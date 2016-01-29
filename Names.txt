@@ -1,5 +1,3 @@
 Mohamed Ahmed Abbas 
 Reem Medhat
 Sahar Ayman
->>>>>>> refs/remotes/origin/master
->>>>>>> c4ffe11d785eb3b87e826a3ee413ad95a015c684
