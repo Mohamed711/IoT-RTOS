@@ -4,7 +4,7 @@
 //
 // Copyright (c) 2011-2014 Texas Instruments Incorporated.  All rights reserved.
 // Software License Agreement
-// 
+//
 // Software License Agreement
 //
 // Texas Instruments (TI) is supplying this software for use solely and
@@ -288,7 +288,7 @@ ResetISR(void)
     // this project.
     //
     HWREG(0xE000ED88) = ((HWREG(0xE000ED88) & ~0x00F00000) | 0x00F00000);
-    
+
     //
     // Call the application's entry point.
     //
