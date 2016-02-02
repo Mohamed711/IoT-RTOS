@@ -14,10 +14,10 @@ int main(void)
     while(1)
     {	
 		GPIO_WritePort(PD,0x01,0x01); 
-		delay_NORMAL();
+		delay_CTC_milli(100);
 		
 		GPIO_WritePort(PD,0x00,0x01);
-		delay_NORMAL();
+		delay_CTC_milli(100);
 		
     }
 }

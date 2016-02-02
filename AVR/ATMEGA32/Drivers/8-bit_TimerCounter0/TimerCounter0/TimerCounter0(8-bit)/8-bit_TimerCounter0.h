@@ -13,7 +13,8 @@
 void TimerCounter0_Init (void);
 void TimerCounter0_milliTimeNORMAL (uint8_t time);
 uint8_t TimerCounter0_Read();
-void delay_NORMAL (void);
+void delay_NORMAL_milli (int t );
+void delay_CTC_milli (t);
 
 
 #endif /* TIMERCOUNTER0_H_ */

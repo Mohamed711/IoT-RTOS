@@ -14,13 +14,13 @@
 //					 010=> (clkI/O)/8				011=> (clkI/O)/64
 //					 100=> (clkI/O)/256				101=> (clkI/O)/1024
 #define CS02_VALUE 0
-#define CS01_VALUE 0
-#define CS00_VALUE 1
+#define CS01_VALUE 1
+#define CS00_VALUE 0
 
 //select MODE
 // WGM01-WGM00 >   00=> Normal		01=> PWM, Phase correct
 //				   10=> CTC			11=> Fast PWM
-#define WGM01_VALUE 0
+#define WGM01_VALUE 1
 #define WGM00_VALUE 0
 
 #define COM01_VALUE 0
