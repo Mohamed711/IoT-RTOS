@@ -14,11 +14,13 @@ int main(void)
 	u16 result;
 	DDRA &=(~(1<<PA0));
 	DDRC |=0xFF;
+	DDRD |=0xFF;
 	
     while(1)
     {
        adc_init() ;
-	 result=  ADC_u16_result();
-	 PORTC =result;
+	 result=  ADC_u16_result(channel_ADC0);
+	 PORTC =(result&0xFF);
+	 PORTD =((result)>>8);
     }
 }

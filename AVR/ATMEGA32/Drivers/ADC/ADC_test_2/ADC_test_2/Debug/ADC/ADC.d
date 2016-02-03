@@ -1,5 +1,5 @@
 ADC/ADC.d ADC/ADC.o: ../ADC/ADC.c ../ADC/ADC.h ../ADC/StdTypes.h \
- ../ADC/GPIO.h \
+ ../ADC/GPIO.h ../ADC/ADC_Lcfg.h ../ADC/ADC_CFG.h \
  c:\program\ files\ (x86)\atmel\atmel\ studio\ 6.0\extensions\atmel\avrgcc\3.4.1.95\avrtoolchain\bin\../lib/gcc/avr/4.6.2/../../../../avr/include/avr/io.h \
  c:\program\ files\ (x86)\atmel\atmel\ studio\ 6.0\extensions\atmel\avrgcc\3.4.1.95\avrtoolchain\bin\../lib/gcc/avr/4.6.2/../../../../avr/include/avr/sfr_defs.h \
  c:\program\ files\ (x86)\atmel\atmel\ studio\ 6.0\extensions\atmel\avrgcc\3.4.1.95\avrtoolchain\bin\../lib/gcc/avr/4.6.2/../../../../avr/include/inttypes.h \
@@ -18,6 +18,10 @@ ADC/ADC.d ADC/ADC.o: ../ADC/ADC.c ../ADC/ADC.h ../ADC/StdTypes.h \
 ../ADC/StdTypes.h:
 
 ../ADC/GPIO.h:
+
+../ADC/ADC_Lcfg.h:
+
+../ADC/ADC_CFG.h:
 
 c:\program\ files\ (x86)\atmel\atmel\ studio\ 6.0\extensions\atmel\avrgcc\3.4.1.95\avrtoolchain\bin\../lib/gcc/avr/4.6.2/../../../../avr/include/avr/io.h:
 
