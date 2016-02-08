@@ -32,6 +32,43 @@
 #define ADPS1  1
 #define ADPSO  0
 
+//channel
+#define channel_ADC0 0b00000
+#define channel_ADC1 0b00001
+#define channel_ADC2 0b00010
+#define channel_ADC3 0b00011
+#define channel_ADC4 0b00100
+#define channel_ADC5 0b00101
+#define channel_ADC6 0b00110
+#define channel_ADC7 0b00111
+#define channel_ADC0_ADC0_10x  0b01000
+#define channel_ADC1_ADC0_10x  0b01001
+#define channel_ADC0_ADC0_200x 0b01010
+#define channel_ADC1_ADC0_200x 0b01011
+#define channel_ADC2_ADC2_10x  0b01100
+#define channel_ADC3_ADC2_10x  0b01101
+#define channel_ADC2_ADC2_200x 0b01110
+#define channel_ADC3_ADC2_200x 0b01111
+
+#define channel_ADC0_ADC1_1x 0b10000
+#define channel_ADC1_ADC1_1x 0b10001
+#define channel_ADC2_ADC1_1x 0b10010
+#define channel_ADC3_ADC1_1x 0b10011
+#define channel_ADC4_ADC1_1x ob10100
+#define channel_ADC5_ADC1_1x 0b10101
+#define channel_ADC6_ADC1_1x 0b10110
+#define channel_ADC7_ADC1_1x ob10111
+
+#define channel_ADC0_ADC2_1x ob11000
+#define channel_ADC1_ADC2_1x ob11001
+#define channel_ADC2_ADC2_1x ob11010
+#define channel_ADC3_ADC2_1x ob11011
+#define channel_ADC4_ADC2_1x ob11100
+#define channel_ADC5_ADC2_1x ob11101
+#define channel_122v ob11110
+#define channel_0v ob11111
+
+
 
 
 
@@ -43,4 +80,7 @@
 #define Left_JUSTIFY  0x01 
 //#define ADC_JUSTIFY Left_JUSTIFY
 
+
+
+#define PRESCALAR_NUM	0x07
 #endif /* SPI_CFG_H_ */

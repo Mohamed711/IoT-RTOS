@@ -21,6 +21,15 @@ typedef struct
 	u32 u32MaxFreq;
 	
 }Freq_of_micro;
+////
+typedef struct
+{
+	u32 u32TempFreq;
+	u8 u8RegVal;
+}CLK_Rate;
+
+extern const CLK_Rate clk[PRESCALAR_NUM];
+////
 
 extern const ADC_Config_Voltage_reference_selection ADC_volt_config;
 extern const Freq_of_micro micro_freq;

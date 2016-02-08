@@ -122,7 +122,7 @@ LOAD c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0x25a
+.text           0x00000000      0x2ca
  *(.vectors)
  .vectors       0x00000000       0x54 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/../../../../avr/lib/avr5/crtm32.o
                 0x00000000                __vector_default
@@ -198,30 +198,30 @@ LOAD c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1
                 0x0000008e                __vector_10
                 0x0000008e                __vector_18
                 0x0000008e                __vector_20
- .text          0x00000092       0xb6 ADC/ADC.o
+ .text          0x00000092      0x126 ADC/ADC.o
                 0x00000092                adc_init
-                0x000000e6                __vector_16
-                0x00000136                ADC_u16_result
- .text          0x00000148        0x0 ADC/ADC_Lcfg.o
- .text          0x00000148       0x1c ADC/ADC_test_2.o
-                0x00000148                main
- .text          0x00000164       0xf2 ADC/GPIO.o
-                0x00000164                GPIO_InitPortDirection
-                0x000001c6                GPIO_WritePort
-                0x00000228                GPIO_ReadPort
- .text          0x00000256        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
- .text          0x00000256        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_copy_data.o)
- .text          0x00000256        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_clear_bss.o)
-                0x00000256                . = ALIGN (0x2)
+                0x00000156                __vector_16
+                0x000001a6                ADC_u16_result
+ .text          0x000001b8        0x0 ADC/ADC_Lcfg.o
+ .text          0x000001b8       0x1c ADC/ADC_test_2.o
+                0x000001b8                main
+ .text          0x000001d4       0xf2 ADC/GPIO.o
+                0x000001d4                GPIO_InitPortDirection
+                0x00000236                GPIO_WritePort
+                0x00000298                GPIO_ReadPort
+ .text          0x000002c6        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
+ .text          0x000002c6        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_copy_data.o)
+ .text          0x000002c6        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_clear_bss.o)
+                0x000002c6                . = ALIGN (0x2)
  *(.text.*)
- .text.libgcc   0x00000256        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
- .text.libgcc   0x00000256        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_copy_data.o)
- .text.libgcc   0x00000256        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_clear_bss.o)
-                0x00000256                . = ALIGN (0x2)
+ .text.libgcc   0x000002c6        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
+ .text.libgcc   0x000002c6        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_copy_data.o)
+ .text.libgcc   0x000002c6        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_clear_bss.o)
+                0x000002c6                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x00000256        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
-                0x00000256                _exit
-                0x00000256                exit
+ .fini9         0x000002c6        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
+                0x000002c6                _exit
+                0x000002c6                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -240,55 +240,55 @@ LOAD c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x00000256        0x4 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
+ .fini0         0x000002c6        0x4 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
  *(.fini0)
-                0x0000025a                _etext = .
+                0x000002ca                _etext = .
 
-.data           0x00800060        0x6 load address 0x0000025a
+.data           0x00800060       0x28 load address 0x000002ca
                 0x00800060                PROVIDE (__data_start, .)
  *(.data)
  .data          0x00800060        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/../../../../avr/lib/avr5/crtm32.o
  .data          0x00800060        0x0 ADC/ADC.o
- .data          0x00800060        0x5 ADC/ADC_Lcfg.o
+ .data          0x00800060       0x28 ADC/ADC_Lcfg.o
                 0x00800060                micro_freq
-                0x00800064                ADC_volt_config
- .data          0x00800065        0x0 ADC/ADC_test_2.o
- .data          0x00800065        0x0 ADC/GPIO.o
- .data          0x00800065        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
- .data          0x00800065        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_copy_data.o)
- .data          0x00800065        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_clear_bss.o)
+                0x00800064                clk
+                0x00800087                ADC_volt_config
+ .data          0x00800088        0x0 ADC/ADC_test_2.o
+ .data          0x00800088        0x0 ADC/GPIO.o
+ .data          0x00800088        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
+ .data          0x00800088        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_copy_data.o)
+ .data          0x00800088        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_clear_bss.o)
  *(.data*)
  *(.rodata)
  *(.rodata*)
  *(.gnu.linkonce.d*)
-                0x00800066                . = ALIGN (0x2)
- *fill*         0x00800065        0x1 00
-                0x00800066                _edata = .
-                0x00800066                PROVIDE (__data_end, .)
+                0x00800088                . = ALIGN (0x2)
+                0x00800088                _edata = .
+                0x00800088                PROVIDE (__data_end, .)
 
-.bss            0x00800066        0x2
-                0x00800066                PROVIDE (__bss_start, .)
+.bss            0x00800088        0x2
+                0x00800088                PROVIDE (__bss_start, .)
  *(.bss)
- .bss           0x00800066        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/../../../../avr/lib/avr5/crtm32.o
- .bss           0x00800066        0x2 ADC/ADC.o
- .bss           0x00800068        0x0 ADC/ADC_Lcfg.o
- .bss           0x00800068        0x0 ADC/ADC_test_2.o
- .bss           0x00800068        0x0 ADC/GPIO.o
- .bss           0x00800068        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
- .bss           0x00800068        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_copy_data.o)
- .bss           0x00800068        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_clear_bss.o)
+ .bss           0x00800088        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/../../../../avr/lib/avr5/crtm32.o
+ .bss           0x00800088        0x2 ADC/ADC.o
+ .bss           0x0080008a        0x0 ADC/ADC_Lcfg.o
+ .bss           0x0080008a        0x0 ADC/ADC_test_2.o
+ .bss           0x0080008a        0x0 ADC/GPIO.o
+ .bss           0x0080008a        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
+ .bss           0x0080008a        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_copy_data.o)
+ .bss           0x0080008a        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_clear_bss.o)
  *(.bss*)
  *(COMMON)
-                0x00800068                PROVIDE (__bss_end, .)
-                0x0000025a                __data_load_start = LOADADDR (.data)
-                0x00000260                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x0080008a                PROVIDE (__bss_end, .)
+                0x000002ca                __data_load_start = LOADADDR (.data)
+                0x000002f2                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x00800068        0x0
-                0x00800068                PROVIDE (__noinit_start, .)
+.noinit         0x0080008a        0x0
+                0x0080008a                PROVIDE (__noinit_start, .)
  *(.noinit*)
-                0x00800068                PROVIDE (__noinit_end, .)
-                0x00800068                _end = .
-                0x00800068                PROVIDE (__heap_start, .)
+                0x0080008a                PROVIDE (__noinit_end, .)
+                0x0080008a                _end = .
+                0x0080008a                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000        0x0
  *(.eeprom*)
@@ -359,36 +359,36 @@ LOAD c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000      0x6b1
+.debug_info     0x00000000      0x7d3
  *(.debug_info)
- .debug_info    0x00000000      0x145 ADC/ADC.o
- .debug_info    0x00000145       0xd7 ADC/ADC_Lcfg.o
- .debug_info    0x0000021c       0xae ADC/ADC_test_2.o
- .debug_info    0x000002ca      0x150 ADC/GPIO.o
- .debug_info    0x0000041a       0xdd c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
- .debug_info    0x000004f7       0xdd c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_copy_data.o)
- .debug_info    0x000005d4       0xdd c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_clear_bss.o)
+ .debug_info    0x00000000      0x209 ADC/ADC.o
+ .debug_info    0x00000209      0x135 ADC/ADC_Lcfg.o
+ .debug_info    0x0000033e       0xae ADC/ADC_test_2.o
+ .debug_info    0x000003ec      0x150 ADC/GPIO.o
+ .debug_info    0x0000053c       0xdd c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
+ .debug_info    0x00000619       0xdd c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_copy_data.o)
+ .debug_info    0x000006f6       0xdd c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_clear_bss.o)
  *(.gnu.linkonce.wi.*)
 
-.debug_abbrev   0x00000000      0x292
+.debug_abbrev   0x00000000      0x2e9
  *(.debug_abbrev)
- .debug_abbrev  0x00000000       0xe0 ADC/ADC.o
- .debug_abbrev  0x000000e0       0x6d ADC/ADC_Lcfg.o
- .debug_abbrev  0x0000014d       0x6a ADC/ADC_test_2.o
- .debug_abbrev  0x000001b7       0x9f ADC/GPIO.o
- .debug_abbrev  0x00000256       0x14 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
- .debug_abbrev  0x0000026a       0x14 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_copy_data.o)
- .debug_abbrev  0x0000027e       0x14 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_clear_bss.o)
+ .debug_abbrev  0x00000000      0x114 ADC/ADC.o
+ .debug_abbrev  0x00000114       0x90 ADC/ADC_Lcfg.o
+ .debug_abbrev  0x000001a4       0x6a ADC/ADC_test_2.o
+ .debug_abbrev  0x0000020e       0x9f ADC/GPIO.o
+ .debug_abbrev  0x000002ad       0x14 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
+ .debug_abbrev  0x000002c1       0x14 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_copy_data.o)
+ .debug_abbrev  0x000002d5       0x14 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_clear_bss.o)
 
-.debug_line     0x00000000      0x4f4
+.debug_line     0x00000000      0x4fa
  *(.debug_line)
- .debug_line    0x00000000      0x104 ADC/ADC.o
- .debug_line    0x00000104       0x4b ADC/ADC_Lcfg.o
- .debug_line    0x0000014f       0xfe ADC/ADC_test_2.o
- .debug_line    0x0000024d      0x100 ADC/GPIO.o
- .debug_line    0x0000034d       0x88 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
- .debug_line    0x000003d5       0x91 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_copy_data.o)
- .debug_line    0x00000466       0x8e c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_clear_bss.o)
+ .debug_line    0x00000000      0x10a ADC/ADC.o
+ .debug_line    0x0000010a       0x4b ADC/ADC_Lcfg.o
+ .debug_line    0x00000155       0xfe ADC/ADC_test_2.o
+ .debug_line    0x00000253      0x100 ADC/GPIO.o
+ .debug_line    0x00000353       0x88 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
+ .debug_line    0x000003db       0x91 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_copy_data.o)
+ .debug_line    0x0000046c       0x8e c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_clear_bss.o)
 
 .debug_frame    0x00000000       0xd0
  *(.debug_frame)
@@ -396,21 +396,21 @@ LOAD c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1
  .debug_frame   0x00000068       0x24 ADC/ADC_test_2.o
  .debug_frame   0x0000008c       0x44 ADC/GPIO.o
 
-.debug_str      0x00000000      0x1e0
+.debug_str      0x00000000      0x20a
  *(.debug_str)
- .debug_str     0x00000000      0x134 ADC/ADC.o
-                                0x168 (size before relaxing)
- .debug_str     0x00000134       0x36 ADC/ADC_Lcfg.o
-                                0x11c (size before relaxing)
- .debug_str     0x0000016a       0x19 ADC/ADC_test_2.o
+ .debug_str     0x00000000      0x182 ADC/ADC.o
+                                0x1b6 (size before relaxing)
+ .debug_str     0x00000182       0x12 ADC/ADC_Lcfg.o
+                                0x147 (size before relaxing)
+ .debug_str     0x00000194       0x19 ADC/ADC_test_2.o
                                  0xf9 (size before relaxing)
- .debug_str     0x00000183       0x5d ADC/GPIO.o
+ .debug_str     0x000001ad       0x5d ADC/GPIO.o
                                 0x149 (size before relaxing)
 
-.debug_loc      0x00000000      0x20d
+.debug_loc      0x00000000      0x238
  *(.debug_loc)
- .debug_loc     0x00000000       0x83 ADC/ADC.o
- .debug_loc     0x00000083      0x18a ADC/GPIO.o
+ .debug_loc     0x00000000       0xae ADC/ADC.o
+ .debug_loc     0x000000ae      0x18a ADC/GPIO.o
 
 .debug_macinfo
  *(.debug_macinfo)

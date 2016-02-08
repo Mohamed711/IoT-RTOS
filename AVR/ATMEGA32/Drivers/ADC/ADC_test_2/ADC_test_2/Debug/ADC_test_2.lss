@@ -3,29 +3,29 @@ ADC_test_2.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         0000025a  00000000  00000000  00000094  2**1
+  0 .text         000002ca  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         00000006  00800060  0000025a  000002ee  2**0
+  1 .data         00000028  00800060  000002ca  0000035e  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .bss          00000002  00800066  00800066  000002f4  2**0
+  2 .bss          00000002  00800088  00800088  00000386  2**0
                   ALLOC
-  3 .stab         000006cc  00000000  00000000  000002f4  2**2
+  3 .stab         000006cc  00000000  00000000  00000388  2**2
                   CONTENTS, READONLY, DEBUGGING
-  4 .stabstr      00000085  00000000  00000000  000009c0  2**0
+  4 .stabstr      00000085  00000000  00000000  00000a54  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_aranges 000000c0  00000000  00000000  00000a48  2**3
+  5 .debug_aranges 000000c0  00000000  00000000  00000ae0  2**3
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   000006b1  00000000  00000000  00000b08  2**0
+  6 .debug_info   000007d3  00000000  00000000  00000ba0  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 00000292  00000000  00000000  000011b9  2**0
+  7 .debug_abbrev 000002e9  00000000  00000000  00001373  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   000004f4  00000000  00000000  0000144b  2**0
+  8 .debug_line   000004fa  00000000  00000000  0000165c  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  000000d0  00000000  00000000  00001940  2**2
+  9 .debug_frame  000000d0  00000000  00000000  00001b58  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    000001e0  00000000  00000000  00001a10  2**0
+ 10 .debug_str    0000020a  00000000  00000000  00001c28  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    0000020d  00000000  00000000  00001bf0  2**0
+ 11 .debug_loc    00000238  00000000  00000000  00001e32  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -47,7 +47,7 @@ Disassembly of section .text:
   34:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
   38:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
   3c:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
-  40:	0c 94 73 00 	jmp	0xe6	; 0xe6 <__vector_16>
+  40:	0c 94 ab 00 	jmp	0x156	; 0x156 <__vector_16>
   44:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
   48:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
   4c:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
@@ -65,18 +65,18 @@ Disassembly of section .text:
   60:	10 e0       	ldi	r17, 0x00	; 0
   62:	a0 e6       	ldi	r26, 0x60	; 96
   64:	b0 e0       	ldi	r27, 0x00	; 0
-  66:	ea e5       	ldi	r30, 0x5A	; 90
+  66:	ea ec       	ldi	r30, 0xCA	; 202
   68:	f2 e0       	ldi	r31, 0x02	; 2
   6a:	02 c0       	rjmp	.+4      	; 0x70 <__do_copy_data+0x10>
   6c:	05 90       	lpm	r0, Z+
   6e:	0d 92       	st	X+, r0
-  70:	a6 36       	cpi	r26, 0x66	; 102
+  70:	a8 38       	cpi	r26, 0x88	; 136
   72:	b1 07       	cpc	r27, r17
   74:	d9 f7       	brne	.-10     	; 0x6c <__do_copy_data+0xc>
 
 00000076 <__do_clear_bss>:
   76:	10 e0       	ldi	r17, 0x00	; 0
-  78:	a6 e6       	ldi	r26, 0x66	; 102
+  78:	a8 e8       	ldi	r26, 0x88	; 136
   7a:	b0 e0       	ldi	r27, 0x00	; 0
   7c:	01 c0       	rjmp	.+2      	; 0x80 <.do_clear_bss_start>
 
@@ -84,11 +84,11 @@ Disassembly of section .text:
   7e:	1d 92       	st	X+, r1
 
 00000080 <.do_clear_bss_start>:
-  80:	a8 36       	cpi	r26, 0x68	; 104
+  80:	aa 38       	cpi	r26, 0x8A	; 138
   82:	b1 07       	cpc	r27, r17
   84:	e1 f7       	brne	.-8      	; 0x7e <.do_clear_bss_loop>
-  86:	0e 94 a4 00 	call	0x148	; 0x148 <main>
-  8a:	0c 94 2b 01 	jmp	0x256	; 0x256 <_exit>
+  86:	0e 94 dc 00 	call	0x1b8	; 0x1b8 <main>
+  8a:	0c 94 63 01 	jmp	0x2c6	; 0x2c6 <_exit>
 
 0000008e <__bad_interrupt>:
   8e:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
@@ -101,7 +101,7 @@ void adc_init(void)
 	
 		ADMUX |= (  (( (ADC_volt_config.voltage_ref_sel)&0x02)>>1)<<REFS1 )| (((ADC_volt_config.voltage_ref_sel)&0x01)<<REFS0 ) ;
   92:	67 b1       	in	r22, 0x07	; 7
-  94:	80 91 64 00 	lds	r24, 0x0064
+  94:	80 91 87 00 	lds	r24, 0x0087
   98:	90 e0       	ldi	r25, 0x00	; 0
   9a:	ac 01       	movw	r20, r24
   9c:	41 70       	andi	r20, 0x01	; 1
@@ -131,351 +131,420 @@ void adc_init(void)
   cc:	87 95       	ror	r24
   ce:	84 2b       	or	r24, r20
   d0:	87 b9       	out	0x07, r24	; 7
-	#elif ADC_PRESCALER == 32
-	ADCSRA |= (1 << ADPS2) | (0 << ADPS1) | (1 << ADPS0); // Prescaler 32
-	#elif ADC_PRESCALER == 64
-	ADCSRA |= (1 << ADPS2) | (1 << ADPS1) | (0 << ADPS0); // Prescaler 64
-	#elif ADC_PRESCALER == 128
-	ADCSRA |= (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0); // Prescaler 128
-  d2:	86 b1       	in	r24, 0x06	; 6
-  d4:	87 60       	ori	r24, 0x07	; 7
-  d6:	86 b9       	out	0x06, r24	; 6
+	/*Get the most suitable pre-scalar */
+	
+	u8 u8LoopCount;
+	for( u8LoopCount = 0; u8LoopCount < PRESCALAR_NUM ;u8LoopCount++)
+	{
+		if(clk[u8LoopCount].u32TempFreq < micro_freq.u32MaxFreq )
+  d2:	40 91 60 00 	lds	r20, 0x0060
+  d6:	50 91 61 00 	lds	r21, 0x0061
+  da:	60 91 62 00 	lds	r22, 0x0062
+  de:	70 91 63 00 	lds	r23, 0x0063
+  e2:	80 91 64 00 	lds	r24, 0x0064
+  e6:	90 91 65 00 	lds	r25, 0x0065
+  ea:	a0 91 66 00 	lds	r26, 0x0066
+  ee:	b0 91 67 00 	lds	r27, 0x0067
+  f2:	84 17       	cp	r24, r20
+  f4:	95 07       	cpc	r25, r21
+  f6:	a6 07       	cpc	r26, r22
+  f8:	b7 07       	cpc	r27, r23
+  fa:	88 f0       	brcs	.+34     	; 0x11e <adc_init+0x8c>
+  fc:	e9 e6       	ldi	r30, 0x69	; 105
+  fe:	f0 e0       	ldi	r31, 0x00	; 0
+	//////
+	
+	/*Get the most suitable pre-scalar */
+	
+	u8 u8LoopCount;
+	for( u8LoopCount = 0; u8LoopCount < PRESCALAR_NUM ;u8LoopCount++)
+ 100:	21 e0       	ldi	r18, 0x01	; 1
+	{
+		if(clk[u8LoopCount].u32TempFreq < micro_freq.u32MaxFreq )
+ 102:	80 81       	ld	r24, Z
+ 104:	91 81       	ldd	r25, Z+1	; 0x01
+ 106:	a2 81       	ldd	r26, Z+2	; 0x02
+ 108:	b3 81       	ldd	r27, Z+3	; 0x03
+ 10a:	84 17       	cp	r24, r20
+ 10c:	95 07       	cpc	r25, r21
+ 10e:	a6 07       	cpc	r26, r22
+ 110:	b7 07       	cpc	r27, r23
+ 112:	30 f0       	brcs	.+12     	; 0x120 <adc_init+0x8e>
+	//////
+	
+	/*Get the most suitable pre-scalar */
+	
+	u8 u8LoopCount;
+	for( u8LoopCount = 0; u8LoopCount < PRESCALAR_NUM ;u8LoopCount++)
+ 114:	2f 5f       	subi	r18, 0xFF	; 255
+ 116:	35 96       	adiw	r30, 0x05	; 5
+ 118:	27 30       	cpi	r18, 0x07	; 7
+ 11a:	99 f7       	brne	.-26     	; 0x102 <adc_init+0x70>
+ 11c:	01 c0       	rjmp	.+2      	; 0x120 <adc_init+0x8e>
+ 11e:	20 e0       	ldi	r18, 0x00	; 0
+		if(clk[u8LoopCount].u32TempFreq < micro_freq.u32MaxFreq )
+		{
+			break;
+		}
+	}
+	ADCSRA &=0xF8;
+ 120:	86 b1       	in	r24, 0x06	; 6
+ 122:	88 7f       	andi	r24, 0xF8	; 248
+ 124:	86 b9       	out	0x06, r24	; 6
+	ADCSRA |=(clk[u8LoopCount].u8RegVal & 0x03);
+ 126:	36 b1       	in	r19, 0x06	; 6
+ 128:	82 2f       	mov	r24, r18
+ 12a:	90 e0       	ldi	r25, 0x00	; 0
+ 12c:	fc 01       	movw	r30, r24
+ 12e:	ee 0f       	add	r30, r30
+ 130:	ff 1f       	adc	r31, r31
+ 132:	ee 0f       	add	r30, r30
+ 134:	ff 1f       	adc	r31, r31
+ 136:	8e 0f       	add	r24, r30
+ 138:	9f 1f       	adc	r25, r31
+ 13a:	fc 01       	movw	r30, r24
+ 13c:	ec 59       	subi	r30, 0x9C	; 156
+ 13e:	ff 4f       	sbci	r31, 0xFF	; 255
+ 140:	84 81       	ldd	r24, Z+4	; 0x04
+ 142:	83 70       	andi	r24, 0x03	; 3
+ 144:	83 2b       	or	r24, r19
+ 146:	86 b9       	out	0x06, r24	; 6
 	// i only support right adjust
 	// Set ADC justify
 	#if ADC_JUSTIFY == 'L'
 	ADMUX |= (1 << ADLAR); // Left adjust ADC result to allow easy 8 bit reading
 	#elif ADC_JUSTIFY == 'R'
 	ADMUX |= (0 << ADLAR); // Right adjust
-  d8:	87 b1       	in	r24, 0x07	; 7
-  da:	87 b9       	out	0x07, r24	; 7
+ 148:	87 b1       	in	r24, 0x07	; 7
+ 14a:	87 b9       	out	0x07, r24	; 7
 	#endif
 		
     // Enable ADC Interrupt
 	ADCSRA |= (1 << ADIE);
-  dc:	33 9a       	sbi	0x06, 3	; 6
+ 14c:	33 9a       	sbi	0x06, 3	; 6
 	
 	// Enable ADC
 	ADCSRA |= (1 << ADEN);
-  de:	37 9a       	sbi	0x06, 7	; 6
+ 14e:	37 9a       	sbi	0x06, 7	; 6
 	
 	//set global interrupt
 	sei();
-  e0:	78 94       	sei
+ 150:	78 94       	sei
 	 // Start conversions
 	ADCSRA |= (1 << ADSC);
-  e2:	36 9a       	sbi	0x06, 6	; 6
+ 152:	36 9a       	sbi	0x06, 6	; 6
 	
 }
-  e4:	08 95       	ret
+ 154:	08 95       	ret
 
-000000e6 <__vector_16>:
+00000156 <__vector_16>:
 ISR(ADC_vect)
 {
-  e6:	1f 92       	push	r1
-  e8:	0f 92       	push	r0
-  ea:	0f b6       	in	r0, 0x3f	; 63
-  ec:	0f 92       	push	r0
-  ee:	11 24       	eor	r1, r1
-  f0:	2f 93       	push	r18
-  f2:	3f 93       	push	r19
-  f4:	4f 93       	push	r20
-  f6:	8f 93       	push	r24
-  f8:	9f 93       	push	r25
+ 156:	1f 92       	push	r1
+ 158:	0f 92       	push	r0
+ 15a:	0f b6       	in	r0, 0x3f	; 63
+ 15c:	0f 92       	push	r0
+ 15e:	11 24       	eor	r1, r1
+ 160:	2f 93       	push	r18
+ 162:	3f 93       	push	r19
+ 164:	4f 93       	push	r20
+ 166:	8f 93       	push	r24
+ 168:	9f 93       	push	r25
 	/*read the low byte of the converted data*/
 	u16_ADC_result = ADCL;
-  fa:	84 b1       	in	r24, 0x04	; 4
-  fc:	90 e0       	ldi	r25, 0x00	; 0
-  fe:	90 93 67 00 	sts	0x0067, r25
- 102:	80 93 66 00 	sts	0x0066, r24
+ 16a:	84 b1       	in	r24, 0x04	; 4
+ 16c:	90 e0       	ldi	r25, 0x00	; 0
+ 16e:	90 93 89 00 	sts	0x0089, r25
+ 172:	80 93 88 00 	sts	0x0088, r24
 	/*read the high byte of the converted data*/
 	u16_ADC_result |= ADCH <<8;
- 106:	45 b1       	in	r20, 0x05	; 5
- 108:	20 91 66 00 	lds	r18, 0x0066
- 10c:	30 91 67 00 	lds	r19, 0x0067
- 110:	94 2f       	mov	r25, r20
- 112:	80 e0       	ldi	r24, 0x00	; 0
- 114:	82 2b       	or	r24, r18
- 116:	93 2b       	or	r25, r19
- 118:	90 93 67 00 	sts	0x0067, r25
- 11c:	80 93 66 00 	sts	0x0066, r24
+ 176:	45 b1       	in	r20, 0x05	; 5
+ 178:	20 91 88 00 	lds	r18, 0x0088
+ 17c:	30 91 89 00 	lds	r19, 0x0089
+ 180:	94 2f       	mov	r25, r20
+ 182:	80 e0       	ldi	r24, 0x00	; 0
+ 184:	82 2b       	or	r24, r18
+ 186:	93 2b       	or	r25, r19
+ 188:	90 93 89 00 	sts	0x0089, r25
+ 18c:	80 93 88 00 	sts	0x0088, r24
 	
 	/* set the start conversion to begin next conversion  */
 	ADCSRA |= (1 << ADSC);
- 120:	36 9a       	sbi	0x06, 6	; 6
+ 190:	36 9a       	sbi	0x06, 6	; 6
 
 }
- 122:	9f 91       	pop	r25
- 124:	8f 91       	pop	r24
- 126:	4f 91       	pop	r20
- 128:	3f 91       	pop	r19
- 12a:	2f 91       	pop	r18
- 12c:	0f 90       	pop	r0
- 12e:	0f be       	out	0x3f, r0	; 63
- 130:	0f 90       	pop	r0
- 132:	1f 90       	pop	r1
- 134:	18 95       	reti
+ 192:	9f 91       	pop	r25
+ 194:	8f 91       	pop	r24
+ 196:	4f 91       	pop	r20
+ 198:	3f 91       	pop	r19
+ 19a:	2f 91       	pop	r18
+ 19c:	0f 90       	pop	r0
+ 19e:	0f be       	out	0x3f, r0	; 63
+ 1a0:	0f 90       	pop	r0
+ 1a2:	1f 90       	pop	r1
+ 1a4:	18 95       	reti
 
-00000136 <ADC_u16_result>:
+000001a6 <ADC_u16_result>:
 s16 ADC_u16_result(u8 channel)
 {  
 	//set channel 
 	ADMUX |=(channel&0x1F);
- 136:	97 b1       	in	r25, 0x07	; 7
- 138:	8f 71       	andi	r24, 0x1F	; 31
- 13a:	98 2b       	or	r25, r24
- 13c:	97 b9       	out	0x07, r25	; 7
+ 1a6:	97 b1       	in	r25, 0x07	; 7
+ 1a8:	8f 71       	andi	r24, 0x1F	; 31
+ 1aa:	98 2b       	or	r25, r24
+ 1ac:	97 b9       	out	0x07, r25	; 7
 	
     return u16_ADC_result;	
- 13e:	80 91 66 00 	lds	r24, 0x0066
- 142:	90 91 67 00 	lds	r25, 0x0067
- 146:	08 95       	ret
+ 1ae:	80 91 88 00 	lds	r24, 0x0088
+ 1b2:	90 91 89 00 	lds	r25, 0x0089
+ 1b6:	08 95       	ret
 
-00000148 <main>:
-#include "ADC.h"
+000001b8 <main>:
+#include "ADC_CFG.h" 
 
 int main(void)
 {
 	u16 result;
 	DDRA &=(~(1<<PA0));
- 148:	d0 98       	cbi	0x1a, 0	; 26
+ 1b8:	d0 98       	cbi	0x1a, 0	; 26
 	DDRC |=0xFF;
- 14a:	84 b3       	in	r24, 0x14	; 20
- 14c:	8f ef       	ldi	r24, 0xFF	; 255
- 14e:	84 bb       	out	0x14, r24	; 20
+ 1ba:	84 b3       	in	r24, 0x14	; 20
+ 1bc:	8f ef       	ldi	r24, 0xFF	; 255
+ 1be:	84 bb       	out	0x14, r24	; 20
 	DDRD |=0xFF;
- 150:	91 b3       	in	r25, 0x11	; 17
- 152:	81 bb       	out	0x11, r24	; 17
+ 1c0:	91 b3       	in	r25, 0x11	; 17
+ 1c2:	81 bb       	out	0x11, r24	; 17
 	
     while(1)
     {
        adc_init() ;
- 154:	0e 94 49 00 	call	0x92	; 0x92 <adc_init>
+ 1c4:	0e 94 49 00 	call	0x92	; 0x92 <adc_init>
 	 result=  ADC_u16_result(channel_ADC0);
- 158:	80 e0       	ldi	r24, 0x00	; 0
- 15a:	0e 94 9b 00 	call	0x136	; 0x136 <ADC_u16_result>
+ 1c8:	80 e0       	ldi	r24, 0x00	; 0
+ 1ca:	0e 94 d3 00 	call	0x1a6	; 0x1a6 <ADC_u16_result>
 	 PORTC =(result&0xFF);
- 15e:	85 bb       	out	0x15, r24	; 21
+ 1ce:	85 bb       	out	0x15, r24	; 21
 	 PORTD =((result)>>8);
- 160:	92 bb       	out	0x12, r25	; 18
- 162:	f8 cf       	rjmp	.-16     	; 0x154 <main+0xc>
+ 1d0:	92 bb       	out	0x12, r25	; 18
+ 1d2:	f8 cf       	rjmp	.-16     	; 0x1c4 <main+0xc>
 
-00000164 <GPIO_InitPortDirection>:
+000001d4 <GPIO_InitPortDirection>:
 #define WRITE_REG(Reg,Value,Mask) Reg&=~(Mask); Reg|=(Value & Mask)
 #define READ_REG(Reg,Mask) Reg & Mask
 
 void GPIO_InitPortDirection(u8 PortName,u8 PortDirection,u8 PortMask)
 {
 	switch(PortName)
- 164:	81 30       	cpi	r24, 0x01	; 1
- 166:	89 f0       	breq	.+34     	; 0x18a <GPIO_InitPortDirection+0x26>
- 168:	81 30       	cpi	r24, 0x01	; 1
- 16a:	28 f0       	brcs	.+10     	; 0x176 <GPIO_InitPortDirection+0x12>
- 16c:	82 30       	cpi	r24, 0x02	; 2
- 16e:	b9 f0       	breq	.+46     	; 0x19e <GPIO_InitPortDirection+0x3a>
- 170:	83 30       	cpi	r24, 0x03	; 3
- 172:	41 f5       	brne	.+80     	; 0x1c4 <GPIO_InitPortDirection+0x60>
- 174:	1e c0       	rjmp	.+60     	; 0x1b2 <GPIO_InitPortDirection+0x4e>
+ 1d4:	81 30       	cpi	r24, 0x01	; 1
+ 1d6:	89 f0       	breq	.+34     	; 0x1fa <GPIO_InitPortDirection+0x26>
+ 1d8:	81 30       	cpi	r24, 0x01	; 1
+ 1da:	28 f0       	brcs	.+10     	; 0x1e6 <GPIO_InitPortDirection+0x12>
+ 1dc:	82 30       	cpi	r24, 0x02	; 2
+ 1de:	b9 f0       	breq	.+46     	; 0x20e <GPIO_InitPortDirection+0x3a>
+ 1e0:	83 30       	cpi	r24, 0x03	; 3
+ 1e2:	41 f5       	brne	.+80     	; 0x234 <GPIO_InitPortDirection+0x60>
+ 1e4:	1e c0       	rjmp	.+60     	; 0x222 <GPIO_InitPortDirection+0x4e>
 	{
 		case PA:
 		{
 			WRITE_REG(DDRA,PortDirection,PortMask);
- 176:	8a b3       	in	r24, 0x1a	; 26
- 178:	94 2f       	mov	r25, r20
- 17a:	90 95       	com	r25
- 17c:	89 23       	and	r24, r25
- 17e:	8a bb       	out	0x1a, r24	; 26
- 180:	8a b3       	in	r24, 0x1a	; 26
- 182:	64 23       	and	r22, r20
- 184:	68 2b       	or	r22, r24
- 186:	6a bb       	out	0x1a, r22	; 26
+ 1e6:	8a b3       	in	r24, 0x1a	; 26
+ 1e8:	94 2f       	mov	r25, r20
+ 1ea:	90 95       	com	r25
+ 1ec:	89 23       	and	r24, r25
+ 1ee:	8a bb       	out	0x1a, r24	; 26
+ 1f0:	8a b3       	in	r24, 0x1a	; 26
+ 1f2:	64 23       	and	r22, r20
+ 1f4:	68 2b       	or	r22, r24
+ 1f6:	6a bb       	out	0x1a, r22	; 26
 		}
 		break;
- 188:	08 95       	ret
+ 1f8:	08 95       	ret
 		case PB:
 		{
 			WRITE_REG(DDRB,PortDirection,PortMask);
- 18a:	87 b3       	in	r24, 0x17	; 23
- 18c:	94 2f       	mov	r25, r20
- 18e:	90 95       	com	r25
- 190:	89 23       	and	r24, r25
- 192:	87 bb       	out	0x17, r24	; 23
- 194:	87 b3       	in	r24, 0x17	; 23
- 196:	64 23       	and	r22, r20
- 198:	68 2b       	or	r22, r24
- 19a:	67 bb       	out	0x17, r22	; 23
+ 1fa:	87 b3       	in	r24, 0x17	; 23
+ 1fc:	94 2f       	mov	r25, r20
+ 1fe:	90 95       	com	r25
+ 200:	89 23       	and	r24, r25
+ 202:	87 bb       	out	0x17, r24	; 23
+ 204:	87 b3       	in	r24, 0x17	; 23
+ 206:	64 23       	and	r22, r20
+ 208:	68 2b       	or	r22, r24
+ 20a:	67 bb       	out	0x17, r22	; 23
 		}
 		break;
- 19c:	08 95       	ret
+ 20c:	08 95       	ret
 		case PC:
 		{
 			WRITE_REG(DDRC,PortDirection,PortMask);
- 19e:	84 b3       	in	r24, 0x14	; 20
- 1a0:	94 2f       	mov	r25, r20
- 1a2:	90 95       	com	r25
- 1a4:	89 23       	and	r24, r25
- 1a6:	84 bb       	out	0x14, r24	; 20
- 1a8:	84 b3       	in	r24, 0x14	; 20
- 1aa:	64 23       	and	r22, r20
- 1ac:	68 2b       	or	r22, r24
- 1ae:	64 bb       	out	0x14, r22	; 20
+ 20e:	84 b3       	in	r24, 0x14	; 20
+ 210:	94 2f       	mov	r25, r20
+ 212:	90 95       	com	r25
+ 214:	89 23       	and	r24, r25
+ 216:	84 bb       	out	0x14, r24	; 20
+ 218:	84 b3       	in	r24, 0x14	; 20
+ 21a:	64 23       	and	r22, r20
+ 21c:	68 2b       	or	r22, r24
+ 21e:	64 bb       	out	0x14, r22	; 20
 		}
 		break;
- 1b0:	08 95       	ret
+ 220:	08 95       	ret
 		case PD:
 		{
 			WRITE_REG(DDRD,PortDirection,PortMask);
- 1b2:	81 b3       	in	r24, 0x11	; 17
- 1b4:	94 2f       	mov	r25, r20
- 1b6:	90 95       	com	r25
- 1b8:	89 23       	and	r24, r25
- 1ba:	81 bb       	out	0x11, r24	; 17
- 1bc:	81 b3       	in	r24, 0x11	; 17
- 1be:	64 23       	and	r22, r20
- 1c0:	68 2b       	or	r22, r24
- 1c2:	61 bb       	out	0x11, r22	; 17
- 1c4:	08 95       	ret
+ 222:	81 b3       	in	r24, 0x11	; 17
+ 224:	94 2f       	mov	r25, r20
+ 226:	90 95       	com	r25
+ 228:	89 23       	and	r24, r25
+ 22a:	81 bb       	out	0x11, r24	; 17
+ 22c:	81 b3       	in	r24, 0x11	; 17
+ 22e:	64 23       	and	r22, r20
+ 230:	68 2b       	or	r22, r24
+ 232:	61 bb       	out	0x11, r22	; 17
+ 234:	08 95       	ret
 
-000001c6 <GPIO_WritePort>:
+00000236 <GPIO_WritePort>:
 		break;
 	}	
 }
 void GPIO_WritePort(u8 PortName,u8 PortData,u8 PortMask)
 {
 	switch(PortName)
- 1c6:	81 30       	cpi	r24, 0x01	; 1
- 1c8:	89 f0       	breq	.+34     	; 0x1ec <GPIO_WritePort+0x26>
- 1ca:	81 30       	cpi	r24, 0x01	; 1
- 1cc:	28 f0       	brcs	.+10     	; 0x1d8 <GPIO_WritePort+0x12>
- 1ce:	82 30       	cpi	r24, 0x02	; 2
- 1d0:	b9 f0       	breq	.+46     	; 0x200 <GPIO_WritePort+0x3a>
- 1d2:	83 30       	cpi	r24, 0x03	; 3
- 1d4:	41 f5       	brne	.+80     	; 0x226 <GPIO_WritePort+0x60>
- 1d6:	1e c0       	rjmp	.+60     	; 0x214 <GPIO_WritePort+0x4e>
+ 236:	81 30       	cpi	r24, 0x01	; 1
+ 238:	89 f0       	breq	.+34     	; 0x25c <GPIO_WritePort+0x26>
+ 23a:	81 30       	cpi	r24, 0x01	; 1
+ 23c:	28 f0       	brcs	.+10     	; 0x248 <GPIO_WritePort+0x12>
+ 23e:	82 30       	cpi	r24, 0x02	; 2
+ 240:	b9 f0       	breq	.+46     	; 0x270 <GPIO_WritePort+0x3a>
+ 242:	83 30       	cpi	r24, 0x03	; 3
+ 244:	41 f5       	brne	.+80     	; 0x296 <GPIO_WritePort+0x60>
+ 246:	1e c0       	rjmp	.+60     	; 0x284 <GPIO_WritePort+0x4e>
 	{
 		case PA:
 		{
 			WRITE_REG(PORTA,PortData,PortMask);
- 1d8:	8b b3       	in	r24, 0x1b	; 27
- 1da:	94 2f       	mov	r25, r20
- 1dc:	90 95       	com	r25
- 1de:	89 23       	and	r24, r25
- 1e0:	8b bb       	out	0x1b, r24	; 27
- 1e2:	8b b3       	in	r24, 0x1b	; 27
- 1e4:	64 23       	and	r22, r20
- 1e6:	68 2b       	or	r22, r24
- 1e8:	6b bb       	out	0x1b, r22	; 27
+ 248:	8b b3       	in	r24, 0x1b	; 27
+ 24a:	94 2f       	mov	r25, r20
+ 24c:	90 95       	com	r25
+ 24e:	89 23       	and	r24, r25
+ 250:	8b bb       	out	0x1b, r24	; 27
+ 252:	8b b3       	in	r24, 0x1b	; 27
+ 254:	64 23       	and	r22, r20
+ 256:	68 2b       	or	r22, r24
+ 258:	6b bb       	out	0x1b, r22	; 27
 		}
 		break;
- 1ea:	08 95       	ret
+ 25a:	08 95       	ret
 		case PB:
 		{
 			WRITE_REG(PORTB,PortData,PortMask);
- 1ec:	88 b3       	in	r24, 0x18	; 24
- 1ee:	94 2f       	mov	r25, r20
- 1f0:	90 95       	com	r25
- 1f2:	89 23       	and	r24, r25
- 1f4:	88 bb       	out	0x18, r24	; 24
- 1f6:	88 b3       	in	r24, 0x18	; 24
- 1f8:	64 23       	and	r22, r20
- 1fa:	68 2b       	or	r22, r24
- 1fc:	68 bb       	out	0x18, r22	; 24
+ 25c:	88 b3       	in	r24, 0x18	; 24
+ 25e:	94 2f       	mov	r25, r20
+ 260:	90 95       	com	r25
+ 262:	89 23       	and	r24, r25
+ 264:	88 bb       	out	0x18, r24	; 24
+ 266:	88 b3       	in	r24, 0x18	; 24
+ 268:	64 23       	and	r22, r20
+ 26a:	68 2b       	or	r22, r24
+ 26c:	68 bb       	out	0x18, r22	; 24
 		}
 		break;
- 1fe:	08 95       	ret
+ 26e:	08 95       	ret
 		case PC:
 		{
 			WRITE_REG(PORTC,PortData,PortMask);
- 200:	85 b3       	in	r24, 0x15	; 21
- 202:	94 2f       	mov	r25, r20
- 204:	90 95       	com	r25
- 206:	89 23       	and	r24, r25
- 208:	85 bb       	out	0x15, r24	; 21
- 20a:	85 b3       	in	r24, 0x15	; 21
- 20c:	64 23       	and	r22, r20
- 20e:	68 2b       	or	r22, r24
- 210:	65 bb       	out	0x15, r22	; 21
+ 270:	85 b3       	in	r24, 0x15	; 21
+ 272:	94 2f       	mov	r25, r20
+ 274:	90 95       	com	r25
+ 276:	89 23       	and	r24, r25
+ 278:	85 bb       	out	0x15, r24	; 21
+ 27a:	85 b3       	in	r24, 0x15	; 21
+ 27c:	64 23       	and	r22, r20
+ 27e:	68 2b       	or	r22, r24
+ 280:	65 bb       	out	0x15, r22	; 21
 		}
 		break;
- 212:	08 95       	ret
+ 282:	08 95       	ret
 		case PD:
 		{
 			WRITE_REG(PORTD,PortData,PortMask);
- 214:	82 b3       	in	r24, 0x12	; 18
- 216:	94 2f       	mov	r25, r20
- 218:	90 95       	com	r25
- 21a:	89 23       	and	r24, r25
- 21c:	82 bb       	out	0x12, r24	; 18
- 21e:	82 b3       	in	r24, 0x12	; 18
- 220:	64 23       	and	r22, r20
- 222:	68 2b       	or	r22, r24
- 224:	62 bb       	out	0x12, r22	; 18
- 226:	08 95       	ret
+ 284:	82 b3       	in	r24, 0x12	; 18
+ 286:	94 2f       	mov	r25, r20
+ 288:	90 95       	com	r25
+ 28a:	89 23       	and	r24, r25
+ 28c:	82 bb       	out	0x12, r24	; 18
+ 28e:	82 b3       	in	r24, 0x12	; 18
+ 290:	64 23       	and	r22, r20
+ 292:	68 2b       	or	r22, r24
+ 294:	62 bb       	out	0x12, r22	; 18
+ 296:	08 95       	ret
 
-00000228 <GPIO_ReadPort>:
+00000298 <GPIO_ReadPort>:
 	}	
 }
 u8 GPIO_ReadPort(u8 PortName,u8 PortMask)
 {
 	u8 Data = 0;
 	switch(PortName)
- 228:	81 30       	cpi	r24, 0x01	; 1
- 22a:	51 f0       	breq	.+20     	; 0x240 <GPIO_ReadPort+0x18>
- 22c:	81 30       	cpi	r24, 0x01	; 1
- 22e:	28 f0       	brcs	.+10     	; 0x23a <GPIO_ReadPort+0x12>
- 230:	82 30       	cpi	r24, 0x02	; 2
- 232:	49 f0       	breq	.+18     	; 0x246 <GPIO_ReadPort+0x1e>
- 234:	83 30       	cpi	r24, 0x03	; 3
- 236:	69 f4       	brne	.+26     	; 0x252 <GPIO_ReadPort+0x2a>
- 238:	09 c0       	rjmp	.+18     	; 0x24c <GPIO_ReadPort+0x24>
+ 298:	81 30       	cpi	r24, 0x01	; 1
+ 29a:	51 f0       	breq	.+20     	; 0x2b0 <GPIO_ReadPort+0x18>
+ 29c:	81 30       	cpi	r24, 0x01	; 1
+ 29e:	28 f0       	brcs	.+10     	; 0x2aa <GPIO_ReadPort+0x12>
+ 2a0:	82 30       	cpi	r24, 0x02	; 2
+ 2a2:	49 f0       	breq	.+18     	; 0x2b6 <GPIO_ReadPort+0x1e>
+ 2a4:	83 30       	cpi	r24, 0x03	; 3
+ 2a6:	69 f4       	brne	.+26     	; 0x2c2 <GPIO_ReadPort+0x2a>
+ 2a8:	09 c0       	rjmp	.+18     	; 0x2bc <GPIO_ReadPort+0x24>
 	{
 		case PA:
 		{
 			Data = READ_REG(PINA,PortMask);
- 23a:	89 b3       	in	r24, 0x19	; 25
- 23c:	86 23       	and	r24, r22
+ 2aa:	89 b3       	in	r24, 0x19	; 25
+ 2ac:	86 23       	and	r24, r22
 		}
 		break;
- 23e:	08 95       	ret
+ 2ae:	08 95       	ret
 		case PB:
 		{
 			Data = READ_REG(PINB,PortMask);
- 240:	86 b3       	in	r24, 0x16	; 22
- 242:	86 23       	and	r24, r22
+ 2b0:	86 b3       	in	r24, 0x16	; 22
+ 2b2:	86 23       	and	r24, r22
 		}
 		break;
- 244:	08 95       	ret
+ 2b4:	08 95       	ret
 		case PC:
 		{
 			Data = READ_REG(PINC,PortMask);
- 246:	83 b3       	in	r24, 0x13	; 19
- 248:	86 23       	and	r24, r22
+ 2b6:	83 b3       	in	r24, 0x13	; 19
+ 2b8:	86 23       	and	r24, r22
 		}
 		break;
- 24a:	08 95       	ret
+ 2ba:	08 95       	ret
 		case PD:
 		{
 			Data = READ_REG(PIND,PortMask);
- 24c:	80 b3       	in	r24, 0x10	; 16
- 24e:	86 23       	and	r24, r22
+ 2bc:	80 b3       	in	r24, 0x10	; 16
+ 2be:	86 23       	and	r24, r22
 		}
 		break;
- 250:	08 95       	ret
+ 2c0:	08 95       	ret
 		break;
 	}	
 }
 u8 GPIO_ReadPort(u8 PortName,u8 PortMask)
 {
 	u8 Data = 0;
- 252:	80 e0       	ldi	r24, 0x00	; 0
+ 2c2:	80 e0       	ldi	r24, 0x00	; 0
 		break;
 		
 	}
 	return Data;
 	
- 254:	08 95       	ret
+ 2c4:	08 95       	ret
 
-00000256 <_exit>:
- 256:	f8 94       	cli
+000002c6 <_exit>:
+ 2c6:	f8 94       	cli
 
-00000258 <__stop_program>:
- 258:	ff cf       	rjmp	.-2      	; 0x258 <__stop_program>
+000002c8 <__stop_program>:
+ 2c8:	ff cf       	rjmp	.-2      	; 0x2c8 <__stop_program>

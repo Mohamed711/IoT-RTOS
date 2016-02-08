@@ -8,6 +8,7 @@
 
 #include <avr/io.h>
 #include "ADC.h"
+#include "ADC_CFG.h" 
 
 int main(void)
 {

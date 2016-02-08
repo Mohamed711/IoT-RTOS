@@ -37,6 +37,21 @@ void adc_init(void)
 	*/
 	//////
 	
+	/*Get the most suitable pre-scalar */
+	
+	u8 u8LoopCount;
+	for( u8LoopCount = 0; u8LoopCount < PRESCALAR_NUM ;u8LoopCount++)
+	{
+		if(clk[u8LoopCount].u32TempFreq < micro_freq.u32MaxFreq )
+		{
+			break;
+		}
+	}
+	ADCSRA &=0xF8;
+	ADCSRA |=(clk[u8LoopCount].u8RegVal & 0x03);
+	
+	
+    /*
 	// Set ADC prescaler
 	#if ADC_PRESCALER == 2
 	ADCSRA |= (0 << ADPS2) | (0 << ADPS1) | (1 << ADPS0); // Prescaler 2
@@ -54,8 +69,7 @@ void adc_init(void)
 	ADCSRA |= (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0); // Prescaler 128
 	#endif
 	
-	
-	
+	*/
 	
 	// i only support right adjust
 	// Set ADC justify
