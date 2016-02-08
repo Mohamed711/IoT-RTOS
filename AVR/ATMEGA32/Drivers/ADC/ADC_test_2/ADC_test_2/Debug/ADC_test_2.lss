@@ -23,9 +23,9 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
   9 .debug_frame  000000d0  00000000  00000000  00001b58  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    0000020a  00000000  00000000  00001c28  2**0
+ 10 .debug_str    0000025c  00000000  00000000  00001c28  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    00000238  00000000  00000000  00001e32  2**0
+ 11 .debug_loc    00000238  00000000  00000000  00001e84  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -152,7 +152,7 @@ void adc_init(void)
   fa:	88 f0       	brcs	.+34     	; 0x11e <adc_init+0x8c>
   fc:	e9 e6       	ldi	r30, 0x69	; 105
   fe:	f0 e0       	ldi	r31, 0x00	; 0
-	//////
+	
 	
 	/*Get the most suitable pre-scalar */
 	
@@ -170,7 +170,7 @@ void adc_init(void)
  10e:	a6 07       	cpc	r26, r22
  110:	b7 07       	cpc	r27, r23
  112:	30 f0       	brcs	.+12     	; 0x120 <adc_init+0x8e>
-	//////
+	
 	
 	/*Get the most suitable pre-scalar */
 	
