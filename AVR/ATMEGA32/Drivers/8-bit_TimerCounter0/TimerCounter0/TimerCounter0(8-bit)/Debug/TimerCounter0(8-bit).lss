@@ -3,29 +3,29 @@ TimerCounter0(8-bit).elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         00000278  00000000  00000000  00000094  2**1
+  0 .text         000002f0  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         00000000  00800060  00000278  0000030c  2**0
+  1 .data         00000000  00800060  000002f0  00000384  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .bss          00000001  00800060  00800060  0000030c  2**0
+  2 .bss          00000001  00800060  00800060  00000384  2**0
                   ALLOC
-  3 .stab         000006cc  00000000  00000000  0000030c  2**2
+  3 .stab         000006cc  00000000  00000000  00000384  2**2
                   CONTENTS, READONLY, DEBUGGING
-  4 .stabstr      00000085  00000000  00000000  000009d8  2**0
+  4 .stabstr      00000085  00000000  00000000  00000a50  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_aranges 000000c0  00000000  00000000  00000a60  2**3
+  5 .debug_aranges 000000e0  00000000  00000000  00000ad8  2**3
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   000005b8  00000000  00000000  00000b20  2**0
+  6 .debug_info   00000704  00000000  00000000  00000bb8  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 000001ec  00000000  00000000  000010d8  2**0
+  7 .debug_abbrev 0000021b  00000000  00000000  000012bc  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   00000409  00000000  00000000  000012c4  2**0
+  8 .debug_line   000004b5  00000000  00000000  000014d7  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  000000f4  00000000  00000000  000016d0  2**2
+  9 .debug_frame  00000128  00000000  00000000  0000198c  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    0000022b  00000000  00000000  000017c4  2**0
+ 10 .debug_str    0000026d  00000000  00000000  00001ab4  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    000002ce  00000000  00000000  000019ef  2**0
+ 11 .debug_loc    00000389  00000000  00000000  00001d21  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -65,7 +65,7 @@ Disassembly of section .text:
   60:	10 e0       	ldi	r17, 0x00	; 0
   62:	a0 e6       	ldi	r26, 0x60	; 96
   64:	b0 e0       	ldi	r27, 0x00	; 0
-  66:	e8 e7       	ldi	r30, 0x78	; 120
+  66:	e0 ef       	ldi	r30, 0xF0	; 240
   68:	f2 e0       	ldi	r31, 0x02	; 2
   6a:	02 c0       	rjmp	.+4      	; 0x70 <__do_copy_data+0x10>
   6c:	05 90       	lpm	r0, Z+
@@ -87,454 +87,551 @@ Disassembly of section .text:
   80:	a1 36       	cpi	r26, 0x61	; 97
   82:	b1 07       	cpc	r27, r17
   84:	e1 f7       	brne	.-8      	; 0x7e <.do_clear_bss_loop>
-  86:	0e 94 22 01 	call	0x244	; 0x244 <main>
-  8a:	0c 94 3a 01 	jmp	0x274	; 0x274 <_exit>
+  86:	0e 94 4c 01 	call	0x298	; 0x298 <main>
+  8a:	0c 94 76 01 	jmp	0x2ec	; 0x2ec <_exit>
 
 0000008e <__bad_interrupt>:
   8e:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
 
 00000092 <TimerCounter0_Init>:
 	{
-		TCNT0 &= 0x83;		
+		TCNT0 &= 0x00;//0x83;		
 	}
 	else if ((WGM01_VALUE==1) && (WGM00_VALUE==0)) //CTC
 	{
 		TCNT0 &=0x00;
   92:	82 b7       	in	r24, 0x32	; 50
   94:	12 be       	out	0x32, r1	; 50
-		OCR0 = 0x3E;	
-  96:	8e e3       	ldi	r24, 0x3E	; 62
-  98:	8c bf       	out	0x3c, r24	; 60
+		OCR0 = 0x00;
+  96:	1c be       	out	0x3c, r1	; 60
+		//OCR0 = 0x3E;	
 	}
 	TCCR0 = (CS00_VALUE<<CS00)|(CS01_VALUE<<CS01)|(CS02_VALUE<<CS02)|(WGM01_VALUE<<WGM01)|(WGM00_VALUE<<WGM00)|(COM00_VALUE<<COM00)|(COM01_VALUE<<COM01);
-  9a:	8a e0       	ldi	r24, 0x0A	; 10
-  9c:	83 bf       	out	0x33, r24	; 51
+  98:	8d e0       	ldi	r24, 0x0D	; 13
+  9a:	83 bf       	out	0x33, r24	; 51
 	GPIO_InitPortDirection(PB, 0xFF,0xFF);
-  9e:	81 e0       	ldi	r24, 0x01	; 1
-  a0:	6f ef       	ldi	r22, 0xFF	; 255
-  a2:	4f ef       	ldi	r20, 0xFF	; 255
-  a4:	0e 94 a9 00 	call	0x152	; 0x152 <GPIO_InitPortDirection>
+  9c:	81 e0       	ldi	r24, 0x01	; 1
+  9e:	6f ef       	ldi	r22, 0xFF	; 255
+  a0:	4f ef       	ldi	r20, 0xFF	; 255
+  a2:	0e 94 d3 00 	call	0x1a6	; 0x1a6 <GPIO_InitPortDirection>
 }
-  a8:	08 95       	ret
+  a6:	08 95       	ret
 
-000000aa <TimerCounter0_Read>:
+000000a8 <TimerCounter0_Read>:
 
 uint8_t TimerCounter0_Read()
 {
 	return TCNT0;
-  aa:	82 b7       	in	r24, 0x32	; 50
+  a8:	82 b7       	in	r24, 0x32	; 50
 }
-  ac:	08 95       	ret
+  aa:	08 95       	ret
 
-000000ae <delay_NORMAL_milli>:
+000000ac <delay_NORMAL_milli>:
 
 void delay_NORMAL_milli (int t)
 {	
-  ae:	ff 92       	push	r15
-  b0:	0f 93       	push	r16
-  b2:	1f 93       	push	r17
-  b4:	cf 93       	push	r28
-  b6:	df 93       	push	r29
-  b8:	8c 01       	movw	r16, r24
+  ac:	ff 92       	push	r15
+  ae:	0f 93       	push	r16
+  b0:	1f 93       	push	r17
+  b2:	cf 93       	push	r28
+  b4:	df 93       	push	r29
+  b6:	8c 01       	movw	r16, r24
 	TimerCounter0_Init();
-  ba:	0e 94 49 00 	call	0x92	; 0x92 <TimerCounter0_Init>
+  b8:	0e 94 49 00 	call	0x92	; 0x92 <TimerCounter0_Init>
 	for (int i=0 ; i<t ; i++)
-  be:	10 16       	cp	r1, r16
-  c0:	11 06       	cpc	r1, r17
-  c2:	c4 f4       	brge	.+48     	; 0xf4 <delay_NORMAL_milli+0x46>
-  c4:	c0 e0       	ldi	r28, 0x00	; 0
-  c6:	d0 e0       	ldi	r29, 0x00	; 0
+  bc:	10 16       	cp	r1, r16
+  be:	11 06       	cpc	r1, r17
+  c0:	c4 f4       	brge	.+48     	; 0xf2 <delay_NORMAL_milli+0x46>
+  c2:	c0 e0       	ldi	r28, 0x00	; 0
+  c4:	d0 e0       	ldi	r29, 0x00	; 0
 	{
 		TCNT0=0x83;
-  c8:	0f 2e       	mov	r0, r31
-  ca:	f3 e8       	ldi	r31, 0x83	; 131
-  cc:	ff 2e       	mov	r15, r31
-  ce:	f0 2d       	mov	r31, r0
-  d0:	f2 be       	out	0x32, r15	; 50
+  c6:	0f 2e       	mov	r0, r31
+  c8:	f3 e8       	ldi	r31, 0x83	; 131
+  ca:	ff 2e       	mov	r15, r31
+  cc:	f0 2d       	mov	r31, r0
+  ce:	f2 be       	out	0x32, r15	; 50
 		//TimerCounter0_Init();
 		while((TIFR&0x01)==0)
-  d2:	08 b6       	in	r0, 0x38	; 56
-  d4:	00 fc       	sbrc	r0, 0
-  d6:	08 c0       	rjmp	.+16     	; 0xe8 <delay_NORMAL_milli+0x3a>
+  d0:	08 b6       	in	r0, 0x38	; 56
+  d2:	00 fc       	sbrc	r0, 0
+  d4:	08 c0       	rjmp	.+16     	; 0xe6 <delay_NORMAL_milli+0x3a>
 			{GPIO_WritePort(PB, TCNT0, 0xFF);}
-  d8:	62 b7       	in	r22, 0x32	; 50
-  da:	81 e0       	ldi	r24, 0x01	; 1
-  dc:	4f ef       	ldi	r20, 0xFF	; 255
-  de:	0e 94 da 00 	call	0x1b4	; 0x1b4 <GPIO_WritePort>
+  d6:	62 b7       	in	r22, 0x32	; 50
+  d8:	81 e0       	ldi	r24, 0x01	; 1
+  da:	4f ef       	ldi	r20, 0xFF	; 255
+  dc:	0e 94 04 01 	call	0x208	; 0x208 <GPIO_WritePort>
 	TimerCounter0_Init();
 	for (int i=0 ; i<t ; i++)
 	{
 		TCNT0=0x83;
 		//TimerCounter0_Init();
 		while((TIFR&0x01)==0)
-  e2:	08 b6       	in	r0, 0x38	; 56
-  e4:	00 fe       	sbrs	r0, 0
-  e6:	f8 cf       	rjmp	.-16     	; 0xd8 <delay_NORMAL_milli+0x2a>
+  e0:	08 b6       	in	r0, 0x38	; 56
+  e2:	00 fe       	sbrs	r0, 0
+  e4:	f8 cf       	rjmp	.-16     	; 0xd6 <delay_NORMAL_milli+0x2a>
 			{GPIO_WritePort(PB, TCNT0, 0xFF);}
 		//TCCR0=0;
 		//TCNT0=0x00;
 		TIFR = 0x01;
-  e8:	81 e0       	ldi	r24, 0x01	; 1
-  ea:	88 bf       	out	0x38, r24	; 56
+  e6:	81 e0       	ldi	r24, 0x01	; 1
+  e8:	88 bf       	out	0x38, r24	; 56
 }
 
 void delay_NORMAL_milli (int t)
 {	
 	TimerCounter0_Init();
 	for (int i=0 ; i<t ; i++)
-  ec:	21 96       	adiw	r28, 0x01	; 1
-  ee:	c0 17       	cp	r28, r16
-  f0:	d1 07       	cpc	r29, r17
-  f2:	71 f7       	brne	.-36     	; 0xd0 <delay_NORMAL_milli+0x22>
+  ea:	21 96       	adiw	r28, 0x01	; 1
+  ec:	c0 17       	cp	r28, r16
+  ee:	d1 07       	cpc	r29, r17
+  f0:	71 f7       	brne	.-36     	; 0xce <delay_NORMAL_milli+0x22>
 			{GPIO_WritePort(PB, TCNT0, 0xFF);}
 		//TCCR0=0;
 		//TCNT0=0x00;
 		TIFR = 0x01;
 	}
 	TCCR0=0x00;
-  f4:	13 be       	out	0x33, r1	; 51
+  f2:	13 be       	out	0x33, r1	; 51
 	
 }
-  f6:	df 91       	pop	r29
-  f8:	cf 91       	pop	r28
-  fa:	1f 91       	pop	r17
-  fc:	0f 91       	pop	r16
-  fe:	ff 90       	pop	r15
- 100:	08 95       	ret
+  f4:	df 91       	pop	r29
+  f6:	cf 91       	pop	r28
+  f8:	1f 91       	pop	r17
+  fa:	0f 91       	pop	r16
+  fc:	ff 90       	pop	r15
+  fe:	08 95       	ret
 
-00000102 <delay_CTC_milli>:
+00000100 <delay_CTC_milli>:
 
 void delay_CTC_milli (int t)
 {
- 102:	ff 92       	push	r15
- 104:	0f 93       	push	r16
- 106:	1f 93       	push	r17
- 108:	cf 93       	push	r28
- 10a:	df 93       	push	r29
- 10c:	8c 01       	movw	r16, r24
+ 100:	ff 92       	push	r15
+ 102:	0f 93       	push	r16
+ 104:	1f 93       	push	r17
+ 106:	cf 93       	push	r28
+ 108:	df 93       	push	r29
+ 10a:	8c 01       	movw	r16, r24
 	TimerCounter0_Init();
- 10e:	0e 94 49 00 	call	0x92	; 0x92 <TimerCounter0_Init>
+ 10c:	0e 94 49 00 	call	0x92	; 0x92 <TimerCounter0_Init>
 	for (int i=0 ; i<t ; i++)
- 112:	10 16       	cp	r1, r16
- 114:	11 06       	cpc	r1, r17
- 116:	b4 f4       	brge	.+44     	; 0x144 <delay_CTC_milli+0x42>
- 118:	c0 e0       	ldi	r28, 0x00	; 0
- 11a:	d0 e0       	ldi	r29, 0x00	; 0
+ 110:	10 16       	cp	r1, r16
+ 112:	11 06       	cpc	r1, r17
+ 114:	b4 f4       	brge	.+44     	; 0x142 <delay_CTC_milli+0x42>
+ 116:	c0 e0       	ldi	r28, 0x00	; 0
+ 118:	d0 e0       	ldi	r29, 0x00	; 0
 		TCNT0=0x00;
 		while((TIFR&0x02)==0)
 			{GPIO_WritePort(PB, TCNT0, 0xFF);}
 		//TCCR0=0;
 		//TCNT0=0x00;
 		TIFR = 0x02;
- 11c:	ff 24       	eor	r15, r15
- 11e:	68 94       	set
- 120:	f1 f8       	bld	r15, 1
+ 11a:	ff 24       	eor	r15, r15
+ 11c:	68 94       	set
+ 11e:	f1 f8       	bld	r15, 1
 void delay_CTC_milli (int t)
 {
 	TimerCounter0_Init();
 	for (int i=0 ; i<t ; i++)
 	{
 		TCNT0=0x00;
- 122:	12 be       	out	0x32, r1	; 50
+ 120:	12 be       	out	0x32, r1	; 50
 		while((TIFR&0x02)==0)
- 124:	08 b6       	in	r0, 0x38	; 56
- 126:	01 fc       	sbrc	r0, 1
- 128:	08 c0       	rjmp	.+16     	; 0x13a <delay_CTC_milli+0x38>
+ 122:	08 b6       	in	r0, 0x38	; 56
+ 124:	01 fc       	sbrc	r0, 1
+ 126:	08 c0       	rjmp	.+16     	; 0x138 <delay_CTC_milli+0x38>
 			{GPIO_WritePort(PB, TCNT0, 0xFF);}
- 12a:	62 b7       	in	r22, 0x32	; 50
- 12c:	81 e0       	ldi	r24, 0x01	; 1
- 12e:	4f ef       	ldi	r20, 0xFF	; 255
- 130:	0e 94 da 00 	call	0x1b4	; 0x1b4 <GPIO_WritePort>
+ 128:	62 b7       	in	r22, 0x32	; 50
+ 12a:	81 e0       	ldi	r24, 0x01	; 1
+ 12c:	4f ef       	ldi	r20, 0xFF	; 255
+ 12e:	0e 94 04 01 	call	0x208	; 0x208 <GPIO_WritePort>
 {
 	TimerCounter0_Init();
 	for (int i=0 ; i<t ; i++)
 	{
 		TCNT0=0x00;
 		while((TIFR&0x02)==0)
- 134:	08 b6       	in	r0, 0x38	; 56
- 136:	01 fe       	sbrs	r0, 1
- 138:	f8 cf       	rjmp	.-16     	; 0x12a <delay_CTC_milli+0x28>
+ 132:	08 b6       	in	r0, 0x38	; 56
+ 134:	01 fe       	sbrs	r0, 1
+ 136:	f8 cf       	rjmp	.-16     	; 0x128 <delay_CTC_milli+0x28>
 			{GPIO_WritePort(PB, TCNT0, 0xFF);}
 		//TCCR0=0;
 		//TCNT0=0x00;
 		TIFR = 0x02;
- 13a:	f8 be       	out	0x38, r15	; 56
+ 138:	f8 be       	out	0x38, r15	; 56
 }
 
 void delay_CTC_milli (int t)
 {
 	TimerCounter0_Init();
 	for (int i=0 ; i<t ; i++)
- 13c:	21 96       	adiw	r28, 0x01	; 1
- 13e:	c0 17       	cp	r28, r16
- 140:	d1 07       	cpc	r29, r17
- 142:	79 f7       	brne	.-34     	; 0x122 <delay_CTC_milli+0x20>
+ 13a:	21 96       	adiw	r28, 0x01	; 1
+ 13c:	c0 17       	cp	r28, r16
+ 13e:	d1 07       	cpc	r29, r17
+ 140:	79 f7       	brne	.-34     	; 0x120 <delay_CTC_milli+0x20>
 			{GPIO_WritePort(PB, TCNT0, 0xFF);}
 		//TCCR0=0;
 		//TCNT0=0x00;
 		TIFR = 0x02;
 	}
 	TCCR0=0x00;
- 144:	13 be       	out	0x33, r1	; 51
-	
- 146:	df 91       	pop	r29
- 148:	cf 91       	pop	r28
- 14a:	1f 91       	pop	r17
- 14c:	0f 91       	pop	r16
- 14e:	ff 90       	pop	r15
- 150:	08 95       	ret
+ 142:	13 be       	out	0x33, r1	; 51
+}
+ 144:	df 91       	pop	r29
+ 146:	cf 91       	pop	r28
+ 148:	1f 91       	pop	r17
+ 14a:	0f 91       	pop	r16
+ 14c:	ff 90       	pop	r15
+ 14e:	08 95       	ret
 
-00000152 <GPIO_InitPortDirection>:
+00000150 <delay_us>:
+
+void delay_us(unsigned short time_us)
+ {
+ 150:	cf 93       	push	r28
+ 152:	df 93       	push	r29
+ 154:	ec 01       	movw	r28, r24
+	 TimerCounter0_Init();
+ 156:	0e 94 49 00 	call	0x92	; 0x92 <TimerCounter0_Init>
+	         unsigned short delay_loops;
+	         register unsigned short i;
+	
+	         delay_loops = (time_us+3)/5*CYCLES_PER_US; // +3 for rounding up (dirty)
+ 15a:	ce 01       	movw	r24, r28
+ 15c:	03 96       	adiw	r24, 0x03	; 3
+ 15e:	65 e0       	ldi	r22, 0x05	; 5
+ 160:	70 e0       	ldi	r23, 0x00	; 0
+ 162:	0e 94 62 01 	call	0x2c4	; 0x2c4 <__udivmodhi4>
+ 166:	66 0f       	add	r22, r22
+ 168:	77 1f       	adc	r23, r23
+ 16a:	66 0f       	add	r22, r22
+ 16c:	77 1f       	adc	r23, r23
+ 16e:	66 0f       	add	r22, r22
+ 170:	77 1f       	adc	r23, r23
+	
+	         // one loop takes 5 cpu cycles
+         for (i=0; i < delay_loops; i++) {};
+ 172:	61 15       	cp	r22, r1
+ 174:	71 05       	cpc	r23, r1
+ 176:	31 f0       	breq	.+12     	; 0x184 <delay_us+0x34>
+ 178:	80 e0       	ldi	r24, 0x00	; 0
+ 17a:	90 e0       	ldi	r25, 0x00	; 0
+ 17c:	01 96       	adiw	r24, 0x01	; 1
+ 17e:	86 17       	cp	r24, r22
+ 180:	97 07       	cpc	r25, r23
+ 182:	e1 f7       	brne	.-8      	; 0x17c <delay_us+0x2c>
+ }
+ 184:	df 91       	pop	r29
+ 186:	cf 91       	pop	r28
+ 188:	08 95       	ret
+
+0000018a <delay_ms>:
+ void delay_ms(unsigned char time_ms)
+  {
+ 18a:	cf 93       	push	r28
+ 18c:	c8 2f       	mov	r28, r24
+	  TimerCounter0_Init();
+ 18e:	0e 94 49 00 	call	0x92	; 0x92 <TimerCounter0_Init>
+        unsigned short delay_count = F_CPU / 8000;
+        unsigned short cnt;
+        asm volatile ("\n"
+ 192:	88 ee       	ldi	r24, 0xE8	; 232
+ 194:	93 e0       	ldi	r25, 0x03	; 3
+
+00000196 <L_dl1205>:
+ 196:	e8 2f       	mov	r30, r24
+ 198:	f9 2f       	mov	r31, r25
+
+0000019a <L_dl2205>:
+ 19a:	31 97       	sbiw	r30, 0x01	; 1
+ 19c:	f1 f7       	brne	.-4      	; 0x19a <L_dl2205>
+ 19e:	ca 95       	dec	r28
+ 1a0:	d1 f7       	brne	.-12     	; 0x196 <L_dl1205>
+                  "sbiw %A0, 1\n\t"
+                  "brne L_dl2%=\n\t"
+                  "dec %1\n\t" "brne L_dl1%=\n\t":"=&w" (cnt)
+                  :"r"(time_ms), "r"((unsigned short) (delay_count))
+        );
+ 1a2:	cf 91       	pop	r28
+ 1a4:	08 95       	ret
+
+000001a6 <GPIO_InitPortDirection>:
 #define WRITE_REG(Reg,Value,Mask) Reg&=~(Mask); Reg|=(Value & Mask)
 #define READ_REG(Reg,Mask) Reg & Mask
 
 void GPIO_InitPortDirection(u8 PortName,u8 PortDirection,u8 PortMask)
 {
 	switch(PortName)
- 152:	81 30       	cpi	r24, 0x01	; 1
- 154:	89 f0       	breq	.+34     	; 0x178 <GPIO_InitPortDirection+0x26>
- 156:	81 30       	cpi	r24, 0x01	; 1
- 158:	28 f0       	brcs	.+10     	; 0x164 <GPIO_InitPortDirection+0x12>
- 15a:	82 30       	cpi	r24, 0x02	; 2
- 15c:	b9 f0       	breq	.+46     	; 0x18c <GPIO_InitPortDirection+0x3a>
- 15e:	83 30       	cpi	r24, 0x03	; 3
- 160:	41 f5       	brne	.+80     	; 0x1b2 <GPIO_InitPortDirection+0x60>
- 162:	1e c0       	rjmp	.+60     	; 0x1a0 <GPIO_InitPortDirection+0x4e>
+ 1a6:	81 30       	cpi	r24, 0x01	; 1
+ 1a8:	89 f0       	breq	.+34     	; 0x1cc <GPIO_InitPortDirection+0x26>
+ 1aa:	81 30       	cpi	r24, 0x01	; 1
+ 1ac:	28 f0       	brcs	.+10     	; 0x1b8 <GPIO_InitPortDirection+0x12>
+ 1ae:	82 30       	cpi	r24, 0x02	; 2
+ 1b0:	b9 f0       	breq	.+46     	; 0x1e0 <GPIO_InitPortDirection+0x3a>
+ 1b2:	83 30       	cpi	r24, 0x03	; 3
+ 1b4:	41 f5       	brne	.+80     	; 0x206 <GPIO_InitPortDirection+0x60>
+ 1b6:	1e c0       	rjmp	.+60     	; 0x1f4 <GPIO_InitPortDirection+0x4e>
 	{
 		case PA:
 		{
 			WRITE_REG(DDRA,PortDirection,PortMask);
- 164:	8a b3       	in	r24, 0x1a	; 26
- 166:	94 2f       	mov	r25, r20
- 168:	90 95       	com	r25
- 16a:	89 23       	and	r24, r25
- 16c:	8a bb       	out	0x1a, r24	; 26
- 16e:	8a b3       	in	r24, 0x1a	; 26
- 170:	64 23       	and	r22, r20
- 172:	68 2b       	or	r22, r24
- 174:	6a bb       	out	0x1a, r22	; 26
+ 1b8:	8a b3       	in	r24, 0x1a	; 26
+ 1ba:	94 2f       	mov	r25, r20
+ 1bc:	90 95       	com	r25
+ 1be:	89 23       	and	r24, r25
+ 1c0:	8a bb       	out	0x1a, r24	; 26
+ 1c2:	8a b3       	in	r24, 0x1a	; 26
+ 1c4:	64 23       	and	r22, r20
+ 1c6:	68 2b       	or	r22, r24
+ 1c8:	6a bb       	out	0x1a, r22	; 26
 		}
 		break;
- 176:	08 95       	ret
+ 1ca:	08 95       	ret
 		case PB:
 		{
 			WRITE_REG(DDRB,PortDirection,PortMask);
- 178:	87 b3       	in	r24, 0x17	; 23
- 17a:	94 2f       	mov	r25, r20
- 17c:	90 95       	com	r25
- 17e:	89 23       	and	r24, r25
- 180:	87 bb       	out	0x17, r24	; 23
- 182:	87 b3       	in	r24, 0x17	; 23
- 184:	64 23       	and	r22, r20
- 186:	68 2b       	or	r22, r24
- 188:	67 bb       	out	0x17, r22	; 23
+ 1cc:	87 b3       	in	r24, 0x17	; 23
+ 1ce:	94 2f       	mov	r25, r20
+ 1d0:	90 95       	com	r25
+ 1d2:	89 23       	and	r24, r25
+ 1d4:	87 bb       	out	0x17, r24	; 23
+ 1d6:	87 b3       	in	r24, 0x17	; 23
+ 1d8:	64 23       	and	r22, r20
+ 1da:	68 2b       	or	r22, r24
+ 1dc:	67 bb       	out	0x17, r22	; 23
 		}
 		break;
- 18a:	08 95       	ret
+ 1de:	08 95       	ret
 		case PC:
 		{
 			WRITE_REG(DDRC,PortDirection,PortMask);
- 18c:	84 b3       	in	r24, 0x14	; 20
- 18e:	94 2f       	mov	r25, r20
- 190:	90 95       	com	r25
- 192:	89 23       	and	r24, r25
- 194:	84 bb       	out	0x14, r24	; 20
- 196:	84 b3       	in	r24, 0x14	; 20
- 198:	64 23       	and	r22, r20
- 19a:	68 2b       	or	r22, r24
- 19c:	64 bb       	out	0x14, r22	; 20
+ 1e0:	84 b3       	in	r24, 0x14	; 20
+ 1e2:	94 2f       	mov	r25, r20
+ 1e4:	90 95       	com	r25
+ 1e6:	89 23       	and	r24, r25
+ 1e8:	84 bb       	out	0x14, r24	; 20
+ 1ea:	84 b3       	in	r24, 0x14	; 20
+ 1ec:	64 23       	and	r22, r20
+ 1ee:	68 2b       	or	r22, r24
+ 1f0:	64 bb       	out	0x14, r22	; 20
 		}
 		break;
- 19e:	08 95       	ret
+ 1f2:	08 95       	ret
 		case PD:
 		{
 			WRITE_REG(DDRD,PortDirection,PortMask);
- 1a0:	81 b3       	in	r24, 0x11	; 17
- 1a2:	94 2f       	mov	r25, r20
- 1a4:	90 95       	com	r25
- 1a6:	89 23       	and	r24, r25
- 1a8:	81 bb       	out	0x11, r24	; 17
- 1aa:	81 b3       	in	r24, 0x11	; 17
- 1ac:	64 23       	and	r22, r20
- 1ae:	68 2b       	or	r22, r24
- 1b0:	61 bb       	out	0x11, r22	; 17
- 1b2:	08 95       	ret
+ 1f4:	81 b3       	in	r24, 0x11	; 17
+ 1f6:	94 2f       	mov	r25, r20
+ 1f8:	90 95       	com	r25
+ 1fa:	89 23       	and	r24, r25
+ 1fc:	81 bb       	out	0x11, r24	; 17
+ 1fe:	81 b3       	in	r24, 0x11	; 17
+ 200:	64 23       	and	r22, r20
+ 202:	68 2b       	or	r22, r24
+ 204:	61 bb       	out	0x11, r22	; 17
+ 206:	08 95       	ret
 
-000001b4 <GPIO_WritePort>:
+00000208 <GPIO_WritePort>:
 		break;
 	}	
 }
 void GPIO_WritePort(u8 PortName,u8 PortData,u8 PortMask)
 {
 	switch(PortName)
- 1b4:	81 30       	cpi	r24, 0x01	; 1
- 1b6:	89 f0       	breq	.+34     	; 0x1da <GPIO_WritePort+0x26>
- 1b8:	81 30       	cpi	r24, 0x01	; 1
- 1ba:	28 f0       	brcs	.+10     	; 0x1c6 <GPIO_WritePort+0x12>
- 1bc:	82 30       	cpi	r24, 0x02	; 2
- 1be:	b9 f0       	breq	.+46     	; 0x1ee <GPIO_WritePort+0x3a>
- 1c0:	83 30       	cpi	r24, 0x03	; 3
- 1c2:	41 f5       	brne	.+80     	; 0x214 <GPIO_WritePort+0x60>
- 1c4:	1e c0       	rjmp	.+60     	; 0x202 <GPIO_WritePort+0x4e>
+ 208:	81 30       	cpi	r24, 0x01	; 1
+ 20a:	89 f0       	breq	.+34     	; 0x22e <GPIO_WritePort+0x26>
+ 20c:	81 30       	cpi	r24, 0x01	; 1
+ 20e:	28 f0       	brcs	.+10     	; 0x21a <GPIO_WritePort+0x12>
+ 210:	82 30       	cpi	r24, 0x02	; 2
+ 212:	b9 f0       	breq	.+46     	; 0x242 <GPIO_WritePort+0x3a>
+ 214:	83 30       	cpi	r24, 0x03	; 3
+ 216:	41 f5       	brne	.+80     	; 0x268 <GPIO_WritePort+0x60>
+ 218:	1e c0       	rjmp	.+60     	; 0x256 <GPIO_WritePort+0x4e>
 	{
 		case PA:
 		{
 			WRITE_REG(PORTA,PortData,PortMask);
- 1c6:	8b b3       	in	r24, 0x1b	; 27
- 1c8:	94 2f       	mov	r25, r20
- 1ca:	90 95       	com	r25
- 1cc:	89 23       	and	r24, r25
- 1ce:	8b bb       	out	0x1b, r24	; 27
- 1d0:	8b b3       	in	r24, 0x1b	; 27
- 1d2:	64 23       	and	r22, r20
- 1d4:	68 2b       	or	r22, r24
- 1d6:	6b bb       	out	0x1b, r22	; 27
+ 21a:	8b b3       	in	r24, 0x1b	; 27
+ 21c:	94 2f       	mov	r25, r20
+ 21e:	90 95       	com	r25
+ 220:	89 23       	and	r24, r25
+ 222:	8b bb       	out	0x1b, r24	; 27
+ 224:	8b b3       	in	r24, 0x1b	; 27
+ 226:	64 23       	and	r22, r20
+ 228:	68 2b       	or	r22, r24
+ 22a:	6b bb       	out	0x1b, r22	; 27
 		}
 		break;
- 1d8:	08 95       	ret
+ 22c:	08 95       	ret
 		case PB:
 		{
 			WRITE_REG(PORTB,PortData,PortMask);
- 1da:	88 b3       	in	r24, 0x18	; 24
- 1dc:	94 2f       	mov	r25, r20
- 1de:	90 95       	com	r25
- 1e0:	89 23       	and	r24, r25
- 1e2:	88 bb       	out	0x18, r24	; 24
- 1e4:	88 b3       	in	r24, 0x18	; 24
- 1e6:	64 23       	and	r22, r20
- 1e8:	68 2b       	or	r22, r24
- 1ea:	68 bb       	out	0x18, r22	; 24
+ 22e:	88 b3       	in	r24, 0x18	; 24
+ 230:	94 2f       	mov	r25, r20
+ 232:	90 95       	com	r25
+ 234:	89 23       	and	r24, r25
+ 236:	88 bb       	out	0x18, r24	; 24
+ 238:	88 b3       	in	r24, 0x18	; 24
+ 23a:	64 23       	and	r22, r20
+ 23c:	68 2b       	or	r22, r24
+ 23e:	68 bb       	out	0x18, r22	; 24
 		}
 		break;
- 1ec:	08 95       	ret
+ 240:	08 95       	ret
 		case PC:
 		{
 			WRITE_REG(PORTC,PortData,PortMask);
- 1ee:	85 b3       	in	r24, 0x15	; 21
- 1f0:	94 2f       	mov	r25, r20
- 1f2:	90 95       	com	r25
- 1f4:	89 23       	and	r24, r25
- 1f6:	85 bb       	out	0x15, r24	; 21
- 1f8:	85 b3       	in	r24, 0x15	; 21
- 1fa:	64 23       	and	r22, r20
- 1fc:	68 2b       	or	r22, r24
- 1fe:	65 bb       	out	0x15, r22	; 21
+ 242:	85 b3       	in	r24, 0x15	; 21
+ 244:	94 2f       	mov	r25, r20
+ 246:	90 95       	com	r25
+ 248:	89 23       	and	r24, r25
+ 24a:	85 bb       	out	0x15, r24	; 21
+ 24c:	85 b3       	in	r24, 0x15	; 21
+ 24e:	64 23       	and	r22, r20
+ 250:	68 2b       	or	r22, r24
+ 252:	65 bb       	out	0x15, r22	; 21
 		}
 		break;
- 200:	08 95       	ret
+ 254:	08 95       	ret
 		case PD:
 		{
 			WRITE_REG(PORTD,PortData,PortMask);
- 202:	82 b3       	in	r24, 0x12	; 18
- 204:	94 2f       	mov	r25, r20
- 206:	90 95       	com	r25
- 208:	89 23       	and	r24, r25
- 20a:	82 bb       	out	0x12, r24	; 18
- 20c:	82 b3       	in	r24, 0x12	; 18
- 20e:	64 23       	and	r22, r20
- 210:	68 2b       	or	r22, r24
- 212:	62 bb       	out	0x12, r22	; 18
- 214:	08 95       	ret
+ 256:	82 b3       	in	r24, 0x12	; 18
+ 258:	94 2f       	mov	r25, r20
+ 25a:	90 95       	com	r25
+ 25c:	89 23       	and	r24, r25
+ 25e:	82 bb       	out	0x12, r24	; 18
+ 260:	82 b3       	in	r24, 0x12	; 18
+ 262:	64 23       	and	r22, r20
+ 264:	68 2b       	or	r22, r24
+ 266:	62 bb       	out	0x12, r22	; 18
+ 268:	08 95       	ret
 
-00000216 <GPIO_ReadPort>:
+0000026a <GPIO_ReadPort>:
 	}	
 }
 u8 GPIO_ReadPort(u8 PortName,u8 PortMask)
 {
 	u8 Data = 0;
 	switch(PortName)
- 216:	81 30       	cpi	r24, 0x01	; 1
- 218:	51 f0       	breq	.+20     	; 0x22e <GPIO_ReadPort+0x18>
- 21a:	81 30       	cpi	r24, 0x01	; 1
- 21c:	28 f0       	brcs	.+10     	; 0x228 <GPIO_ReadPort+0x12>
- 21e:	82 30       	cpi	r24, 0x02	; 2
- 220:	49 f0       	breq	.+18     	; 0x234 <GPIO_ReadPort+0x1e>
- 222:	83 30       	cpi	r24, 0x03	; 3
- 224:	69 f4       	brne	.+26     	; 0x240 <GPIO_ReadPort+0x2a>
- 226:	09 c0       	rjmp	.+18     	; 0x23a <GPIO_ReadPort+0x24>
+ 26a:	81 30       	cpi	r24, 0x01	; 1
+ 26c:	51 f0       	breq	.+20     	; 0x282 <GPIO_ReadPort+0x18>
+ 26e:	81 30       	cpi	r24, 0x01	; 1
+ 270:	28 f0       	brcs	.+10     	; 0x27c <GPIO_ReadPort+0x12>
+ 272:	82 30       	cpi	r24, 0x02	; 2
+ 274:	49 f0       	breq	.+18     	; 0x288 <GPIO_ReadPort+0x1e>
+ 276:	83 30       	cpi	r24, 0x03	; 3
+ 278:	69 f4       	brne	.+26     	; 0x294 <GPIO_ReadPort+0x2a>
+ 27a:	09 c0       	rjmp	.+18     	; 0x28e <GPIO_ReadPort+0x24>
 	{
 		case PA:
 		{
 			Data = READ_REG(PINA,PortMask);
- 228:	89 b3       	in	r24, 0x19	; 25
- 22a:	86 23       	and	r24, r22
+ 27c:	89 b3       	in	r24, 0x19	; 25
+ 27e:	86 23       	and	r24, r22
 		}
 		break;
- 22c:	08 95       	ret
+ 280:	08 95       	ret
 		case PB:
 		{
 			Data = READ_REG(PINB,PortMask);
- 22e:	86 b3       	in	r24, 0x16	; 22
- 230:	86 23       	and	r24, r22
+ 282:	86 b3       	in	r24, 0x16	; 22
+ 284:	86 23       	and	r24, r22
 		}
 		break;
- 232:	08 95       	ret
+ 286:	08 95       	ret
 		case PC:
 		{
 			Data = READ_REG(PINC,PortMask);
- 234:	83 b3       	in	r24, 0x13	; 19
- 236:	86 23       	and	r24, r22
+ 288:	83 b3       	in	r24, 0x13	; 19
+ 28a:	86 23       	and	r24, r22
 		}
 		break;
- 238:	08 95       	ret
+ 28c:	08 95       	ret
 		case PD:
 		{
 			Data = READ_REG(PIND,PortMask);
- 23a:	80 b3       	in	r24, 0x10	; 16
- 23c:	86 23       	and	r24, r22
+ 28e:	80 b3       	in	r24, 0x10	; 16
+ 290:	86 23       	and	r24, r22
 		}
 		break;
- 23e:	08 95       	ret
+ 292:	08 95       	ret
 		break;
 	}	
 }
 u8 GPIO_ReadPort(u8 PortName,u8 PortMask)
 {
 	u8 Data = 0;
- 240:	80 e0       	ldi	r24, 0x00	; 0
+ 294:	80 e0       	ldi	r24, 0x00	; 0
 		break;
 		
 	}
 	return Data;
 	
- 242:	08 95       	ret
+ 296:	08 95       	ret
 
-00000244 <main>:
-
-#include <avr/io.h>
+00000298 <main>:
 #include "GPIO.h"
+#include "8-bit_TimerCounter0.h"
+
 int main(void)
 {
 	GPIO_InitPortDirection(PD,0xFF,0x01);
- 244:	83 e0       	ldi	r24, 0x03	; 3
- 246:	6f ef       	ldi	r22, 0xFF	; 255
- 248:	41 e0       	ldi	r20, 0x01	; 1
- 24a:	0e 94 a9 00 	call	0x152	; 0x152 <GPIO_InitPortDirection>
+ 298:	83 e0       	ldi	r24, 0x03	; 3
+ 29a:	6f ef       	ldi	r22, 0xFF	; 255
+ 29c:	41 e0       	ldi	r20, 0x01	; 1
+ 29e:	0e 94 d3 00 	call	0x1a6	; 0x1a6 <GPIO_InitPortDirection>
     while(1)
     {	
 		GPIO_WritePort(PD,0x01,0x01); 
- 24e:	83 e0       	ldi	r24, 0x03	; 3
- 250:	61 e0       	ldi	r22, 0x01	; 1
- 252:	41 e0       	ldi	r20, 0x01	; 1
- 254:	0e 94 da 00 	call	0x1b4	; 0x1b4 <GPIO_WritePort>
-		delay_CTC_milli(100);
- 258:	84 e6       	ldi	r24, 0x64	; 100
- 25a:	90 e0       	ldi	r25, 0x00	; 0
- 25c:	0e 94 81 00 	call	0x102	; 0x102 <delay_CTC_milli>
-		
+ 2a2:	83 e0       	ldi	r24, 0x03	; 3
+ 2a4:	61 e0       	ldi	r22, 0x01	; 1
+ 2a6:	41 e0       	ldi	r20, 0x01	; 1
+ 2a8:	0e 94 04 01 	call	0x208	; 0x208 <GPIO_WritePort>
+		//delay_CTC_milli(100);
+		//delay_us(1000000);
+		delay_ms(2000);
+ 2ac:	80 ed       	ldi	r24, 0xD0	; 208
+ 2ae:	0e 94 c5 00 	call	0x18a	; 0x18a <delay_ms>
 		GPIO_WritePort(PD,0x00,0x01);
- 260:	83 e0       	ldi	r24, 0x03	; 3
- 262:	60 e0       	ldi	r22, 0x00	; 0
- 264:	41 e0       	ldi	r20, 0x01	; 1
- 266:	0e 94 da 00 	call	0x1b4	; 0x1b4 <GPIO_WritePort>
-		delay_CTC_milli(100);
- 26a:	84 e6       	ldi	r24, 0x64	; 100
- 26c:	90 e0       	ldi	r25, 0x00	; 0
- 26e:	0e 94 81 00 	call	0x102	; 0x102 <delay_CTC_milli>
- 272:	ed cf       	rjmp	.-38     	; 0x24e <main+0xa>
+ 2b2:	83 e0       	ldi	r24, 0x03	; 3
+ 2b4:	60 e0       	ldi	r22, 0x00	; 0
+ 2b6:	41 e0       	ldi	r20, 0x01	; 1
+ 2b8:	0e 94 04 01 	call	0x208	; 0x208 <GPIO_WritePort>
+		//delay_CTC_milli(100);
+		delay_ms(2000);
+ 2bc:	80 ed       	ldi	r24, 0xD0	; 208
+ 2be:	0e 94 c5 00 	call	0x18a	; 0x18a <delay_ms>
+ 2c2:	ef cf       	rjmp	.-34     	; 0x2a2 <main+0xa>
 
-00000274 <_exit>:
- 274:	f8 94       	cli
+000002c4 <__udivmodhi4>:
+ 2c4:	aa 1b       	sub	r26, r26
+ 2c6:	bb 1b       	sub	r27, r27
+ 2c8:	51 e1       	ldi	r21, 0x11	; 17
+ 2ca:	07 c0       	rjmp	.+14     	; 0x2da <__udivmodhi4_ep>
 
-00000276 <__stop_program>:
- 276:	ff cf       	rjmp	.-2      	; 0x276 <__stop_program>
+000002cc <__udivmodhi4_loop>:
+ 2cc:	aa 1f       	adc	r26, r26
+ 2ce:	bb 1f       	adc	r27, r27
+ 2d0:	a6 17       	cp	r26, r22
+ 2d2:	b7 07       	cpc	r27, r23
+ 2d4:	10 f0       	brcs	.+4      	; 0x2da <__udivmodhi4_ep>
+ 2d6:	a6 1b       	sub	r26, r22
+ 2d8:	b7 0b       	sbc	r27, r23
+
+000002da <__udivmodhi4_ep>:
+ 2da:	88 1f       	adc	r24, r24
+ 2dc:	99 1f       	adc	r25, r25
+ 2de:	5a 95       	dec	r21
+ 2e0:	a9 f7       	brne	.-22     	; 0x2cc <__udivmodhi4_loop>
+ 2e2:	80 95       	com	r24
+ 2e4:	90 95       	com	r25
+ 2e6:	bc 01       	movw	r22, r24
+ 2e8:	cd 01       	movw	r24, r26
+ 2ea:	08 95       	ret
+
+000002ec <_exit>:
+ 2ec:	f8 94       	cli
+
+000002ee <__stop_program>:
+ 2ee:	ff cf       	rjmp	.-2      	; 0x2ee <__stop_program>
