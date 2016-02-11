@@ -61,7 +61,7 @@ void adc_init(void)
 	
 	//set global interrupt
 	sei();
-	 // Start conversions
+	 // Start conversions single conversion
 	ADCSRA |= (1 << ADSC);
 	//set channel
 	ADMUX |=((ADC_volt_CH_config.channel)&0x1F);
@@ -74,11 +74,11 @@ ISR(ADC_vect)
 	ADC_result = ADCL;
 	/*read the high byte of the converted data*/
 	ADC_result |= ADCH <<8;
-		
 	#elif ADC_JUSTIFY=='L'
 	ADC_result = ADCH ;
-	
 	#endif	
+	
+	
 	/* set the start conversion to begin next conversion  */
 	ADCSRA |= (1 << ADSC);
 
@@ -89,7 +89,7 @@ u16 ADC_u16_result()
 	
     return ADC_result;	
 }
-
+// in case of left adjust 
 u8 ADC_u8_result()
 {
 	

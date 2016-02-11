@@ -3,29 +3,29 @@ ADC_test_2.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         000002ce  00000000  00000000  00000094  2**1
+  0 .text         000002a8  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         0000002a  00800060  000002ce  00000362  2**0
+  1 .data         0000002a  00800060  000002a8  0000033c  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .bss          00000001  0080008a  0080008a  0000038c  2**0
+  2 .bss          00000001  0080008a  0080008a  00000366  2**0
                   ALLOC
-  3 .stab         000006cc  00000000  00000000  0000038c  2**2
+  3 .stab         000006cc  00000000  00000000  00000368  2**2
                   CONTENTS, READONLY, DEBUGGING
-  4 .stabstr      00000085  00000000  00000000  00000a58  2**0
+  4 .stabstr      00000085  00000000  00000000  00000a34  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_aranges 000000c0  00000000  00000000  00000ae0  2**3
+  5 .debug_aranges 000000c0  00000000  00000000  00000ac0  2**3
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   00000810  00000000  00000000  00000ba0  2**0
+  6 .debug_info   000007f6  00000000  00000000  00000b80  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 00000303  00000000  00000000  000013b0  2**0
+  7 .debug_abbrev 000002eb  00000000  00000000  00001376  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   00000501  00000000  00000000  000016b3  2**0
+  8 .debug_line   000004fd  00000000  00000000  00001661  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  000000dc  00000000  00000000  00001bb4  2**2
+  9 .debug_frame  000000dc  00000000  00000000  00001b60  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    00000276  00000000  00000000  00001c90  2**0
+ 10 .debug_str    00000235  00000000  00000000  00001c3c  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    0000026b  00000000  00000000  00001f06  2**0
+ 11 .debug_loc    000001f1  00000000  00000000  00001e71  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -65,7 +65,7 @@ Disassembly of section .text:
   60:	10 e0       	ldi	r17, 0x00	; 0
   62:	a0 e6       	ldi	r26, 0x60	; 96
   64:	b0 e0       	ldi	r27, 0x00	; 0
-  66:	ee ec       	ldi	r30, 0xCE	; 206
+  66:	e8 ea       	ldi	r30, 0xA8	; 168
   68:	f2 e0       	ldi	r31, 0x02	; 2
   6a:	02 c0       	rjmp	.+4      	; 0x70 <__do_copy_data+0x10>
   6c:	05 90       	lpm	r0, Z+
@@ -88,7 +88,7 @@ Disassembly of section .text:
   82:	b1 07       	cpc	r27, r17
   84:	e1 f7       	brne	.-8      	; 0x7e <.do_clear_bss_loop>
   86:	0e 94 cc 00 	call	0x198	; 0x198 <main>
-  8a:	0c 94 65 01 	jmp	0x2ca	; 0x2ca <_exit>
+  8a:	0c 94 52 01 	jmp	0x2a4	; 0x2a4 <_exit>
 
 0000008e <__bad_interrupt>:
   8e:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
@@ -246,7 +246,7 @@ void adc_init(void)
 	//set global interrupt
 	sei();
  158:	78 94       	sei
-	 // Start conversions
+	 // Start conversions single conversion
 	ADCSRA |= (1 << ADSC);
  15a:	36 9a       	sbi	0x06, 6	; 6
 	//set channel
@@ -269,16 +269,17 @@ ISR(ADC_vect)
  170:	0f 92       	push	r0
  172:	11 24       	eor	r1, r1
  174:	8f 93       	push	r24
+	/*read the low byte of the converted data*/
 	ADC_result = ADCL;
 	/*read the high byte of the converted data*/
 	ADC_result |= ADCH <<8;
-		
 	#elif ADC_JUSTIFY=='L'
 	ADC_result = ADCH ;
  176:	85 b1       	in	r24, 0x05	; 5
  178:	80 93 8a 00 	sts	0x008A, r24
-	
 	#endif	
+	
+	
 	/* set the start conversion to begin next conversion  */
 	ADCSRA |= (1 << ADSC);
  17c:	36 9a       	sbi	0x06, 6	; 6
@@ -303,7 +304,7 @@ u16 ADC_u16_result()
  190:	08 95       	ret
 
 00000192 <ADC_u8_result>:
-
+// in case of left adjust 
 u8 ADC_u8_result()
 {
 	
@@ -317,7 +318,7 @@ u8 ADC_u8_result()
 
 int main(void)
 {
-	u16 result;
+	u8 result;
 	DDRA &=(~(1<<PA0));
  198:	d0 98       	cbi	0x1a, 0	; 26
 	DDRC |=0xFF;
@@ -327,277 +328,239 @@ int main(void)
 	DDRD |=0xFF;
  1a0:	91 b3       	in	r25, 0x11	; 17
  1a2:	81 bb       	out	0x11, r24	; 17
-       adc_init() ;
-	   result=  ADC_u8_result();
-		 
-	 
-	 PORTC =(result&0xFF);
-	 PORTD =((result)>>8);
- 1a4:	c0 e0       	ldi	r28, 0x00	; 0
- 1a6:	d0 e0       	ldi	r29, 0x00	; 0
-	 u16 i;
-	 for(i=0;i<10;i++)
- 1a8:	1c 2f       	mov	r17, r28
- 1aa:	0d 2f       	mov	r16, r29
-	DDRD |=0xFF;
 	
     while(1)
     {
 		
        adc_init() ;
- 1ac:	0e 94 4e 00 	call	0x9c	; 0x9c <adc_init>
+ 1a4:	0e 94 4e 00 	call	0x9c	; 0x9c <adc_init>
 	   result=  ADC_u8_result();
- 1b0:	0e 94 c9 00 	call	0x192	; 0x192 <ADC_u8_result>
+ 1a8:	0e 94 c9 00 	call	0x192	; 0x192 <ADC_u8_result>
 		 
 	 
 	 PORTC =(result&0xFF);
- 1b4:	85 bb       	out	0x15, r24	; 21
+ 1ac:	85 bb       	out	0x15, r24	; 21
 	 PORTD =((result)>>8);
- 1b6:	12 ba       	out	0x12, r1	; 18
- 1b8:	9e 01       	movw	r18, r28
- 1ba:	03 c0       	rjmp	.+6      	; 0x1c2 <main+0x2a>
-	 u16 i;
-	 for(i=0;i<10;i++)
- 1bc:	81 2f       	mov	r24, r17
- 1be:	90 2f       	mov	r25, r16
- 1c0:	9c 01       	movw	r18, r24
-	 {
-	 for(i=0;i<100;i++){;}
- 1c2:	c9 01       	movw	r24, r18
- 1c4:	01 96       	adiw	r24, 0x01	; 1
- 1c6:	84 36       	cpi	r24, 0x64	; 100
- 1c8:	91 05       	cpc	r25, r1
- 1ca:	d0 f3       	brcs	.-12     	; 0x1c0 <main+0x28>
-		 
-	 
-	 PORTC =(result&0xFF);
-	 PORTD =((result)>>8);
-	 u16 i;
-	 for(i=0;i<10;i++)
- 1cc:	2e 5f       	subi	r18, 0xFE	; 254
- 1ce:	3f 4f       	sbci	r19, 0xFF	; 255
- 1d0:	2a 30       	cpi	r18, 0x0A	; 10
- 1d2:	31 05       	cpc	r19, r1
- 1d4:	58 f7       	brcc	.-42     	; 0x1ac <main+0x14>
- 1d6:	f2 cf       	rjmp	.-28     	; 0x1bc <main+0x24>
+ 1ae:	12 ba       	out	0x12, r1	; 18
+ 1b0:	f9 cf       	rjmp	.-14     	; 0x1a4 <main+0xc>
 
-000001d8 <GPIO_InitPortDirection>:
+000001b2 <GPIO_InitPortDirection>:
 #define WRITE_REG(Reg,Value,Mask) Reg&=~(Mask); Reg|=(Value & Mask)
 #define READ_REG(Reg,Mask) Reg & Mask
 
 void GPIO_InitPortDirection(u8 PortName,u8 PortDirection,u8 PortMask)
 {
 	switch(PortName)
- 1d8:	81 30       	cpi	r24, 0x01	; 1
- 1da:	89 f0       	breq	.+34     	; 0x1fe <GPIO_InitPortDirection+0x26>
- 1dc:	81 30       	cpi	r24, 0x01	; 1
- 1de:	28 f0       	brcs	.+10     	; 0x1ea <GPIO_InitPortDirection+0x12>
- 1e0:	82 30       	cpi	r24, 0x02	; 2
- 1e2:	b9 f0       	breq	.+46     	; 0x212 <GPIO_InitPortDirection+0x3a>
- 1e4:	83 30       	cpi	r24, 0x03	; 3
- 1e6:	41 f5       	brne	.+80     	; 0x238 <GPIO_InitPortDirection+0x60>
- 1e8:	1e c0       	rjmp	.+60     	; 0x226 <GPIO_InitPortDirection+0x4e>
+ 1b2:	81 30       	cpi	r24, 0x01	; 1
+ 1b4:	89 f0       	breq	.+34     	; 0x1d8 <GPIO_InitPortDirection+0x26>
+ 1b6:	81 30       	cpi	r24, 0x01	; 1
+ 1b8:	28 f0       	brcs	.+10     	; 0x1c4 <GPIO_InitPortDirection+0x12>
+ 1ba:	82 30       	cpi	r24, 0x02	; 2
+ 1bc:	b9 f0       	breq	.+46     	; 0x1ec <GPIO_InitPortDirection+0x3a>
+ 1be:	83 30       	cpi	r24, 0x03	; 3
+ 1c0:	41 f5       	brne	.+80     	; 0x212 <GPIO_InitPortDirection+0x60>
+ 1c2:	1e c0       	rjmp	.+60     	; 0x200 <GPIO_InitPortDirection+0x4e>
 	{
 		case PA:
 		{
 			WRITE_REG(DDRA,PortDirection,PortMask);
- 1ea:	8a b3       	in	r24, 0x1a	; 26
- 1ec:	94 2f       	mov	r25, r20
- 1ee:	90 95       	com	r25
- 1f0:	89 23       	and	r24, r25
- 1f2:	8a bb       	out	0x1a, r24	; 26
- 1f4:	8a b3       	in	r24, 0x1a	; 26
- 1f6:	64 23       	and	r22, r20
- 1f8:	68 2b       	or	r22, r24
- 1fa:	6a bb       	out	0x1a, r22	; 26
+ 1c4:	8a b3       	in	r24, 0x1a	; 26
+ 1c6:	94 2f       	mov	r25, r20
+ 1c8:	90 95       	com	r25
+ 1ca:	89 23       	and	r24, r25
+ 1cc:	8a bb       	out	0x1a, r24	; 26
+ 1ce:	8a b3       	in	r24, 0x1a	; 26
+ 1d0:	64 23       	and	r22, r20
+ 1d2:	68 2b       	or	r22, r24
+ 1d4:	6a bb       	out	0x1a, r22	; 26
 		}
 		break;
- 1fc:	08 95       	ret
+ 1d6:	08 95       	ret
 		case PB:
 		{
 			WRITE_REG(DDRB,PortDirection,PortMask);
- 1fe:	87 b3       	in	r24, 0x17	; 23
- 200:	94 2f       	mov	r25, r20
- 202:	90 95       	com	r25
- 204:	89 23       	and	r24, r25
- 206:	87 bb       	out	0x17, r24	; 23
- 208:	87 b3       	in	r24, 0x17	; 23
- 20a:	64 23       	and	r22, r20
- 20c:	68 2b       	or	r22, r24
- 20e:	67 bb       	out	0x17, r22	; 23
+ 1d8:	87 b3       	in	r24, 0x17	; 23
+ 1da:	94 2f       	mov	r25, r20
+ 1dc:	90 95       	com	r25
+ 1de:	89 23       	and	r24, r25
+ 1e0:	87 bb       	out	0x17, r24	; 23
+ 1e2:	87 b3       	in	r24, 0x17	; 23
+ 1e4:	64 23       	and	r22, r20
+ 1e6:	68 2b       	or	r22, r24
+ 1e8:	67 bb       	out	0x17, r22	; 23
 		}
 		break;
- 210:	08 95       	ret
+ 1ea:	08 95       	ret
 		case PC:
 		{
 			WRITE_REG(DDRC,PortDirection,PortMask);
- 212:	84 b3       	in	r24, 0x14	; 20
- 214:	94 2f       	mov	r25, r20
- 216:	90 95       	com	r25
- 218:	89 23       	and	r24, r25
- 21a:	84 bb       	out	0x14, r24	; 20
- 21c:	84 b3       	in	r24, 0x14	; 20
- 21e:	64 23       	and	r22, r20
- 220:	68 2b       	or	r22, r24
- 222:	64 bb       	out	0x14, r22	; 20
+ 1ec:	84 b3       	in	r24, 0x14	; 20
+ 1ee:	94 2f       	mov	r25, r20
+ 1f0:	90 95       	com	r25
+ 1f2:	89 23       	and	r24, r25
+ 1f4:	84 bb       	out	0x14, r24	; 20
+ 1f6:	84 b3       	in	r24, 0x14	; 20
+ 1f8:	64 23       	and	r22, r20
+ 1fa:	68 2b       	or	r22, r24
+ 1fc:	64 bb       	out	0x14, r22	; 20
 		}
 		break;
- 224:	08 95       	ret
+ 1fe:	08 95       	ret
 		case PD:
 		{
 			WRITE_REG(DDRD,PortDirection,PortMask);
- 226:	81 b3       	in	r24, 0x11	; 17
- 228:	94 2f       	mov	r25, r20
- 22a:	90 95       	com	r25
- 22c:	89 23       	and	r24, r25
- 22e:	81 bb       	out	0x11, r24	; 17
- 230:	81 b3       	in	r24, 0x11	; 17
- 232:	64 23       	and	r22, r20
- 234:	68 2b       	or	r22, r24
- 236:	61 bb       	out	0x11, r22	; 17
- 238:	08 95       	ret
+ 200:	81 b3       	in	r24, 0x11	; 17
+ 202:	94 2f       	mov	r25, r20
+ 204:	90 95       	com	r25
+ 206:	89 23       	and	r24, r25
+ 208:	81 bb       	out	0x11, r24	; 17
+ 20a:	81 b3       	in	r24, 0x11	; 17
+ 20c:	64 23       	and	r22, r20
+ 20e:	68 2b       	or	r22, r24
+ 210:	61 bb       	out	0x11, r22	; 17
+ 212:	08 95       	ret
 
-0000023a <GPIO_WritePort>:
+00000214 <GPIO_WritePort>:
 		break;
 	}	
 }
 void GPIO_WritePort(u8 PortName,u8 PortData,u8 PortMask)
 {
 	switch(PortName)
- 23a:	81 30       	cpi	r24, 0x01	; 1
- 23c:	89 f0       	breq	.+34     	; 0x260 <GPIO_WritePort+0x26>
- 23e:	81 30       	cpi	r24, 0x01	; 1
- 240:	28 f0       	brcs	.+10     	; 0x24c <GPIO_WritePort+0x12>
- 242:	82 30       	cpi	r24, 0x02	; 2
- 244:	b9 f0       	breq	.+46     	; 0x274 <GPIO_WritePort+0x3a>
- 246:	83 30       	cpi	r24, 0x03	; 3
- 248:	41 f5       	brne	.+80     	; 0x29a <GPIO_WritePort+0x60>
- 24a:	1e c0       	rjmp	.+60     	; 0x288 <GPIO_WritePort+0x4e>
+ 214:	81 30       	cpi	r24, 0x01	; 1
+ 216:	89 f0       	breq	.+34     	; 0x23a <GPIO_WritePort+0x26>
+ 218:	81 30       	cpi	r24, 0x01	; 1
+ 21a:	28 f0       	brcs	.+10     	; 0x226 <GPIO_WritePort+0x12>
+ 21c:	82 30       	cpi	r24, 0x02	; 2
+ 21e:	b9 f0       	breq	.+46     	; 0x24e <GPIO_WritePort+0x3a>
+ 220:	83 30       	cpi	r24, 0x03	; 3
+ 222:	41 f5       	brne	.+80     	; 0x274 <GPIO_WritePort+0x60>
+ 224:	1e c0       	rjmp	.+60     	; 0x262 <GPIO_WritePort+0x4e>
 	{
 		case PA:
 		{
 			WRITE_REG(PORTA,PortData,PortMask);
- 24c:	8b b3       	in	r24, 0x1b	; 27
- 24e:	94 2f       	mov	r25, r20
- 250:	90 95       	com	r25
- 252:	89 23       	and	r24, r25
- 254:	8b bb       	out	0x1b, r24	; 27
- 256:	8b b3       	in	r24, 0x1b	; 27
- 258:	64 23       	and	r22, r20
- 25a:	68 2b       	or	r22, r24
- 25c:	6b bb       	out	0x1b, r22	; 27
+ 226:	8b b3       	in	r24, 0x1b	; 27
+ 228:	94 2f       	mov	r25, r20
+ 22a:	90 95       	com	r25
+ 22c:	89 23       	and	r24, r25
+ 22e:	8b bb       	out	0x1b, r24	; 27
+ 230:	8b b3       	in	r24, 0x1b	; 27
+ 232:	64 23       	and	r22, r20
+ 234:	68 2b       	or	r22, r24
+ 236:	6b bb       	out	0x1b, r22	; 27
 		}
 		break;
- 25e:	08 95       	ret
+ 238:	08 95       	ret
 		case PB:
 		{
 			WRITE_REG(PORTB,PortData,PortMask);
- 260:	88 b3       	in	r24, 0x18	; 24
- 262:	94 2f       	mov	r25, r20
- 264:	90 95       	com	r25
- 266:	89 23       	and	r24, r25
- 268:	88 bb       	out	0x18, r24	; 24
- 26a:	88 b3       	in	r24, 0x18	; 24
- 26c:	64 23       	and	r22, r20
- 26e:	68 2b       	or	r22, r24
- 270:	68 bb       	out	0x18, r22	; 24
+ 23a:	88 b3       	in	r24, 0x18	; 24
+ 23c:	94 2f       	mov	r25, r20
+ 23e:	90 95       	com	r25
+ 240:	89 23       	and	r24, r25
+ 242:	88 bb       	out	0x18, r24	; 24
+ 244:	88 b3       	in	r24, 0x18	; 24
+ 246:	64 23       	and	r22, r20
+ 248:	68 2b       	or	r22, r24
+ 24a:	68 bb       	out	0x18, r22	; 24
 		}
 		break;
- 272:	08 95       	ret
+ 24c:	08 95       	ret
 		case PC:
 		{
 			WRITE_REG(PORTC,PortData,PortMask);
- 274:	85 b3       	in	r24, 0x15	; 21
- 276:	94 2f       	mov	r25, r20
- 278:	90 95       	com	r25
- 27a:	89 23       	and	r24, r25
- 27c:	85 bb       	out	0x15, r24	; 21
- 27e:	85 b3       	in	r24, 0x15	; 21
- 280:	64 23       	and	r22, r20
- 282:	68 2b       	or	r22, r24
- 284:	65 bb       	out	0x15, r22	; 21
+ 24e:	85 b3       	in	r24, 0x15	; 21
+ 250:	94 2f       	mov	r25, r20
+ 252:	90 95       	com	r25
+ 254:	89 23       	and	r24, r25
+ 256:	85 bb       	out	0x15, r24	; 21
+ 258:	85 b3       	in	r24, 0x15	; 21
+ 25a:	64 23       	and	r22, r20
+ 25c:	68 2b       	or	r22, r24
+ 25e:	65 bb       	out	0x15, r22	; 21
 		}
 		break;
- 286:	08 95       	ret
+ 260:	08 95       	ret
 		case PD:
 		{
 			WRITE_REG(PORTD,PortData,PortMask);
- 288:	82 b3       	in	r24, 0x12	; 18
- 28a:	94 2f       	mov	r25, r20
- 28c:	90 95       	com	r25
- 28e:	89 23       	and	r24, r25
- 290:	82 bb       	out	0x12, r24	; 18
- 292:	82 b3       	in	r24, 0x12	; 18
- 294:	64 23       	and	r22, r20
- 296:	68 2b       	or	r22, r24
- 298:	62 bb       	out	0x12, r22	; 18
- 29a:	08 95       	ret
+ 262:	82 b3       	in	r24, 0x12	; 18
+ 264:	94 2f       	mov	r25, r20
+ 266:	90 95       	com	r25
+ 268:	89 23       	and	r24, r25
+ 26a:	82 bb       	out	0x12, r24	; 18
+ 26c:	82 b3       	in	r24, 0x12	; 18
+ 26e:	64 23       	and	r22, r20
+ 270:	68 2b       	or	r22, r24
+ 272:	62 bb       	out	0x12, r22	; 18
+ 274:	08 95       	ret
 
-0000029c <GPIO_ReadPort>:
+00000276 <GPIO_ReadPort>:
 	}	
 }
 u8 GPIO_ReadPort(u8 PortName,u8 PortMask)
 {
 	u8 Data = 0;
 	switch(PortName)
- 29c:	81 30       	cpi	r24, 0x01	; 1
- 29e:	51 f0       	breq	.+20     	; 0x2b4 <GPIO_ReadPort+0x18>
- 2a0:	81 30       	cpi	r24, 0x01	; 1
- 2a2:	28 f0       	brcs	.+10     	; 0x2ae <GPIO_ReadPort+0x12>
- 2a4:	82 30       	cpi	r24, 0x02	; 2
- 2a6:	49 f0       	breq	.+18     	; 0x2ba <GPIO_ReadPort+0x1e>
- 2a8:	83 30       	cpi	r24, 0x03	; 3
- 2aa:	69 f4       	brne	.+26     	; 0x2c6 <GPIO_ReadPort+0x2a>
- 2ac:	09 c0       	rjmp	.+18     	; 0x2c0 <GPIO_ReadPort+0x24>
+ 276:	81 30       	cpi	r24, 0x01	; 1
+ 278:	51 f0       	breq	.+20     	; 0x28e <GPIO_ReadPort+0x18>
+ 27a:	81 30       	cpi	r24, 0x01	; 1
+ 27c:	28 f0       	brcs	.+10     	; 0x288 <GPIO_ReadPort+0x12>
+ 27e:	82 30       	cpi	r24, 0x02	; 2
+ 280:	49 f0       	breq	.+18     	; 0x294 <GPIO_ReadPort+0x1e>
+ 282:	83 30       	cpi	r24, 0x03	; 3
+ 284:	69 f4       	brne	.+26     	; 0x2a0 <GPIO_ReadPort+0x2a>
+ 286:	09 c0       	rjmp	.+18     	; 0x29a <GPIO_ReadPort+0x24>
 	{
 		case PA:
 		{
 			Data = READ_REG(PINA,PortMask);
- 2ae:	89 b3       	in	r24, 0x19	; 25
- 2b0:	86 23       	and	r24, r22
+ 288:	89 b3       	in	r24, 0x19	; 25
+ 28a:	86 23       	and	r24, r22
 		}
 		break;
- 2b2:	08 95       	ret
+ 28c:	08 95       	ret
 		case PB:
 		{
 			Data = READ_REG(PINB,PortMask);
- 2b4:	86 b3       	in	r24, 0x16	; 22
- 2b6:	86 23       	and	r24, r22
+ 28e:	86 b3       	in	r24, 0x16	; 22
+ 290:	86 23       	and	r24, r22
 		}
 		break;
- 2b8:	08 95       	ret
+ 292:	08 95       	ret
 		case PC:
 		{
 			Data = READ_REG(PINC,PortMask);
- 2ba:	83 b3       	in	r24, 0x13	; 19
- 2bc:	86 23       	and	r24, r22
+ 294:	83 b3       	in	r24, 0x13	; 19
+ 296:	86 23       	and	r24, r22
 		}
 		break;
- 2be:	08 95       	ret
+ 298:	08 95       	ret
 		case PD:
 		{
 			Data = READ_REG(PIND,PortMask);
- 2c0:	80 b3       	in	r24, 0x10	; 16
- 2c2:	86 23       	and	r24, r22
+ 29a:	80 b3       	in	r24, 0x10	; 16
+ 29c:	86 23       	and	r24, r22
 		}
 		break;
- 2c4:	08 95       	ret
+ 29e:	08 95       	ret
 		break;
 	}	
 }
 u8 GPIO_ReadPort(u8 PortName,u8 PortMask)
 {
 	u8 Data = 0;
- 2c6:	80 e0       	ldi	r24, 0x00	; 0
+ 2a0:	80 e0       	ldi	r24, 0x00	; 0
 		break;
 		
 	}
 	return Data;
 	
- 2c8:	08 95       	ret
+ 2a2:	08 95       	ret
 
-000002ca <_exit>:
- 2ca:	f8 94       	cli
+000002a4 <_exit>:
+ 2a4:	f8 94       	cli
 
-000002cc <__stop_program>:
- 2cc:	ff cf       	rjmp	.-2      	; 0x2cc <__stop_program>
+000002a6 <__stop_program>:
+ 2a6:	ff cf       	rjmp	.-2      	; 0x2a6 <__stop_program>

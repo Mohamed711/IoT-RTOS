@@ -12,7 +12,7 @@
 
 int main(void)
 {
-	u16 result;
+	u8 result;
 	DDRA &=(~(1<<PA0));
 	DDRC |=0xFF;
 	DDRD |=0xFF;
@@ -26,15 +26,10 @@ int main(void)
 	 
 	 PORTC =(result&0xFF);
 	 PORTD =((result)>>8);
-	 u16 i;
-	 for(i=0;i<10;i++)
-	 {
-	 for(i=0;i<100;i++){;}
-	 
-     }
+	
 	
 	
 }
-adc_off();
+
 
 	}
