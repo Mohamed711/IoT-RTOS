@@ -39,7 +39,7 @@ SUBDIRS :=  \
 C_SRCS +=  \
 ../ADC/ADC.c \
 ../ADC/ADC_Lcfg.c \
-../ADC/ADC_test_2.c \
+../ADC/ADC_main.c \
 ../ADC/GPIO.c
 
 
@@ -52,28 +52,28 @@ ASM_SRCS +=
 OBJS +=  \
 ADC/ADC.o \
 ADC/ADC_Lcfg.o \
-ADC/ADC_test_2.o \
+ADC/ADC_main.o \
 ADC/GPIO.o
 
 
 OBJS_AS_ARGS +=  \
 ADC/ADC.o \
 ADC/ADC_Lcfg.o \
-ADC/ADC_test_2.o \
+ADC/ADC_main.o \
 ADC/GPIO.o
 
 
 C_DEPS +=  \
 ADC/ADC.d \
 ADC/ADC_Lcfg.d \
-ADC/ADC_test_2.d \
+ADC/ADC_main.d \
 ADC/GPIO.d
 
 
 C_DEPS_AS_ARGS +=  \
 ADC/ADC.d \
 ADC/ADC_Lcfg.d \
-ADC/ADC_test_2.d \
+ADC/ADC_main.d \
 ADC/GPIO.d
 
 

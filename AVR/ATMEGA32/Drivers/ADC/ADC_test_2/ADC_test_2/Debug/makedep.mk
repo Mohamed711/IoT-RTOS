@@ -6,7 +6,7 @@ ADC\ADC.c
 
 ADC\ADC_Lcfg.c
 
-ADC\ADC_test_2.c
+ADC\ADC_main.c
 
 ADC\GPIO.c
 

@@ -8,14 +8,24 @@
 #include <avr/interrupt.h>
 
 
-static volatile u16 u16_ADC_result;
+#if ADC_JUSTIFY == 'L'
+static volatile u8 ADC_result;
+#else
+static volatile u16 ADC_result;
+#endif
 
-
+void adc_off(void)
+{
+	// disable interrupt
+	ADCSRA &= (0 << ADIE);
+	// disable ADC
+	ADCSRA &= (0 << ADEN);
+}
 void adc_init(void) 
 {
 	// Set ADC reference
 	
-		ADMUX |= (  (( (ADC_volt_config.voltage_ref_sel)&0x02)>>1)<<REFS1 )| (((ADC_volt_config.voltage_ref_sel)&0x01)<<REFS0 ) ;
+		ADMUX |= (  (( (ADC_volt_CH_config.voltage_ref_sel)&0x02)>>1)<<REFS1 )| (((ADC_volt_CH_config.voltage_ref_sel)&0x01)<<REFS0 ) ;
 		
 	
 	
@@ -53,23 +63,35 @@ void adc_init(void)
 	sei();
 	 // Start conversions
 	ADCSRA |= (1 << ADSC);
+	//set channel
+	ADMUX |=((ADC_volt_CH_config.channel)&0x1F);
 	
 }
 ISR(ADC_vect)
-{
+{  
+	 #if ADC_JUSTIFY == 'R'
 	/*read the low byte of the converted data*/
-	u16_ADC_result = ADCL;
+	ADC_result = ADCL;
 	/*read the high byte of the converted data*/
-	u16_ADC_result |= ADCH <<8;
+	ADC_result |= ADCH <<8;
+		
+	#elif ADC_JUSTIFY=='L'
+	ADC_result = ADCH ;
 	
+	#endif	
 	/* set the start conversion to begin next conversion  */
 	ADCSRA |= (1 << ADSC);
 
 }
-s16 ADC_u16_result(u8 channel)
+
+u16 ADC_u16_result()
 {  
-	//set channel 
-	ADMUX |=(channel&0x1F);
 	
-    return u16_ADC_result;	
+    return ADC_result;	
+}
+
+u8 ADC_u8_result()
+{
+	
+	return ADC_result;
 }
