@@ -19,17 +19,9 @@ int main(void)
 	
     while(1)
     {
-		
        adc_init() ;
-	   result=  ADC_u16_result();
-		 
-	 
-	 PORTC =(result &0xFF);
+	 result=  ADC_u16_result(channel_ADC0);
+	 PORTC =(result&0xFF);
 	 PORTD =((result)>>8);
-	
-	
-	
+    }
 }
-
-
-	}

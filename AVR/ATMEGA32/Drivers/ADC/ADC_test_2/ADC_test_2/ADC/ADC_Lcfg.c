@@ -10,8 +10,8 @@
 const ADC_Config_Voltage_reference_and_CH_selection ADC_volt_CH_config =
 {
 	
-	AREF_Internal_Vref_turned_off ,
-	ch_ADC0,
+   AREF_Internal_Vref_turned_off,
+	 ch_ADC0  ,
 	 
 };
 const CLK_Rate clk[7] =
