@@ -1,1 +1,0 @@
-"./main.obj" "./tm4c123gh6pm_startup_ccs.obj" "./Drivers/watchdog/watchdog.obj" "./Drivers/watchdog/watchdog_test.obj" "./Drivers/interrupt/interrupt.obj" "./Drivers/cpu/cpu.obj" "../tm4c123gh6pm.cmd" "../Drivers/rvmdk/driverlib.lib" -l"libc.a" 
