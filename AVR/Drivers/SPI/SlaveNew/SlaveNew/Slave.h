@@ -18,8 +18,8 @@ void SPI_SlaveInit(void);
 //unsigned char SPI_MasterReceive(void);
 void SPI_SlaveTransmit (u8);
 void SPI_SlaveReceive ();
-void initInterrupt();
-ISR(INT1_vect);
+//void initInterrupt();
+ISR(SPI_STC_vect);
 
 
 
