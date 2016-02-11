@@ -13,15 +13,16 @@
 #define GPIO_PORTF_PCTL_R       (*((volatile unsigned long *)0x4002552C))
 #define SYSCTL_RCGC2_R          (*((volatile unsigned long *)0x400FE108))
 
-#include "drivers/watchdog/watchdog_test.h"
+#include "driverlib/driver_test/watchdog_test.h"
 
 void PortF_Init(void);
 
 int main(void) {
 
 	PortF_Init();
+
 //	WDT_ResetTest();
-//	WDT_INTTest();
+	WDT_INTTest();
 //	WDT_ON();
 
 	return 0;
