@@ -16,7 +16,8 @@ void initInterrupt()
 	sei();
 	GPIO_InitPortDirection(PD,0x00,0x00);	//for INT1
 	GICR |=(1<<7); //enable external interrupt of INT1
-	MCUCR &=~((0<<3) & (0<<2)); // enable interrupt on low levelof INT1 and th
+	MCUCR &= ~(1<<2); // enable interrupt on low levelof INT1 
+	MCUCR |= (1<<3);
 	//PORTC=0xFF;
 //	DDRC &= ~(1); //pin responsible of interrupt
 //	PORTC &=~(0);

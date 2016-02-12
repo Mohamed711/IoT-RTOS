@@ -7,7 +7,7 @@
 #include "Slave.h"
 #include "GPIO.h"
 //extern volatile u8 data;
-
+u8 data_available=0;
 void SPI_SlaveInit(void)
 {
 	/* Set MISO output, all others input */
@@ -19,6 +19,7 @@ void SPI_SlaveInit(void)
 	/* Enable SPI */
 	SPCR = (1<<SPE)|(1<<DORD)|(1<<SPIE);//interrupt enable DORD
 	sei();
+	
 //	DDRB &= ~(1<<7);
 //	PORTD &=~(1<<7);
 	//DDRA=0xFF;
@@ -43,20 +44,22 @@ void SPI_SlaveInit(void)
 */
 void SPI_SlaveTransmit (u8 data)
 {
-	//PORTB &=~(1<<4);
+	SPCR &=~ (1<<7);
 	PORTC= 0x00;
 	SPDR=data;
-	//PORTB = SPDR; for receiving
 	while(!(SPSR &(1<<7)));
-	//PORTB |=(1<<4);
+	//while (data_available !=1);
+	data_available =0;
 	PORTC= 0x01;
+	PORTA =SPDR;
+	//PORTA =SPDR;
+	SPCR |= (1<<7);
 }
 
 
 ISR (SPI_STC_vect)//receive
 {
-	//PORTA = SPDR;
+	data_available =1;
 	PORTA =SPDR;
-	//SPI_MasterTransmit(data);
-	//PORTA = SPDR;
+//	PORTC= 0x01;
 }

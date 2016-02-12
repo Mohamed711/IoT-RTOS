@@ -12,12 +12,9 @@ int main(void)
 	//DDRA= 0xFF;
 	SPI_MasterInit();
 	initInterrupt();
-	int data1=0x08;
 	while(1)
 	{
-		SPI_MasterTransmit(8);
-		data1= 0x7;
-		SPI_MasterTransmit(7);
-		// for(int i=0;i<10;i++){}
+		//SPI_MasterTransmit(8);
+		//SPI_MasterTransmit(7);
 	}
 }

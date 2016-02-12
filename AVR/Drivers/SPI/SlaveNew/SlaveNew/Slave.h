@@ -20,7 +20,7 @@ void SPI_SlaveTransmit (u8);
 void SPI_SlaveReceive ();
 //void initInterrupt();
 ISR(SPI_STC_vect);
-
+extern u8 data_available;
 
 
 
