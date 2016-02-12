@@ -3,51 +3,53 @@ SlaveNew.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         00000132  00000000  00000000  00000054  2**1
+  0 .text         0000015a  00000000  00000000  00000074  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .comment      00000030  00000000  00000000  00000186  2**0
+  1 .bss          00000001  00800060  00800060  000001ce  2**0
+                  ALLOC
+  2 .comment      00000030  00000000  00000000  000001ce  2**0
                   CONTENTS, READONLY
-  2 .debug_aranges 00000080  00000000  00000000  000001b6  2**0
+  3 .debug_aranges 00000080  00000000  00000000  000001fe  2**0
                   CONTENTS, READONLY, DEBUGGING
-  3 .debug_info   00000380  00000000  00000000  00000236  2**0
+  4 .debug_info   000003a5  00000000  00000000  0000027e  2**0
                   CONTENTS, READONLY, DEBUGGING
-  4 .debug_abbrev 00000219  00000000  00000000  000005b6  2**0
+  5 .debug_abbrev 00000237  00000000  00000000  00000623  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_line   0000020c  00000000  00000000  000007cf  2**0
+  6 .debug_line   00000216  00000000  00000000  0000085a  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_frame  000000bc  00000000  00000000  000009dc  2**2
+  7 .debug_frame  000000bc  00000000  00000000  00000a70  2**2
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_str    000001db  00000000  00000000  00000a98  2**0
+  8 .debug_str    000001c8  00000000  00000000  00000b2c  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_loc    00000319  00000000  00000000  00000c73  2**0
+  9 .debug_loc    0000030d  00000000  00000000  00000cf4  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_ranges 00000050  00000000  00000000  00000f8c  2**0
+ 10 .debug_ranges 00000050  00000000  00000000  00001001  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
 
 00000000 <__vectors>:
    0:	0c 94 2a 00 	jmp	0x54	; 0x54 <__ctors_end>
-   4:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
-   8:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
-   c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
-  10:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
-  14:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
-  18:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
-  1c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
-  20:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
-  24:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
-  28:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
-  2c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
-  30:	0c 94 83 00 	jmp	0x106	; 0x106 <__vector_12>
-  34:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
-  38:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
-  3c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
-  40:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
-  44:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
-  48:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
-  4c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
-  50:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+   4:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+   8:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+   c:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  10:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  14:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  18:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  1c:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  20:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  24:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  28:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  2c:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  30:	0c 94 91 00 	jmp	0x122	; 0x122 <__vector_12>
+  34:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  38:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  3c:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  40:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  44:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  48:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  4c:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  50:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
 
 00000054 <__ctors_end>:
   54:	11 24       	eor	r1, r1
@@ -56,187 +58,215 @@ Disassembly of section .text:
   5a:	d8 e0       	ldi	r29, 0x08	; 8
   5c:	de bf       	out	0x3e, r29	; 62
   5e:	cd bf       	out	0x3d, r28	; 61
-  60:	0e 94 91 00 	call	0x122	; 0x122 <main>
-  64:	0c 94 97 00 	jmp	0x12e	; 0x12e <_exit>
 
-00000068 <__bad_interrupt>:
-  68:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+00000060 <__do_clear_bss>:
+  60:	20 e0       	ldi	r18, 0x00	; 0
+  62:	a0 e6       	ldi	r26, 0x60	; 96
+  64:	b0 e0       	ldi	r27, 0x00	; 0
+  66:	01 c0       	rjmp	.+2      	; 0x6a <.do_clear_bss_start>
 
-0000006c <GPIO_InitPortDirection>:
+00000068 <.do_clear_bss_loop>:
+  68:	1d 92       	st	X+, r1
+
+0000006a <.do_clear_bss_start>:
+  6a:	a1 36       	cpi	r26, 0x61	; 97
+  6c:	b2 07       	cpc	r27, r18
+  6e:	e1 f7       	brne	.-8      	; 0x68 <.do_clear_bss_loop>
+  70:	0e 94 a2 00 	call	0x144	; 0x144 <main>
+  74:	0c 94 ab 00 	jmp	0x156	; 0x156 <_exit>
+
+00000078 <__bad_interrupt>:
+  78:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+0000007c <GPIO_InitPortDirection>:
 #define WRITE_REG(Reg,Value,Mask) Reg&=~(Mask); Reg|=(Value & Mask)
 #define READ_REG(Reg,Mask) Reg & Mask
 
 void GPIO_InitPortDirection(u8 PortName,u8 PortDirection,u8 PortMask)
 {
 	switch(PortName)
-  6c:	81 30       	cpi	r24, 0x01	; 1
-  6e:	81 f0       	breq	.+32     	; 0x90 <GPIO_InitPortDirection+0x24>
-  70:	28 f0       	brcs	.+10     	; 0x7c <GPIO_InitPortDirection+0x10>
-  72:	82 30       	cpi	r24, 0x02	; 2
-  74:	b9 f0       	breq	.+46     	; 0xa4 <GPIO_InitPortDirection+0x38>
-  76:	83 30       	cpi	r24, 0x03	; 3
-  78:	f9 f0       	breq	.+62     	; 0xb8 <GPIO_InitPortDirection+0x4c>
-  7a:	08 95       	ret
+  7c:	81 30       	cpi	r24, 0x01	; 1
+  7e:	81 f0       	breq	.+32     	; 0xa0 <GPIO_InitPortDirection+0x24>
+  80:	28 f0       	brcs	.+10     	; 0x8c <GPIO_InitPortDirection+0x10>
+  82:	82 30       	cpi	r24, 0x02	; 2
+  84:	b9 f0       	breq	.+46     	; 0xb4 <GPIO_InitPortDirection+0x38>
+  86:	83 30       	cpi	r24, 0x03	; 3
+  88:	f9 f0       	breq	.+62     	; 0xc8 <GPIO_InitPortDirection+0x4c>
+  8a:	08 95       	ret
 	{
 		case PA:
 		{
 			WRITE_REG(DDRA,PortDirection,PortMask);
-  7c:	8a b3       	in	r24, 0x1a	; 26
-  7e:	94 2f       	mov	r25, r20
-  80:	90 95       	com	r25
-  82:	89 23       	and	r24, r25
-  84:	8a bb       	out	0x1a, r24	; 26
-  86:	8a b3       	in	r24, 0x1a	; 26
-  88:	46 23       	and	r20, r22
-  8a:	48 2b       	or	r20, r24
-  8c:	4a bb       	out	0x1a, r20	; 26
+  8c:	8a b3       	in	r24, 0x1a	; 26
+  8e:	94 2f       	mov	r25, r20
+  90:	90 95       	com	r25
+  92:	89 23       	and	r24, r25
+  94:	8a bb       	out	0x1a, r24	; 26
+  96:	8a b3       	in	r24, 0x1a	; 26
+  98:	46 23       	and	r20, r22
+  9a:	48 2b       	or	r20, r24
+  9c:	4a bb       	out	0x1a, r20	; 26
 		}
 		break;
-  8e:	08 95       	ret
+  9e:	08 95       	ret
 		case PB:
 		{
 			WRITE_REG(DDRB,PortDirection,PortMask);
-  90:	87 b3       	in	r24, 0x17	; 23
-  92:	94 2f       	mov	r25, r20
-  94:	90 95       	com	r25
-  96:	89 23       	and	r24, r25
-  98:	87 bb       	out	0x17, r24	; 23
-  9a:	87 b3       	in	r24, 0x17	; 23
-  9c:	46 23       	and	r20, r22
-  9e:	48 2b       	or	r20, r24
-  a0:	47 bb       	out	0x17, r20	; 23
+  a0:	87 b3       	in	r24, 0x17	; 23
+  a2:	94 2f       	mov	r25, r20
+  a4:	90 95       	com	r25
+  a6:	89 23       	and	r24, r25
+  a8:	87 bb       	out	0x17, r24	; 23
+  aa:	87 b3       	in	r24, 0x17	; 23
+  ac:	46 23       	and	r20, r22
+  ae:	48 2b       	or	r20, r24
+  b0:	47 bb       	out	0x17, r20	; 23
 		}
 		break;
-  a2:	08 95       	ret
+  b2:	08 95       	ret
 		case PC:
 		{
 			WRITE_REG(DDRC,PortDirection,PortMask);
-  a4:	84 b3       	in	r24, 0x14	; 20
-  a6:	94 2f       	mov	r25, r20
-  a8:	90 95       	com	r25
-  aa:	89 23       	and	r24, r25
-  ac:	84 bb       	out	0x14, r24	; 20
-  ae:	84 b3       	in	r24, 0x14	; 20
-  b0:	46 23       	and	r20, r22
-  b2:	48 2b       	or	r20, r24
-  b4:	44 bb       	out	0x14, r20	; 20
+  b4:	84 b3       	in	r24, 0x14	; 20
+  b6:	94 2f       	mov	r25, r20
+  b8:	90 95       	com	r25
+  ba:	89 23       	and	r24, r25
+  bc:	84 bb       	out	0x14, r24	; 20
+  be:	84 b3       	in	r24, 0x14	; 20
+  c0:	46 23       	and	r20, r22
+  c2:	48 2b       	or	r20, r24
+  c4:	44 bb       	out	0x14, r20	; 20
 		}
 		break;
-  b6:	08 95       	ret
+  c6:	08 95       	ret
 		case PD:
 		{
 			WRITE_REG(DDRD,PortDirection,PortMask);
-  b8:	81 b3       	in	r24, 0x11	; 17
-  ba:	94 2f       	mov	r25, r20
-  bc:	90 95       	com	r25
-  be:	89 23       	and	r24, r25
-  c0:	81 bb       	out	0x11, r24	; 17
-  c2:	81 b3       	in	r24, 0x11	; 17
-  c4:	46 23       	and	r20, r22
-  c6:	48 2b       	or	r20, r24
-  c8:	41 bb       	out	0x11, r20	; 17
-  ca:	08 95       	ret
+  c8:	81 b3       	in	r24, 0x11	; 17
+  ca:	94 2f       	mov	r25, r20
+  cc:	90 95       	com	r25
+  ce:	89 23       	and	r24, r25
+  d0:	81 bb       	out	0x11, r24	; 17
+  d2:	81 b3       	in	r24, 0x11	; 17
+  d4:	46 23       	and	r20, r22
+  d6:	48 2b       	or	r20, r24
+  d8:	41 bb       	out	0x11, r20	; 17
+  da:	08 95       	ret
 
-000000cc <SPI_SlaveInit>:
+000000dc <SPI_SlaveInit>:
 //extern volatile u8 data;
-
+u8 data_available=0;
 void SPI_SlaveInit(void)
 {
 	/* Set MISO output, all others input */
 	GPIO_InitPortDirection(PB,0xFF,0x40); //only MISO configured as op , others conf as ip
-  cc:	40 e4       	ldi	r20, 0x40	; 64
-  ce:	6f ef       	ldi	r22, 0xFF	; 255
-  d0:	81 e0       	ldi	r24, 0x01	; 1
-  d2:	0e 94 36 00 	call	0x6c	; 0x6c <GPIO_InitPortDirection>
+  dc:	40 e4       	ldi	r20, 0x40	; 64
+  de:	6f ef       	ldi	r22, 0xFF	; 255
+  e0:	81 e0       	ldi	r24, 0x01	; 1
+  e2:	0e 94 3e 00 	call	0x7c	; 0x7c <GPIO_InitPortDirection>
 	PORTB |=(1<<4);
-  d6:	c4 9a       	sbi	0x18, 4	; 24
+  e6:	c4 9a       	sbi	0x18, 4	; 24
 	GPIO_InitPortDirection(PC,0xFF,0x01);
-  d8:	41 e0       	ldi	r20, 0x01	; 1
-  da:	6f ef       	ldi	r22, 0xFF	; 255
-  dc:	82 e0       	ldi	r24, 0x02	; 2
-  de:	0e 94 36 00 	call	0x6c	; 0x6c <GPIO_InitPortDirection>
+  e8:	41 e0       	ldi	r20, 0x01	; 1
+  ea:	6f ef       	ldi	r22, 0xFF	; 255
+  ec:	82 e0       	ldi	r24, 0x02	; 2
+  ee:	0e 94 3e 00 	call	0x7c	; 0x7c <GPIO_InitPortDirection>
 	PORTC=0X01;
-  e2:	81 e0       	ldi	r24, 0x01	; 1
-  e4:	85 bb       	out	0x15, r24	; 21
+  f2:	81 e0       	ldi	r24, 0x01	; 1
+  f4:	85 bb       	out	0x15, r24	; 21
 	GPIO_InitPortDirection(PA,0xFF,0xFF);
-  e6:	4f ef       	ldi	r20, 0xFF	; 255
-  e8:	6f ef       	ldi	r22, 0xFF	; 255
-  ea:	80 e0       	ldi	r24, 0x00	; 0
-  ec:	0e 94 36 00 	call	0x6c	; 0x6c <GPIO_InitPortDirection>
+  f6:	4f ef       	ldi	r20, 0xFF	; 255
+  f8:	6f ef       	ldi	r22, 0xFF	; 255
+  fa:	80 e0       	ldi	r24, 0x00	; 0
+  fc:	0e 94 3e 00 	call	0x7c	; 0x7c <GPIO_InitPortDirection>
 	/* Enable SPI */
 	SPCR = (1<<SPE)|(1<<DORD)|(1<<SPIE);//interrupt enable DORD
-  f0:	80 ee       	ldi	r24, 0xE0	; 224
-  f2:	8d b9       	out	0x0d, r24	; 13
+ 100:	80 ee       	ldi	r24, 0xE0	; 224
+ 102:	8d b9       	out	0x0d, r24	; 13
 	sei();
-  f4:	78 94       	sei
-  f6:	08 95       	ret
+ 104:	78 94       	sei
+ 106:	08 95       	ret
 
-000000f8 <SPI_SlaveTransmit>:
+00000108 <SPI_SlaveTransmit>:
+	//GPIO_WritePort(PC,0xFF,0x00);
 }
 */
 void SPI_SlaveTransmit (u8 data)
 {
-	//PORTB &=~(1<<4);
+	SPCR &=~ (1<<7);
+ 108:	6f 98       	cbi	0x0d, 7	; 13
 	PORTC= 0x00;
-  f8:	15 ba       	out	0x15, r1	; 21
+ 10a:	15 ba       	out	0x15, r1	; 21
 	SPDR=data;
-  fa:	8f b9       	out	0x0f, r24	; 15
-	//PORTB = SPDR; for receiving
+ 10c:	8f b9       	out	0x0f, r24	; 15
 	while(!(SPSR &(1<<7)));
-  fc:	77 9b       	sbis	0x0e, 7	; 14
-  fe:	fe cf       	rjmp	.-4      	; 0xfc <SPI_SlaveTransmit+0x4>
-	//PORTB |=(1<<4);
+ 10e:	77 9b       	sbis	0x0e, 7	; 14
+ 110:	fe cf       	rjmp	.-4      	; 0x10e <SPI_SlaveTransmit+0x6>
+	//while (data_available !=1);
+	data_available =0;
+ 112:	10 92 60 00 	sts	0x0060, r1
 	PORTC= 0x01;
- 100:	81 e0       	ldi	r24, 0x01	; 1
- 102:	85 bb       	out	0x15, r24	; 21
- 104:	08 95       	ret
+ 116:	81 e0       	ldi	r24, 0x01	; 1
+ 118:	85 bb       	out	0x15, r24	; 21
+	PORTA =SPDR;
+ 11a:	8f b1       	in	r24, 0x0f	; 15
+ 11c:	8b bb       	out	0x1b, r24	; 27
+	//PORTA =SPDR;
+	SPCR |= (1<<7);
+ 11e:	6f 9a       	sbi	0x0d, 7	; 13
+ 120:	08 95       	ret
 
-00000106 <__vector_12>:
+00000122 <__vector_12>:
 }
 
 
 ISR (SPI_STC_vect)//receive
 {
- 106:	1f 92       	push	r1
- 108:	0f 92       	push	r0
- 10a:	0f b6       	in	r0, 0x3f	; 63
- 10c:	0f 92       	push	r0
- 10e:	11 24       	eor	r1, r1
- 110:	8f 93       	push	r24
-	//PORTA = SPDR;
+ 122:	1f 92       	push	r1
+ 124:	0f 92       	push	r0
+ 126:	0f b6       	in	r0, 0x3f	; 63
+ 128:	0f 92       	push	r0
+ 12a:	11 24       	eor	r1, r1
+ 12c:	8f 93       	push	r24
+	data_available =1;
+ 12e:	81 e0       	ldi	r24, 0x01	; 1
+ 130:	80 93 60 00 	sts	0x0060, r24
 	PORTA =SPDR;
- 112:	8f b1       	in	r24, 0x0f	; 15
- 114:	8b bb       	out	0x1b, r24	; 27
-	//SPI_MasterTransmit(data);
-	//PORTA = SPDR;
+ 134:	8f b1       	in	r24, 0x0f	; 15
+ 136:	8b bb       	out	0x1b, r24	; 27
+//	PORTC= 0x01;
 }
- 116:	8f 91       	pop	r24
- 118:	0f 90       	pop	r0
- 11a:	0f be       	out	0x3f, r0	; 63
- 11c:	0f 90       	pop	r0
- 11e:	1f 90       	pop	r1
- 120:	18 95       	reti
+ 138:	8f 91       	pop	r24
+ 13a:	0f 90       	pop	r0
+ 13c:	0f be       	out	0x3f, r0	; 63
+ 13e:	0f 90       	pop	r0
+ 140:	1f 90       	pop	r1
+ 142:	18 95       	reti
 
-00000122 <main>:
+00000144 <main>:
 	// GPIO_InitPortDirection(PD,0xFF,0xFF); 	
 	 //GPIO_InitPortDirection(PA,0xFF,0x00);
 	int data=0x05;
 	//PORTA= data;
 	//DDRA= 0xFF;
 	SPI_SlaveInit();
- 122:	0e 94 66 00 	call	0xcc	; 0xcc <SPI_SlaveInit>
+ 144:	0e 94 6e 00 	call	0xdc	; 0xdc <SPI_SlaveInit>
+	{
 		//GPIO_WritePort(PC,0xFF,data);
 		
 	// for(int i=0;i<10;i++){}
 		//for(int i=0;i<10;i++){}
-		//SPI_SlaveTransmit(5);
+		SPI_SlaveTransmit(5);
+ 148:	85 e0       	ldi	r24, 0x05	; 5
+ 14a:	0e 94 84 00 	call	0x108	; 0x108 <SPI_SlaveTransmit>
+		//PORTC= 0x01;
 		SPI_SlaveTransmit(2);
- 126:	82 e0       	ldi	r24, 0x02	; 2
- 128:	0e 94 7c 00 	call	0xf8	; 0xf8 <SPI_SlaveTransmit>
- 12c:	fc cf       	rjmp	.-8      	; 0x126 <main+0x4>
+ 14e:	82 e0       	ldi	r24, 0x02	; 2
+ 150:	0e 94 84 00 	call	0x108	; 0x108 <SPI_SlaveTransmit>
+ 154:	f9 cf       	rjmp	.-14     	; 0x148 <main+0x4>
 
-0000012e <_exit>:
- 12e:	f8 94       	cli
+00000156 <_exit>:
+ 156:	f8 94       	cli
 
-00000130 <__stop_program>:
- 130:	ff cf       	rjmp	.-2      	; 0x130 <__stop_program>
+00000158 <__stop_program>:
+ 158:	ff cf       	rjmp	.-2      	; 0x158 <__stop_program>

@@ -34,7 +34,8 @@ int main(void)
 		
 	// for(int i=0;i<10;i++){}
 		//for(int i=0;i<10;i++){}
-		//SPI_SlaveTransmit(5);
+		SPI_SlaveTransmit(5);
+		//PORTC= 0x01;
 		SPI_SlaveTransmit(2);
 		
 		
