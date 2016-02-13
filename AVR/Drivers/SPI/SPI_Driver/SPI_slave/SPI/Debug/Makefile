@@ -39,7 +39,8 @@ SUBDIRS :=
 C_SRCS +=  \
 ../GPIO.c \
 ../SPI.c \
-../SPI_Lcfg.c
+../SPI_Lcfg.c \
+../SPI_SLAVE.c
 
 
 PREPROCESSING_SRCS += 
@@ -51,22 +52,26 @@ ASM_SRCS +=
 OBJS +=  \
 GPIO.o \
 SPI.o \
-SPI_Lcfg.o
+SPI_Lcfg.o \
+SPI_SLAVE.o
 
 OBJS_AS_ARGS +=  \
 GPIO.o \
 SPI.o \
-SPI_Lcfg.o
+SPI_Lcfg.o \
+SPI_SLAVE.o
 
 C_DEPS +=  \
 GPIO.d \
 SPI.d \
-SPI_Lcfg.d
+SPI_Lcfg.d \
+SPI_SLAVE.d
 
 C_DEPS_AS_ARGS +=  \
 GPIO.d \
 SPI.d \
-SPI_Lcfg.d
+SPI_Lcfg.d \
+SPI_SLAVE.d
 
 OUTPUT_FILE_PATH +=SPI.elf
 
@@ -82,6 +87,8 @@ LINKER_SCRIPT_DEP+=
 
 
 # AVR32/GNU C Compiler
+
+
 
 
 

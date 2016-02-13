@@ -8,3 +8,5 @@ SPI.c
 
 SPI_Lcfg.c
 
+SPI_SLAVE.c
+

@@ -23,8 +23,8 @@ typedef struct
 	u32 u32MaxFreq;
 	u8 u8Mode;
 	u8 u8DataOrder;
-	u8 u8Master_OR_SLAVE;
-	u8 ENABLE_INTERRUPT_OR_NOT;
+	//u8 u8Master_OR_SLAVE;
+	//u8 ENABLE_INTERRUPT_OR_NOT;
 }SPI_ConfigType;
 
 extern const SPI_ConfigType SPI_InitConfig;

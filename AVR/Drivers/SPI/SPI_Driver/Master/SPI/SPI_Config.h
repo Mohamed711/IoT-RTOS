@@ -42,10 +42,11 @@
 
 #define SPI_INT_EN		0x80		//Enable execution of SPI interrupt 
 #define SPI_EN			0x40		//SPI Enabled
+#define SPI_INT_Disable		0x00
 
 
-//#define SPI_MSTR_OR_SLAVE SPI_MASTER_EN
-//#define ENABLE_INTERRUPT_OR_NOT SPI_INT_EN
+#define Master_Or_Slave			SPI_MASTER_EN
+#define ENABLE_INTERRUPT_OR_NOT SPI_INT_EN	
 
 #define SPI_INT_FL		0x80		//SPI Interrupt Flag 
 #define SPI_DOUBLE_SP	0x01		//?Double SPI Speed Bit for Master
