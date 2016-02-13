@@ -19,9 +19,9 @@
 #define MCUCR_REG		*((u8 volatile *const)0x55)
 
 //for interrupt
-#define INT_1 0x07
-#define ISC_11 0x03
-#define ISC_10 0x02
+#define INT_1 0x80
+#define ISC_11 0x08
+#define ISC_10 0x04
 #define SPIF 0x80
 //SCK rate for Mater
 #define PRESCALAR_NUM	0x07
@@ -43,6 +43,7 @@
 #define SPI_INT_EN		0x80		//Enable execution of SPI interrupt 
 #define SPI_EN			0x40		//SPI Enabled
 #define SPI_INT_Disable		0x00
+
 
 #define Master_Or_Slave			SPI_SLAVE_EN
 #define ENABLE_INTERRUPT_OR_NOT SPI_INT_EN	

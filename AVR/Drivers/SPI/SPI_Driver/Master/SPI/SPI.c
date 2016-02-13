@@ -49,8 +49,10 @@ void SPI_Init(void)
 		sei();
 		GPIO_InitPortDirection(PD,0x00,0x08);	//for INT1
 		//DDRD=0x00;
+		GICR_REG =0x00;
 		GICR_REG |=(INT_1); //enable external interrupt of INT1
-		MCUCR_REG &=~(ISC_10); // enable interrupt on negative edge of INT1
+		MCUCR_REG=0x00;
+	//	MCUCR_REG &=~(ISC_10); // enable interrupt on negative edge of INT1
 		MCUCR_REG |= (ISC_11) ;
 		//SPCR_REG &= ~(ENABLE_INTERRUPT_OR_NOT); //to disable spi interrupt
 		#else 
