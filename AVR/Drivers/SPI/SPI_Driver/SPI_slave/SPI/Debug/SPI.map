@@ -14,54 +14,29 @@ Discarded input sections
  .text          0x00000000        0x0 GPIO.o
  .data          0x00000000        0x0 GPIO.o
  .bss           0x00000000        0x0 GPIO.o
- .text.GPIO_InitPortDirection
-                0x00000000       0x60 GPIO.o
  .text.GPIO_WritePort
                 0x00000000       0x60 GPIO.o
  .text.GPIO_ReadPort
                 0x00000000       0x2c GPIO.o
- .debug_info    0x00000000      0x157 GPIO.o
- .debug_abbrev  0x00000000       0xa7 GPIO.o
- .debug_loc     0x00000000      0x2b0 GPIO.o
- .debug_aranges
-                0x00000000       0x30 GPIO.o
- .debug_ranges  0x00000000       0x20 GPIO.o
- .debug_line    0x00000000       0xd8 GPIO.o
- .debug_str     0x00000000      0x1c6 GPIO.o
- .comment       0x00000000       0x31 GPIO.o
- .debug_frame   0x00000000       0x44 GPIO.o
  .text          0x00000000        0x0 SPI.o
  .data          0x00000000        0x0 SPI.o
  .bss           0x00000000        0x0 SPI.o
- .text.SPI_vidInit
-                0x00000000      0x11a SPI.o
  .text.SPI_MasterTransmit
                 0x00000000        0x8 SPI.o
  .text.SPI_SlaveTransmit
-                0x00000000       0x28 SPI.o
+                0x00000000       0x16 SPI.o
  .text.SPI_Tranceiver
                 0x00000000        0xc SPI.o
  .text.SPI_SlaveReceive
                 0x00000000        0xa SPI.o
- .bss.With_Or_Without_Interrupt
-                0x00000000        0x1 SPI.o
- .bss.Master_Or_Slave
-                0x00000000        0x1 SPI.o
  .bss.u8LoopCount
                 0x00000000        0x1 SPI.o
  .text          0x00000000        0x0 SPI_Lcfg.o
  .data          0x00000000        0x0 SPI_Lcfg.o
  .bss           0x00000000        0x0 SPI_Lcfg.o
- .rodata.clk    0x00000000       0x23 SPI_Lcfg.o
- .rodata.SPI_InitConfig
-                0x00000000        0x8 SPI_Lcfg.o
- .debug_info    0x00000000      0x12c SPI_Lcfg.o
- .debug_abbrev  0x00000000       0x8c SPI_Lcfg.o
- .debug_aranges
-                0x00000000       0x18 SPI_Lcfg.o
- .debug_line    0x00000000       0x49 SPI_Lcfg.o
- .debug_str     0x00000000      0x1bb SPI_Lcfg.o
- .comment       0x00000000       0x31 SPI_Lcfg.o
+ .text          0x00000000        0x0 SPI_SLAVE.o
+ .data          0x00000000        0x0 SPI_SLAVE.o
+ .bss           0x00000000        0x0 SPI_SLAVE.o
  .text          0x00000000        0x0 e:/atmel toolchain/avr8 gcc/native/3.4.1061/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
  .data          0x00000000        0x0 e:/atmel toolchain/avr8 gcc/native/3.4.1061/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
  .bss           0x00000000        0x0 e:/atmel toolchain/avr8 gcc/native/3.4.1061/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
@@ -130,6 +105,7 @@ LOAD e:/atmel toolchain/avr8 gcc/native/3.4.1061/avr8-gnu-toolchain/bin/../lib/g
 LOAD GPIO.o
 LOAD SPI.o
 LOAD SPI_Lcfg.o
+LOAD SPI_SLAVE.o
 START GROUP
 LOAD e:/atmel toolchain/avr8 gcc/native/3.4.1061/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libm.a
 END GROUP
@@ -229,7 +205,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000       0xfe
+.text           0x00000000      0x218
  *(.vectors)
  .vectors       0x00000000       0x7c e:/atmel toolchain/avr8 gcc/native/3.4.1061/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5/crtm324a.o
                 0x00000000                __vector_default
@@ -317,17 +293,25 @@ END GROUP
                 0x000000b6                __vector_20
                 0x000000ba                . = ALIGN (0x2)
  *(.text.*)
+ .text.GPIO_InitPortDirection
+                0x000000ba       0x60 GPIO.o
+                0x000000ba                GPIO_InitPortDirection
+ .text.SPI_Init
+                0x0000011a       0xb4 SPI.o
+                0x0000011a                SPI_Init
  .text.__vector_2
-                0x000000ba       0x24 SPI.o
-                0x000000ba                __vector_2
+                0x000001ce       0x24 SPI.o
+                0x000001ce                __vector_2
  .text.__vector_19
-                0x000000de       0x1c SPI.o
-                0x000000de                __vector_19
-                0x000000fa                . = ALIGN (0x2)
+                0x000001f2       0x1c SPI.o
+                0x000001f2                __vector_19
+ .text.main     0x0000020e        0x6 SPI_SLAVE.o
+                0x0000020e                main
+                0x00000214                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x000000fa        0x0 e:/atmel toolchain/avr8 gcc/native/3.4.1061/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
-                0x000000fa                _exit
-                0x000000fa                exit
+ .fini9         0x00000214        0x0 e:/atmel toolchain/avr8 gcc/native/3.4.1061/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
+                0x00000214                _exit
+                0x00000214                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -346,36 +330,42 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x000000fa        0x4 e:/atmel toolchain/avr8 gcc/native/3.4.1061/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
+ .fini0         0x00000214        0x4 e:/atmel toolchain/avr8 gcc/native/3.4.1061/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
  *(.fini0)
-                0x000000fe                _etext = .
+                0x00000218                _etext = .
 
-.data           0x00800100        0x0 load address 0x000000fe
+.data           0x00800100       0x2a load address 0x00000218
                 0x00800100                PROVIDE (__data_start, .)
  *(.data)
  *(.data*)
  *(.rodata)
  *(.rodata*)
+ .rodata.clk    0x00800100       0x23 SPI_Lcfg.o
+                0x00800100                clk
+ .rodata.SPI_InitConfig
+                0x00800123        0x6 SPI_Lcfg.o
+                0x00800123                SPI_InitConfig
  *(.gnu.linkonce.d*)
-                0x00800100                . = ALIGN (0x2)
-                0x00800100                _edata = .
-                0x00800100                PROVIDE (__data_end, .)
+                0x0080012a                . = ALIGN (0x2)
+ *fill*         0x00800129        0x1 
+                0x0080012a                _edata = .
+                0x0080012a                PROVIDE (__data_end, .)
 
-.bss            0x00800100        0x0
-                0x00800100                PROVIDE (__bss_start, .)
+.bss            0x0080012a        0x0
+                0x0080012a                PROVIDE (__bss_start, .)
  *(.bss)
  *(.bss*)
  *(COMMON)
-                0x00800100                PROVIDE (__bss_end, .)
-                0x000000fe                __data_load_start = LOADADDR (.data)
-                0x000000fe                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x0080012a                PROVIDE (__bss_end, .)
+                0x00000218                __data_load_start = LOADADDR (.data)
+                0x00000242                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x00800060        0x0
-                0x00800060                PROVIDE (__noinit_start, .)
+.noinit         0x0080012a        0x0
+                0x0080012a                PROVIDE (__noinit_start, .)
  *(.noinit*)
-                0x00800060                PROVIDE (__noinit_end, .)
-                0x00800060                _end = .
-                0x00800060                PROVIDE (__heap_start, .)
+                0x0080012a                PROVIDE (__noinit_end, .)
+                0x0080012a                _end = .
+                0x0080012a                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000        0x0
  *(.eeprom*)
@@ -416,8 +406,11 @@ END GROUP
 
 .comment        0x00000000       0x30
  *(.comment)
- .comment       0x00000000       0x30 SPI.o
+ .comment       0x00000000       0x30 GPIO.o
                                  0x31 (size before relaxing)
+ .comment       0x00000000       0x31 SPI.o
+ .comment       0x00000000       0x31 SPI_Lcfg.o
+ .comment       0x00000000       0x31 SPI_SLAVE.o
 
 .note.gnu.build-id
  *(.note.gnu.build-id)
@@ -434,38 +427,62 @@ END GROUP
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x00000000       0x50
+.debug_aranges  0x00000000       0xb8
  *(.debug_aranges)
  .debug_aranges
-                0x00000000       0x50 SPI.o
+                0x00000000       0x30 GPIO.o
+ .debug_aranges
+                0x00000030       0x50 SPI.o
+ .debug_aranges
+                0x00000080       0x18 SPI_Lcfg.o
+ .debug_aranges
+                0x00000098       0x20 SPI_SLAVE.o
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000      0x2b9
+.debug_info     0x00000000      0x5ae
  *(.debug_info .gnu.linkonce.wi.*)
- .debug_info    0x00000000      0x2b9 SPI.o
+ .debug_info    0x00000000      0x157 GPIO.o
+ .debug_info    0x00000157      0x2a7 SPI.o
+ .debug_info    0x000003fe      0x110 SPI_Lcfg.o
+ .debug_info    0x0000050e       0xa0 SPI_SLAVE.o
 
-.debug_abbrev   0x00000000      0x155
+.debug_abbrev   0x00000000      0x30f
  *(.debug_abbrev)
- .debug_abbrev  0x00000000      0x155 SPI.o
+ .debug_abbrev  0x00000000       0xa7 GPIO.o
+ .debug_abbrev  0x000000a7      0x164 SPI.o
+ .debug_abbrev  0x0000020b       0x8c SPI_Lcfg.o
+ .debug_abbrev  0x00000297       0x78 SPI_SLAVE.o
 
-.debug_line     0x00000000      0x14b
+.debug_line     0x00000000      0x2ad
  *(.debug_line .debug_line.* .debug_line_end)
- .debug_line    0x00000000      0x14b SPI.o
+ .debug_line    0x00000000       0xd8 GPIO.o
+ .debug_line    0x000000d8      0x14e SPI.o
+ .debug_line    0x00000226       0x49 SPI_Lcfg.o
+ .debug_line    0x0000026f       0x3e SPI_SLAVE.o
 
-.debug_frame    0x00000000       0xa4
+.debug_frame    0x00000000      0x10c
  *(.debug_frame)
- .debug_frame   0x00000000       0xa4 SPI.o
+ .debug_frame   0x00000000       0x44 GPIO.o
+ .debug_frame   0x00000044       0xa4 SPI.o
+ .debug_frame   0x000000e8       0x24 SPI_SLAVE.o
 
-.debug_str      0x00000000      0x276
+.debug_str      0x00000000      0x28f
  *(.debug_str)
- .debug_str     0x00000000      0x276 SPI.o
-                                0x2aa (size before relaxing)
+ .debug_str     0x00000000      0x185 GPIO.o
+                                0x1cc (size before relaxing)
+ .debug_str     0x00000185       0xe4 SPI.o
+                                0x259 (size before relaxing)
+ .debug_str     0x00000269       0x10 SPI_Lcfg.o
+                                0x197 (size before relaxing)
+ .debug_str     0x00000279       0x16 SPI_SLAVE.o
+                                0x143 (size before relaxing)
 
-.debug_loc      0x00000000       0xd2
+.debug_loc      0x00000000      0x3ad
  *(.debug_loc)
- .debug_loc     0x00000000       0xd2 SPI.o
+ .debug_loc     0x00000000      0x2b0 GPIO.o
+ .debug_loc     0x000002b0       0xfd SPI.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -485,9 +502,11 @@ END GROUP
 .debug_pubtypes
  *(.debug_pubtypes)
 
-.debug_ranges   0x00000000       0x40
+.debug_ranges   0x00000000       0x70
  *(.debug_ranges)
- .debug_ranges  0x00000000       0x40 SPI.o
+ .debug_ranges  0x00000000       0x20 GPIO.o
+ .debug_ranges  0x00000020       0x40 SPI.o
+ .debug_ranges  0x00000060       0x10 SPI_SLAVE.o
 
 .debug_macro
  *(.debug_macro)

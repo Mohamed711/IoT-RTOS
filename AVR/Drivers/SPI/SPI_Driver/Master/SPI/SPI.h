@@ -13,8 +13,8 @@
 #include "avr/interrupt.h"
 #include "GPIO.h"
 
-void SPI_MasterInit(void);
-void SPI_SlaveInit(void);
+void SPI_Init(void);
+//void SPI_SlaveInit(void);
 void SPI_MasterTransmit(u8 data);	//for both with and without interrupt
 void SPI_SlaveTransmit(u8 data);	//with interrupt
 void SPI_MasterReceive();			//with interrupt

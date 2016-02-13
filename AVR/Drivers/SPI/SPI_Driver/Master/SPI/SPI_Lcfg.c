@@ -5,9 +5,7 @@ const SPI_ConfigType SPI_InitConfig =
 {
 	75000000UL,
 	u8MODE_1,
-	u8DOR_MSB,
-	SPI_MASTER_EN,
-	SPI_INT_EN
+	u8DOR_MSB
 };
 
 
