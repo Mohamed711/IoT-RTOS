@@ -22,7 +22,7 @@
 #define INT_1 0x80
 #define ISC_10 0x04
 #define ISC_11 0x08
-#define SPIF 0x80
+#define SPIF_0 0x80
 //SCK rate for Mater
 #define PRESCALAR_NUM	0x07
 
@@ -46,7 +46,7 @@
 
 
 #define Master_Or_Slave			SPI_MASTER_EN
-#define ENABLE_INTERRUPT_OR_NOT SPI_INT_EN	
+#define ENABLE_INTERRUPT_OR_NOT SPI_INT_EN
 
 //#define SPI_INT_FL		0x80		//SPI Interrupt Flag 
 #define SPI_DOUBLE_SP	0x01		//?Double SPI Speed Bit for Master

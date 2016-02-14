@@ -1,9 +1,9 @@
 ﻿
 #include "SPI_Lcfg.h"
 
-const SPI_ConfigType SPI_InitConfig = 
+const SPI_ConfigType SPI_InitConfig =
 {
-	75000000UL,
+	7500000UL,
 	u8MODE_1,
 	u8DOR_MSB
 };
