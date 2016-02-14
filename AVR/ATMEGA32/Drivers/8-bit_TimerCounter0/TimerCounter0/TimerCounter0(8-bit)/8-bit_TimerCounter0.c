@@ -11,22 +11,29 @@
 #include "8-bit_TimerCounter0_CFG.h"
 #include "avr/interrupt.h"
 
-uint8_t time;
+
 
 void TimerCounter0_Init (void)
-{			
-	if((WGM01_VALUE==0) && (WGM00_VALUE==0)) //NORMAL
-	{
-		TCNT0 &= 0x00;//0x83;		
-	}
-	else if ((WGM01_VALUE==1) && (WGM00_VALUE==0)) //CTC
-	{
-		TCNT0 &=0x00;
-		OCR0 = 0x00;
-		//OCR0 = 0x3E;	
-	}
-	TCCR0 = (CS00_VALUE<<CS00)|(CS01_VALUE<<CS01)|(CS02_VALUE<<CS02)|(WGM01_VALUE<<WGM01)|(WGM00_VALUE<<WGM00)|(COM00_VALUE<<COM00)|(COM01_VALUE<<COM01);
-	GPIO_InitPortDirection(PB, 0xFF,0xFF);
+{		
+	TCCR0 |= (((MODE.MODE_NORMAL_CTC & 0x02)>>1)<<WGM01) | ((MODE.MODE_NORMAL_CTC & 0x01)<<WGM00);
+	//TCCR0 = 0x03;
+	TCCR0 |= (COM00_VALUE<<COM00)|(COM01_VALUE<<COM01);
+	
+	//TCCR0 = (COM00_VALUE<<COM00)|(COM01_VALUE<<COM01);
+	//TCCR0 = (MODE.MODE_NORMAL_CTC & 0b10)<<3 | (MODE.MODE_NORMAL_CTC & 0b01)<<6; 
+	//TCCR0 = (CS00_VALUE<<CS00)|(CS01_VALUE<<CS01)|(CS02_VALUE<<CS02)|(WGM01_VALUE<<WGM01)|(WGM00_VALUE<<WGM00)|(COM00_VALUE<<COM00)|(COM01_VALUE<<COM01);
+	//if((WGM01_VALUE==0) && (WGM00_VALUE==0)) //NORMAL
+	//{
+		//TCNT0 &= 0x00;//0x83;		
+	//}
+	//else if ((WGM01_VALUE==1) && (WGM00_VALUE==0)) //CTC
+	//{
+		//TCNT0 &=0x00;
+		//OCR0 = 0xFF;
+		////OCR0 = 0x3E;	
+	//}
+	//
+	//GPIO_InitPortDirection(PB, 0xFF,0xFF);
 }
 
 uint8_t TimerCounter0_Read()
@@ -34,62 +41,68 @@ uint8_t TimerCounter0_Read()
 	return TCNT0;
 }
 
-void delay_NORMAL_milli (int t)
+void delay_ms (uint16_t delay)
 {	
-	TimerCounter0_Init();
-	for (int i=0 ; i<t ; i++)
+	//TimerCounter0_Init();
+	TCCR0 |= (CS00_VALUE<<CS00)|(CS01_VALUE<<CS01)|(CS02_VALUE<<CS02)|(WGM01_VALUE<<WGM01)|(WGM00_VALUE<<WGM00)|(COM00_VALUE<<COM00)|(COM01_VALUE<<COM01); 
+	uint16_t i;
+	for (i=0 ; i < (4 * delay) ; i++)
 	{
-		TCNT0=0x83;
+		TCNT0=0;
 		//TimerCounter0_Init();
-		while((TIFR&0x01)==0)
-			{GPIO_WritePort(PB, TCNT0, 0xFF);}
+		//while((TIFR&0x01)==0)
+		//for(uint16_t x=0 ; x<4 ; x++)
+		
+			//TCNT0=0x00;
+			while(TCNT0 <= 250)
+			;//{GPIO_WritePort(PB, TCNT0, 0xFF);}
 		//TCCR0=0;
+		//TIFR = 0x01;
 		//TCNT0=0x00;
-		TIFR = 0x01;
+				
 	}
-	TCCR0=0x00;
+	//TCCR0=0x00;
 	
 }
 
-void delay_CTC_milli (int t)
+void delay1ms(uint16_t delay)
 {
 	TimerCounter0_Init();
-	for (int i=0 ; i<t ; i++)
+	u8 u8LoopCounter;
+	u32 x;
+	//double y;
+	for(u8LoopCounter=0; u8LoopCounter< PRESCALAR_NUM ; u8LoopCounter++)
 	{
-		TCNT0=0x00;
-		while((TIFR&0x02)==0)
-			{GPIO_WritePort(PB, TCNT0, 0xFF);}
-		//TCCR0=0;
-		//TCNT0=0x00;
-		TIFR = 0x02;
+		//y = 1/(clk[u8LoopCounter].u32TempFreq);
+		//x = (0.001/y);
+		x = 0.001*(clk[u8LoopCounter].u32TempFreq);
+		//x = (clk[u8LoopCounter].u32TempFreq)/1000;
+		if (x < 256)
+		{
+			TCCR0 |= ((clk[u8LoopCounter].u8RegVal) &0x07);
+			break;
+		}
+		
 	}
-	TCCR0=0x00;
+	//GPIO_InitPortDirection(PB, 0xFF,0xFF);
+	//GPIO_WritePort(PB, x, 0xFF);
+	u16 i;
+	for (i=0 ; i < delay ; i++)
+	{
+		//TCNT0 = 0x00;
+		//while(TCNT0 <= (x)); //clk[u8LoopCounter].u32TempFreq);
+		if(MODE.MODE_NORMAL_CTC == u8_MODE_NORMAL)
+		{
+			TCNT0 = 256 - x;
+			while ((TIFR&0x01)==0);
+			TIFR = 0x01;
+		}		
+		else if (MODE.MODE_NORMAL_CTC == u8_MODE_CTC)
+		{ 
+			 TCNT0 = 0;
+			 OCR0 = x-1;
+			 while ((TIFR&0x02)==0);
+			 TIFR = 0x02;
+		}
+	}
 }
-
-void delay_us(unsigned short time_us)
- {
-	 TimerCounter0_Init();
-	         unsigned short delay_loops;
-	         register unsigned short i;
-	
-	         delay_loops = (time_us+3)/5*CYCLES_PER_US; // +3 for rounding up (dirty)
-	
-	         // one loop takes 5 cpu cycles
-         for (i=0; i < delay_loops; i++) {};
- }
- void delay_ms(unsigned char time_ms)
-  {
-	  TimerCounter0_Init();
-        unsigned short delay_count = F_CPU / 8000;
-        unsigned short cnt;
-        asm volatile ("\n"
-                  "L_dl1%=:\n\t"
-                  "mov %A0, %A2\n\t"
-                  "mov %B0, %B2\n"
-                  "L_dl2%=:\n\t"
-                  "sbiw %A0, 1\n\t"
-                  "brne L_dl2%=\n\t"
-                  "dec %1\n\t" "brne L_dl1%=\n\t":"=&w" (cnt)
-                  :"r"(time_ms), "r"((unsigned short) (delay_count))
-        );
-  }

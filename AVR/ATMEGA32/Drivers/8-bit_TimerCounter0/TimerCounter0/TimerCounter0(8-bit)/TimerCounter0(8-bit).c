@@ -12,15 +12,15 @@
 
 int main(void)
 {
-	GPIO_InitPortDirection(PD,0xFF,0x01);
+	GPIO_InitPortDirection(PC,0x01,0x01);
+	//TimerCounter0_Init();
     while(1)
     {	
-		GPIO_WritePort(PD,0x01,0x01); 
-		//delay_CTC_milli(100);
-		//delay_us(1000000);
-		delay_ms(2000);
-		GPIO_WritePort(PD,0x00,0x01);
-		//delay_CTC_milli(100);
-		delay_ms(2000);
+		GPIO_WritePort(PC,0x01,0x01); 
+		//delay_ms(1);
+		delay1ms(10);
+		GPIO_WritePort(PC,0x00,0x01);
+		//delay_ms(1);
+		delay1ms(10);
     }
 }
