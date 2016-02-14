@@ -5,7 +5,7 @@
     <ProjectVersion>6.2</ProjectVersion>
     <ToolchainName>com.Atmel.AVRGCC8.C</ToolchainName>
     <ProjectGuid>{05b2782d-fba7-4cfb-a87d-4cedb0c582b3}</ProjectGuid>
-    <avrdevice>ATmega324A</avrdevice>
+    <avrdevice>ATmega32A</avrdevice>
     <avrdeviceseries>none</avrdeviceseries>
     <OutputType>Executable</OutputType>
     <Language>C</Language>
@@ -40,15 +40,18 @@
     </AsfFrameworkConfig>
     <avrtool>com.atmel.avrdbg.tool.simulator</avrtool>
     <com_atmel_avrdbg_tool_simulator>
-      <ToolOptions xmlns="">
+      <ToolOptions>
         <InterfaceProperties>
         </InterfaceProperties>
+        <InterfaceName>
+        </InterfaceName>
       </ToolOptions>
-      <ToolType xmlns="">com.atmel.avrdbg.tool.simulator</ToolType>
-      <ToolNumber xmlns="">
+      <ToolType>com.atmel.avrdbg.tool.simulator</ToolType>
+      <ToolNumber>
       </ToolNumber>
-      <ToolName xmlns="">Simulator</ToolName>
+      <ToolName>Simulator</ToolName>
     </com_atmel_avrdbg_tool_simulator>
+    <avrtoolinterface />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>

@@ -54,10 +54,11 @@ void SPI_Init(void)
 		MCUCR_REG |= (ISC_11) ;
 		//SPCR_REG &= ~(ENABLE_INTERRUPT_OR_NOT); //to disable spi interrupt
 		#else 
+		SPCR_REG |=  ENABLE_INTERRUPT_OR_NOT ;
 		sei();
 		GPIO_InitPortDirection(PC,0x01,0x01);	//responsible for interrupt of INT1
 		//DDRC=0x01;
-		SPCR_REG |=  ENABLE_INTERRUPT_OR_NOT ;
+		
 		#endif
 	#endif
 }
@@ -65,14 +66,14 @@ void SPI_Init(void)
 void SPI_MasterTransmit (u8 data)
 {
 	SPDR_REG=data;
-	while(!(SPSR_REG & SPIF));
+	while(!(SPSR_REG & SPIF_0));
 }
 
 
 ISR (INT1_vect)  //receive of Master with interrupt
 {
 	SPDR_REG = 0xFF;//garbage
-	while(!(SPSR_REG & SPIF));
+	while(!(SPSR_REG & SPIF_0));
 	PORTA =SPDR_REG;
 }
 
@@ -81,7 +82,7 @@ void SPI_SlaveTransmit (u8 data)
 	SPCR_REG &=~ ENABLE_INTERRUPT_OR_NOT;
 	PORTC= 0x00;
 	SPDR_REG=data;
-	while(!(SPSR_REG & SPIF));
+	while(!(SPSR_REG & SPIF_0));
 	//data_available =0;
 	PORTC= 0x01;
 	PORTA =SPDR_REG;
@@ -95,14 +96,14 @@ ISR (SPI_STC_vect)//receive for slave
 }
 
 
-void SPI_Tranceiver(u8 data)
+u8 SPI_Tranceiver(u8 data)
 {
 	SPDR_REG =data;
-	while(!(SPSR_REG & SPIF));
-	PORTA =SPDR_REG;
+	while(!(SPSR_REG & SPIF_0));
+	return SPDR_REG;
 }
-void SPI_SlaveReceive()
+u8 SPI_SlaveReceive()
 {
-	while(!(SPSR_REG & SPIF));
-	PORTA=SPDR_REG;
+	while(!(SPSR_REG & SPIF_0));
+	return SPDR_REG;
 }
