@@ -13,14 +13,14 @@
 int main(void)
 {
 	GPIO_InitPortDirection(PC,0x01,0x01);
-	//TimerCounter0_Init();
+	TimerInit();
     while(1)
     {	
 		GPIO_WritePort(PC,0x01,0x01); 
 		//delay_ms(1);
-		delay1ms(10);
+		delay1ms(100);
 		GPIO_WritePort(PC,0x00,0x01);
 		//delay_ms(1);
-		delay1ms(10);
+		delay1ms(100);
     }
 }
