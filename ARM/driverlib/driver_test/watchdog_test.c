@@ -1,4 +1,3 @@
-<<<<<<< HEAD:tivaC/driverlib/driver_test/watchdog_test.c
 /*
  * watchdog_test.c
  *
