@@ -1,0 +1,310 @@
+
+******************************************************************************
+                  TI ARM Linker PC v5.2.2                      
+******************************************************************************
+>> Linked Thu Feb 11 16:34:19 2016
+
+OUTPUT FILE NAME:   <IoT_RTOS.out>
+ENTRY POINT SYMBOL: "_c_int00"  address: 00000b71
+
+
+MEMORY CONFIGURATION
+
+         name            origin    length      used     unused   attr    fill
+----------------------  --------  ---------  --------  --------  ----  --------
+  FLASH                 00000000   00040000  00000e30  0003f1d0  R  X
+  SRAM                  20000000   00008000  00000480  00007b80  RW X
+
+
+SEGMENT ALLOCATION MAP
+
+run origin  load origin   length   init length attrs members
+----------  ----------- ---------- ----------- ----- -------
+00000000    00000000    00000e30   00000e30    r-x
+  00000000    00000000    0000026c   0000026c    r-- .intvecs
+  0000026c    0000026c    00000a80   00000a80    r-x .text
+  00000cec    00000cec    0000010c   0000010c    r-- .const
+  00000df8    00000df8    00000038   00000038    r-- .cinit
+20000000    20000000    00000480   00000000    rw-
+  20000000    20000000    0000026c   00000000    rw- .vtable
+  2000026c    2000026c    00000200   00000000    rw- .stack
+  2000046c    2000046c    00000014   00000000    rw- .data
+
+
+SECTION ALLOCATION MAP
+
+ output                                  attributes/
+section   page    origin      length       input sections
+--------  ----  ----------  ----------   ----------------
+.intvecs   0    00000000    0000026c     
+                  00000000    0000026c     tm4c123gh6pm_startup_ccs.obj (.intvecs)
+
+.text      0    0000026c    00000a80     
+                  0000026c    000003c0     interrupt.obj (.text)
+                  0000062c    00000188     watchdog.obj (.text)
+                  000007b4    0000014c     watchdog_test.obj (.text)
+                  00000900    0000009c     rtsv7M4_T_le_v4SPD16_eabi.lib : memcpy_t2.obj (.text)
+                  0000099c    00000080     main.obj (.text)
+                  00000a1c    0000007a     rtsv7M4_T_le_v4SPD16_eabi.lib : memset_t2.obj (.text)
+                  00000a96    00000002     --HOLE-- [fill = 0]
+                  00000a98    0000006c                                   : autoinit.obj (.text)
+                  00000b04    0000006a                                   : copy_decompress_rle.obj (.text)
+                  00000b6e    00000002     --HOLE-- [fill = 0]
+                  00000b70    00000050                                   : boot.obj (.text)
+                  00000bc0    0000004c                                   : cpy_tbl.obj (.text)
+                  00000c0c    00000044                                   : exit.obj (.text)
+                  00000c50    0000003e     cpu.obj (.text)
+                  00000c8e    00000002     --HOLE-- [fill = 0]
+                  00000c90    00000018     rtsv7M4_T_le_v4SPD16_eabi.lib : args_main.obj (.text)
+                  00000ca8    00000014                                   : _lock.obj (.text)
+                  00000cbc    0000000e                                   : copy_decompress_none.obj (.text:decompress:none)
+                  00000cca    0000000c                                   : copy_zero_init.obj (.text:decompress:ZI)
+                  00000cd6    0000000c     tm4c123gh6pm_startup_ccs.obj (.text)
+                  00000ce2    00000006     rtsv7M4_T_le_v4SPD16_eabi.lib : copy_decompress_rle.obj (.text:decompress:rle24)
+                  00000ce8    00000004                                   : pre_init.obj (.text)
+
+.const     0    00000cec    0000010c     
+                  00000cec    0000009c     interrupt.obj (.const:g_pui32Regs)
+                  00000d88    00000070     interrupt.obj (.const)
+
+.cinit     0    00000df8    00000038     
+                  00000df8    0000000f     (.cinit..data.load) [load image, compression = rle]
+                  00000e07    00000001     --HOLE-- [fill = 0]
+                  00000e08    0000000c     (__TI_handler_table)
+                  00000e14    00000004     --HOLE-- [fill = 0]
+                  00000e18    00000008     (.cinit..vtable.load) [load image, compression = zero_init]
+                  00000e20    00000010     (__TI_cinit_table)
+
+.init_array 
+*          0    00000000    00000000     UNINITIALIZED
+
+.vtable    0    20000000    0000026c     UNINITIALIZED
+                  20000000    0000026c     interrupt.obj (.vtable)
+
+.stack     0    2000026c    00000200     UNINITIALIZED
+                  2000026c    00000200     --HOLE--
+
+.data      0    2000046c    00000014     UNINITIALIZED
+                  2000046c    00000008     rtsv7M4_T_le_v4SPD16_eabi.lib : _lock.obj (.data)
+                  20000474    00000008                                   : exit.obj (.data)
+                  2000047c    00000004                                   : stkdepth_vars.obj (.data)
+
+.TI.persistent 
+*          0    2000046c    00000000     UNINITIALIZED
+
+
+LINKER GENERATED COPY TABLES
+
+__TI_cinit_table @ 00000e20 records: 2, size/record: 8, table size: 16
+	.data: load addr=00000df8, load size=0000000f bytes, run addr=2000046c, run size=00000014 bytes, compression=rle
+	.vtable: load addr=00000e18, load size=00000008 bytes, run addr=20000000, run size=0000026c bytes, compression=zero_init
+
+
+LINKER GENERATED HANDLER TABLE
+
+__TI_handler_table @ 00000e08 records: 3, size/record: 4, table size: 12
+	index: 0, handler: __TI_zero_init
+	index: 1, handler: __TI_decompress_rle24
+	index: 2, handler: __TI_decompress_none
+
+
+GLOBAL SYMBOLS: SORTED ALPHABETICALLY BY Name 
+
+address   name                    
+-------   ----                    
+00000c0d  C$$EXIT                 
+00000c85  CPUbasepriGet           
+00000c77  CPUbasepriSet           
+00000c51  CPUcpsid                
+00000c67  CPUcpsie                
+00000c5d  CPUprimask              
+00000c73  CPUwfi                  
+0000042d  IntDisable              
+000003bb  IntEnable               
+0000049f  IntIsEnabled            
+0000027f  IntMasterDisable        
+0000026f  IntMasterEnable         
+00000595  IntPendClear            
+00000525  IntPendSet              
+00000397  IntPriorityGet          
+0000030f  IntPriorityGroupingGet  
+000002f5  IntPriorityGroupingSet  
+000005ef  IntPriorityMaskGet      
+000005e3  IntPriorityMaskSet      
+00000347  IntPrioritySet          
+0000028f  IntRegister             
+000005f7  IntTrigger              
+000002e1  IntUnregister           
+000009ab  PortF_Init              
+00000cd7  ResetISR                
+UNDEFED   SHT$$INIT_ARRAY$$Base   
+UNDEFED   SHT$$INIT_ARRAY$$Limit  
+00000869  WDT_INTTest             
+000008a3  WDT_ON                  
+0000081b  WDT_ResetTest           
+00000643  WatchdogEnable          
+00000755  WatchdogIntClear        
+00000721  WatchdogIntEnable       
+000006f9  WatchdogIntRegister     
+00000737  WatchdogIntStatus       
+00000765  WatchdogIntTypeSet      
+0000070f  WatchdogIntUnregister   
+00000685  WatchdogLock            
+000006a9  WatchdogLockState       
+000006dd  WatchdogReloadGet       
+000006cb  WatchdogReloadSet       
+0000066f  WatchdogResetDisable    
+00000659  WatchdogResetEnable     
+0000062d  WatchdogRunning         
+00000799  WatchdogStallDisable    
+00000781  WatchdogStallEnable     
+00000697  WatchdogUnlock          
+000006eb  WatchdogValueGet        
+2000046c  __STACK_END             
+00000200  __STACK_SIZE            
+2000046c  __STACK_TOP             
+00000e20  __TI_CINIT_Base         
+00000e30  __TI_CINIT_Limit        
+00000e08  __TI_Handler_Table_Base 
+00000e14  __TI_Handler_Table_Limit
+00000a99  __TI_auto_init          
+20000474  __TI_cleanup_ptr        
+00000cbd  __TI_decompress_none    
+00000ce3  __TI_decompress_rle24   
+20000478  __TI_dtors_ptr          
+00000000  __TI_static_base__      
+00000ccb  __TI_zero_init          
+00000a1d  __aeabi_memclr          
+00000a1d  __aeabi_memclr4         
+00000a1d  __aeabi_memclr8         
+00000901  __aeabi_memcpy          
+00000901  __aeabi_memcpy4         
+00000901  __aeabi_memcpy8         
+00000a1f  __aeabi_memset          
+00000a1f  __aeabi_memset4         
+00000a1f  __aeabi_memset8         
+ffffffff  __binit__               
+ffffffff  __c_args__              
+2000026c  __stack                 
+00000c91  _args_main              
+00000b71  _c_int00                
+2000046c  _lock                   
+00000cb7  _nop                    
+00000caf  _register_lock          
+00000ca9  _register_unlock        
+00000ce9  _system_pre_init        
+20000470  _unlock                 
+00000c11  abort                   
+ffffffff  binit                   
+00000bc1  copy_in                 
+000007b5  delay                   
+00000c19  exit                    
+20000000  g_pfnRAMVectors         
+00000000  g_pfnVectors            
+0000099d  main                    
+2000047c  main_func_sp            
+00000901  memcpy                  
+00000a25  memset                  
+000007f3  watchDogInterrupt       
+
+
+GLOBAL SYMBOLS: SORTED BY Symbol Address 
+
+address   name                    
+-------   ----                    
+00000000  __TI_static_base__      
+00000000  g_pfnVectors            
+00000200  __STACK_SIZE            
+0000026f  IntMasterEnable         
+0000027f  IntMasterDisable        
+0000028f  IntRegister             
+000002e1  IntUnregister           
+000002f5  IntPriorityGroupingSet  
+0000030f  IntPriorityGroupingGet  
+00000347  IntPrioritySet          
+00000397  IntPriorityGet          
+000003bb  IntEnable               
+0000042d  IntDisable              
+0000049f  IntIsEnabled            
+00000525  IntPendSet              
+00000595  IntPendClear            
+000005e3  IntPriorityMaskSet      
+000005ef  IntPriorityMaskGet      
+000005f7  IntTrigger              
+0000062d  WatchdogRunning         
+00000643  WatchdogEnable          
+00000659  WatchdogResetEnable     
+0000066f  WatchdogResetDisable    
+00000685  WatchdogLock            
+00000697  WatchdogUnlock          
+000006a9  WatchdogLockState       
+000006cb  WatchdogReloadSet       
+000006dd  WatchdogReloadGet       
+000006eb  WatchdogValueGet        
+000006f9  WatchdogIntRegister     
+0000070f  WatchdogIntUnregister   
+00000721  WatchdogIntEnable       
+00000737  WatchdogIntStatus       
+00000755  WatchdogIntClear        
+00000765  WatchdogIntTypeSet      
+00000781  WatchdogStallEnable     
+00000799  WatchdogStallDisable    
+000007b5  delay                   
+000007f3  watchDogInterrupt       
+0000081b  WDT_ResetTest           
+00000869  WDT_INTTest             
+000008a3  WDT_ON                  
+00000901  __aeabi_memcpy          
+00000901  __aeabi_memcpy4         
+00000901  __aeabi_memcpy8         
+00000901  memcpy                  
+0000099d  main                    
+000009ab  PortF_Init              
+00000a1d  __aeabi_memclr          
+00000a1d  __aeabi_memclr4         
+00000a1d  __aeabi_memclr8         
+00000a1f  __aeabi_memset          
+00000a1f  __aeabi_memset4         
+00000a1f  __aeabi_memset8         
+00000a25  memset                  
+00000a99  __TI_auto_init          
+00000b71  _c_int00                
+00000bc1  copy_in                 
+00000c0d  C$$EXIT                 
+00000c11  abort                   
+00000c19  exit                    
+00000c51  CPUcpsid                
+00000c5d  CPUprimask              
+00000c67  CPUcpsie                
+00000c73  CPUwfi                  
+00000c77  CPUbasepriSet           
+00000c85  CPUbasepriGet           
+00000c91  _args_main              
+00000ca9  _register_unlock        
+00000caf  _register_lock          
+00000cb7  _nop                    
+00000cbd  __TI_decompress_none    
+00000ccb  __TI_zero_init          
+00000cd7  ResetISR                
+00000ce3  __TI_decompress_rle24   
+00000ce9  _system_pre_init        
+00000e08  __TI_Handler_Table_Base 
+00000e14  __TI_Handler_Table_Limit
+00000e20  __TI_CINIT_Base         
+00000e30  __TI_CINIT_Limit        
+20000000  g_pfnRAMVectors         
+2000026c  __stack                 
+2000046c  __STACK_END             
+2000046c  __STACK_TOP             
+2000046c  _lock                   
+20000470  _unlock                 
+20000474  __TI_cleanup_ptr        
+20000478  __TI_dtors_ptr          
+2000047c  main_func_sp            
+ffffffff  __binit__               
+ffffffff  __c_args__              
+ffffffff  binit                   
+UNDEFED   SHT$$INIT_ARRAY$$Base   
+UNDEFED   SHT$$INIT_ARRAY$$Limit  
+
+[94 symbols]
