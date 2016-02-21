@@ -18,7 +18,7 @@
  *  The function is a busy waiting delay according to the
  *  x value
  */
-void delay(uint32_t x)
+void static delay(uint32_t x)
 {
 	uint32_t i,j;
 	for (i = 0 ; i < x ; i++)
