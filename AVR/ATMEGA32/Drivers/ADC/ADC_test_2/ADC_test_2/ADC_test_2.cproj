@@ -107,6 +107,12 @@
     <Compile Include="ADC\GPIO.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="ADC\HAL_ADC_AVR.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ADC\HAL_ADC_AVR.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="ADC\StdTypes.h">
       <SubType>compile</SubType>
     </Compile>

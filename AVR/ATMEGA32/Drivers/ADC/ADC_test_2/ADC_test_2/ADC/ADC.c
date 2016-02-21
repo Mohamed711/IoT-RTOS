@@ -1,19 +1,12 @@
 
 #include "ADC.h"
-#include "GPIO.h"
-#include "ADC_Lcfg.h"
-#include "ADC_CFG.h"
-
-#include <avr/io.h>
-#include <avr/interrupt.h>
-
 
 #if ADC_JUSTIFY == 'L'
 static volatile u8 ADC_result;
 #elif ADC_JUSTIFY == 'R'
 static volatile u16 ADC_result;
 #endif
-
+u8  enable_interrupt;
 void adc_off(void)
 {
 	// disable interrupt
@@ -22,18 +15,18 @@ void adc_off(void)
 	ADCSRA &= (0 << ADEN);
 }
 
-void adc_init(void) 
+void adc_init(u8 voltage_ref_sel , u8 enable_interrupt_, u8 trigger , u8 channel,u32 u32MaxFreq ) 
 {
 	// 1)Set ADC reference
-	
-	ADMUX |= (  (( (ADC_volt_CH_config.voltage_ref_sel)&0x02)>>1)<<REFS1 )| (((ADC_volt_CH_config.voltage_ref_sel)&0x01)<<REFS0 ) ;
+	enable_interrupt=enable_interrupt_;
+	ADMUX |= (  (( (voltage_ref_sel)&0x02)>>1)<<REFS1 )| (((voltage_ref_sel)&0x01)<<REFS0 ) ;
 		
 	// 2) Get the most suitable pre-scalar 
 	
 	u8 u8LoopCount;
 	for( u8LoopCount = 0; u8LoopCount < PRESCALAR_NUM ;u8LoopCount++)
 	{
-		if(clk[u8LoopCount].u32TempFreq < micro_freq.u32MaxFreq )
+		if(clk[u8LoopCount].u32TempFreq < u32MaxFreq )
 		{
 			break;
 		}
@@ -44,6 +37,8 @@ void adc_init(void)
 	
     
 	
+
+	
 	// i only support right adjust
 	// 3)Set ADC justify
 	#if ADC_JUSTIFY == 'L'
@@ -52,25 +47,35 @@ void adc_init(void)
 	ADMUX |= (0 << ADLAR); // Right adjust
 	#endif
 	
-	#if enable_interrupt == 1	
+	if( enable_interrupt == 1)
+	{	
     //4) Enable ADC Interrupt
 	ADCSRA |= (1 << ADIE);
 	//6) set global interrupt
 	sei();
-	#endif
-	
+	}	
+	// enable 
+	if(trigger != Free_Running_mode )
+	{	
+	ADCSRA |=(1<<ADATE);
+	}	
+	//8)set channel
+	ADMUX |=((channel)&0x1F);
 	//5) Enable ADC
 	ADCSRA |= (1 << ADEN);
 	
-	#if enable_interrupt == 1	
-	//8)set channel
-	ADMUX |=((ADC_volt_CH_config.channel)&0x1F);
+	if( enable_interrupt == 1)	
+	{
+		
+	
 	//7) Start conversions single conversion
 	ADCSRA |= (1 << ADSC);
-	#endif
-	
+	}	
+	//set trigger
+	SFIOR |= ((trigger)&07)<<5;
+	//_delay_ms(25);
 }
-#if enable_interrupt == 1
+//#if enable_interrupt == 1
 ISR(ADC_vect)
 {  
 	 #if ADC_JUSTIFY == 'R'
@@ -86,21 +91,29 @@ ISR(ADC_vect)
 	ADCSRA |= (1 << ADSC);
 
 }
-#endif
+//#endif
 
 
 u16 ADC_u16_result()
 {  
-	#if enable_interrupt == 0
+	if( enable_interrupt == 0)
+	{
+		
+	
 	//ADMUX=(ADMUX & 0xE0); // clear channel
-	ADMUX |=((ADC_volt_CH_config.channel)&0x1F);
+	//ADMUX |=((ADC_volt_CH_config.channel)&0x1F);
+	
 	//7) Start conversions single conversion
+	//_delay_ms(30);
 	ADCSRA |= (1 << ADSC);
-	 while(ADCSRA & (1<<ADSC));
+	// while(ADCSRA & (1<<ADSC));
+	 while(!(ADCSRA & (1<<ADIF)));
+	
 	 ADC_result = ADCL;
 	 ADC_result |= ADCH<<8;
 	
-     #endif
+	 ADCSRA|=(1<<ADIF);
+	}     
 
     return ADC_result;	
 	
@@ -110,15 +123,20 @@ u16 ADC_u16_result()
 
 u8 ADC_u8_result()
 {
-	#if enable_interrupt == 0
+	if( enable_interrupt == 0)
+	{
+		
+	
 	//ADMUX=(ADMUX & 0xE0); // clear channel
-	ADMUX |=((ADC_volt_CH_config.channel)&0x1F);
+	//ADMUX |=((ADC_volt_CH_config.channel)&0x1F);
+	//_delay_ms(100);
 	//7) Start conversions single conversion
 	ADCSRA |= (1 << ADSC);
-	while(ADCSRA & (1<<ADSC));
-	
-	ADC_result =ADCH;
-	
-	#endif
+	//_delay_ms(100);
+	//while(ADCSRA & (1<<ADSC));
+	while(!(ADCSRA & (1<<ADIF)));
+	ADC_result = ADCH;
+	 ADCSRA|=(1<<ADIF);
+	}		
 	return ADC_result;
 }

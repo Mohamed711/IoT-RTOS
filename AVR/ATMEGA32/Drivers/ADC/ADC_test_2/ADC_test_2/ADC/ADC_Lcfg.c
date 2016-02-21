@@ -10,9 +10,9 @@
 const ADC_Config_Voltage_reference_and_CH_selection ADC_volt_CH_config =
 {
 	
-   AREF_Internal_Vref_turned_off,
-	 ch_ADC0  ,
-	 
+   Internal_2_dot_56V_Voltage_Reference_with_external_cap_at_AREF_pin ,
+	 ch_ADC3_ADC2_1x,
+	 Free_Running_mode,
 };
 const CLK_Rate clk[7] =
 {

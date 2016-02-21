@@ -54,19 +54,19 @@
 #define ch_ADC1_ADC1_1x 0b10001
 #define ch_ADC2_ADC1_1x 0b10010
 #define ch_ADC3_ADC1_1x 0b10011
-#define ch_ADC4_ADC1_1x ob10100
+#define ch_ADC4_ADC1_1x 0b10100
 #define ch_ADC5_ADC1_1x 0b10101
 #define ch_ADC6_ADC1_1x 0b10110
-#define ch_ADC7_ADC1_1x ob10111
+#define ch_ADC7_ADC1_1x 0b10111
 
-#define ch_ADC0_ADC2_1x ob11000
-#define ch_ADC1_ADC2_1x ob11001
-#define ch_ADC2_ADC2_1x ob11010
-#define ch_ADC3_ADC2_1x ob11011
-#define ch_ADC4_ADC2_1x ob11100
-#define ch_ADC5_ADC2_1x ob11101
-#define ch_122v ob11110
-#define ch_0v ob11111
+#define ch_ADC0_ADC2_1x 0b11000
+#define ch_ADC1_ADC2_1x 0b11001
+#define ch_ADC2_ADC2_1x 0b11010
+#define ch_ADC3_ADC2_1x 0b11011
+#define ch_ADC4_ADC2_1x 0b11100
+#define ch_ADC5_ADC2_1x 0b11101
+#define ch_122v 0b11110
+#define ch_0v 0b11111
 
 
 
@@ -75,10 +75,16 @@
 #define AREF_Internal_Vref_turned_off  0x00
 #define AVCC_with_external_capacitor_at_AREF_pin  0x01
 #define Internal_2_dot_56V_Voltage_Reference_with_external_cap_at_AREF_pin  0x03
+// ADC Auto trigger Source Selection
 
-#define Right_JUSTIFY 0x00
-#define Left_JUSTIFY  0x01 
-//#define ADC_JUSTIFY Left_JUSTIFY
+#define Free_Running_mode 0b000
+#define Analog_comparator 0b001
+#define Eternal_Interrupt_Request0 0b010
+#define Timer_conter0_compare_match 0b011
+#define Timer_conter0_overflow 0b100
+#define Timer_conter1_compare_match_B 0b101
+#define Timer_conter1_overflow  0b110
+#define Timer_conter0_capture_Event 0b111
 
 
 

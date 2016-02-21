@@ -15,6 +15,7 @@ typedef struct
 {
 	 u8 voltage_ref_sel ;
 	 u8 channel;
+	 u8 trigger;
 }ADC_Config_Voltage_reference_and_CH_selection ;
 
 typedef struct

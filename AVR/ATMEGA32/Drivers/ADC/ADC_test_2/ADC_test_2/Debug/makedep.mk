@@ -10,3 +10,5 @@ ADC\ADC_main.c
 
 ADC\GPIO.c
 
+ADC\HAL_ADC_AVR.c
+
