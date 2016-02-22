@@ -88,6 +88,9 @@
     <Compile Include="GPIO.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="HAL.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="StdTypes.h">
       <SubType>compile</SubType>
     </Compile>

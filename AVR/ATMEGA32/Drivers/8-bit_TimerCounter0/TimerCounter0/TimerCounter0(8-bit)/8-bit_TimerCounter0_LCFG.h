@@ -42,4 +42,6 @@ typedef struct
 
 extern const TimerMODE MODE; 
 
+
+
 #endif /* TIMERCOUNTER0_LCFG_H_ */

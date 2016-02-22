@@ -37,5 +37,5 @@ const CLK_RATE1ms clk1ms [5] =
 
 const TimerMODE MODE = 
 {
-	u8_MODE_NORMAL,
+	u8_MODE_CTC,
 };
