@@ -21,6 +21,22 @@ void main()
 		//PORTA=SPI_Tranceiver(7);
 		GPIO_WritePort(PA,SPI_Tranceiver(7),0xFF);
 		GPIO_WritePort(PA,SPI_Tranceiver(8),0xFF);
+		//PORTA=SPI_Tranceiver(8);
+		//PORTA=SPI_SlaveReceive();
+		//PORTA=SPI_SlaveReceive();
+	//	PORTA=SPI_Tranceiver(5);
+	//	PORTA=SPI_Tranceiver(8);
+		//PORTA=SPI_SlaveReceive();
 		
+		//SPI_SlaveTransmit(7);
+	//	PORTA=SPI_DATA;
+	//PORTA=SPI_Tranceiver(2);
+	
+	//PORTA=SPI_Tranceiver(5);
+	
+//	PORTA=SPI_Tranceiver(7);
+	//PORTA=SPI_Tranceiver(4);
+	//SPI_SlaveTransmit(5);
+	//SPI_SlaveTransmit(2);
 	}
 }
