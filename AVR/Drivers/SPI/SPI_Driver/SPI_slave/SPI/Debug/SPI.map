@@ -7,6 +7,11 @@ e:/atmel toolchain/avr8 gcc/native/3.4.1061/avr8-gnu-toolchain/bin/../lib/gcc/av
 e:/atmel toolchain/avr8 gcc/native/3.4.1061/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_clear_bss.o)
                               SPI.o (__do_clear_bss)
 
+Allocating common symbols
+Common symbol       size              file
+
+SPI_DATA            0x1               SPI_SLAVE.o
+
 Discarded input sections
 
  .data          0x00000000        0x0 e:/atmel toolchain/avr8 gcc/native/3.4.1061/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5/crtm32a.o
@@ -14,8 +19,6 @@ Discarded input sections
  .text          0x00000000        0x0 GPIO.o
  .data          0x00000000        0x0 GPIO.o
  .bss           0x00000000        0x0 GPIO.o
- .text.GPIO_WritePort
-                0x00000000       0x60 GPIO.o
  .text.GPIO_ReadPort
                 0x00000000       0x2c GPIO.o
  .text          0x00000000        0x0 SPI.o
@@ -24,9 +27,7 @@ Discarded input sections
  .text.SPI_MasterTransmit
                 0x00000000        0x8 SPI.o
  .text.SPI_SlaveTransmit
-                0x00000000       0x16 SPI.o
- .text.SPI_Tranceiver
-                0x00000000        0xa SPI.o
+                0x00000000       0x24 SPI.o
  .text.SPI_SlaveReceive
                 0x00000000        0x8 SPI.o
  .bss.u8LoopCount
@@ -204,7 +205,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0x1fa
+.text           0x00000000      0x270
  *(.vectors)
  .vectors       0x00000000       0x54 e:/atmel toolchain/avr8 gcc/native/3.4.1061/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5/crtm32a.o
                 0x00000000                __vector_default
@@ -285,22 +286,28 @@ END GROUP
  .text.GPIO_InitPortDirection
                 0x00000092       0x60 GPIO.o
                 0x00000092                GPIO_InitPortDirection
+ .text.GPIO_WritePort
+                0x000000f2       0x60 GPIO.o
+                0x000000f2                GPIO_WritePort
  .text.SPI_Init
-                0x000000f2       0xb4 SPI.o
-                0x000000f2                SPI_Init
+                0x00000152       0x9c SPI.o
+                0x00000152                SPI_Init
  .text.__vector_2
-                0x000001a6       0x24 SPI.o
-                0x000001a6                __vector_2
+                0x000001ee       0x26 SPI.o
+                0x000001ee                __vector_2
  .text.__vector_12
-                0x000001ca       0x1c SPI.o
-                0x000001ca                __vector_12
- .text.main     0x000001e6       0x10 SPI_SLAVE.o
-                0x000001e6                main
-                0x000001f6                . = ALIGN (0x2)
+                0x00000214       0x1e SPI.o
+                0x00000214                __vector_12
+ .text.SPI_Tranceiver
+                0x00000232        0xa SPI.o
+                0x00000232                SPI_Tranceiver
+ .text.main     0x0000023c       0x30 SPI_SLAVE.o
+                0x0000023c                main
+                0x0000026c                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x000001f6        0x0 e:/atmel toolchain/avr8 gcc/native/3.4.1061/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
-                0x000001f6                _exit
-                0x000001f6                exit
+ .fini9         0x0000026c        0x0 e:/atmel toolchain/avr8 gcc/native/3.4.1061/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
+                0x0000026c                _exit
+                0x0000026c                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -319,11 +326,11 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x000001f6        0x4 e:/atmel toolchain/avr8 gcc/native/3.4.1061/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
+ .fini0         0x0000026c        0x4 e:/atmel toolchain/avr8 gcc/native/3.4.1061/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
  *(.fini0)
-                0x000001fa                _etext = .
+                0x00000270                _etext = .
 
-.data           0x00800060       0x2a load address 0x000001fa
+.data           0x00800060       0x2a load address 0x00000270
                 0x00800060                PROVIDE (__data_start, .)
  *(.data)
  *(.data*)
@@ -340,21 +347,23 @@ END GROUP
                 0x0080008a                _edata = .
                 0x0080008a                PROVIDE (__data_end, .)
 
-.bss            0x0080008a        0x0
+.bss            0x0080008a        0x1
                 0x0080008a                PROVIDE (__bss_start, .)
  *(.bss)
  *(.bss*)
  *(COMMON)
-                0x0080008a                PROVIDE (__bss_end, .)
-                0x000001fa                __data_load_start = LOADADDR (.data)
-                0x00000224                __data_load_end = (__data_load_start + SIZEOF (.data))
+ COMMON         0x0080008a        0x1 SPI_SLAVE.o
+                0x0080008a                SPI_DATA
+                0x0080008b                PROVIDE (__bss_end, .)
+                0x00000270                __data_load_start = LOADADDR (.data)
+                0x0000029a                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x0080008a        0x0
-                0x0080008a                PROVIDE (__noinit_start, .)
+.noinit         0x0080008b        0x0
+                0x0080008b                PROVIDE (__noinit_start, .)
  *(.noinit*)
-                0x0080008a                PROVIDE (__noinit_end, .)
-                0x0080008a                _end = .
-                0x0080008a                PROVIDE (__heap_start, .)
+                0x0080008b                PROVIDE (__noinit_end, .)
+                0x0080008b                _end = .
+                0x0080008b                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000        0x0
  *(.eeprom*)
@@ -430,26 +439,26 @@ END GROUP
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000      0x5f2
+.debug_info     0x00000000      0x693
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x00000000      0x157 GPIO.o
- .debug_info    0x00000157      0x2af SPI.o
- .debug_info    0x00000406      0x110 SPI_Lcfg.o
- .debug_info    0x00000516       0xdc SPI_SLAVE.o
+ .debug_info    0x00000157      0x2ab SPI.o
+ .debug_info    0x00000402      0x110 SPI_Lcfg.o
+ .debug_info    0x00000512      0x181 SPI_SLAVE.o
 
-.debug_abbrev   0x00000000      0x351
+.debug_abbrev   0x00000000      0x39e
  *(.debug_abbrev)
  .debug_abbrev  0x00000000       0xa7 GPIO.o
  .debug_abbrev  0x000000a7      0x182 SPI.o
  .debug_abbrev  0x00000229       0x8c SPI_Lcfg.o
- .debug_abbrev  0x000002b5       0x9c SPI_SLAVE.o
+ .debug_abbrev  0x000002b5       0xe9 SPI_SLAVE.o
 
-.debug_line     0x00000000      0x2d1
+.debug_line     0x00000000      0x288
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x00000000       0xd8 GPIO.o
- .debug_line    0x000000d8      0x150 SPI.o
- .debug_line    0x00000228       0x49 SPI_Lcfg.o
- .debug_line    0x00000271       0x60 SPI_SLAVE.o
+ .debug_line    0x000000d8       0xfb SPI.o
+ .debug_line    0x000001d3       0x49 SPI_Lcfg.o
+ .debug_line    0x0000021c       0x6c SPI_SLAVE.o
 
 .debug_frame    0x00000000      0x10c
  *(.debug_frame)
@@ -457,16 +466,16 @@ END GROUP
  .debug_frame   0x00000044       0xa4 SPI.o
  .debug_frame   0x000000e8       0x24 SPI_SLAVE.o
 
-.debug_str      0x00000000      0x28e
+.debug_str      0x00000000      0x2c6
  *(.debug_str)
  .debug_str     0x00000000      0x184 GPIO.o
                                 0x1cb (size before relaxing)
- .debug_str     0x00000184       0xe4 SPI.o
-                                0x258 (size before relaxing)
- .debug_str     0x00000268       0x10 SPI_Lcfg.o
-                                0x196 (size before relaxing)
- .debug_str     0x00000278       0x16 SPI_SLAVE.o
-                                0x18b (size before relaxing)
+ .debug_str     0x00000184      0x11c SPI.o
+                                0x24b (size before relaxing)
+ .debug_str     0x000002a0       0x10 SPI_Lcfg.o
+                                0x188 (size before relaxing)
+ .debug_str     0x000002b0       0x16 SPI_SLAVE.o
+                                0x1a4 (size before relaxing)
 
 .debug_loc      0x00000000      0x39f
  *(.debug_loc)
