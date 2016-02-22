@@ -19,4 +19,5 @@ void SPI_SlaveTransmit(u8 data);	//with interrupt
 u8 SPI_SlaveReceive();			//without interrupt
 u8 SPI_Tranceiver(u8 data);		//for Master and Slave with and without interrupt
 //u8 Data_Received();
+extern volatile u8 SPI_DATA ;
 #endif /* SPI_H_ */
