@@ -102,9 +102,19 @@ int main(void) {
 			{
 				currentTest = UART_TEST;
 			}
-			// receive a character from the user
-			// add one to the received character
-			// send it again
+			SSIConfigSetExpClk(SSI0_BASE, SysCtlClockGet(), SSI_FRF_MOTO_MODE_0,
+								SSI_MODE_SLAVE, 2000000, 8);
+						SSIEnable(SSI0_BASE);
+						// receive a character from the user
+						uint32_t data;
+						uint32_t *RxData;
+						SSIDataGet(SSI0_BASE, RxData);
+
+						// add one to the received character
+						data = *RxData;
+						data+=1;
+						// send it again
+						SSIDataPut(SSI0_BASE, data);
 		}
 
 		/////////// UART Test ////////////////
