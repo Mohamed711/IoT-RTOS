@@ -9,10 +9,10 @@
 #ifndef HAL_SPI_AVR_H_
 #define HAL_SPI_AVR_H_
 
-#include "GPIO.h"
+#include "DIO.h"
 #include "StdTypes.h"
 #include "SPI_Config.h"
-//#include "SPI.h"
+#include "SPI.h"
 
 typedef struct {
 	//u8 SPIData;

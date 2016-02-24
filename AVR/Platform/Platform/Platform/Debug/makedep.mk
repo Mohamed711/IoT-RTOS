@@ -18,3 +18,7 @@ LED\LED_Lcfg.c
 
 Platform.c
 
+SPI\HAL_SPI_AVR.c
+
+SPI\SPI.c
+

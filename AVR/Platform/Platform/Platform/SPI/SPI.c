@@ -7,7 +7,7 @@
 
 
 #include "SPI.h"
-//#include "GPIO.h"
+//#include "DIO.h"
 //#include "SPI_Lcfg.h"
 //#include "SPI_Config.h"
 //#include "HAL_SPI_AVR.h"
@@ -15,16 +15,16 @@
 
 
 static volatile u8 u8LoopCount;
-
+ volatile u8 SPI_DATA;
 void SPI_Init(u32 u32MaxFreq, u8 u8Mode, u8 u8DataOrder)
 {
 	u8 u8LoopCount;
 	#if (Master_Or_Slave == SPI_MASTER_EN)
-		GPIO_InitPortDirection(PB,0xB0,0xF0);// MOSI,MISO,SCK,SS Port direction
+		DIO_InitPortDirection(PB,0xB0,0xF0);// MOSI,MISO,SCK,SS Port direction
 	
 	#else
 		/* Set MISO output, all others input */
-		GPIO_InitPortDirection(PB,0x40,0xF0); //only MISO configured as op , others conf as ip
+		DIO_InitPortDirection(PB,0x40,0xF0); //only MISO configured as op , others conf as ip
 	
 	#endif
 	
@@ -49,9 +49,9 @@ void SPI_InterruptInit()
 		//with or without interrupt
 		#if (ENABLE_INTERRUPT_OR_NOT == SPI_INT_EN)  //enable interrupt
 		#if ( Master_Or_Slave == SPI_MASTER_EN)
-		//GPIO_InitPortDirection(PC,0xFF,0x01); //for INT1
+		//DIO_InitPortDirection(PC,0xFF,0x01); //for INT1
 		sei();
-		GPIO_InitPortDirection(PD,0x00,0x08);	//for INT1
+		DIO_InitPortDirection(PD,0x00,0x08);	//for INT1
 		//DDRD=0x00;
 		GICR_REG |=(INT_1); //enable external interrupt of INT1
 		MCUCR_REG &=~(ISC_10); // enable interrupt on negative edge of INT1
@@ -60,7 +60,7 @@ void SPI_InterruptInit()
 		#else
 		SPCR_REG |=  ENABLE_INTERRUPT_OR_NOT ;
 		sei();
-		GPIO_InitPortDirection(PC,0x01,0x01);	//responsible for interrupt of INT1
+		DIO_InitPortDirection(PC,0x01,0x01);	//responsible for interrupt of INT1
 		//PORTC= 0x01;
 		#endif
 		#endif
@@ -77,11 +77,11 @@ void SPI_Transmit(u8 data)
 	SPCR_REG &=~ ENABLE_INTERRUPT_OR_NOT;
 	SPDR_REG=data;
 	//PORTC= 0x00;
-	GPIO_InitPortDirection(PC,0x00,0x01);
+	DIO_InitPortDirection(PC,0x00,0x01);
 	while(!(SPSR_REG & SPIF_0));
 	//data_available =0;
 	//PORTC= 0x01;
-	GPIO_InitPortDirection(PC,0x01,0x01);
+	DIO_InitPortDirection(PC,0x01,0x01);
 	SPCR_REG |= ENABLE_INTERRUPT_OR_NOT;
 	#endif
 }
