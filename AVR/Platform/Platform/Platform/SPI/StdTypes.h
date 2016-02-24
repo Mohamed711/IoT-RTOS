@@ -10,6 +10,7 @@ typedef signed char s8;
 typedef signed short int s16;
 typedef signed long int	s32;
 
+#ifndef F_CPU
 #define F_CPU 8000000ul
-
+#endif
 #endif /* STDTYPES_H_ */

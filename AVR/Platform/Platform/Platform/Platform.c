@@ -14,6 +14,7 @@
 #include "LCD/LCD_Cfg.h"
 #include "LED/LED.h"
 #include "LED/LED_Cfg.h"
+#include "SPI/SPI.h"
 
 typedef enum {
 	GPIO_TEST,
@@ -107,6 +108,13 @@ int main(void)
 		//////////// SPI Test  ////////////////
 		else if (currentTest == SPI_TEST)
 		{
+			SPI_INITTypeDef spi ;
+			spi.u32MaxFreq=2000000UL;
+			spi.u8Mode=u8MODE_1;
+			spi.u8DataOrder=u8DOR_MSB;
+			SPI_HandleTypeDef SPIDATA;
+			DIO_InitPortDirection(PA,0xFF,0xFF);
+			HAL_SPI_Init( &spi);
 			if (Btn_Read(BTN_ID0) == BTN_ACTIVE)
 			{
 				currentTest = UART_TEST;
@@ -120,6 +128,9 @@ int main(void)
 			{
 				charSend += 1;
 				// send the char
+				SPIDATA.Txdata=2;
+				SPIDATA.Rxdata=HAL_SPI_Receive(&SPIDATA);
+				PORTA=SPIDATA.Rxdata;
 				lcd_gotoxy(1,5,LCD_ID0);
 				lcd_displayChar(charSend,LED_ID0);
 				// receive a character in the charReceived variable

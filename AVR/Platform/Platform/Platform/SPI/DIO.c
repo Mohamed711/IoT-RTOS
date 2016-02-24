@@ -1,11 +1,11 @@
-﻿#include "GPIO.h"
+﻿#include "DIO.h"
 
 #include <avr/io.h>
 
 #define WRITE_REG(Reg,Value,Mask) Reg&=~(Mask); Reg|=(Value & Mask)
 #define READ_REG(Reg,Mask) Reg & Mask
 
-void GPIO_InitPortDirection(u8 PortName,u8 PortDirection,u8 PortMask)
+void DIO_InitPortDirection(uint8_t PortName,uint8_t PortDirection,uint8_t PortMask)
 {
 	switch(PortName)
 	{
@@ -31,7 +31,7 @@ void GPIO_InitPortDirection(u8 PortName,u8 PortDirection,u8 PortMask)
 		break;
 	}	
 }
-void GPIO_WritePort(u8 PortName,u8 PortData,u8 PortMask)
+void DIO_WritePort(uint8_t PortName,uint8_t PortData,uint8_t PortMask)
 {
 	switch(PortName)
 	{
@@ -57,9 +57,9 @@ void GPIO_WritePort(u8 PortName,u8 PortData,u8 PortMask)
 		break;
 	}	
 }
-u8 GPIO_ReadPort(u8 PortName,u8 PortMask)
+uint8_t DIO_ReadPort(uint8_t PortName,uint8_t PortMask)
 {
-	u8 Data = 0;
+	uint8_t Data = 0;
 	switch(PortName)
 	{
 		case PA:
