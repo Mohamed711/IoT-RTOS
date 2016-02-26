@@ -4,8 +4,9 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "driverlib/watchdog.h"
+//#include "driverlib/watchdog.h"
 #include "inc/hw_memmap.h"
+#include"drivers/adc/ADC_HAL_TIVA.h"
 
 #define GPIO_PORTF_DATA_R       (*((volatile unsigned long *)0x400253FC))
 #define GPIO_PORTF_DIR_R        (*((volatile unsigned long *)0x40025400))
@@ -131,7 +132,39 @@ int main(void) {
 			}
 			float number;
 			// read the value of the adc and send it with UART
+
+			//SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_OSC_MAIN|SYSCTL_XTAL_16MHZ); //clock should be setup
+
+				typedef struct
+				{
+					uint32_t ADCn;
+					uint8_t seq;
+					uint32_t ADC_TRIGGER;
+					uint32_t prio;
+					uint32_t steps;
+					uint32_t src;
+					uint32_t * ui32ADCnValue;
+					bool diff;
+					}
+				ADC_InitTypeDef;
+
+
+					uint32_t result[4];
+					ADC_InitTypeDef mystruct={SYSCTL_PERIPH_ADC0,1,ADC_TRIGGER_PROCESSOR,0,4,ADC_CTL_TS,result,0}; //reading the temp sensor on board
+
+					 HAL_ADC_Init(&mystruct);
+					 HAL_ADC_read(&mystruct);
+
+					 //uint32_t value;
+					 number= (mystruct.ui32ADCnValue[0] + mystruct.ui32ADCnValue[1] +mystruct.ui32ADCnValue[2] + mystruct.ui32ADCnValue[3])/4 ; //averaging the seqeuncer values
+
+
+
+
+
 		}
+
+
 		/////////// AC Test   //////////////
 		else if (currentTest == AC_TEST)
 		{
