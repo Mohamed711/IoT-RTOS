@@ -15,6 +15,7 @@
 #include "LED/LED.h"
 #include "LED/LED_Cfg.h"
 #include "SPI/SPI.h"
+#include "UART/HAL_UART.h"
 
 typedef enum {
 	GPIO_TEST,
@@ -141,6 +142,21 @@ int main(void)
 		/////////// UART Test ////////////////
 		else if (currentTest == UART_TEST)
 		{
+			UART_HandleTypeDef UartHandle;
+			USART_CONFIG usart_init_config;
+			volatile unsigned char value;
+			
+			usart_init_config.Baud = 9600;
+			usart_init_config.DataBits = DATA_BIT_8;
+			usart_init_config.StopBits = STOP_BIT_1;
+			usart_init_config.Parity = PARITY_ODD;
+			usart_init_config.EnableInterrupt = 1;
+			usart_init_config.U2X_State = U2X_ENABLE;
+			
+			UartHandle.transmit_char = 'A';
+			
+			HAL_UART_Init(&usart_init_config);
+			
 			if (Btn_Read(BTN_ID0) == BTN_ACTIVE)
 			{
 				currentTest = ADC_TEST;
@@ -151,10 +167,16 @@ int main(void)
 			else if (Btn_Read(BTN_ID1) == BTN_ACTIVE)
 			{
 				charSend += 1;
+				
 				// send the char
+				HAL_UART_Transmit(&UartHandle);
+				
 				lcd_gotoxy(1,5,LCD_ID0);
 				lcd_displayChar(charSend,LED_ID0);
+				
 				// receive a character in the charReceived variable
+				charReceived = HAL_UART_Receive();
+				
 				lcd_gotoxy(1,15,LED_ID0);
 				lcd_displayChar(charReceived,LED_ID0);
 			}			
