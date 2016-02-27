@@ -38,6 +38,7 @@ C_SRCS +=  \
 ../8-bit_TimerCounter0.c \
 ../8-bit_TimerCounter0_LCFG.c \
 ../GPIO.c \
+../HAL_Timer_AVR.c \
 ../TimerCounter0(8-bit).c
 
 
@@ -51,6 +52,7 @@ OBJS +=  \
 8-bit_TimerCounter0.o \
 8-bit_TimerCounter0_LCFG.o \
 GPIO.o \
+HAL_Timer_AVR.o \
 TimerCounter0(8-bit).o
 
 
@@ -58,6 +60,7 @@ OBJS_AS_ARGS +=  \
 8-bit_TimerCounter0.o \
 8-bit_TimerCounter0_LCFG.o \
 GPIO.o \
+HAL_Timer_AVR.o \
 TimerCounter0(8-bit).o
 
 
@@ -65,6 +68,7 @@ C_DEPS +=  \
 8-bit_TimerCounter0.d \
 8-bit_TimerCounter0_LCFG.d \
 GPIO.d \
+HAL_Timer_AVR.d \
 TimerCounter0(8-bit).d
 
 
@@ -72,6 +76,7 @@ C_DEPS_AS_ARGS +=  \
 8-bit_TimerCounter0.d \
 8-bit_TimerCounter0_LCFG.d \
 GPIO.d \
+HAL_Timer_AVR.d \
 TimerCounter0(8-bit).d
 
 
@@ -84,6 +89,8 @@ ADDITIONAL_DEPENDENCIES:=
 OUTPUT_FILE_DEP:= ./makedep.mk
 
 # AVR32/GNU C Compiler
+
+
 
 
 

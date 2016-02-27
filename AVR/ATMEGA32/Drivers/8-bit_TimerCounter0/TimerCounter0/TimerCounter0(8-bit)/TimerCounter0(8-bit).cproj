@@ -88,7 +88,10 @@
     <Compile Include="GPIO.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HAL.h">
+    <Compile Include="HAL_Timer_AVR.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HAL_Timer_AVR.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="StdTypes.h">

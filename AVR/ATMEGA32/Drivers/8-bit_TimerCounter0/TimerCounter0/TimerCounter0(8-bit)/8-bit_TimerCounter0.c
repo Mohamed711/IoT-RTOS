@@ -18,7 +18,7 @@ static u32 count = 0;
 static u16 countCompare = 0;
 static u16 no_of_ticks = 0;
 
-void HAL_Timer_Init1ms ()
+void Timer0_Init1ms ()
 {		
 	sei();
 	TCCR0 = 0x00;
@@ -46,7 +46,7 @@ void HAL_Timer_Init1ms ()
 }
 
 
-void HAL_Timer_Start (u16 millis, FnPtr timeoutFn)
+void Timer0_Start (u16 millis, FnPtr timeoutFn)
 {
 	//TCNT0 = 0x00;
 	
@@ -64,7 +64,7 @@ uint8_t timer0_Read()
 	return TCNT0;
 }
 
-void HAL_Timer_delay1ms(u16 delay, FnPtr delayFn)
+void Timer0_delay1ms(u16 millis, FnPtr timeoutFn)
 {
 	//u8 u8LoopCounter;
 	//u16 x;
@@ -82,7 +82,7 @@ void HAL_Timer_delay1ms(u16 delay, FnPtr delayFn)
 	//}
 	//
 	u16 i;
-	for (i=0 ; i < delay ; i++)
+	for (i=0 ; i < millis ; i++)
 	{
 		if(MODE.MODE_NORMAL_CTC == u8_MODE_NORMAL)
 		{
@@ -98,7 +98,7 @@ void HAL_Timer_delay1ms(u16 delay, FnPtr delayFn)
 			 TIFR = 0x02;
 		}
 	}
-	delayFn();
+	timeoutFn();
 }
 
 
@@ -124,7 +124,7 @@ void setOCR0 (u8 OCR0_value)
 	OCR0 = OCR0_value - 1;
 }
 
-void timer0_stop()
+void Timer0_stop()
 {
 	TCCR0 |= (0<<CS02) | (0<<CS01) | (0<<CS00);
 }

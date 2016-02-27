@@ -9,6 +9,7 @@
 #include <avr/io.h>
 #include "GPIO.h"
 #include "8-bit_TimerCounter0.h"
+#include "HAL_Timer_AVR.h"
 
 void trial_fnON()
 {
@@ -24,7 +25,11 @@ int main(void)
 {
 	GPIO_InitPortDirection(PC,0x01,0x01);
 	//TimerInit();
-	HAL_Timer_Init1ms();
+	Timer_InitTypeDef timerInit;
+	Timer_HandleTypeDef timerHandle;
+	timerHandle.millis = 10;
+	
+	HAL_Timer_Init(&timerInit);
 	//HAL_Timer_Start (1000, trial_fnON);
 	//trial_fnOFF();
 	//HAL_Timer_Start (1000, trial_fnON);
@@ -32,9 +37,18 @@ int main(void)
     {	
 		//HAL_Timer_Start(1000,trial_fnON);
 		//int x=0;
-		HAL_Timer_delay1ms(1000,trial_fnON);
-		HAL_Timer_Init1ms(1000,trial_fnOFF);
-		HAL_Timer_delay1ms(1000,trial_fnON);
+		timerHandle.timeoutFn = trial_fnON;
+		HAL_Timer_Delay(&timerHandle);
+		timerHandle.timeoutFn = trial_fnOFF;
+		HAL_Timer_Delay(&timerHandle);
+		
+		
+		//HAL_Timer_delay1ms(1000,trial_fnON);
+		int x=1;
+		if (x==1)
+		{
+			
+		}
 		//GPIO_InitPortDirection(PC,0x2,0x02);
 		//GPIO_WritePort(PC,0x00,0x01);
 		//delay1ms(1000,trial_fnON);

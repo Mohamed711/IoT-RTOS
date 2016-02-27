@@ -14,13 +14,13 @@
 
 typedef void (*FnPtr)(void);
 
-void HAL_Timer_Init1ms ();
+void Timer0_Init1ms ();
 
 u8 timer0_Read();
 
 //void delay1ms(u16 delay);
-void HAL_Timer_delay1ms(u16 delay, FnPtr delayFn);
-void HAL_Timer_Start (u16 millis, FnPtr timeoutFn);
+void Timer0_delay1ms(u16 millis, FnPtr timeoutFn);
+void Timer0_Start (u16 millis, FnPtr timeoutFn);
 
 //void delay1us(u16 delay);
 
@@ -28,6 +28,7 @@ u8 timer0_readOVFFlag();
 
 void trial_fn();
 u8 timer0_readCMPFlag();
+void Timer0_stop();
 
 
 #endif /* TIMERCOUNTER0_H_ */

@@ -8,5 +8,7 @@
 
 GPIO.c
 
+HAL_Timer_AVR.c
+
 TimerCounter0(8-bit).c
 

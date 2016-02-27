@@ -3,29 +3,29 @@ TimerCounter0(8-bit).elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         000003c8  00000000  00000000  00000094  2**1
+  0 .text         0000040e  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         0000001a  00800060  000003c8  0000045c  2**0
+  1 .data         0000001a  00800060  0000040e  000004a2  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .bss          0000000a  0080007a  0080007a  00000476  2**0
+  2 .bss          0000000a  0080007a  0080007a  000004bc  2**0
                   ALLOC
-  3 .stab         000006cc  00000000  00000000  00000478  2**2
+  3 .stab         000006cc  00000000  00000000  000004bc  2**2
                   CONTENTS, READONLY, DEBUGGING
-  4 .stabstr      00000085  00000000  00000000  00000b44  2**0
+  4 .stabstr      00000085  00000000  00000000  00000b88  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_aranges 000000c0  00000000  00000000  00000bd0  2**3
+  5 .debug_aranges 000000e0  00000000  00000000  00000c10  2**3
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   000008a4  00000000  00000000  00000c90  2**0
+  6 .debug_info   00000ac3  00000000  00000000  00000cf0  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 000002fc  00000000  00000000  00001534  2**0
+  7 .debug_abbrev 0000042a  00000000  00000000  000017b3  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   000004eb  00000000  00000000  00001830  2**0
+  8 .debug_line   000005a1  00000000  00000000  00001bdd  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  000001a0  00000000  00000000  00001d1c  2**2
+  9 .debug_frame  00000204  00000000  00000000  00002180  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    0000035b  00000000  00000000  00001ebc  2**0
+ 10 .debug_str    000003e2  00000000  00000000  00002384  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    00000318  00000000  00000000  00002217  2**0
+ 11 .debug_loc    000003e0  00000000  00000000  00002766  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -65,8 +65,8 @@ Disassembly of section .text:
   60:	10 e0       	ldi	r17, 0x00	; 0
   62:	a0 e6       	ldi	r26, 0x60	; 96
   64:	b0 e0       	ldi	r27, 0x00	; 0
-  66:	e8 ec       	ldi	r30, 0xC8	; 200
-  68:	f3 e0       	ldi	r31, 0x03	; 3
+  66:	ee e0       	ldi	r30, 0x0E	; 14
+  68:	f4 e0       	ldi	r31, 0x04	; 4
   6a:	02 c0       	rjmp	.+4      	; 0x70 <__do_copy_data+0x10>
   6c:	05 90       	lpm	r0, Z+
   6e:	0d 92       	st	X+, r0
@@ -87,17 +87,17 @@ Disassembly of section .text:
   80:	a4 38       	cpi	r26, 0x84	; 132
   82:	b1 07       	cpc	r27, r17
   84:	e1 f7       	brne	.-8      	; 0x7e <.do_clear_bss_loop>
-  86:	0e 94 c7 01 	call	0x38e	; 0x38e <main>
-  8a:	0c 94 e2 01 	jmp	0x3c4	; 0x3c4 <_exit>
+  86:	0e 94 dd 01 	call	0x3ba	; 0x3ba <main>
+  8a:	0c 94 05 02 	jmp	0x40a	; 0x40a <_exit>
 
 0000008e <__bad_interrupt>:
   8e:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
 
-00000092 <HAL_Timer_Init1ms>:
+00000092 <Timer0_Init1ms>:
 static u16 countCompare = 0;
 static u16 no_of_ticks = 0;
 
-void HAL_Timer_Init1ms ()
+void Timer0_Init1ms ()
 {		
 	sei();
   92:	78 94       	sei
@@ -149,8 +149,8 @@ void HAL_Timer_Init1ms ()
 		if (no_of_ticks < 256)
   e8:	8f 3f       	cpi	r24, 0xFF	; 255
   ea:	91 05       	cpc	r25, r1
-  ec:	89 f0       	breq	.+34     	; 0x110 <HAL_Timer_Init1ms+0x7e>
-  ee:	80 f0       	brcs	.+32     	; 0x110 <HAL_Timer_Init1ms+0x7e>
+  ec:	89 f0       	breq	.+34     	; 0x110 <Timer0_Init1ms+0x7e>
+  ee:	80 f0       	brcs	.+32     	; 0x110 <Timer0_Init1ms+0x7e>
   f0:	e6 e6       	ldi	r30, 0x66	; 102
   f2:	f0 e0       	ldi	r31, 0x00	; 0
   f4:	81 e0       	ldi	r24, 0x01	; 1
@@ -167,11 +167,11 @@ void HAL_Timer_Init1ms ()
 		if (no_of_ticks < 256)
   fe:	2f 3f       	cpi	r18, 0xFF	; 255
  100:	31 05       	cpc	r19, r1
- 102:	09 f0       	breq	.+2      	; 0x106 <HAL_Timer_Init1ms+0x74>
- 104:	b8 f4       	brcc	.+46     	; 0x134 <HAL_Timer_Init1ms+0xa2>
+ 102:	09 f0       	breq	.+2      	; 0x106 <Timer0_Init1ms+0x74>
+ 104:	b8 f4       	brcc	.+46     	; 0x134 <Timer0_Init1ms+0xa2>
  106:	30 93 7b 00 	sts	0x007B, r19
  10a:	20 93 7a 00 	sts	0x007A, r18
- 10e:	02 c0       	rjmp	.+4      	; 0x114 <HAL_Timer_Init1ms+0x82>
+ 10e:	02 c0       	rjmp	.+4      	; 0x114 <Timer0_Init1ms+0x82>
 	u8 u8LoopCounter;
 	//u16 no_of_ticks = 0;
 	
@@ -210,14 +210,14 @@ void HAL_Timer_Init1ms ()
 	for(u8LoopCounter=0; u8LoopCounter< PRESCALAR_NUM ; u8LoopCounter++)
  138:	85 30       	cpi	r24, 0x05	; 5
  13a:	91 05       	cpc	r25, r1
- 13c:	e9 f6       	brne	.-70     	; 0xf8 <HAL_Timer_Init1ms+0x66>
+ 13c:	e9 f6       	brne	.-70     	; 0xf8 <Timer0_Init1ms+0x66>
  13e:	30 93 7b 00 	sts	0x007B, r19
  142:	20 93 7a 00 	sts	0x007A, r18
  146:	08 95       	ret
 
-00000148 <HAL_Timer_Start>:
+00000148 <Timer0_Start>:
 
-void HAL_Timer_Start (u16 millis, FnPtr timeoutFn)
+void Timer0_Start (u16 millis, FnPtr timeoutFn)
 {
 	//TCNT0 = 0x00;
 	
@@ -251,15 +251,15 @@ uint8_t timer0_Read()
 }
  16c:	08 95       	ret
 
-0000016e <HAL_Timer_delay1ms>:
+0000016e <Timer0_delay1ms>:
 		//}
 		//
 	//}
 	//
 	u16 i;
-	for (i=0 ; i < delay ; i++)
+	for (i=0 ; i < millis ; i++)
  16e:	00 97       	sbiw	r24, 0x00	; 0
- 170:	09 f1       	breq	.+66     	; 0x1b4 <HAL_Timer_delay1ms+0x46>
+ 170:	09 f1       	breq	.+66     	; 0x1b4 <Timer0_delay1ms+0x46>
  172:	20 e0       	ldi	r18, 0x00	; 0
  174:	30 e0       	ldi	r19, 0x00	; 0
 	{
@@ -286,11 +286,11 @@ uint8_t timer0_Read()
 	//}
 	//
 	u16 i;
-	for (i=0 ; i < delay ; i++)
+	for (i=0 ; i < millis ; i++)
 	{
 		if(MODE.MODE_NORMAL_CTC == u8_MODE_NORMAL)
  182:	44 23       	and	r20, r20
- 184:	41 f4       	brne	.+16     	; 0x196 <HAL_Timer_delay1ms+0x28>
+ 184:	41 f4       	brne	.+16     	; 0x196 <Timer0_delay1ms+0x28>
 		{
 			TCNT0 = 256 - no_of_ticks;
  186:	50 81       	ld	r21, Z
@@ -299,14 +299,14 @@ uint8_t timer0_Read()
 			while ((TIFR&0x01)==0);
  18c:	08 b6       	in	r0, 0x38	; 56
  18e:	00 fe       	sbrs	r0, 0
- 190:	fd cf       	rjmp	.-6      	; 0x18c <HAL_Timer_delay1ms+0x1e>
+ 190:	fd cf       	rjmp	.-6      	; 0x18c <Timer0_delay1ms+0x1e>
 			TIFR = 0x01;
  192:	a8 bf       	out	0x38, r26	; 56
- 194:	0a c0       	rjmp	.+20     	; 0x1aa <HAL_Timer_delay1ms+0x3c>
+ 194:	0a c0       	rjmp	.+20     	; 0x1aa <Timer0_delay1ms+0x3c>
 		}		
 		else if (MODE.MODE_NORMAL_CTC == u8_MODE_CTC)
  196:	42 30       	cpi	r20, 0x02	; 2
- 198:	41 f4       	brne	.+16     	; 0x1aa <HAL_Timer_delay1ms+0x3c>
+ 198:	41 f4       	brne	.+16     	; 0x1aa <Timer0_delay1ms+0x3c>
 		{ 
 			 TCNT0 = 0;
  19a:	12 be       	out	0x32, r1	; 50
@@ -317,7 +317,7 @@ uint8_t timer0_Read()
 			 while ((TIFR&0x02)==0);
  1a2:	08 b6       	in	r0, 0x38	; 56
  1a4:	01 fe       	sbrs	r0, 1
- 1a6:	fd cf       	rjmp	.-6      	; 0x1a2 <HAL_Timer_delay1ms+0x34>
+ 1a6:	fd cf       	rjmp	.-6      	; 0x1a2 <Timer0_delay1ms+0x34>
 			 TIFR = 0x02;
  1a8:	b8 bf       	out	0x38, r27	; 56
 		//}
@@ -325,18 +325,18 @@ uint8_t timer0_Read()
 	//}
 	//
 	u16 i;
-	for (i=0 ; i < delay ; i++)
+	for (i=0 ; i < millis ; i++)
  1aa:	2f 5f       	subi	r18, 0xFF	; 255
  1ac:	3f 4f       	sbci	r19, 0xFF	; 255
  1ae:	28 17       	cp	r18, r24
  1b0:	39 07       	cpc	r19, r25
- 1b2:	39 f7       	brne	.-50     	; 0x182 <HAL_Timer_delay1ms+0x14>
+ 1b2:	39 f7       	brne	.-50     	; 0x182 <Timer0_delay1ms+0x14>
 			 OCR0 = no_of_ticks-1;
 			 while ((TIFR&0x02)==0);
 			 TIFR = 0x02;
 		}
 	}
-	delayFn();
+	timeoutFn();
  1b4:	fb 01       	movw	r30, r22
  1b6:	09 95       	icall
 }
@@ -384,9 +384,9 @@ void setOCR0 (u8 OCR0_value)
 }
  1ce:	08 95       	ret
 
-000001d0 <timer0_stop>:
+000001d0 <Timer0_stop>:
 
-void timer0_stop()
+void Timer0_stop()
 {
 	TCCR0 |= (0<<CS02) | (0<<CS01) | (0<<CS00);
  1d0:	83 b7       	in	r24, 0x33	; 51
@@ -700,83 +700,149 @@ u8 GPIO_ReadPort(u8 PortName,u8 PortMask)
 	
  374:	08 95       	ret
 
-00000376 <trial_fnOFF>:
+00000376 <HAL_Timer_Init>:
+#include "8-bit_TimerCounter0.h"
+#include "HAL_Timer_AVR.h"
+
+void HAL_Timer_Init(Timer_InitTypeDef * timer)
+{
+	Timer0_Init1ms();
+ 376:	0e 94 49 00 	call	0x92	; 0x92 <Timer0_Init1ms>
+}
+ 37a:	08 95       	ret
+
+0000037c <HAL_Timer_Delay>:
+
+void HAL_Timer_Delay(Timer_HandleTypeDef * timer)
+{
+ 37c:	fc 01       	movw	r30, r24
+	Timer0_delay1ms(timer->millis, timer->timeoutFn);
+ 37e:	62 81       	ldd	r22, Z+2	; 0x02
+ 380:	73 81       	ldd	r23, Z+3	; 0x03
+ 382:	80 81       	ld	r24, Z
+ 384:	91 81       	ldd	r25, Z+1	; 0x01
+ 386:	0e 94 b7 00 	call	0x16e	; 0x16e <Timer0_delay1ms>
+}
+ 38a:	08 95       	ret
+
+0000038c <HAL_Timer_Start>:
+void HAL_Timer_Start (Timer_HandleTypeDef * timer)
+{
+ 38c:	fc 01       	movw	r30, r24
+	Timer0_Start(timer->millis, timer->timeoutFn);
+ 38e:	62 81       	ldd	r22, Z+2	; 0x02
+ 390:	73 81       	ldd	r23, Z+3	; 0x03
+ 392:	80 81       	ld	r24, Z
+ 394:	91 81       	ldd	r25, Z+1	; 0x01
+ 396:	0e 94 a4 00 	call	0x148	; 0x148 <Timer0_Start>
+}
+ 39a:	08 95       	ret
+
+0000039c <HAL_Timer_stop>:
+void HAL_Timer_stop(Timer_HandleTypeDef * timer)
+{
+	Timer0_stop();
+ 39c:	0e 94 e8 00 	call	0x1d0	; 0x1d0 <Timer0_stop>
+ 3a0:	08 95       	ret
+
+000003a2 <trial_fnOFF>:
 	GPIO_WritePort(PC,0x01,0x01);
 }
 
 void trial_fnOFF()
 {
 	GPIO_WritePort(PC,0x00,0x01);
- 376:	82 e0       	ldi	r24, 0x02	; 2
- 378:	60 e0       	ldi	r22, 0x00	; 0
- 37a:	41 e0       	ldi	r20, 0x01	; 1
- 37c:	0e 94 73 01 	call	0x2e6	; 0x2e6 <GPIO_WritePort>
+ 3a2:	82 e0       	ldi	r24, 0x02	; 2
+ 3a4:	60 e0       	ldi	r22, 0x00	; 0
+ 3a6:	41 e0       	ldi	r20, 0x01	; 1
+ 3a8:	0e 94 73 01 	call	0x2e6	; 0x2e6 <GPIO_WritePort>
 }
- 380:	08 95       	ret
+ 3ac:	08 95       	ret
 
-00000382 <trial_fnON>:
-#include "GPIO.h"
+000003ae <trial_fnON>:
 #include "8-bit_TimerCounter0.h"
+#include "HAL_Timer_AVR.h"
 
 void trial_fnON()
 {
 	GPIO_WritePort(PC,0x01,0x01);
- 382:	82 e0       	ldi	r24, 0x02	; 2
- 384:	61 e0       	ldi	r22, 0x01	; 1
- 386:	41 e0       	ldi	r20, 0x01	; 1
- 388:	0e 94 73 01 	call	0x2e6	; 0x2e6 <GPIO_WritePort>
+ 3ae:	82 e0       	ldi	r24, 0x02	; 2
+ 3b0:	61 e0       	ldi	r22, 0x01	; 1
+ 3b2:	41 e0       	ldi	r20, 0x01	; 1
+ 3b4:	0e 94 73 01 	call	0x2e6	; 0x2e6 <GPIO_WritePort>
 }
- 38c:	08 95       	ret
+ 3b8:	08 95       	ret
 
-0000038e <main>:
+000003ba <main>:
+{
 	GPIO_WritePort(PC,0x00,0x01);
 }
 
 int main(void)
 {
+ 3ba:	cf 93       	push	r28
+ 3bc:	df 93       	push	r29
+ 3be:	00 d0       	rcall	.+0      	; 0x3c0 <main+0x6>
+ 3c0:	00 d0       	rcall	.+0      	; 0x3c2 <main+0x8>
+ 3c2:	cd b7       	in	r28, 0x3d	; 61
+ 3c4:	de b7       	in	r29, 0x3e	; 62
 	GPIO_InitPortDirection(PC,0x01,0x01);
- 38e:	82 e0       	ldi	r24, 0x02	; 2
- 390:	61 e0       	ldi	r22, 0x01	; 1
- 392:	41 e0       	ldi	r20, 0x01	; 1
- 394:	0e 94 42 01 	call	0x284	; 0x284 <GPIO_InitPortDirection>
+ 3c6:	82 e0       	ldi	r24, 0x02	; 2
+ 3c8:	61 e0       	ldi	r22, 0x01	; 1
+ 3ca:	41 e0       	ldi	r20, 0x01	; 1
+ 3cc:	0e 94 42 01 	call	0x284	; 0x284 <GPIO_InitPortDirection>
 	//TimerInit();
-	HAL_Timer_Init1ms();
- 398:	0e 94 49 00 	call	0x92	; 0x92 <HAL_Timer_Init1ms>
+	Timer_InitTypeDef timerInit;
+	Timer_HandleTypeDef timerHandle;
+	timerHandle.millis = 10;
+ 3d0:	8a e0       	ldi	r24, 0x0A	; 10
+ 3d2:	90 e0       	ldi	r25, 0x00	; 0
+ 3d4:	9a 83       	std	Y+2, r25	; 0x02
+ 3d6:	89 83       	std	Y+1, r24	; 0x01
+	
+	HAL_Timer_Init(&timerInit);
+ 3d8:	ce 01       	movw	r24, r28
+ 3da:	01 96       	adiw	r24, 0x01	; 1
+ 3dc:	0e 94 bb 01 	call	0x376	; 0x376 <HAL_Timer_Init>
 	//HAL_Timer_Start (1000, trial_fnON);
     while(1)
     {	
 		//HAL_Timer_Start(1000,trial_fnON);
 		//int x=0;
-		HAL_Timer_delay1ms(1000,trial_fnON);
- 39c:	c1 ec       	ldi	r28, 0xC1	; 193
- 39e:	d1 e0       	ldi	r29, 0x01	; 1
-		HAL_Timer_Init1ms(1000,trial_fnOFF);
- 3a0:	0b eb       	ldi	r16, 0xBB	; 187
- 3a2:	11 e0       	ldi	r17, 0x01	; 1
+		timerHandle.timeoutFn = trial_fnON;
+ 3e0:	07 ed       	ldi	r16, 0xD7	; 215
+ 3e2:	11 e0       	ldi	r17, 0x01	; 1
+		HAL_Timer_Delay(&timerHandle);
+		timerHandle.timeoutFn = trial_fnOFF;
+ 3e4:	0f 2e       	mov	r0, r31
+ 3e6:	f1 ed       	ldi	r31, 0xD1	; 209
+ 3e8:	ef 2e       	mov	r14, r31
+ 3ea:	f1 e0       	ldi	r31, 0x01	; 1
+ 3ec:	ff 2e       	mov	r15, r31
+ 3ee:	f0 2d       	mov	r31, r0
 	//HAL_Timer_Start (1000, trial_fnON);
     while(1)
     {	
 		//HAL_Timer_Start(1000,trial_fnON);
 		//int x=0;
-		HAL_Timer_delay1ms(1000,trial_fnON);
- 3a4:	88 ee       	ldi	r24, 0xE8	; 232
- 3a6:	93 e0       	ldi	r25, 0x03	; 3
- 3a8:	be 01       	movw	r22, r28
- 3aa:	0e 94 b7 00 	call	0x16e	; 0x16e <HAL_Timer_delay1ms>
-		HAL_Timer_Init1ms(1000,trial_fnOFF);
- 3ae:	88 ee       	ldi	r24, 0xE8	; 232
- 3b0:	93 e0       	ldi	r25, 0x03	; 3
- 3b2:	b8 01       	movw	r22, r16
- 3b4:	0e 94 49 00 	call	0x92	; 0x92 <HAL_Timer_Init1ms>
-		HAL_Timer_delay1ms(1000,trial_fnON);
- 3b8:	88 ee       	ldi	r24, 0xE8	; 232
- 3ba:	93 e0       	ldi	r25, 0x03	; 3
- 3bc:	be 01       	movw	r22, r28
- 3be:	0e 94 b7 00 	call	0x16e	; 0x16e <HAL_Timer_delay1ms>
- 3c2:	f0 cf       	rjmp	.-32     	; 0x3a4 <main+0x16>
+		timerHandle.timeoutFn = trial_fnON;
+ 3f0:	1c 83       	std	Y+4, r17	; 0x04
+ 3f2:	0b 83       	std	Y+3, r16	; 0x03
+		HAL_Timer_Delay(&timerHandle);
+ 3f4:	ce 01       	movw	r24, r28
+ 3f6:	01 96       	adiw	r24, 0x01	; 1
+ 3f8:	0e 94 be 01 	call	0x37c	; 0x37c <HAL_Timer_Delay>
+		timerHandle.timeoutFn = trial_fnOFF;
+ 3fc:	fc 82       	std	Y+4, r15	; 0x04
+ 3fe:	eb 82       	std	Y+3, r14	; 0x03
+		HAL_Timer_Delay(&timerHandle);
+ 400:	ce 01       	movw	r24, r28
+ 402:	01 96       	adiw	r24, 0x01	; 1
+ 404:	0e 94 be 01 	call	0x37c	; 0x37c <HAL_Timer_Delay>
+ 408:	f3 cf       	rjmp	.-26     	; 0x3f0 <main+0x36>
 
-000003c4 <_exit>:
- 3c4:	f8 94       	cli
+0000040a <_exit>:
+ 40a:	f8 94       	cli
 
-000003c6 <__stop_program>:
- 3c6:	ff cf       	rjmp	.-2      	; 0x3c6 <__stop_program>
+0000040c <__stop_program>:
+ 40c:	ff cf       	rjmp	.-2      	; 0x40c <__stop_program>
