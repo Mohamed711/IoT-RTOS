@@ -1,0 +1,48 @@
+Femto Os:
+----------
+general specs:
+--------------
+1-preemptive operating system (RTOS).
+2-The main target is the Atmel AVR architecture.
+3-Maximum number of tasks:	16
+4-Maximum number of priorities:	8
+5-Maximum number of locks:	15
+6-Minimum tcb size per task:	2 bytes
+7-Minimum stack size per task:	4 bytes
+8-Minimum OS stack size:	9 bytes
+9-Minimum OS other ram usage:	3 bytes
+10-Smallest application:	258 bytes
+
+os design requirements :
+----------
+1-Round Robin Scheduling per priority (equal priorities are having round robin among them starting from highest priority to the lower one)
+2-Preemptive and cooperative	Choose between preemptive or cooperative on a task by task basis.
+3-Shared Stacks for tasks	Possibility to save ram by letting tasks share their stack space.
+4-Register Compression	Save only the registers that are used on the stack at taskswitch.
+5-Separate OS/ISR Stack Space	The OS (ISR) has its own stack space
+6-Power save on Idle	The idle task can be used to save power.
+7-Honest Time Slicing	Every task gets the same amount of execution time, so no starvation.
+8-OS interruptible	Large parts of the OS can be made interruptable.
+9-Resource Tracking	Tasks that are terminated are managed to release all kernel resources.
+
+Additional capabilities
+------------------------
+1-Nested Critical Sections	Seperated nesting for tick and general interrupt critical sections.
+2-Rendez Vous, Mutexes, Queues	Everything you need to communicate between tasks.
+3-Priority Lifting	Tasks get the priority of the most important blocked task.
+4-Timed Power down	If all tasks are delayed sufficiently long, the OS may sleep.
+5-Precision Delays	The time between the different wakeups of a task can be set precisely.
+6-Watchdog per Task	Revive tasks that have crashed with a watchdog.
+7-High Resolution Load Monitor	Check how many subticks a task really runs.
+8-Integrated file system	File system for onboard eeprom managed by the OS.
+9-High speed events	Events for reviving tasks with for some special action.
+
+Quality protection
+-------------------
+1-Parameter Checking	Parameters passed to the kernel can be checked for validity.
+2-Stack Overflow Protection	Before a task overflows the stack it is shut down, others keep running.
+3-Error Callback	System errors are reported through a customable method.
+4-Trace facility	Produces a trace of most actions taken inside the OS.
+5-Configuration Checking	Your configuration is checked by preprocessor code for typos.
+6-Script code analyzer	Some scripts help you to optimize your code further.
+
