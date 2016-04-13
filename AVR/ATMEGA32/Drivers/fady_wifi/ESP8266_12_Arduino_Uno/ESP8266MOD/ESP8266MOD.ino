@@ -7,11 +7,11 @@ SoftwareSerial esp8266(10,11); //make RX Arduino line is pin 2, make TX Arduino 
 String url = "/update?api_key=6SWWF4IE3BLP7VCV&field1="; //thingspeak channel taking readings
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(9600); // for arduino mega
-  esp8266.begin(9600);
+  Serial.begin(115200); // for arduino mega
+  esp8266.begin(115200);
 esp8266.println("AT");
 Serial.println("AT");
-delay(200);
+
 if(esp8266.find("OK"))
 {
   Serial.println("module is ready");
@@ -20,7 +20,12 @@ else
 {
   Serial.println("module has no response");
 }
-esp8266.println("AT+CWMODE=1/r/n"); // SETTING mode
+delay(300);
+//FIRMWARE
+esp8266.println("AT+GMR"); // SETTING mode
+Serial.println(esp8266.readString());
+delay(300);
+esp8266.println("AT+CWMODE=1"); // SETTING mode
 Serial.println("AT+CWMODE=1"); // SETTING mode
 
 if(esp8266.find("OK"))
@@ -31,6 +36,7 @@ else
 {
   Serial.println("module habe no response");
 }
+delay(300);
 
 while(esp8266.find("OK") == false)
 {
@@ -57,6 +63,7 @@ else
 }
 Serial.print("Connecting to ");
 Serial.println(IP);
+delay(300);
 while(esp8266.find("OK") == false)
 {
 String page = "AT+CIPSTART=4,\"TCP\",\"";
@@ -78,6 +85,10 @@ String cmd = "GET ";
 cmd += url;
 cmd += x;
 cmd += " HTTP/1.0\r\n\r\n";
+esp8266.print("AT+CIPSEND=4,");
+Serial.print("AT+CIPSEND=4,");
+esp8266.println(cmd.length());
+Serial.println(cmd.length());
 if(esp8266.find("OK"))
 {
   Serial.println("OK");
