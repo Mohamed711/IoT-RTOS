@@ -11,7 +11,7 @@ void setup() {
   esp8266.begin(115200);
 esp8266.println("AT");
 Serial.println("AT");
-delay(300);
+
 if(esp8266.find("OK"))
 {
   Serial.println("module is ready");
@@ -20,9 +20,14 @@ else
 {
   Serial.println("module has no response");
 }
+delay(300);
+//FIRMWARE
+esp8266.println("AT+GMR"); // SETTING mode
+Serial.println(esp8266.readString());
+delay(300);
 esp8266.println("AT+CWMODE=1"); // SETTING mode
 Serial.println("AT+CWMODE=1"); // SETTING mode
-delay(300);
+
 if(esp8266.find("OK"))
 {
   Serial.println("mode is set");
@@ -31,6 +36,7 @@ else
 {
   Serial.println("module habe no response");
 }
+delay(300);
 
 while(esp8266.find("OK") == false)
 {
