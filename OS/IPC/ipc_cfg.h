@@ -19,3 +19,16 @@
  *  documentation and/or other materials provided with the  
  *  distribution.
  *****************************************************************************/
+
+
+/* the basetype must be defined some where */
+ typedef BaseType_t int8_t;
+ typedef TickType_t uint8_t;
+ typedef UBaseType_t uint8_t;
+
+
+/*
+ #define SUCCESSFUL 
+ #define QUEUE_IS_EMPTY
+ #define QUEUE_IS_FULL 
+*/
