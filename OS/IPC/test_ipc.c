@@ -19,3 +19,17 @@
  *  documentation and/or other materials provided with the  
  *  distribution.
  *****************************************************************************/
+
+#include <stdio.h>
+int main(void) {
+	
+	int * c ;
+	int y;
+
+	printf("%d",sizeof(c));
+
+	scanf("%d",&y);
+
+
+	return 0;
+}
