@@ -131,7 +131,7 @@ pid32 processCreate(void *funcAddr, u32 ssize, pri16 priority, char *name)
 sysCall processTerminate(pid32 pid)
 {
 	struct procent *prptr; /* Ptr to process’ table entry */
-	u32 i; /* Index into descriptors */
+	//u32 i; /* Index into descriptors */
 
 	if (isbadpid(pid) || (pid == NULLPROC)
 		|| ((prptr = &proctab[pid])->prstate) == PR_FREE) {
@@ -206,7 +206,7 @@ pri16 processResume(pid32 pid) 		/* ID of process to unsuspend	*/
 		return (pri16)SYSERR;
 	}
 	prio = prptr->prprio;		/* Record priority to return	*/
-	ready(pid);
+	processSetReady(pid);
 	//restore(mask);
 	/*
 	Function restore reloads an interrupt status from a previously saved value.
