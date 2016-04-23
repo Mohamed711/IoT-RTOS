@@ -4,6 +4,7 @@
 #include "headers.h"
 
 qid16 readylist;
+qid16 suspendedlist;
 
 //#define SYSERR (0);
 #ifndef NQENT

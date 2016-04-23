@@ -25,7 +25,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define NSEM 120 //semaphore dummy
+#define NSEM 0 //semaphore dummy
 #define preemptive 0
 #define NPROC 4
 

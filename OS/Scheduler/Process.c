@@ -131,7 +131,7 @@ pid32 processCreate(void *funcAddr, u32 ssize, pri16 priority, char *name)
 sysCall processTerminate(pid32 pid)
 {
 	struct procent *prptr; /* Ptr to process’ table entry */
-	//u32 i; /* Index into descriptors */
+	u32 i; /* Index into descriptors */
 
 	if (isbadpid(pid) || (pid == NULLPROC)
 		|| ((prptr = &proctab[pid])->prstate) == PR_FREE) {
@@ -206,7 +206,9 @@ pri16 processResume(pid32 pid) 		/* ID of process to unsuspend	*/
 		return (pri16)SYSERR;
 	}
 	prio = prptr->prprio;		/* Record priority to return	*/
+	
 	processSetReady(pid);
+	//dequeue(suspendedlist); // lw 3wz a keep track l kol el suspended
 	//restore(mask);
 	/*
 	Function restore reloads an interrupt status from a previously saved value.
@@ -237,16 +239,38 @@ sysCall	processSuspend(pid32 pid) 		/* ID of process to suspend	*/
 	}
 	if (prptr->prstate == PR_READY)
 	{
+		
 		getitem(pid);		    /* Remove a ready process	*/
 					    /*   from the ready list	*/
 		prptr->prstate = PR_SUSP;
+		//enqueue(pid,suspendedlist); lw 3wzen n keep track lel suspended processes
 	}
 	else
 	{
 		prptr->prstate = PR_SUSP;   /* Mark the current process	*/
+		//enqueue(pid,suspendedlist); lw 3wzen n keep track lel suspended processes
 		reSched();		    /*   suspended and resched.	*/
 	}
 	prio = prptr->prprio;
 	//restore(mask);
 	return prio;
+}
+void processSuspendAll(void) 		
+{	
+	while(nonempty(readylist))
+	{
+		
+		pid32 pid=getfirst(readylist);
+		processSuspend(pid);
+		enqueue(pid,suspendedlist);
+			
+	}
+}
+void processResumeAll(void)
+{
+	while(nonempty(suspendedlist))
+	{
+		pid32 pid=getfirst(suspendedlist);
+		processResume(pid);
+	}
 }

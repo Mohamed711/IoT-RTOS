@@ -19,15 +19,80 @@
 *  documentation and/or other materials provided with the
 *  distribution.
 *****************************************************************************/
+
+
 #ifndef STD_H_
 #define STD_H_
 #include <stdint.h>
 #include <stdbool.h>
-
-typedef int32_t pid32;
+#define AVRMICRO 1 //for Avr atmega 32
+#if (AVRMICRO==0) // ARM
+typedef uint32_t pid32;
 typedef uint16_t pri16;
 typedef uint32_t sid32;
-typedef uint32_t umsg32;
+typedef uint32_t umsg32
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;
 typedef bool bool8;
 
 typedef uint32_t u32;
@@ -40,10 +105,29 @@ typedef int32_t s32;
 typedef int16_t s16;
 typedef int8_t s8;
 
+#else // AVR
+typedef uint8_t pid32;
+typedef uint8_t pri16;
+typedef uint8_t sid32;
+typedef uint8_t umsg32;
+typedef bool bool8;
+
+typedef uint8_t u32;
+typedef uint8_t u16;
+typedef uint8_t u8;
+typedef uint8_t qid16;
+
+
+typedef int8_t s32;
+typedef int8_t s16;
+typedef int8_t s8;
+
+#endif
 typedef bool sysCall;
 
 #define OK 1
 #define SYSERR -1
+
 
 #endif
 

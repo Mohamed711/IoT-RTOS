@@ -83,5 +83,6 @@ sysCall processTerminate(pid32 pid);
 sysCall	processSetReady(u32 pid);
 pri16 processResume(pid32 pid);
 sysCall	processSuspend(pid32 pid);
-
+void processSuspendAll(void);
+void processResumeAll(void);
 #endif

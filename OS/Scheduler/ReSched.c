@@ -34,8 +34,18 @@
 void reSched(void) /* Assumes interrupts are disabled */
 {
 
-	struct procent *ptnew; /* Ptr to table entry for new process */
+struct procent *ptold; /* Ptr to table entry for old process */
+struct procent *ptnew; /* Ptr to table entry for new process */
+ptold = &proctab[currpid];
+if (ptold->prstate == PR_CURR) { /* Process remains eligible */
+if (ptold->prprio > firstkey(readylist)) {
+return;
+}
+/* Old process will no longer remain current */
 
+ptold->prstate = PR_READY;
+insert(currpid, readylist, ptold->prprio);
+}
 	currpid = dequeue(readylist);
 	ptnew = &proctab[currpid];
 	ptnew->prstate = PR_CURR;
