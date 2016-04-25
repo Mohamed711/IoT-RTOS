@@ -29,55 +29,12 @@
 #include "queue.h"
 
 
-typedef struct
- {
- 	Queue *Bsem_queue = createQueue(10);
- 	int8_t count;
-
- }Bsem_t;
-
-
  typedef struct {
 	 volatile uint8_t count;
-	 Queue *queue;
+	 qid16 queue;
  } Csema;
 
- /******************************************************************************
-   *
-   *Initializes binary semaphore
-   *
-   *\param p_Bsem is a pointer to a semaphore
-   *
-   * \return None
-   *
-   *****************************************************************************/
- static inline void vid_Binary_semp_Bsem_init(Bsem_t *p_Bsem)
- {
- 	p_Bsem->Bsem_queue->current= NULL;
 
- }
-
- /******************************************************************************
-   *
-   * Wait for a binary semaphore
-   *
-   * \param S is a pointer to a semaphore
-   *
-   * \return None
-   *
-   *****************************************************************************/
- void vid_Binary_semp_Bsem_wait (Bsem_t *S);
-
- /******************************************************************************
-   *
-   * Release a counting semaphore
-   *
-   * \param S is a pointer to a semaphore
-   *
-   * \return None
-   *
-   *****************************************************************************/
- void vid_Binary_semp_Bsem_signal(Bsem_t *S);
 
  /******************************************************************************
   *
