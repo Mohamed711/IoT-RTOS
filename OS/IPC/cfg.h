@@ -20,11 +20,18 @@
  *  distribution.
  *****************************************************************************/
 
+#include <stdint.h>
 
 /* the basetype must be defined some where */
- typedef BaseType_t int8_t;
- typedef TickType_t uint8_t;
- typedef UBaseType_t uint8_t;
+ typedef int8_t BaseType_t ;
+ typedef uint8_t TickType_t ;
+ typedef uint8_t UBaseType_t ;
+
+#define taskENTER_CRITICAL() 
+#define taskEXIT_CRITICAL()
+#define pdTRUE 
+#define pdFALSE
+ #define mtCOVERAGE_TEST_MARKER()
 
 
 /*
