@@ -27,6 +27,8 @@
  typedef uint8_t TickType_t ;
  typedef uint8_t UBaseType_t ;
 
+
+#define configASSERT(x) 
 #define taskENTER_CRITICAL() 
 #define taskEXIT_CRITICAL()
 #define pdTRUE 

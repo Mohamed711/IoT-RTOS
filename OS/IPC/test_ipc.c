@@ -21,15 +21,30 @@
  *****************************************************************************/
 
 #include <stdio.h>
+#include "queue.c"
+
+Queue_t createQueueStructure();
+
 int main(void) {
 	
-	int * c ;
 	int y;
+Queue_t testQueue;
 
-	printf("%d",sizeof(c));
+testQueue = createQueueStructure();
+
+	printf("%d \n",testQueue.uxItemSize);
+	
 
 	scanf("%d",&y);
 
 
 	return 0;
+}
+
+Queue_t createQueueStructure()
+{
+	Queue_t testQueue;
+	testQueue.uxLength = 5;
+	testQueue.uxItemSize = 4;
+
 }
