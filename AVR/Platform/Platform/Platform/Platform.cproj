@@ -15,7 +15,8 @@
     <AssemblyName>Platform</AssemblyName>
     <Name>Platform</Name>
     <RootNamespace>Platform</RootNamespace>
-    <ToolchainFlavour>Native</ToolchainFlavour>
+    <ToolchainFlavour>
+    </ToolchainFlavour>
     <KeepTimersRunning>true</KeepTimersRunning>
     <OverrideVtor>false</OverrideVtor>
     <CacheFlash>true</CacheFlash>
