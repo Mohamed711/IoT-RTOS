@@ -27,6 +27,6 @@
 
 #define NSEM 0 //semaphore dummy
 #define preemptive 0
-#define NPROC 4
+#define NPROC 5
 
 #endif

@@ -243,12 +243,12 @@ sysCall	processSuspend(pid32 pid) 		/* ID of process to suspend	*/
 		getitem(pid);		    /* Remove a ready process	*/
 					    /*   from the ready list	*/
 		prptr->prstate = PR_SUSP;
-		//enqueue(pid,suspendedlist); lw 3wzen n keep track lel suspended processes
+		enqueue(pid,suspendedlist); //lw 3wzen n keep track lel suspended processes
 	}
 	else
 	{
 		prptr->prstate = PR_SUSP;   /* Mark the current process	*/
-		//enqueue(pid,suspendedlist); lw 3wzen n keep track lel suspended processes
+		enqueue(pid,suspendedlist); //lw 3wzen n keep track lel suspended processes
 		reSched();		    /*   suspended and resched.	*/
 	}
 	prio = prptr->prprio;
