@@ -24,31 +24,30 @@
 #include "ipc.h"
 
 
+// include of the task header file which can be used to transfer the task between modules
+#include "ipc.h"
 
- /* Constants used with the xRxLock and xTxLock structure members. */
+/* Constants used with the xRxLock and xTxLock structure members. */
 #define queueUNLOCKED					( ( BaseType_t ) -1 )
 #define queueLOCKED_UNMODIFIED			( ( BaseType_t ) 0 )
 
-
- /*
- * Definition of the queue used by ourOS
+/*
+ * Definition of the queue used by the scheduler.
+ * Items are queued by copy, not reference.
  */
 typedef struct QueueDefinition
 {
 	int8_t *pcHead;					/*< Points to the beginning of the queue storage area. */
-	//int8_t *pcTail;					/*< Points to the byte at the end of the queue storage area.  Once more byte is allocated than necessary to store the queue items, this is used as a marker. */
+	int8_t *pcTail;					/*< Points to the byte at the end of the queue storage area.  Once more byte is allocated than necessary to store the queue items, this is used as a marker. */
 	int8_t *pcWriteTo;				/*< Points to the free next place in the storage area. */
 
-	//int8_t *pcReadFrom;			/*< Points to the last place that a queued item was read from when the structure is used as a queue. */
+	int8_t *pcReadFrom;			/*< Points to the last place that a queued item was read from when the structure is used as a queue. */
 
-	/* make two lists for the tasks wiating to send and receive 
-	on this queue */
-	/*< List of tasks that are blocked waiting to post onto this queue.  Stored in priority order. */
-	/*< List of tasks that are blocked waiting to read from this queue.  Stored in priority order. */
-	/*
-	List_t xTasksWaitingToSend;		
-	List_t xTasksWaitingToReceive;	
-*/
+
+// Two lists of processes one for the tasks waiting to send and other waiting to receive
+//	List_t xTasksWaitingToSend;		/*< List of tasks that are blocked waiting to post onto this queue.  Stored in priority order. */
+//	List_t xTasksWaitingToReceive;	/*< List of tasks that are blocked waiting to read from this queue.  Stored in priority order. */
+
 	volatile UBaseType_t uxMessagesWaiting;/*< The number of items currently in the queue. */
 	UBaseType_t uxLength;			/*< The length of the queue defined as the number of items it will hold, not the number of bytes. */
 	UBaseType_t uxItemSize;			/*< The size of each items that the queue will hold. */
@@ -118,103 +117,43 @@ static void prvCopyDataFromQueue( Queue_t * const pxQueue, void * const pvBuffer
 	taskEXIT_CRITICAL()
 /*-----------------------------------------------------------*/
 
-UBaseType_t uxQueueMessagesWaiting( const QueueHandle_t xQueue )
-{
-UBaseType_t uxReturn;
-
-	configASSERT( xQueue );
-
-	taskENTER_CRITICAL();
-	{
-		uxReturn = ( ( Queue_t * ) xQueue )->uxMessagesWaiting;
-	}
-	taskEXIT_CRITICAL();
-
-	return uxReturn;
-} /*lint !e818 Pointer cannot be declared const as xQueue is a typedef not pointer. */
-/*-----------------------------------------------------------*/
-
-UBaseType_t uxQueueSpacesAvailable( const QueueHandle_t xQueue )
-{
-UBaseType_t uxReturn;
-Queue_t *pxQueue;
-
-	pxQueue = ( Queue_t * ) xQueue;
-	configASSERT( pxQueue );
-
-	taskENTER_CRITICAL();
-	{
-		uxReturn = pxQueue->uxLength - pxQueue->uxMessagesWaiting;
-	}
-	taskEXIT_CRITICAL();
-
-	return uxReturn;
-} /*lint !e818 Pointer cannot be declared const as xQueue is a typedef not pointer. */
-/*-----------------------------------------------------------*/
-
-UBaseType_t uxQueueMessagesWaitingFromISR( const QueueHandle_t xQueue )
-{
-UBaseType_t uxReturn;
-
-	configASSERT( xQueue );
-
-	uxReturn = ( ( Queue_t * ) xQueue )->uxMessagesWaiting;
-
-	return uxReturn;
-} /*lint !e818 Pointer cannot be declared const as xQueue is a typedef not pointer. */
-/*-----------------------------------------------------------*/
-
-void vQueueDelete( QueueHandle_t xQueue )
+BaseType_t xQueueGenericReset( QueueHandle_t xQueue, BaseType_t xNewQueue )
 {
 Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 
 	configASSERT( pxQueue );
 
-///// free the queue from the memory , ask for it from the MMU team
-/////	vPortFree( pxQueue );
-}
-
-/*-----------------------------------------------------------*/
-
-static BaseType_t prvCopyDataToQueue( Queue_t * const pxQueue, const void *pvItemToQueue, const BaseType_t xPosition )
-{
-BaseType_t xReturn = pdFALSE;
-
-	if( xPosition == queueSEND_TO_BACK )
+	taskENTER_CRITICAL();
 	{
-		( void ) memcpy( ( void * ) pxQueue->pcWriteTo, pvItemToQueue, ( size_t ) pxQueue->uxItemSize ); /*lint !e961 !e418 MISRA exception as the casts are only redundant for some ports, plus previous logic ensures a null pointer can only be passed to memcpy() if the copy size is 0. */
-		pxQueue->pcWriteTo += pxQueue->uxItemSize;
-		if( pxQueue->pcWriteTo >= pxQueue->pcTail ) /*lint !e946 MISRA exception justified as comparison of pointers is the cleanest solution. */
-		{
-			pxQueue->pcWriteTo = pxQueue->pcHead;
-		}
-		else
-		{
-			mtCOVERAGE_TEST_MARKER();
-		}
-	}
-	else
-	{
-		( void ) memcpy( ( void * ) pxQueue->pcReadFrom, pvItemToQueue, ( size_t ) pxQueue->uxItemSize ); /*lint !e961 MISRA exception as the casts are only redundant for some ports. */
-		pxQueue->pcReadFrom -= pxQueue->uxItemSize;
-		if( pxQueue->pcReadFrom < pxQueue->pcHead ) /*lint !e946 MISRA exception justified as comparison of pointers is the cleanest solution. */
-		{
-			pxQueue->pcReadFrom = ( pxQueue->pcTail - pxQueue->uxItemSize );
-		}
-		else
-		{
-			mtCOVERAGE_TEST_MARKER();
-		}
+		pxQueue->pcTail = pxQueue->pcHead + ( pxQueue->uxLength * pxQueue->uxItemSize );
+		pxQueue->uxMessagesWaiting = ( UBaseType_t ) 0U;
+		pxQueue->pcWriteTo = pxQueue->pcHead;
+		pxQueue->pcReadFrom = pxQueue->pcHead + ( ( pxQueue->uxLength - ( UBaseType_t ) 1U ) * pxQueue->uxItemSize );
+		pxQueue->xRxLock = queueUNLOCKED;
+		pxQueue->xTxLock = queueUNLOCKED;
 
-		if( xPosition == queueOVERWRITE )
+		if( xNewQueue == pdFALSE )
 		{
-			if( pxQueue->uxMessagesWaiting > ( UBaseType_t ) 0 )
+			/* If there are tasks blocked waiting to read from the queue, then
+			the tasks will remain blocked as after this function exits the queue
+			will still be empty.  If there are tasks blocked waiting to write to
+			the queue, then one should be unblocked as after this function exits
+			it will be possible to write to it. */
+
+			// check for the list of waiting to send tasks is empty
+			// check list is empty
+			if( listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToSend ) ) == pdFALSE )
 			{
-				/* An item is not being added but overwritten, so subtract
-				one from the recorded number of items in the queue so when
-				one is added again below the number of recorded items remains
-				correct. */
-				--( pxQueue->uxMessagesWaiting );
+				// remove a process from waiting to send on the queue
+				if( xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToSend ) ) == pdTRUE )
+				{
+					// check in case of preemption if it has high priority
+					queueYIELD_IF_USING_PREEMPTION();
+				}
+				else
+				{
+					mtCOVERAGE_TEST_MARKER();
+				}
 			}
 			else
 			{
@@ -223,104 +162,82 @@ BaseType_t xReturn = pdFALSE;
 		}
 		else
 		{
-			mtCOVERAGE_TEST_MARKER();
+			/* Ensure the event queues start in the correct state. */
+			// make two lists for tasks, one waiting to send and the other is waiting to receive
+			vListInitialise( &( pxQueue->xTasksWaitingToSend ) );
+			vListInitialise( &( pxQueue->xTasksWaitingToReceive ) );
 		}
 	}
+	taskEXIT_CRITICAL();
 
-	++( pxQueue->uxMessagesWaiting );
-
-	return xReturn;
+	/* A value is returned for calling semantic consistency with previous
+	versions. */
+	return pdPASS;
 }
 /*-----------------------------------------------------------*/
 
-static void prvCopyDataFromQueue( Queue_t * const pxQueue, void * const pvBuffer )
+QueueHandle_t xQueueGenericCreate( const UBaseType_t uxQueueLength, const UBaseType_t uxItemSize, const uint8_t ucQueueType )
 {
-	pxQueue->pcReadFrom += pxQueue->uxItemSize;
-	if( pxQueue->pcReadFrom >= pxQueue->pcTail ) /*lint !e946 MISRA exception justified as use of the relational operator is the cleanest solutions. */
+Queue_t *pxNewQueue;
+size_t xQueueSizeInBytes;
+QueueHandle_t xReturn = NULL;
+
+	/* Remove compiler warnings about unused parameters should
+	configUSE_TRACE_FACILITY not be set to 1. */
+	( void ) ucQueueType;
+
+	configASSERT( uxQueueLength > ( UBaseType_t ) 0 );
+
+	if( uxItemSize == ( UBaseType_t ) 0 )
 	{
-		pxQueue->pcReadFrom = pxQueue->pcHead;
+		/* There is not going to be a queue storage area. */
+		xQueueSizeInBytes = ( size_t ) 0;
+	}
+	else
+	{
+		/* The queue is one byte longer than asked for to make wrap checking
+		easier/faster. */
+		xQueueSizeInBytes = ( size_t ) ( uxQueueLength * uxItemSize ) + ( size_t ) 1; /*lint !e961 MISRA exception as the casts are only redundant for some ports. */
+	}
+
+	/* Allocate the new queue structure and storage area. */
+	// reserve the amount in memory for the queue
+	//	pxNewQueue = ( Queue_t * ) pvPortMalloc( sizeof( Queue_t ) + xQueueSizeInBytes );
+
+	if( pxNewQueue != NULL )
+	{
+		if( uxItemSize == ( UBaseType_t ) 0 )
+		{
+			/* No RAM was allocated for the queue storage area, but PC head
+			cannot be set to NULL because NULL is used as a key to say the queue
+			is used as a mutex.  Therefore just set pcHead to point to the queue
+			as a benign value that is known to be within the memory map. */
+			pxNewQueue->pcHead = ( int8_t * ) pxNewQueue;
+		}
+		else
+		{
+			/* Jump past the queue structure to find the location of the queue
+			storage area. */
+			pxNewQueue->pcHead = ( ( int8_t * ) pxNewQueue ) + sizeof( Queue_t );
+		}
+
+		/* Initialise the queue members as described above where the queue type
+		is defined. */
+		pxNewQueue->uxLength = uxQueueLength;
+		pxNewQueue->uxItemSize = uxItemSize;
+		( void ) xQueueGenericReset( pxNewQueue, pdTRUE );
+
+		// what is trace queue create
+		// traceQUEUE_CREATE( pxNewQueue );
+		xReturn = pxNewQueue;
 	}
 	else
 	{
 		mtCOVERAGE_TEST_MARKER();
 	}
-	( void ) memcpy( ( void * ) pvBuffer, ( void * ) pxQueue->pcReadFrom, ( size_t ) pxQueue->uxItemSize ); /*lint !e961 !e418 MISRA exception as the casts are only redundant for some ports.  Also previous logic ensures a null pointer can only be passed to memcpy() when the count is 0. */
-}
-/*-----------------------------------------------------------*/
-static BaseType_t prvIsQueueEmpty( const Queue_t *pxQueue )
-{
-BaseType_t xReturn;
 
-	taskENTER_CRITICAL();
-	{
-		if( pxQueue->uxMessagesWaiting == ( UBaseType_t )  0 )
-		{
-			xReturn = pdTRUE;
-		}
-		else
-		{
-			xReturn = pdFALSE;
-		}
-	}
-	taskEXIT_CRITICAL();
+	configASSERT( xReturn );
 
 	return xReturn;
 }
-/*-----------------------------------------------------------*/
-
-BaseType_t xQueueIsQueueEmptyFromISR( const QueueHandle_t xQueue )
-{
-BaseType_t xReturn;
-
-	configASSERT( xQueue );
-	if( ( ( Queue_t * ) xQueue )->uxMessagesWaiting == ( UBaseType_t ) 0 )
-	{
-		xReturn = pdTRUE;
-	}
-	else
-	{
-		xReturn = pdFALSE;
-	}
-
-	return xReturn;
-} /*lint !e818 xQueue could not be pointer to const because it is a typedef. */
-/*-----------------------------------------------------------*/
-
-static BaseType_t prvIsQueueFull( const Queue_t *pxQueue )
-{
-BaseType_t xReturn;
-
-	taskENTER_CRITICAL();
-	{
-		if( pxQueue->uxMessagesWaiting == pxQueue->uxLength )
-		{
-			xReturn = pdTRUE;
-		}
-		else
-		{
-			xReturn = pdFALSE;
-		}
-	}
-	taskEXIT_CRITICAL();
-
-	return xReturn;
-}
-/*-----------------------------------------------------------*/
-
-BaseType_t xQueueIsQueueFullFromISR( const QueueHandle_t xQueue )
-{
-BaseType_t xReturn;
-
-	configASSERT( xQueue );
-	if( ( ( Queue_t * ) xQueue )->uxMessagesWaiting == ( ( Queue_t * ) xQueue )->uxLength )
-	{
-		xReturn = pdTRUE;
-	}
-	else
-	{
-		xReturn = pdFALSE;
-	}
-
-	return xReturn;
-} /*lint !e818 xQueue could not be pointer to const because it is a typedef. */
-/*-----------------------------------------------------------*/
+/*-----------------------------------------------------------*//*-----------------------------------------------------------*/
