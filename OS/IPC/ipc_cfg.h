@@ -38,6 +38,7 @@
 #define pdPASS
 #define mtCOVERAGE_TEST_MARKER()
 #define PRIVILEGED_FUNCTION
+#define queueYIELD_IF_USING_PREEMPTION()
 
 /*
  #define SUCCESSFUL
