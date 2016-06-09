@@ -21,30 +21,19 @@
  *****************************************************************************/
 
 #include <stdio.h>
-#include "queue.c"
+#include <stdint.h>
 
-Queue_t createQueueStructure();
+#include "ipc.h"
 
 int main(void) {
 	
-	int y;
-Queue_t testQueue;
+	uint8_t uxLength, uxItemSize ;
+	uxLength = 5;
+	uxItemSize = 4;
 
-testQueue = createQueueStructure();
-
-	printf("%d \n",testQueue.uxItemSize);
-	
-
-	scanf("%d",&y);
-
+	xQueueCreate(uxLength, uxItemSize);
 
 	return 0;
 }
 
-Queue_t createQueueStructure()
-{
-	Queue_t testQueue;
-	testQueue.uxLength = 5;
-	testQueue.uxItemSize = 4;
 
-}

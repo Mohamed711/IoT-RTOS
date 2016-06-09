@@ -33,8 +33,9 @@
 #define configASSERT(x)
 #define taskENTER_CRITICAL()
 #define taskEXIT_CRITICAL()
-#define pdTRUE
-#define pdFALSE
+#define pdTRUE	0x01
+#define pdFALSE	0x00
+#define pdPASS
 #define mtCOVERAGE_TEST_MARKER()
 #define PRIVILEGED_FUNCTION
 

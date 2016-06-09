@@ -21,11 +21,11 @@
  *****************************************************************************/
 
 #include <stdint.h>
-#include "ipc.h"
-
+#include <stdlib.h>
 
 // include of the task header file which can be used to transfer the task between modules
 #include "ipc.h"
+
 
 /* Constants used with the xRxLock and xTxLock structure members. */
 #define queueUNLOCKED					( ( BaseType_t ) -1 )
@@ -142,10 +142,10 @@ Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 
 			// check for the list of waiting to send tasks is empty
 			// check list is empty
-			if( listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToSend ) ) == pdFALSE )
+			if( /* listLIST_IS_EMPTY( &(  pxQueue->xTasksWaitingToSend  ) ) */ pdTRUE == pdFALSE )
 			{
 				// remove a process from waiting to send on the queue
-				if( xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToSend ) ) == pdTRUE )
+				if( /* xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToSend  ) ) */ pdTRUE == pdTRUE )
 				{
 					// check in case of preemption if it has high priority
 					queueYIELD_IF_USING_PREEMPTION();
@@ -164,8 +164,8 @@ Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 		{
 			/* Ensure the event queues start in the correct state. */
 			// make two lists for tasks, one waiting to send and the other is waiting to receive
-			vListInitialise( &( pxQueue->xTasksWaitingToSend ) );
-			vListInitialise( &( pxQueue->xTasksWaitingToReceive ) );
+		//	vListInitialise( &( pxQueue->xTasksWaitingToSend ) );
+		//	vListInitialise( &( pxQueue->xTasksWaitingToReceive ) );
 		}
 	}
 	taskEXIT_CRITICAL();

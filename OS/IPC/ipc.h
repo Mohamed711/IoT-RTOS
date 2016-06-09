@@ -23,9 +23,6 @@
 #ifndef IPC_H
 #define IPC_H
 
-#ifndef IPC_H
-#define IPC_H
-
 #include "ipc_cfg.h"
 
 // Ensure the configuration file is included before including this file
@@ -112,3 +109,12 @@ typedef void * QueueHandle_t;
  * \ingroup QueueManagement
  */
 #define xQueueCreate( uxQueueLength, uxItemSize ) xQueueGenericCreate( uxQueueLength, uxItemSize, queueQUEUE_TYPE_BASE )
+
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* IPC_H */
+
+
