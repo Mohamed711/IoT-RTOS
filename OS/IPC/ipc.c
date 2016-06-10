@@ -882,40 +882,20 @@ Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 
 	configASSERT( pxQueue );
 
-	traceQUEUE_DELETE( pxQueue );
-	#if ( configQUEUE_REGISTRY_SIZE > 0 )
-	{
-		vQueueUnregisterQueue( pxQueue );
-	}
-	#endif
-	vPortFree( pxQueue );
+	// what is trace queue delete ?
+	// where are these tracings ?
+	// traceQUEUE_DELETE( pxQueue );
+	// free the part of the pxQueue
+	// vPortFree( pxQueue );
 }
 
 /*-----------------------------------------------------------*/
-
 
 static BaseType_t prvCopyDataToQueue( Queue_t * const pxQueue, const void *pvItemToQueue, const BaseType_t xPosition )
 {
 BaseType_t xReturn = pdFALSE;
 
-	if( pxQueue->uxItemSize == ( UBaseType_t ) 0 )
-	{
-		#if ( configUSE_MUTEXES == 1 )
-		{
-			if( pxQueue->uxQueueType == queueQUEUE_IS_MUTEX )
-			{
-				/* The mutex is no longer being held. */
-				xReturn = xTaskPriorityDisinherit( ( void * ) pxQueue->pxMutexHolder );
-				pxQueue->pxMutexHolder = NULL;
-			}
-			else
-			{
-				mtCOVERAGE_TEST_MARKER();
-			}
-		}
-		#endif /* configUSE_MUTEXES */
-	}
-	else if( xPosition == queueSEND_TO_BACK )
+	if( xPosition == queueSEND_TO_BACK )
 	{
 		( void ) memcpy( ( void * ) pxQueue->pcWriteTo, pvItemToQueue, ( size_t ) pxQueue->uxItemSize ); /*lint !e961 !e418 MISRA exception as the casts are only redundant for some ports, plus previous logic ensures a null pointer can only be passed to memcpy() if the copy size is 0. */
 		pxQueue->pcWriteTo += pxQueue->uxItemSize;
@@ -1002,46 +982,6 @@ static void prvUnlockQueue( Queue_t * const pxQueue )
 		{
 			/* Data was posted while the queue was locked.  Are any tasks
 			blocked waiting for data to become available? */
-			#if ( configUSE_QUEUE_SETS == 1 )
-			{
-				if( pxQueue->pxQueueSetContainer != NULL )
-				{
-					if( prvNotifyQueueSetContainer( pxQueue, queueSEND_TO_BACK ) == pdTRUE )
-					{
-						/* The queue is a member of a queue set, and posting to
-						the queue set caused a higher priority task to unblock.
-						A context switch is required. */
-						vTaskMissedYield();
-					}
-					else
-					{
-						mtCOVERAGE_TEST_MARKER();
-					}
-				}
-				else
-				{
-					/* Tasks that are removed from the event list will get added to
-					the pending ready list as the scheduler is still suspended. */
-					if( listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToReceive ) ) == pdFALSE )
-					{
-						if( xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToReceive ) ) != pdFALSE )
-						{
-							/* The task waiting has a higher priority so record that a
-							context	switch is required. */
-							vTaskMissedYield();
-						}
-						else
-						{
-							mtCOVERAGE_TEST_MARKER();
-						}
-					}
-					else
-					{
-						break;
-					}
-				}
-			}
-			#else /* configUSE_QUEUE_SETS */
 			{
 				/* Tasks that are removed from the event list will get added to
 				the pending ready list as the scheduler is still suspended. */
@@ -1063,8 +1003,6 @@ static void prvUnlockQueue( Queue_t * const pxQueue )
 					break;
 				}
 			}
-			#endif /* configUSE_QUEUE_SETS */
-
 			--( pxQueue->xTxLock );
 		}
 
