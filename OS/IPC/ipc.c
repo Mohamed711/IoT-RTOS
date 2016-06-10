@@ -798,3 +798,83 @@ UBaseType_t uxReturn;
 } /*lint !e818 Pointer cannot be declared const as xQueue is a typedef not pointer. */
 /*-----------------------------------------------------------*/
 
+
+static BaseType_t prvIsQueueEmpty( const Queue_t *pxQueue )
+{
+BaseType_t xReturn;
+
+	taskENTER_CRITICAL();
+	{
+		if( pxQueue->uxMessagesWaiting == ( UBaseType_t )  0 )
+		{
+			xReturn = pdTRUE;
+		}
+		else
+		{
+			xReturn = pdFALSE;
+		}
+	}
+	taskEXIT_CRITICAL();
+
+	return xReturn;
+}
+/*-----------------------------------------------------------*/
+
+BaseType_t xQueueIsQueueEmptyFromISR( const QueueHandle_t xQueue )
+{
+BaseType_t xReturn;
+
+	configASSERT( xQueue );
+	if( ( ( Queue_t * ) xQueue )->uxMessagesWaiting == ( UBaseType_t ) 0 )
+	{
+		xReturn = pdTRUE;
+	}
+	else
+	{
+		xReturn = pdFALSE;
+	}
+
+	return xReturn;
+} /*lint !e818 xQueue could not be pointer to const because it is a typedef. */
+/*-----------------------------------------------------------*/
+
+static BaseType_t prvIsQueueFull( const Queue_t *pxQueue )
+{
+BaseType_t xReturn;
+
+	taskENTER_CRITICAL();
+	{
+		if( pxQueue->uxMessagesWaiting == pxQueue->uxLength )
+		{
+			xReturn = pdTRUE;
+		}
+		else
+		{
+			xReturn = pdFALSE;
+		}
+	}
+	taskEXIT_CRITICAL();
+
+	return xReturn;
+}
+/*-----------------------------------------------------------*/
+
+BaseType_t xQueueIsQueueFullFromISR( const QueueHandle_t xQueue )
+{
+BaseType_t xReturn;
+
+	configASSERT( xQueue );
+	if( ( ( Queue_t * ) xQueue )->uxMessagesWaiting == ( ( Queue_t * ) xQueue )->uxLength )
+	{
+		xReturn = pdTRUE;
+	}
+	else
+	{
+		xReturn = pdFALSE;
+	}
+
+	return xReturn;
+} /*lint !e818 xQueue could not be pointer to const because it is a typedef. */
+/*-----------------------------------------------------------*/
+
+
