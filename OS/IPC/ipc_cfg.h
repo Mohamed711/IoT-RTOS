@@ -38,7 +38,8 @@
 #define pdPASS
 #define mtCOVERAGE_TEST_MARKER()
 #define PRIVILEGED_FUNCTION
-#define queueYIELD_IF_USING_PREEMPTION()
+#define configUSE_PREEMPTION 0
+#define portYIELD_WITHIN_API()
 
 /*
  #define SUCCESSFUL

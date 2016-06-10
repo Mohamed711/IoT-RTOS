@@ -31,6 +31,16 @@
 #define queueUNLOCKED					( ( BaseType_t ) -1 )
 #define queueLOCKED_UNMODIFIED			( ( BaseType_t ) 0 )
 
+#if( configUSE_PREEMPTION == 0 )
+	/* If the cooperative scheduler is being used then a yield should not be
+	performed just because a higher priority task has been woken. */
+	#define queueYIELD_IF_USING_PREEMPTION()
+#else
+	#define queueYIELD_IF_USING_PREEMPTION() portYIELD_WITHIN_API()
+#endif
+
+
+
 /*
  * Definition of the queue used by the scheduler.
  * Items are queued by copy, not reference.
@@ -242,7 +252,6 @@ QueueHandle_t xReturn = NULL;
 }
 /*-----------------------------------------------------------*/
 
-
 BaseType_t xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQueue, TickType_t xTicksToWait, const BaseType_t xCopyPosition )
 {
 BaseType_t xEntryTimeSet = pdFALSE, xYieldRequired;
@@ -252,6 +261,7 @@ Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 	configASSERT( pxQueue );
 	configASSERT( !( ( pvItemToQueue == NULL ) && ( pxQueue->uxItemSize != ( UBaseType_t ) 0U ) ) );
 	configASSERT( !( ( xCopyPosition == queueOVERWRITE ) && ( pxQueue->uxLength != 1 ) ) );
+
 //get scheduler state
 	//#if ( ( INCLUDE_xTaskGetSchedulerState == 1 ) || ( configUSE_TIMERS == 1 ) )
 	//{
@@ -273,11 +283,8 @@ Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 			queue is full. */
 			if( ( pxQueue->uxMessagesWaiting < pxQueue->uxLength ) || ( xCopyPosition == queueOVERWRITE ) )
 			{
-				traceQUEUE_SEND( pxQueue );
+				// traceQUEUE_SEND( pxQueue );
 				xYieldRequired = prvCopyDataToQueue( pxQueue, pvItemToQueue, xCopyPosition );
-
-
-				/* configUSE_QUEUE_SETS */
 
 					/* If there was a task waiting for data to arrive on the
 					queue then unblock it now. */
@@ -394,8 +401,6 @@ Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 		}
 	}
 }
-/*-----------------------------------------------------------*/
-
 /*-----------------------------------------------------------*/
 
 BaseType_t xQueueGenericSendFromISR( QueueHandle_t xQueue, const void * const pvItemToQueue, BaseType_t * const pxHigherPriorityTaskWoken, const BaseType_t xCopyPosition )
@@ -745,3 +750,51 @@ Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 	return xReturn;
 }
 /*-----------------------------------------------------------*/
+
+
+UBaseType_t uxQueueMessagesWaiting( const QueueHandle_t xQueue )
+{
+UBaseType_t uxReturn;
+
+	configASSERT( xQueue );
+
+	taskENTER_CRITICAL();
+	{
+		uxReturn = ( ( Queue_t * ) xQueue )->uxMessagesWaiting;
+	}
+	taskEXIT_CRITICAL();
+
+	return uxReturn;
+} /*lint !e818 Pointer cannot be declared const as xQueue is a typedef not pointer. */
+/*-----------------------------------------------------------*/
+
+UBaseType_t uxQueueSpacesAvailable( const QueueHandle_t xQueue )
+{
+UBaseType_t uxReturn;
+Queue_t *pxQueue;
+
+	pxQueue = ( Queue_t * ) xQueue;
+	configASSERT( pxQueue );
+
+	taskENTER_CRITICAL();
+	{
+		uxReturn = pxQueue->uxLength - pxQueue->uxMessagesWaiting;
+	}
+	taskEXIT_CRITICAL();
+
+	return uxReturn;
+} /*lint !e818 Pointer cannot be declared const as xQueue is a typedef not pointer. */
+/*-----------------------------------------------------------*/
+
+UBaseType_t uxQueueMessagesWaitingFromISR( const QueueHandle_t xQueue )
+{
+UBaseType_t uxReturn;
+
+	configASSERT( xQueue );
+
+	uxReturn = ( ( Queue_t * ) xQueue )->uxMessagesWaiting;
+
+	return uxReturn;
+} /*lint !e818 Pointer cannot be declared const as xQueue is a typedef not pointer. */
+/*-----------------------------------------------------------*/
+
