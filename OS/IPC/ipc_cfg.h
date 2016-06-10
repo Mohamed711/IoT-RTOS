@@ -25,21 +25,21 @@
 #define IPC_CFG_H
 
 /* the basetype must be defined some where */
- typedef int8_t BaseType_t ;
- typedef uint8_t TickType_t ;
- typedef uint8_t UBaseType_t ;
+ typedef int8_t BaseType_t ;	// signed basetype is the base datatype
+ typedef uint8_t TickType_t ;	// ticktype is a structure for the tick
+ typedef uint8_t UBaseType_t ; // unsigned basetype is important datatype used
 
 
-#define configASSERT(x)
-#define taskENTER_CRITICAL()
-#define taskEXIT_CRITICAL()
-#define pdTRUE	0x01
-#define pdFALSE	0x00
-#define pdPASS	0x01
-#define mtCOVERAGE_TEST_MARKER()
-#define PRIVILEGED_FUNCTION
-#define configUSE_PREEMPTION 0
-#define portYIELD_WITHIN_API()
+#define configASSERT(x)			// configAssert check the condition x is true or return the file and line number
+#define taskENTER_CRITICAL()	// enable critical section
+#define taskEXIT_CRITICAL()		// disable critical section
+#define pdTRUE	0x01			// true return
+#define pdFALSE	0x00			// false return
+#define pdPASS	0x01			// return value that the function carried out correctly
+#define mtCOVERAGE_TEST_MARKER()// just an empty for the else part of the if statement
+#define PRIVILEGED_FUNCTION		// to the memory protection unit
+#define configUSE_PREEMPTION 0	// config the scheduler to be preemptive or cooperative
+#define portYIELD_WITHIN_API()	// check for the tasks to take the higher priority one
 
 /*
  #define SUCCESSFUL
