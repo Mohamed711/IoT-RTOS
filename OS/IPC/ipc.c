@@ -534,7 +534,7 @@ Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 			{
 				/* Remember the read position in case the queue is only being
 				peeked. */
-				pcOriginalReadPosition = pxQueue->u.pcReadFrom;
+				pcOriginalReadPosition = pxQueue->pcReadFrom;
 
 				prvCopyDataFromQueue( pxQueue, pvBuffer );
 
@@ -985,13 +985,17 @@ static void prvUnlockQueue( Queue_t * const pxQueue )
 			{
 				/* Tasks that are removed from the event list will get added to
 				the pending ready list as the scheduler is still suspended. */
-				if( listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToReceive ) ) == pdFALSE )
+
+				// check the list of tasks waiting to receive on the queue
+				if( /* listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToReceive ) ) */ pdTRUE == pdFALSE )
 				{
-					if( xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToReceive ) ) != pdFALSE )
+					// remove task from waiting list to receive
+					if( /* xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToReceive ) )*/ pdTRUE != pdFALSE )
 					{
 						/* The task waiting has a higher priority so record that a
 						context	switch is required. */
-						vTaskMissedYield();
+						// make the higher priority task to run
+						// vTaskMissedYield();
 					}
 					else
 					{
@@ -1015,11 +1019,13 @@ static void prvUnlockQueue( Queue_t * const pxQueue )
 	{
 		while( pxQueue->xRxLock > queueLOCKED_UNMODIFIED )
 		{
-			if( listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToSend ) ) == pdFALSE )
+			// check the tasks on the waiting list to send
+			if(/* listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToSend ) ) */ pdTRUE == pdFALSE )
 			{
-				if( xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToSend ) ) != pdFALSE )
+				if(/* xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToSend ) ) */ pdTRUE != pdFALSE )
 				{
-					vTaskMissedYield();
+					// invoke the highest priority task to run
+					// vTaskMissedYield();
 				}
 				else
 				{
