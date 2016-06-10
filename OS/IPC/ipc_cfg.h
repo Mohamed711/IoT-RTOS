@@ -35,7 +35,7 @@
 #define taskEXIT_CRITICAL()
 #define pdTRUE	0x01
 #define pdFALSE	0x00
-#define pdPASS
+#define pdPASS	0x01
 #define mtCOVERAGE_TEST_MARKER()
 #define PRIVILEGED_FUNCTION
 #define configUSE_PREEMPTION 0
