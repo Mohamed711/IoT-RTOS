@@ -663,8 +663,6 @@ Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 }
 /*-----------------------------------------------------------*/
 
-/*-----------------------------------------------------------*/
-
 BaseType_t xQueueReceiveFromISR( QueueHandle_t xQueue, void * const pvBuffer, BaseType_t * const pxHigherPriorityTaskWoken )
 {
 BaseType_t xReturn;
@@ -932,11 +930,11 @@ BaseType_t xReturn = pdFALSE;
 	}
 	else
 	{
-		( void ) memcpy( ( void * ) pxQueue->u.pcReadFrom, pvItemToQueue, ( size_t ) pxQueue->uxItemSize ); /*lint !e961 MISRA exception as the casts are only redundant for some ports. */
-		pxQueue->u.pcReadFrom -= pxQueue->uxItemSize;
-		if( pxQueue->u.pcReadFrom < pxQueue->pcHead ) /*lint !e946 MISRA exception justified as comparison of pointers is the cleanest solution. */
+		( void ) memcpy( ( void * ) pxQueue->pcReadFrom, pvItemToQueue, ( size_t ) pxQueue->uxItemSize ); /*lint !e961 MISRA exception as the casts are only redundant for some ports. */
+		pxQueue->pcReadFrom -= pxQueue->uxItemSize;
+		if( pxQueue->pcReadFrom < pxQueue->pcHead ) /*lint !e946 MISRA exception justified as comparison of pointers is the cleanest solution. */
 		{
-			pxQueue->u.pcReadFrom = ( pxQueue->pcTail - pxQueue->uxItemSize );
+			pxQueue->pcReadFrom = ( pxQueue->pcTail - pxQueue->uxItemSize );
 		}
 		else
 		{
@@ -974,16 +972,16 @@ static void prvCopyDataFromQueue( Queue_t * const pxQueue, void * const pvBuffer
 {
 	if( pxQueue->uxItemSize != ( UBaseType_t ) 0 )
 	{
-		pxQueue->u.pcReadFrom += pxQueue->uxItemSize;
-		if( pxQueue->u.pcReadFrom >= pxQueue->pcTail ) /*lint !e946 MISRA exception justified as use of the relational operator is the cleanest solutions. */
+		pxQueue->pcReadFrom += pxQueue->uxItemSize;
+		if( pxQueue->pcReadFrom >= pxQueue->pcTail ) /*lint !e946 MISRA exception justified as use of the relational operator is the cleanest solutions. */
 		{
-			pxQueue->u.pcReadFrom = pxQueue->pcHead;
+			pxQueue->pcReadFrom = pxQueue->pcHead;
 		}
 		else
 		{
 			mtCOVERAGE_TEST_MARKER();
 		}
-		( void ) memcpy( ( void * ) pvBuffer, ( void * ) pxQueue->u.pcReadFrom, ( size_t ) pxQueue->uxItemSize ); /*lint !e961 !e418 MISRA exception as the casts are only redundant for some ports.  Also previous logic ensures a null pointer can only be passed to memcpy() when the count is 0. */
+		( void ) memcpy( ( void * ) pvBuffer, ( void * ) pxQueue->pcReadFrom, ( size_t ) pxQueue->uxItemSize ); /*lint !e961 !e418 MISRA exception as the casts are only redundant for some ports.  Also previous logic ensures a null pointer can only be passed to memcpy() when the count is 0. */
 	}
 }
 /*-----------------------------------------------------------*/
