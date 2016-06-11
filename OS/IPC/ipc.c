@@ -82,8 +82,9 @@ typedef struct QueueDefinition
  * to indicate that a task may require unblocking.  When the queue in unlocked
  * these lock counts are inspected, and the appropriate action taken.
  */
-static void prvUnlockQueue( Queue_t * const pxQueue );
-
+#if (configUSE_QUEUE_LOCKS == 1)
+	static void prvUnlockQueue( Queue_t * const pxQueue );
+#endif
 /*
  * Uses a critical section to determine if there is any data in a queue.
  *
@@ -116,19 +117,21 @@ static void prvCopyDataFromQueue( Queue_t * const pxQueue, void * const pvBuffer
  * Macro to mark a queue as locked.  Locking a queue prevents an ISR from
  * accessing the queue event lists.
  */
-#define prvLockQueue( pxQueue )								\
-	taskENTER_CRITICAL();									\
-	{														\
-		if( ( pxQueue )->xRxLock == queueUNLOCKED )			\
-		{													\
-			( pxQueue )->xRxLock = queueLOCKED_UNMODIFIED;	\
-		}													\
-		if( ( pxQueue )->xTxLock == queueUNLOCKED )			\
-		{													\
-			( pxQueue )->xTxLock = queueLOCKED_UNMODIFIED;	\
-		}													\
-	}														\
-	taskEXIT_CRITICAL()
+#if (configUSE_QUEUE_LOCKS == 1)
+	#define prvLockQueue( pxQueue )								\
+		taskENTER_CRITICAL();									\
+		{														\
+			if( ( pxQueue )->xRxLock == queueUNLOCKED )			\
+			{													\
+				( pxQueue )->xRxLock = queueLOCKED_UNMODIFIED;	\
+			}													\
+			if( ( pxQueue )->xTxLock == queueUNLOCKED )			\
+			{													\
+				( pxQueue )->xTxLock = queueLOCKED_UNMODIFIED;	\
+			}													\
+		}														\
+		taskEXIT_CRITICAL()
+#endif
 /*-----------------------------------------------------------*/
 
 BaseType_t xQueueGenericReset( QueueHandle_t xQueue, BaseType_t xNewQueue )
@@ -143,6 +146,7 @@ Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 		pxQueue->uxMessagesWaiting = ( UBaseType_t ) 0U;
 		pxQueue->pcWriteTo = pxQueue->pcHead;
 		pxQueue->pcReadFrom = pxQueue->pcHead + ( ( pxQueue->uxLength - ( UBaseType_t ) 1U ) * pxQueue->uxItemSize );
+
 
 #if (configUSE_QUEUE_LOCKS == 1)
 		pxQueue->xRxLock = queueUNLOCKED;
@@ -591,19 +595,20 @@ BaseType_t xReturn;
 	}
 
 	return xReturn;
-} /*lint !e818 xQueue could not be pointer to const because it is a typedef. */
+}
 /*-----------------------------------------------------------*/
 
 void vQueueDelete( QueueHandle_t xQueue )
 {
-Queue_t * const pxQueue = ( Queue_t * ) xQueue;
+	Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 
 	configASSERT( pxQueue );
 
-	// what is trace queue delete ?
-	// where are these tracings ?
-	// traceQUEUE_DELETE( pxQueue );
+	traceQUEUE_DELETE( pxQueue );
+
+	/// LOOK HERE ///
 	// free the part of the pxQueue
+
 	// vPortFree( pxQueue );
 }
 
@@ -684,83 +689,84 @@ static void prvCopyDataFromQueue( Queue_t * const pxQueue, void * const pvBuffer
 }
 /*-----------------------------------------------------------*/
 
-
-static void prvUnlockQueue( Queue_t * const pxQueue )
-{
-	/* THIS FUNCTION MUST BE CALLED WITH THE SCHEDULER SUSPENDED. */
-
-	/* The lock counts contains the number of extra data items placed or
-	removed from the queue while the queue was locked.  When a queue is
-	locked items can be added or removed, but the event lists cannot be
-	updated. */
-	taskENTER_CRITICAL();
+#define ( configUSE_QUEUE_LOCKS == 1 )
+	static void prvUnlockQueue( Queue_t * const pxQueue )
 	{
-		/* See if data was added to the queue while it was locked. */
-		while( pxQueue->xTxLock > queueLOCKED_UNMODIFIED )
-		{
-			/* Data was posted while the queue was locked.  Are any tasks
-			blocked waiting for data to become available? */
-			{
-				/* Tasks that are removed from the event list will get added to
-				the pending ready list as the scheduler is still suspended. */
+		/* THIS FUNCTION MUST BE CALLED WITH THE SCHEDULER SUSPENDED. */
 
-				// check the list of tasks waiting to receive on the queue
-				if( /* listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToReceive ) ) */ pdTRUE == pdFALSE )
+		/* The lock counts contains the number of extra data items placed or
+		removed from the queue while the queue was locked.  When a queue is
+		locked items can be added or removed, but the event lists cannot be
+		updated. */
+		taskENTER_CRITICAL();
+		{
+			/* See if data was added to the queue while it was locked. */
+			while( pxQueue->xTxLock > queueLOCKED_UNMODIFIED )
+			{
+				/* Data was posted while the queue was locked.  Are any tasks
+				blocked waiting for data to become available? */
 				{
-					// remove task from waiting list to receive
-					if( /* xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToReceive ) )*/ pdTRUE != pdFALSE )
+					/* Tasks that are removed from the event list will get added to
+					the pending ready list as the scheduler is still suspended. */
+
+					// check the list of tasks waiting to receive on the queue
+					if( /* listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToReceive ) ) */ pdTRUE == pdFALSE )
 					{
-						/* The task waiting has a higher priority so record that a
-						context	switch is required. */
-						// make the higher priority task to run
+						// remove task from waiting list to receive
+						if( /* xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToReceive ) )*/ pdTRUE != pdFALSE )
+						{
+							/* The task waiting has a higher priority so record that a
+							context	switch is required. */
+							// make the higher priority task to run
+							// vTaskMissedYield();
+						}
+						else
+						{
+							mtCOVERAGE_TEST_MARKER();
+						}
+					}
+					else
+					{
+						break;
+					}
+				}
+				--( pxQueue->xTxLock );
+			}
+
+			pxQueue->xTxLock = queueUNLOCKED;
+		}
+		taskEXIT_CRITICAL();
+
+		/* Do the same for the Rx lock. */
+		taskENTER_CRITICAL();
+		{
+			while( pxQueue->xRxLock > queueLOCKED_UNMODIFIED )
+			{
+				// check the tasks on the waiting list to send
+				if(/* listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToSend ) ) */ pdTRUE == pdFALSE )
+				{
+					if(/* xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToSend ) ) */ pdTRUE != pdFALSE )
+					{
+						// invoke the highest priority task to run
 						// vTaskMissedYield();
 					}
 					else
 					{
 						mtCOVERAGE_TEST_MARKER();
 					}
+
+					--( pxQueue->xRxLock );
 				}
 				else
 				{
 					break;
 				}
 			}
-			--( pxQueue->xTxLock );
+
+			pxQueue->xRxLock = queueUNLOCKED;
 		}
-
-		pxQueue->xTxLock = queueUNLOCKED;
+		taskEXIT_CRITICAL();
 	}
-	taskEXIT_CRITICAL();
-
-	/* Do the same for the Rx lock. */
-	taskENTER_CRITICAL();
-	{
-		while( pxQueue->xRxLock > queueLOCKED_UNMODIFIED )
-		{
-			// check the tasks on the waiting list to send
-			if(/* listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToSend ) ) */ pdTRUE == pdFALSE )
-			{
-				if(/* xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToSend ) ) */ pdTRUE != pdFALSE )
-				{
-					// invoke the highest priority task to run
-					// vTaskMissedYield();
-				}
-				else
-				{
-					mtCOVERAGE_TEST_MARKER();
-				}
-
-				--( pxQueue->xRxLock );
-			}
-			else
-			{
-				break;
-			}
-		}
-
-		pxQueue->xRxLock = queueUNLOCKED;
-	}
-	taskEXIT_CRITICAL();
-}
+#endif
 /*-----------------------------------------------------------*/
 
