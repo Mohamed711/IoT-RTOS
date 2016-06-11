@@ -88,7 +88,7 @@ pid32 processCreate(void *funcAddr, u32 ssize, pri16 priority, char *name)
 
 	if (ssize < MINSTK)
 		ssize = MINSTK;
-	//ssize = (u32)roundmb(ssize);// sameh hy3mlha
+
 	pid = processNewPid();
 //	saddr = (u32 *)memoryGetStack(ssize); // sameh hy3mlha
 
@@ -141,15 +141,13 @@ sysCall processTerminate(pid32 pid)
 		//xdone(); //lsa mt3mltsh 
 	}
 
-//	memoryFreeStack(prptr->prstkbase, prptr->prstklen); //sameh msh hy3mlha
-
 	switch (prptr->prstate) {
 	case PR_CURR:
 		prptr->prstate = PR_FREE; /* Suicide */
 		reSched();
 	case PR_SLEEP:
 	case PR_RECTIM:
-//		unsleep(pid); lsa mt3mltsh
+		unsleep(pid);
 		prptr->prstate = PR_FREE;
 		break;
 	case PR_WAIT:
