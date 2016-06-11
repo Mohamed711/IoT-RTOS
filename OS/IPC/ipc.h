@@ -23,10 +23,8 @@
 #ifndef IPC_H
 #define IPC_H
 
-// remove this include for the header file it is included in the main file only
-#include "ipc_cfg.h"
-
 // Ensure the configuration file is included before including this file
+/// LOOK HERE ///
 #ifndef IPC_CFG_H
 	#error "include xxxxxx.h" must appear in source files before "include ipc.h"
 #endif
@@ -49,8 +47,6 @@ typedef void * QueueHandle_t;
 #define	queueSEND_TO_FRONT		( ( BaseType_t ) 1 )
 #define queueOVERWRITE			( ( BaseType_t ) 2 )
 
-/* For internal use only.  These definitions *must* match those in ipc.c. */
-#define queueQUEUE_TYPE_BASE				( ( uint8_t ) 0U )
 
 /**
  * ipc. h
@@ -108,7 +104,7 @@ typedef void * QueueHandle_t;
  * \defgroup xQueueCreate xQueueCreate
  * \ingroup QueueManagement
  */
-#define xQueueCreate( uxQueueLength, uxItemSize ) xQueueGenericCreate( uxQueueLength, uxItemSize, queueQUEUE_TYPE_BASE )
+#define xQueueCreate( uxQueueLength, uxItemSize ) xQueueGenericCreate( uxQueueLength, uxItemSize )
 
 /**
  * ipc. h
@@ -1384,7 +1380,7 @@ UBaseType_t uxQueueMessagesWaitingFromISR( const QueueHandle_t xQueue ) PRIVILEG
  * Generic version of the queue creation function, which is in turn called by
  * any queue creation function or macro.
  */
-QueueHandle_t xQueueGenericCreate( const UBaseType_t uxQueueLength, const UBaseType_t uxItemSize, const uint8_t ucQueueType ) PRIVILEGED_FUNCTION;
+QueueHandle_t xQueueGenericCreate( const UBaseType_t uxQueueLength, const UBaseType_t uxItemSize ) PRIVILEGED_FUNCTION;
 
 
 /* Not public API functions. */
@@ -1394,6 +1390,7 @@ BaseType_t xQueueGenericReset( QueueHandle_t xQueue, BaseType_t xNewQueue ) PRIV
 #ifdef __cplusplus
 }
 #endif
+
 
 #endif /* IPC_H */
 

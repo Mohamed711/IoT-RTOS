@@ -43,4 +43,61 @@ typedef uint8_t TimeOut_t;  	// do not know want to know more about it
 #define portYIELD_WITHIN_API()	// check for the tasks to take the higher priority one
 #define errQUEUE_FULL	0x00	// error value indicates that the queue is full
 #define errQUEUE_EMPTY 	0x00	// error the queue is empty
+#define configUSE_QUEUE_LOCKS 1	// configure the locks
+
+#ifndef traceQUEUE_CREATE
+	#define traceQUEUE_CREATE( pxNewQueue )
+#endif
+
+#ifndef traceQUEUE_CREATE_FAILED
+	#define traceQUEUE_CREATE_FAILED( ucQueueType )
+#endif
+
+#ifndef traceQUEUE_SEND
+	#define traceQUEUE_SEND( pxQueue )
+#endif
+
+#ifndef traceQUEUE_SEND_FAILED
+	#define traceQUEUE_SEND_FAILED( pxQueue )
+#endif
+
+#ifndef traceQUEUE_RECEIVE
+	#define traceQUEUE_RECEIVE( pxQueue )
+#endif
+
+#ifndef traceQUEUE_PEEK
+	#define traceQUEUE_PEEK( pxQueue )
+#endif
+
+#ifndef traceQUEUE_PEEK_FROM_ISR
+	#define traceQUEUE_PEEK_FROM_ISR( pxQueue )
+#endif
+
+#ifndef traceQUEUE_RECEIVE_FAILED
+	#define traceQUEUE_RECEIVE_FAILED( pxQueue )
+#endif
+
+#ifndef traceQUEUE_SEND_FROM_ISR
+	#define traceQUEUE_SEND_FROM_ISR( pxQueue )
+#endif
+
+#ifndef traceQUEUE_SEND_FROM_ISR_FAILED
+	#define traceQUEUE_SEND_FROM_ISR_FAILED( pxQueue )
+#endif
+
+#ifndef traceQUEUE_RECEIVE_FROM_ISR
+	#define traceQUEUE_RECEIVE_FROM_ISR( pxQueue )
+#endif
+
+#ifndef traceQUEUE_RECEIVE_FROM_ISR_FAILED
+	#define traceQUEUE_RECEIVE_FROM_ISR_FAILED( pxQueue )
+#endif
+
+#ifndef traceQUEUE_PEEK_FROM_ISR_FAILED
+	#define traceQUEUE_PEEK_FROM_ISR_FAILED( pxQueue )
+#endif
+
+#ifndef traceQUEUE_DELETE
+	#define traceQUEUE_DELETE( pxQueue )
+#endif
 
