@@ -131,7 +131,7 @@ pid32 processCreate(void *funcAddr, u32 ssize, pri16 priority, char *name)
 sysCall processTerminate(pid32 pid)
 {
 	struct procent *prptr; /* Ptr to process’ table entry */
-	u32 i; /* Index into descriptors */
+	//u32 i; /* Index into descriptors */
 
 	if (isbadpid(pid) || (pid == NULLPROC)
 		|| ((prptr = &proctab[pid])->prstate) == PR_FREE) {
@@ -164,13 +164,20 @@ sysCall processTerminate(pid32 pid)
 	return OK;
 }
 
-/* Index of ready list		*/
-
-sysCall	processSetReady(u32 pid)	/* ID of process to make ready	*/
+/******************************************************************************
+*
+*	The function's purpose is to set the status of a new process to ready
+*
+*	\param pid				the process's ID
+*
+* 	\return 0 if there's an error, -1 if there's no error
+*
+*****************************************************************************/
+sysCall	processSetReady(u32 pid)
 {
 	register struct procent *prptr; //optimazation for fast memory access
 
-	if (isbadpid(pid)) //macro should be defined
+	if (isbadpid(pid))
 	{
 		return SYSERR;
 	}
@@ -184,7 +191,16 @@ sysCall	processSetReady(u32 pid)	/* ID of process to make ready	*/
 return OK;
 }
 
-pri16 processResume(pid32 pid) 		/* ID of process to unsuspend	*/
+/******************************************************************************
+*
+*	The function's purpose is to resume a previously suspended process
+*
+*	\param pid				the process's ID
+*
+* 	\return the priority of the resumed process
+*
+*****************************************************************************/
+pri16 processResume(pid32 pid)
 {
 	//intmask	mask;			/* Saved interrupt mask		*/
 	struct	procent *prptr;		/* Ptr to process' table entry	*/
@@ -216,6 +232,15 @@ pri16 processResume(pid32 pid) 		/* ID of process to unsuspend	*/
 	return prio;
 }
 
+/******************************************************************************
+*
+*	The function's purpose is to set the status of a new process to suspend
+*
+*	\param pid				the process's ID
+*
+* 	\return 0 if there's an error, -1 if there's no error
+*
+*****************************************************************************/
 sysCall	processSuspend(pid32 pid) 		/* ID of process to suspend	*/
 {
 	//intmask	mask;			/* Saved interrupt mask		*/
@@ -255,6 +280,14 @@ sysCall	processSuspend(pid32 pid) 		/* ID of process to suspend	*/
 	//restore(mask);
 	return prio;
 }
+
+/******************************************************************************
+*
+*	The function's purpose is to suspend all the processes
+*
+* 	\return none
+*
+*****************************************************************************/
 void processSuspendAll(void) 		
 {	
 	while(nonempty(readylist))
@@ -266,6 +299,14 @@ void processSuspendAll(void)
 			
 	}
 }
+
+/******************************************************************************
+*
+*	The function's purpose is to resume all the previously suspended processes
+*
+* 	\return none
+*
+*****************************************************************************/
 void processResumeAll(void)
 {
 	while(nonempty(suspendedlist))
