@@ -25,10 +25,10 @@
 #define IPC_CFG_H
 
 /* the basetype must be defined some where */
- typedef int8_t BaseType_t ;	// signed basetype is the base datatype
- typedef uint8_t TickType_t ;	// ticktype is a structure for the tick
- typedef uint8_t UBaseType_t ; // unsigned basetype is important datatype used
-
+typedef int8_t BaseType_t ;		// signed basetype is the base datatype
+typedef uint8_t TickType_t ;	// ticktype is a structure for the tick
+typedef uint8_t UBaseType_t ; 	// unsigned basetype is important datatype used
+typedef uint8_t TimeOut_t;  	// do not know want to know more about it
 
 #define configASSERT(x)			// configAssert check the condition x is true or return the file and line number
 #define taskENTER_CRITICAL()	// enable critical section
@@ -36,13 +36,11 @@
 #define pdTRUE	0x01			// true return
 #define pdFALSE	0x00			// false return
 #define pdPASS	0x01			// return value that the function carried out correctly
+#define pdFAIL 	0x00			// return fail
 #define mtCOVERAGE_TEST_MARKER()// just an empty for the else part of the if statement
 #define PRIVILEGED_FUNCTION		// to the memory protection unit
 #define configUSE_PREEMPTION 0	// config the scheduler to be preemptive or cooperative
 #define portYIELD_WITHIN_API()	// check for the tasks to take the higher priority one
+#define errQUEUE_FULL	0x00	// error value indicates that the queue is full
+#define errQUEUE_EMPTY 	0x00	// error the queue is empty
 
-/*
- #define SUCCESSFUL
- #define QUEUE_IS_EMPTY
- #define QUEUE_IS_FULL
-*/

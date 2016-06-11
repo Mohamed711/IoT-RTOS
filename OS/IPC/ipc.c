@@ -255,215 +255,36 @@ QueueHandle_t xReturn = NULL;
 
 BaseType_t xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQueue, TickType_t xTicksToWait, const BaseType_t xCopyPosition )
 {
-BaseType_t xEntryTimeSet = pdFALSE, xYieldRequired;
-TimeOut_t xTimeOut;
-Queue_t * const pxQueue = ( Queue_t * ) xQueue;
+	BaseType_t xEntryTimeSet = pdFALSE;
+	TimeOut_t xTimeOut;
+	Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 
-	configASSERT( pxQueue );
-	configASSERT( !( ( pvItemToQueue == NULL ) && ( pxQueue->uxItemSize != ( UBaseType_t ) 0U ) ) );
-	configASSERT( !( ( xCopyPosition == queueOVERWRITE ) && ( pxQueue->uxLength != 1 ) ) );
+			configASSERT( pxQueue );
+			configASSERT( !( ( pvItemToQueue == NULL ) && ( pxQueue->uxItemSize != ( UBaseType_t ) 0U ) ) );
 
-//get scheduler state
-	//#if ( ( INCLUDE_xTaskGetSchedulerState == 1 ) || ( configUSE_TIMERS == 1 ) )
-	//{
-	//	configASSERT( !( ( xTaskGetSchedulerState() == taskSCHEDULER_SUSPENDED ) && ( xTicksToWait != 0 ) ) );
-	//}
-	//#endif
-
-
-	/* This function relaxes the coding standard somewhat to allow return
-	statements within the function itself.  This is done in the interest
-	of execution time efficiency. */
-	for( ;; )
-	{
-		taskENTER_CRITICAL();
-		{
-			/* Is there room on the queue now?  The running task must be the
-			highest priority task wanting to access the queue.  If the head item
-			in the queue is to be overwritten then it does not matter if the
-			queue is full. */
-			if( ( pxQueue->uxMessagesWaiting < pxQueue->uxLength ) || ( xCopyPosition == queueOVERWRITE ) )
+			for( ;; )
 			{
-				// traceQUEUE_SEND( pxQueue );
-				xYieldRequired = prvCopyDataToQueue( pxQueue, pvItemToQueue, xCopyPosition );
-
-					/* If there was a task waiting for data to arrive on the
-					queue then unblock it now. */
-					if( listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToReceive ) ) == pdFALSE )
+				taskENTER_CRITICAL();
+				{
+					/* Is there room on the queue now?  To be running we must be
+					the highest priority task wanting to access the queue. */
+					if( pxQueue->uxMessagesWaiting < pxQueue->uxLength )
 					{
-						if( xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToReceive ) ) == pdTRUE )
+						// trace queue have to search about this sentence
+						// traceQUEUE_SEND( pxQueue );
+						prvCopyDataToQueue( pxQueue, pvItemToQueue, xCopyPosition );
+
+						/* If there was a task waiting for data to arrive on the
+						queue then unblock it now. */
+						// look for waiting tasks to receive
+						if( /* listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToReceive ) ) */ pdTRUE == pdFALSE )
 						{
-							/* The unblocked task has a priority higher than
-							our own so yield immediately.  Yes it is ok to do
-							this from within the critical section - the kernel
-							takes care of that. */
-							queueYIELD_IF_USING_PREEMPTION();
-						}
-						else
-						{
-							mtCOVERAGE_TEST_MARKER();
-						}
-					}
-					else if( xYieldRequired != pdFALSE )
-					{
-						/* This path is a special case that will only get
-						executed if the task was holding multiple mutexes and
-						the mutexes were given back in an order that is
-						different to that in which they were taken. */
-						queueYIELD_IF_USING_PREEMPTION();
-					}
-					else
-					{
-						mtCOVERAGE_TEST_MARKER();
-					}
-
-				 /* configUSE_QUEUE_SETS */
-
-				taskEXIT_CRITICAL();
-				return pdPASS;
-			}
-			else
-			{
-				if( xTicksToWait == ( TickType_t ) 0 )
-				{
-					/* The queue was full and no block time is specified (or
-					the block time has expired) so leave now. */
-					taskEXIT_CRITICAL();
-
-					/* Return to the original privilege level before exiting
-					the function. */
-					traceQUEUE_SEND_FAILED( pxQueue );
-					return errQUEUE_FULL;
-				}
-				else if( xEntryTimeSet == pdFALSE )
-				{
-					/* The queue was full and a block time was specified so
-					configure the timeout structure. */
-					vTaskSetTimeOutState( &xTimeOut );
-					xEntryTimeSet = pdTRUE;
-				}
-				else
-				{
-					/* Entry time was already set. */
-					mtCOVERAGE_TEST_MARKER();
-				}
-			}
-		}
-		taskEXIT_CRITICAL();
-
-		/* Interrupts and other tasks can send to and receive from the queue
-		now  the critical section has been exited. */
-
-		vTaskSuspendAll();
-		prvLockQueue( pxQueue );
-
-		/* Update the timeout state to see if it has expired yet. */
-		if( xTaskCheckForTimeOut( &xTimeOut, &xTicksToWait ) == pdFALSE )
-		{
-			if( prvIsQueueFull( pxQueue ) != pdFALSE )
-			{
-				traceBLOCKING_ON_QUEUE_SEND( pxQueue );
-				vTaskPlaceOnEventList( &( pxQueue->xTasksWaitingToSend ), xTicksToWait );
-
-				/* Unlocking the queue means queue events can effect the
-				event list.  It is possible	that interrupts occurring now
-				remove this task from the event	list again - but as the
-				scheduler is suspended the task will go onto the pending
-				ready list instead of the actual ready list. */
-				prvUnlockQueue( pxQueue );
-
-				/* Resuming the scheduler will move tasks from the pending
-				ready list into the ready list - so it is feasible that this
-				task is already in a ready list before it yields - in which
-				case the yield will not cause a context switch unless there
-				is also a higher priority task in the pending ready list. */
-				if( xTaskResumeAll() == pdFALSE )
-				{
-					portYIELD_WITHIN_API();
-				}
-			}
-			else
-			{
-				/* Try again. */
-				prvUnlockQueue( pxQueue );
-				( void ) xTaskResumeAll();
-			}
-		}
-		else
-		{
-			/* The timeout has expired. */
-			prvUnlockQueue( pxQueue );
-			( void ) xTaskResumeAll();
-
-			/* Return to the original privilege level before exiting the
-			function. */
-			traceQUEUE_SEND_FAILED( pxQueue );
-			return errQUEUE_FULL;
-		}
-	}
-}
-/*-----------------------------------------------------------*/
-
-BaseType_t xQueueGenericSendFromISR( QueueHandle_t xQueue, const void * const pvItemToQueue, BaseType_t * const pxHigherPriorityTaskWoken, const BaseType_t xCopyPosition )
-{
-BaseType_t xReturn;
-UBaseType_t uxSavedInterruptStatus;
-Queue_t * const pxQueue = ( Queue_t * ) xQueue;
-
-	configASSERT( pxQueue );
-	configASSERT( !( ( pvItemToQueue == NULL ) && ( pxQueue->uxItemSize != ( UBaseType_t ) 0U ) ) );
-	configASSERT( !( ( xCopyPosition == queueOVERWRITE ) && ( pxQueue->uxLength != 1 ) ) );
-
-	/* RTOS ports that support interrupt nesting have the concept of a maximum
-	system call (or maximum API call) interrupt priority.  Interrupts that are
-	above the maximum system call priority are kept permanently enabled, even
-	when the RTOS kernel is in a critical section, but cannot make any calls to
-	FreeRTOS API functions.  If configASSERT() is defined in FreeRTOSConfig.h
-	then portASSERT_IF_INTERRUPT_PRIORITY_INVALID() will result in an assertion
-	failure if a FreeRTOS API function is called from an interrupt that has been
-	assigned a priority above the configured maximum system call priority.
-	Only FreeRTOS functions that end in FromISR can be called from interrupts
-	that have been assigned a priority at or (logically) below the maximum
-	system call	interrupt priority.  FreeRTOS maintains a separate interrupt
-	safe API to ensure interrupt entry is as fast and as simple as possible.
-	More information (albeit Cortex-M specific) is provided on the following
-	link: http://www.freertos.org/RTOS-Cortex-M3-M4.html */
-	portASSERT_IF_INTERRUPT_PRIORITY_INVALID();
-
-	/* Similar to xQueueGenericSend, except without blocking if there is no room
-	in the queue.  Also don't directly wake a task that was blocked on a queue
-	read, instead return a flag to say whether a context switch is required or
-	not (i.e. has a task with a higher priority than us been woken by this
-	post). */
-	uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
-	{
-		if( ( pxQueue->uxMessagesWaiting < pxQueue->uxLength ) || ( xCopyPosition == queueOVERWRITE ) )
-		{
-			traceQUEUE_SEND_FROM_ISR( pxQueue );
-
-			/* Semaphores use xQueueGiveFromISR(), so pxQueue will not be a
-			semaphore or mutex.  That means prvCopyDataToQueue() cannot result
-			in a task disinheriting a priority and prvCopyDataToQueue() can be
-			called here even though the disinherit function does not check if
-			the scheduler is suspended before accessing the ready lists. */
-			( void ) prvCopyDataToQueue( pxQueue, pvItemToQueue, xCopyPosition );
-
-			/* The event list is not altered if the queue is locked.  This will
-			be done when the queue is unlocked later. */
-			if( pxQueue->xTxLock == queueUNLOCKED )
-			{
-
-				 /* configUSE_QUEUE_SETS */
-
-					if( listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToReceive ) ) == pdFALSE )
-					{
-						if( xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToReceive ) ) != pdFALSE )
-						{
-							/* The task waiting has a higher priority so record that a
-							context	switch is required. */
-							if( pxHigherPriorityTaskWoken != NULL )
+							// wake up a task
+							if( /* xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToReceive ) )*/ pdFALSE == pdTRUE )
 							{
-								*pxHigherPriorityTaskWoken = pdTRUE;
+								/* The unblocked task has a priority higher than
+								our own so yield immediately. */
+								portYIELD_WITHIN_API();
 							}
 							else
 							{
@@ -474,245 +295,167 @@ Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 						{
 							mtCOVERAGE_TEST_MARKER();
 						}
+
+						taskEXIT_CRITICAL();
+						return pdPASS;
 					}
 					else
 					{
-						mtCOVERAGE_TEST_MARKER();
+						if( xTicksToWait == ( TickType_t ) 0 )
+						{
+							taskEXIT_CRITICAL();
+							return errQUEUE_FULL;
+						}
+						else if( xEntryTimeSet == pdFALSE )
+						{
+							// initialize the time variable with the required value
+							// vTaskSetTimeOutState( &xTimeOut );
+							xEntryTimeSet = pdTRUE;
+						}
 					}
+				}
+				taskEXIT_CRITICAL();
 
-			 /* configUSE_QUEUE_SETS */
+				taskENTER_CRITICAL();
+				{
+					if( /* xTaskCheckForTimeOut( &xTimeOut, &xTicksToWait ) */ pdTRUE == pdFALSE )
+					{
+						if( prvIsQueueFull( pxQueue ) != pdFALSE )
+						{
+							// traceQueue sentence
+							//traceBLOCKING_ON_QUEUE_SEND( pxQueue );
+							// add the task to the waiting to send with a specific time
+							// vTaskPlaceOnEventList( &( pxQueue->xTasksWaitingToSend ), xTicksToWait );
+							portYIELD_WITHIN_API();
+						}
+						else
+						{
+							mtCOVERAGE_TEST_MARKER();
+						}
+					}
+					else
+					{
+						taskEXIT_CRITICAL();
+						// traceQUEUE_SEND_FAILED( pxQueue );
+						return errQUEUE_FULL;
+					}
+				}
+				taskEXIT_CRITICAL();
 			}
-			else
-			{
-				/* Increment the lock count so the task that unlocks the queue
-				knows that data was posted while it was locked. */
-				++( pxQueue->xTxLock );
-			}
-
-			xReturn = pdPASS;
-		}
-		else
-		{
-			traceQUEUE_SEND_FROM_ISR_FAILED( pxQueue );
-			xReturn = errQUEUE_FULL;
-		}
-	}
-	portCLEAR_INTERRUPT_MASK_FROM_ISR( uxSavedInterruptStatus );
-
-	return xReturn;
 }
-/*-----------------------------------------------------------*/
 
+/*-----------------------------------------------------------*/
 
 BaseType_t xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer, TickType_t xTicksToWait, const BaseType_t xJustPeeking )
 {
-BaseType_t xEntryTimeSet = pdFALSE;
-TimeOut_t xTimeOut;
-int8_t *pcOriginalReadPosition;
-Queue_t * const pxQueue = ( Queue_t * ) xQueue;
+	BaseType_t xEntryTimeSet = pdFALSE;
+		TimeOut_t xTimeOut;
+		int8_t *pcOriginalReadPosition;
+		Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 
-	configASSERT( pxQueue );
-	configASSERT( !( ( pvBuffer == NULL ) && ( pxQueue->uxItemSize != ( UBaseType_t ) 0U ) ) );
-	// get scheduler state
-	#if ( ( INCLUDE_xTaskGetSchedulerState == 1 ) || ( configUSE_TIMERS == 1 ) )
-	{
-		configASSERT( !( ( xTaskGetSchedulerState() == taskSCHEDULER_SUSPENDED ) && ( xTicksToWait != 0 ) ) );
-	}
-	#endif
+			configASSERT( pxQueue );
+			configASSERT( !( ( pvBuffer == NULL ) && ( pxQueue->uxItemSize != ( UBaseType_t ) 0U ) ) );
 
-	/* This function relaxes the coding standard somewhat to allow return
-	statements within the function itself.  This is done in the interest
-	of execution time efficiency. */
-
-	for( ;; )
-	{
-		taskENTER_CRITICAL();
-		{
-			/* Is there data in the queue now?  To be running the calling task
-			must be	the highest priority task wanting to access the queue. */
-			if( pxQueue->uxMessagesWaiting > ( UBaseType_t ) 0 )
+			for( ;; )
 			{
-				/* Remember the read position in case the queue is only being
-				peeked. */
-				pcOriginalReadPosition = pxQueue->pcReadFrom;
-
-				prvCopyDataFromQueue( pxQueue, pvBuffer );
-
-				if( xJustPeeking == pdFALSE )
+				taskENTER_CRITICAL();
 				{
-					traceQUEUE_RECEIVE( pxQueue );
-
-					/* Actually removing data, not just peeking. */
-					--( pxQueue->uxMessagesWaiting );
-
-					 /* configUSE_MUTEXES */
-
-					if( listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToSend ) ) == pdFALSE )
+					if( pxQueue->uxMessagesWaiting > ( UBaseType_t ) 0 )
 					{
-						if( xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToSend ) ) == pdTRUE )
+						/* Remember our read position in case we are just peeking. */
+						pcOriginalReadPosition = pxQueue->pcReadFrom;
+
+						prvCopyDataFromQueue( pxQueue, pvBuffer );
+
+						if( xJustPeeking == pdFALSE )
 						{
-							queueYIELD_IF_USING_PREEMPTION();
+							// the trace of the queue
+							//traceQUEUE_RECEIVE( pxQueue );
+
+							/* Data is actually being removed (not just peeked). */
+							--( pxQueue->uxMessagesWaiting );
+
+							// check for tasks waiting to send
+							if(/* listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToSend ) ) */ pdTRUE == pdFALSE )
+							{
+								// remove a task from the waiting to send list
+								if( /* xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToSend ) ) */ pdFALSE == pdTRUE )
+								{
+									portYIELD_WITHIN_API();
+								}
+								else
+								{
+									mtCOVERAGE_TEST_MARKER();
+								}
+							}
 						}
 						else
 						{
-							mtCOVERAGE_TEST_MARKER();
+							// trace sentence
+							//traceQUEUE_PEEK( pxQueue );
+
+							/* The data is not being removed, so reset our read
+							pointer. */
+							pxQueue->pcReadFrom = pcOriginalReadPosition;
+
+							/* The data is being left in the queue, so see if there are
+							any other tasks waiting for the data. */
+							// check for other tasks waiting to receive
+							if( /* listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToReceive ) ) */ pdTRUE == pdFALSE )
+							{
+								/* Tasks that are removed from the event list will get added to
+								the pending ready list as the scheduler is still suspended. */
+								// get the task that is waiting to receive
+								if( /* xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToReceive ) )*/  pdTRUE != pdFALSE )
+								{
+									/* The task waiting has a higher priority than this task. */
+									portYIELD_WITHIN_API();
+								}
+								else
+								{
+									mtCOVERAGE_TEST_MARKER();
+								}
+							}
+							else
+							{
+								mtCOVERAGE_TEST_MARKER();
+							}
 						}
+
+						taskEXIT_CRITICAL();
+						return pdPASS;
 					}
 					else
 					{
-						mtCOVERAGE_TEST_MARKER();
-					}
-				}
-				else
-				{
-					traceQUEUE_PEEK( pxQueue );
-
-					/* The data is not being removed, so reset the read
-					pointer. */
-					pxQueue->u.pcReadFrom = pcOriginalReadPosition;
-
-					/* The data is being left in the queue, so see if there are
-					any other tasks waiting for the data. */
-					if( listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToReceive ) ) == pdFALSE )
-					{
-						if( xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToReceive ) ) != pdFALSE )
+						if( xTicksToWait == ( TickType_t ) 0 )
 						{
-							/* The task waiting has a higher priority than this task. */
-							queueYIELD_IF_USING_PREEMPTION();
+							taskEXIT_CRITICAL();
+							// trace Queue
+							// traceQUEUE_RECEIVE_FAILED( pxQueue );
+							return errQUEUE_EMPTY;
 						}
-						else
+						else if( xEntryTimeSet == pdFALSE )
 						{
-							mtCOVERAGE_TEST_MARKER();
+							// config the timeout
+							//vTaskSetTimeOutState( &xTimeOut );
+							xEntryTimeSet = pdTRUE;
 						}
 					}
-					else
-					{
-						mtCOVERAGE_TEST_MARKER();
-					}
 				}
-
 				taskEXIT_CRITICAL();
-				return pdPASS;
-			}
-			else
-			{
-				if( xTicksToWait == ( TickType_t ) 0 )
+
+				taskENTER_CRITICAL();
 				{
-					/* The queue was empty and no block time is specified (or
-					the block time has expired) so leave now. */
-					taskEXIT_CRITICAL();
-					traceQUEUE_RECEIVE_FAILED( pxQueue );
-					return errQUEUE_EMPTY;
-				}
-				else if( xEntryTimeSet == pdFALSE )
-				{
-					/* The queue was empty and a block time was specified so
-					configure the timeout structure. */
-					vTaskSetTimeOutState( &xTimeOut );
-					xEntryTimeSet = pdTRUE;
-				}
-				else
-				{
-					/* Entry time was already set. */
-					mtCOVERAGE_TEST_MARKER();
-				}
-			}
-		}
-		taskEXIT_CRITICAL();
-
-		/* Interrupts and other tasks can send to and receive from the queue
-		now the critical section has been exited. */
-
-		vTaskSuspendAll();
-		prvLockQueue( pxQueue );
-
-		/* Update the timeout state to see if it has expired yet. */
-		if( xTaskCheckForTimeOut( &xTimeOut, &xTicksToWait ) == pdFALSE )
-		{
-			if( prvIsQueueEmpty( pxQueue ) != pdFALSE )
-			{
-				traceBLOCKING_ON_QUEUE_RECEIVE( pxQueue );
-
-
-				vTaskPlaceOnEventList( &( pxQueue->xTasksWaitingToReceive ), xTicksToWait );
-				prvUnlockQueue( pxQueue );
-				if( xTaskResumeAll() == pdFALSE )
-				{
-					portYIELD_WITHIN_API();
-				}
-				else
-				{
-					mtCOVERAGE_TEST_MARKER();
-				}
-			}
-			else
-			{
-				/* Try again. */
-				prvUnlockQueue( pxQueue );
-				( void ) xTaskResumeAll();
-			}
-		}
-		else
-		{
-			prvUnlockQueue( pxQueue );
-			( void ) xTaskResumeAll();
-			traceQUEUE_RECEIVE_FAILED( pxQueue );
-			return errQUEUE_EMPTY;
-		}
-	}
-}
-/*-----------------------------------------------------------*/
-
-BaseType_t xQueueReceiveFromISR( QueueHandle_t xQueue, void * const pvBuffer, BaseType_t * const pxHigherPriorityTaskWoken )
-{
-BaseType_t xReturn;
-UBaseType_t uxSavedInterruptStatus;
-Queue_t * const pxQueue = ( Queue_t * ) xQueue;
-
-	configASSERT( pxQueue );
-	configASSERT( !( ( pvBuffer == NULL ) && ( pxQueue->uxItemSize != ( UBaseType_t ) 0U ) ) );
-
-	/* RTOS ports that support interrupt nesting have the concept of a maximum
-	system call (or maximum API call) interrupt priority.  Interrupts that are
-	above the maximum system call priority are kept permanently enabled, even
-	when the RTOS kernel is in a critical section, but cannot make any calls to
-	FreeRTOS API functions.  If configASSERT() is defined in FreeRTOSConfig.h
-	then portASSERT_IF_INTERRUPT_PRIORITY_INVALID() will result in an assertion
-	failure if a FreeRTOS API function is called from an interrupt that has been
-	assigned a priority above the configured maximum system call priority.
-	Only FreeRTOS functions that end in FromISR can be called from interrupts
-	that have been assigned a priority at or (logically) below the maximum
-	system call	interrupt priority.  FreeRTOS maintains a separate interrupt
-	safe API to ensure interrupt entry is as fast and as simple as possible.
-	More information (albeit Cortex-M specific) is provided on the following
-	link: http://www.freertos.org/RTOS-Cortex-M3-M4.html */
-	portASSERT_IF_INTERRUPT_PRIORITY_INVALID();
-
-	uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
-	{
-		/* Cannot block in an ISR, so check there is data available. */
-		if( pxQueue->uxMessagesWaiting > ( UBaseType_t ) 0 )
-		{
-			traceQUEUE_RECEIVE_FROM_ISR( pxQueue );
-
-			prvCopyDataFromQueue( pxQueue, pvBuffer );
-			--( pxQueue->uxMessagesWaiting );
-
-			/* If the queue is locked the event list will not be modified.
-			Instead update the lock count so the task that unlocks the queue
-			will know that an ISR has removed data while the queue was
-			locked. */
-			if( pxQueue->xRxLock == queueUNLOCKED )
-			{
-				if( listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToSend ) ) == pdFALSE )
-				{
-					if( xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToSend ) ) != pdFALSE )
+					// compare if the timeout has passed
+					if( /* xTaskCheckForTimeOut( &xTimeOut, &xTicksToWait )*/ pdTRUE == pdFALSE )
 					{
-						/* The task waiting has a higher priority than us so
-						force a context switch. */
-						if( pxHigherPriorityTaskWoken != NULL )
+						if( prvIsQueueEmpty( pxQueue ) != pdFALSE )
 						{
-							*pxHigherPriorityTaskWoken = pdTRUE;
+							// trace sentence
+							//traceBLOCKING_ON_QUEUE_RECEIVE( pxQueue );
+							// add a task to the list of waiting to receive
+							// vTaskPlaceOnEventList( &( pxQueue->xTasksWaitingToReceive ), xTicksToWait );
+							portYIELD_WITHIN_API();
 						}
 						else
 						{
@@ -721,35 +464,17 @@ Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 					}
 					else
 					{
-						mtCOVERAGE_TEST_MARKER();
+						taskEXIT_CRITICAL();
+						// trace Queue
+						// traceQUEUE_RECEIVE_FAILED( pxQueue );
+						return errQUEUE_EMPTY;
 					}
 				}
-				else
-				{
-					mtCOVERAGE_TEST_MARKER();
-				}
+				taskEXIT_CRITICAL();
 			}
-			else
-			{
-				/* Increment the lock count so the task that unlocks the queue
-				knows that data was removed while it was locked. */
-				++( pxQueue->xRxLock );
-			}
-
-			xReturn = pdPASS;
-		}
-		else
-		{
-			xReturn = pdFAIL;
-			traceQUEUE_RECEIVE_FROM_ISR_FAILED( pxQueue );
-		}
-	}
-	portCLEAR_INTERRUPT_MASK_FROM_ISR( uxSavedInterruptStatus );
-
-	return xReturn;
 }
-/*-----------------------------------------------------------*/
 
+/*-----------------------------------------------------------*/
 
 UBaseType_t uxQueueMessagesWaiting( const QueueHandle_t xQueue )
 {
