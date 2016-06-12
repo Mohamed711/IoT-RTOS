@@ -233,7 +233,7 @@ BaseType_t xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQ
 						if( /* listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToReceive ) ) == pdFALSE */ pxQueue->receive_index != 0 )
 						{
 							// wake up a task
-							if( /* xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToReceive ) )*/ pdFALSE == pdTRUE )
+							if( /* xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToReceive ) ) == pdTRUE */ 0 == 0 )
 							{
 								/* The unblocked task has a priority higher than
 								our own so yield immediately. */
@@ -271,12 +271,11 @@ BaseType_t xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQ
 
 				taskENTER_CRITICAL();
 				{
-					if( /* xTaskCheckForTimeOut( &xTimeOut, &xTicksToWait ) */ pdTRUE == pdFALSE )
+					if( /* xTaskCheckForTimeOut( &xTimeOut, &xTicksToWait ) == pdFALSE  */ 0 == 1 )
 					{
 						if( prvIsQueueFull( pxQueue ) != pdFALSE )
 						{
-							// traceQueue sentence
-							//traceBLOCKING_ON_QUEUE_SEND( pxQueue );
+							traceBLOCKING_ON_QUEUE_SEND( pxQueue );
 							// add the task to the waiting to send with a specific time
 							// vTaskPlaceOnEventList( &( pxQueue->xTasksWaitingToSend ), xTicksToWait );
 							portYIELD_WITHIN_API();
@@ -289,7 +288,7 @@ BaseType_t xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQ
 					else
 					{
 						taskEXIT_CRITICAL();
-						// traceQUEUE_SEND_FAILED( pxQueue );
+						traceQUEUE_SEND_FAILED( pxQueue );
 						return errQUEUE_FULL;
 					}
 				}
@@ -322,8 +321,7 @@ BaseType_t xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer, Ti
 
 						if( xJustPeeking == pdFALSE )
 						{
-							// the trace of the queue
-							//traceQUEUE_RECEIVE( pxQueue );
+							traceQUEUE_RECEIVE( pxQueue );
 
 							/* Data is actually being removed (not just peeked). */
 							--( pxQueue->uxMessagesWaiting );
@@ -344,8 +342,7 @@ BaseType_t xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer, Ti
 						}
 						else
 						{
-							// trace sentence
-							//traceQUEUE_PEEK( pxQueue );
+							traceQUEUE_PEEK( pxQueue );
 
 							/* The data is not being removed, so reset our read
 							pointer. */
