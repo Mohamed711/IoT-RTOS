@@ -20,18 +20,42 @@
  *  distribution.
  *****************************************************************************/
 
-#include <stdio.h>
 #include <stdint.h>
 
+#include "ipc_cfg.h"
 #include "ipc.h"
 
 int main(void) {
 	
-	uint8_t uxLength, uxItemSize ;
+	uint8_t uxLength, uxItemSize, xVal, debugValue;
+	QueueHandle_t queue;
 	uxLength = 5;
 	uxItemSize = 4;
 
-	xQueueCreate(uxLength, uxItemSize);
+	queue = xQueueCreate(uxLength, uxItemSize);
+
+	xVal = xQueueIsQueueFullFromISR(queue);
+	if ( xVal == pdFALSE )
+	{
+		debugValue = 10;
+	}
+
+	xVal = xQueueIsQueueEmptyFromISR(queue);
+	if ( xVal == pdTRUE )
+		{
+			debugValue = 20;
+		}
+
+	xVal = uxQueueMessagesWaitingFromISR(queue);
+	if ( xVal == 0x00 )
+		{
+			debugValue = 30;
+		}
+
+	xVal = uxQueueSpacesAvailable(queue);
+
+	debugValue = xVal;
+
 
 	return 0;
 }

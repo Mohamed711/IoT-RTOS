@@ -27,10 +27,6 @@
 #include "ipc_cfg.h"
 #include "ipc.h"
 
-/* Constants used with the xRxLock and xTxLock structure members. */
-#define queueUNLOCKED					( ( BaseType_t ) -1 )
-#define queueLOCKED_UNMODIFIED			( ( BaseType_t ) 0 )
-
 #if( configUSE_PREEMPTION == 0 )
 	/* If the cooperative scheduler is being used then a yield should not be
 	performed just because a higher priority task has been woken. */
@@ -38,7 +34,6 @@
 #else
 	#define queueYIELD_IF_USING_PREEMPTION() portYIELD_WITHIN_API()
 #endif
-
 
 
 /*
@@ -55,8 +50,11 @@ typedef struct QueueDefinition
 
 // Two lists of processes one for the tasks waiting to send and other waiting to receive
 /// LOOK HERE ///
+// debugging code till merge
 	uint32_t xTasksWaitingToSend[5];
 	uint32_t xTasksWaitingToReceive[5];
+	uint8_t send_index;
+	uint8_t receive_index;
 //	List_t xTasksWaitingToSend;		/*< List of tasks that are blocked waiting to post onto this queue.  Stored in priority order. */
 //	List_t xTasksWaitingToReceive;	/*< List of tasks that are blocked waiting to read from this queue.  Stored in priority order. */
 
@@ -64,27 +62,10 @@ typedef struct QueueDefinition
 	UBaseType_t uxLength;			/*< The length of the queue defined as the number of items it will hold, not the number of bytes. */
 	UBaseType_t uxItemSize;			/*< The size of each items that the queue will hold. */
 
-#if (configUSE_QUEUE_LOCKS == 1)
-	volatile BaseType_t xRxLock;	/*< Stores the number of items received from the queue (removed from the queue) while the queue was locked.  Set to queueUNLOCKED when the queue is not locked. */
-	volatile BaseType_t xTxLock;	/*< Stores the number of items transmitted to the queue (added to the queue) while the queue was locked.  Set to queueUNLOCKED when the queue is not locked. */
-#endif
-
 } Queue_t;
-
 
 /*-----------------------------------------------------------*/
 
-/*
- * Unlocks a queue locked by a call to prvLockQueue.  Locking a queue does not
- * prevent an ISR from adding or removing items to the queue, but does prevent
- * an ISR from removing tasks from the queue event lists.  If an ISR finds a
- * queue is locked it will instead increment the appropriate queue lock count
- * to indicate that a task may require unblocking.  When the queue in unlocked
- * these lock counts are inspected, and the appropriate action taken.
- */
-#if (configUSE_QUEUE_LOCKS == 1)
-	static void prvUnlockQueue( Queue_t * const pxQueue );
-#endif
 /*
  * Uses a critical section to determine if there is any data in a queue.
  *
@@ -113,30 +94,9 @@ static void prvCopyDataFromQueue( Queue_t * const pxQueue, void * const pvBuffer
 
 /*-----------------------------------------------------------*/
 
-/*
- * Macro to mark a queue as locked.  Locking a queue prevents an ISR from
- * accessing the queue event lists.
- */
-#if (configUSE_QUEUE_LOCKS == 1)
-	#define prvLockQueue( pxQueue )								\
-		taskENTER_CRITICAL();									\
-		{														\
-			if( ( pxQueue )->xRxLock == queueUNLOCKED )			\
-			{													\
-				( pxQueue )->xRxLock = queueLOCKED_UNMODIFIED;	\
-			}													\
-			if( ( pxQueue )->xTxLock == queueUNLOCKED )			\
-			{													\
-				( pxQueue )->xTxLock = queueLOCKED_UNMODIFIED;	\
-			}													\
-		}														\
-		taskEXIT_CRITICAL()
-#endif
-/*-----------------------------------------------------------*/
-
 BaseType_t xQueueGenericReset( QueueHandle_t xQueue, BaseType_t xNewQueue )
 {
-Queue_t * const pxQueue = ( Queue_t * ) xQueue;
+	Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 
 	configASSERT( pxQueue );
 
@@ -147,11 +107,9 @@ Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 		pxQueue->pcWriteTo = pxQueue->pcHead;
 		pxQueue->pcReadFrom = pxQueue->pcHead + ( ( pxQueue->uxLength - ( UBaseType_t ) 1U ) * pxQueue->uxItemSize );
 
-
-#if (configUSE_QUEUE_LOCKS == 1)
-		pxQueue->xRxLock = queueUNLOCKED;
-		pxQueue->xTxLock = queueUNLOCKED;
-#endif
+		/// LOOK HERE ///
+		pxQueue->send_index = ( UBaseType_t ) 0U;
+		pxQueue->receive_index = ( UBaseType_t ) 0U;
 
 		if( xNewQueue == pdFALSE )
 		{
@@ -164,8 +122,8 @@ Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 			// check for the list of waiting to send tasks is empty
 			// check list is empty
 			/// LOOK HERE ///
-			// check if the sending state is empty
-			if( /* listLIST_IS_EMPTY( &(  pxQueue->xTasksWaitingToSend  ) ) */ pdTRUE == pdFALSE )
+			// check if the sending state is not empty
+			if( /* listLIST_IS_EMPTY( &(  pxQueue->xTasksWaitingToSend  ) ) == pdFALSE */ pxQueue->send_index != 0 )
 			{
 				// remove a process from waiting to send on the queue as you reset the queue so its empty
 				if( /* xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToSend  ) ) */ pdTRUE == pdTRUE )
@@ -204,12 +162,11 @@ Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 
 QueueHandle_t xQueueGenericCreate( const UBaseType_t uxQueueLength, const UBaseType_t uxItemSize )
 {
-Queue_t *pxNewQueue;
-size_t xQueueSizeInBytes;
-QueueHandle_t xReturn = NULL;
+	Queue_t *pxNewQueue;
+	size_t xQueueSizeInBytes;
+	QueueHandle_t xReturn = NULL;
 
 	configASSERT( ( uxQueueLength > ( UBaseType_t ) 0 ) && ( uxItemSize > ( UBaseType_t ) 0 ) );
-
 
 	/* The queue is one byte longer than asked for to make wrap checking
 	easier/faster. */
@@ -267,14 +224,13 @@ BaseType_t xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQ
 					the highest priority task wanting to access the queue. */
 					if( pxQueue->uxMessagesWaiting < pxQueue->uxLength )
 					{
-						// trace queue have to search about this sentence
-						// traceQUEUE_SEND( pxQueue );
+						traceQUEUE_SEND( pxQueue );
 						prvCopyDataToQueue( pxQueue, pvItemToQueue, xCopyPosition );
 
 						/* If there was a task waiting for data to arrive on the
 						queue then unblock it now. */
 						// look for waiting tasks to receive
-						if( /* listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToReceive ) ) */ pdTRUE == pdFALSE )
+						if( /* listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToReceive ) ) == pdFALSE */ pxQueue->receive_index != 0 )
 						{
 							// wake up a task
 							if( /* xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToReceive ) )*/ pdFALSE == pdTRUE )
@@ -486,13 +442,13 @@ UBaseType_t uxReturn;
 	taskEXIT_CRITICAL();
 
 	return uxReturn;
-} /*lint !e818 Pointer cannot be declared const as xQueue is a typedef not pointer. */
+}
 /*-----------------------------------------------------------*/
 
 UBaseType_t uxQueueSpacesAvailable( const QueueHandle_t xQueue )
 {
-UBaseType_t uxReturn;
-Queue_t *pxQueue;
+	UBaseType_t uxReturn;
+	Queue_t *pxQueue;
 
 	pxQueue = ( Queue_t * ) xQueue;
 	configASSERT( pxQueue );
@@ -673,100 +629,19 @@ BaseType_t xReturn = pdFALSE;
 
 static void prvCopyDataFromQueue( Queue_t * const pxQueue, void * const pvBuffer )
 {
-	if( pxQueue->uxItemSize != ( UBaseType_t ) 0 )
+
+	pxQueue->pcReadFrom += pxQueue->uxItemSize;
+	if( pxQueue->pcReadFrom >= pxQueue->pcTail ) /*lint !e946 MISRA exception justified as use of the relational operator is the cleanest solutions. */
 	{
-		pxQueue->pcReadFrom += pxQueue->uxItemSize;
-		if( pxQueue->pcReadFrom >= pxQueue->pcTail ) /*lint !e946 MISRA exception justified as use of the relational operator is the cleanest solutions. */
-		{
-			pxQueue->pcReadFrom = pxQueue->pcHead;
-		}
-		else
-		{
-			mtCOVERAGE_TEST_MARKER();
-		}
-		( void ) memcpy( ( void * ) pvBuffer, ( void * ) pxQueue->pcReadFrom, ( size_t ) pxQueue->uxItemSize ); /*lint !e961 !e418 MISRA exception as the casts are only redundant for some ports.  Also previous logic ensures a null pointer can only be passed to memcpy() when the count is 0. */
+		pxQueue->pcReadFrom = pxQueue->pcHead;
 	}
+	else
+	{
+		mtCOVERAGE_TEST_MARKER();
+	}
+	( void ) memcpy( ( void * ) pvBuffer, ( void * ) pxQueue->pcReadFrom, ( size_t ) pxQueue->uxItemSize ); /*lint !e961 !e418 MISRA exception as the casts are only redundant for some ports.  Also previous logic ensures a null pointer can only be passed to memcpy() when the count is 0. */
+
 }
 /*-----------------------------------------------------------*/
 
-#define ( configUSE_QUEUE_LOCKS == 1 )
-	static void prvUnlockQueue( Queue_t * const pxQueue )
-	{
-		/* THIS FUNCTION MUST BE CALLED WITH THE SCHEDULER SUSPENDED. */
-
-		/* The lock counts contains the number of extra data items placed or
-		removed from the queue while the queue was locked.  When a queue is
-		locked items can be added or removed, but the event lists cannot be
-		updated. */
-		taskENTER_CRITICAL();
-		{
-			/* See if data was added to the queue while it was locked. */
-			while( pxQueue->xTxLock > queueLOCKED_UNMODIFIED )
-			{
-				/* Data was posted while the queue was locked.  Are any tasks
-				blocked waiting for data to become available? */
-				{
-					/* Tasks that are removed from the event list will get added to
-					the pending ready list as the scheduler is still suspended. */
-
-					// check the list of tasks waiting to receive on the queue
-					if( /* listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToReceive ) ) */ pdTRUE == pdFALSE )
-					{
-						// remove task from waiting list to receive
-						if( /* xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToReceive ) )*/ pdTRUE != pdFALSE )
-						{
-							/* The task waiting has a higher priority so record that a
-							context	switch is required. */
-							// make the higher priority task to run
-							// vTaskMissedYield();
-						}
-						else
-						{
-							mtCOVERAGE_TEST_MARKER();
-						}
-					}
-					else
-					{
-						break;
-					}
-				}
-				--( pxQueue->xTxLock );
-			}
-
-			pxQueue->xTxLock = queueUNLOCKED;
-		}
-		taskEXIT_CRITICAL();
-
-		/* Do the same for the Rx lock. */
-		taskENTER_CRITICAL();
-		{
-			while( pxQueue->xRxLock > queueLOCKED_UNMODIFIED )
-			{
-				// check the tasks on the waiting list to send
-				if(/* listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToSend ) ) */ pdTRUE == pdFALSE )
-				{
-					if(/* xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToSend ) ) */ pdTRUE != pdFALSE )
-					{
-						// invoke the highest priority task to run
-						// vTaskMissedYield();
-					}
-					else
-					{
-						mtCOVERAGE_TEST_MARKER();
-					}
-
-					--( pxQueue->xRxLock );
-				}
-				else
-				{
-					break;
-				}
-			}
-
-			pxQueue->xRxLock = queueUNLOCKED;
-		}
-		taskEXIT_CRITICAL();
-	}
-#endif
-/*-----------------------------------------------------------*/
 
