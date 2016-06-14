@@ -20,54 +20,85 @@
  *  distribution.
  *****************************************************************************/
 
+#include "headers.h"
 #include "Csema.h"
+#include <stdio.h>
 
-
-void Csema_init( Csema *sema, uint8_t count )
+int8_t Csema_init( Csema *sema, int8_t count )
 {
+	if(sema==NULL)
+	{
+		return SYSERR;
+	}
+
 	sema->count =count;
 	sema->queue=newqueue();
+	if(sema->queue==SYSERR)
+		return SYSERR;
+	return OK;
+
 }
 
-void Csema_delete( Csema *sema )
+int8_t Csema_delete( Csema *sema )
 {
+	if(sema==NULL)
+		{
+			return SYSERR;
+		}
+
 	int32_t pid;
 	while(pid=dequeue(sema->queue)!=SYSERR)
 	{
 		processResume(pid);
 	}
+	return OK;
+
 }
 
-void Csema_wait(Csema *sema)
+int8_t Csema_wait(Csema *sema)
 {
+	if(sema==NULL)
+		{
+			return SYSERR;
+		}
+
 	//DisableInterrupt();
+
 	if( sema->count >0)
 	{
 		sema->count--;
 		//EnableInterrupt();
+		return OK;
+
 	}
 	else
 	{
 		enqueue(currpid,sema->queue);
 		processSuspend(currpid);
 		//EnbleInterrupt();
+		return OK;
 	}
 }
 
 void Csema_signal(Csema *sema)
 {
+	if(sema==NULL)
+		{
+			return SYSERR;
+		}
 	//DisableInterrupt();
 	if(isempty(sema->queue))
 	{
 		sema->count++;
 		//EnableInterrupt();
+		return OK;
 	}
 	else
 	{
 		int32_t pid=dequeue(sema->queue);
 		processResume(pid);
 		//EnableInterrupt();
+		return OK;
 	}
-
-
 }
+

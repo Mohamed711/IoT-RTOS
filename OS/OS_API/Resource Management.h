@@ -21,8 +21,8 @@
  *****************************************************************************/
 
 
-#ifndef SEMA_H_
-#define SEMA_H_
+#ifndef CSEMA_H_
+#define CSEMA_H_
 
 #include <stdint.h>
 
@@ -31,7 +31,7 @@
 
  typedef struct {
 	 volatile uint8_t count;
-	 qid16 queue;
+	 int16_t queue;
  } Csema;
 
 
@@ -46,7 +46,7 @@
   * \return None
   *
   *****************************************************************************/
-void Csema_init( Csema *sema, uint8_t count );
+ int8_t Csema_init( Csema *sema, int8_t count );
 
 /******************************************************************************
   *
@@ -57,7 +57,7 @@ void Csema_init( Csema *sema, uint8_t count );
   * \return None
   *
   *****************************************************************************/
-void Csema_delete( Csema *sema );
+ int8_t Csema_delete( Csema *sema );
 
 /******************************************************************************
   *
@@ -68,7 +68,7 @@ void Csema_delete( Csema *sema );
   * \return None
   *
   *****************************************************************************/
-void Csema_wait( Csema *sema );
+ int8_t Csema_wait( Csema *sema );
 
 /******************************************************************************
   *
@@ -80,7 +80,7 @@ void Csema_wait( Csema *sema );
   * \return None
   *
   *****************************************************************************/
-void Csema_wait_timed( Csema *sema , uint32_t timeout );
+ int8_t Csema_wait_timed( Csema *sema , uint32_t timeout );
 
 /******************************************************************************
   *
@@ -91,6 +91,6 @@ void Csema_wait_timed( Csema *sema , uint32_t timeout );
   * \return None
   *
   *****************************************************************************/
-void Csema_signal( Csema *sema );
+ int8_t Csema_signal( Csema *sema );
 
-#endif /* SEMA_H_ */
+#endif /* CSEMA_H_ */
