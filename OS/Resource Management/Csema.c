@@ -32,10 +32,14 @@ int8_t Csema_init( Csema *sema, int8_t count )
 	}
 
 	sema->count =count;
-	sema->queue=newqueue();
-	if(sema->queue==SYSERR)
+	int16_t nq =newqueue();
+	if(nq==SYSERR)
 		return SYSERR;
-	return OK;
+	else
+	{
+		sema->queue=nq;
+		return OK;
+	}
 
 }
 
@@ -74,13 +78,16 @@ int8_t Csema_wait(Csema *sema)
 	else
 	{
 		enqueue(currpid,sema->queue);
-		processSuspend(currpid);
+		processWaiting(currpid);
+
 		//EnbleInterrupt();
 		return OK;
 	}
 }
 
-void Csema_signal(Csema *sema)
+
+
+int8_t Csema_signal(Csema *sema)
 {
 	if(sema==NULL)
 		{
@@ -96,7 +103,8 @@ void Csema_signal(Csema *sema)
 	else
 	{
 		int32_t pid=dequeue(sema->queue);
-		processResume(pid);
+		processSetReady(pid);
+
 		//EnableInterrupt();
 		return OK;
 	}
