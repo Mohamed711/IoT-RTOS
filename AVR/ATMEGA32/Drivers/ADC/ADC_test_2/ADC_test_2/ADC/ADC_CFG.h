@@ -8,11 +8,15 @@
 
 #ifndef SPI_CFG_H_
 #define SPI_CFG_H_
-//to dooo
-// address of ADMUX reg
-//address of ADCSRA reg
-// address of ADCL
-// address of ADCH
+
+#define PRESCALAR_NUM	0x07
+// ADC Registers
+#define ADMUX_REG	 *((uint8_t volatile *const)0x07)
+#define ADCSRA_REG	 *((uint8_t volatile *const)0x06)
+#define ADCL_REG	 *((uint8_t volatile *const)0x04)
+#define ADCH_REG	 *((uint8_t volatile *const)0x05)
+#define SFIOR_REG    *((uint8_t volatile *const)0x30)
+
 //ADMUX register
 #define REFS1  7
 #define REFS0  6
@@ -87,6 +91,6 @@
 #define Timer_conter0_capture_Event 0b111
 
 
+#define ADC_JUSTIFY 'R'
 
-#define PRESCALAR_NUM	0x07
 #endif /* SPI_CFG_H_ */

@@ -8,29 +8,26 @@
 
 #ifndef HAL_ADC_AVR_H_
 #define HAL_ADC_AVR_H_
-#include "StdTypes.h"
-#include "ADC_CFG.h"
+
 #include "ADC.h"
 typedef struct
 {
-	u8 voltage_ref_sel ;
-	u8 channel;
-	u8 trigger;
-    u8 enable_interrupt;
-	u32 u32MaxFreq;
+	uint8_t voltage_ref_sel ;
+	uint8_t channel;
+	uint8_t trigger;
+    bool enable_interrupt;
+	uint32_t u32MaxFreq;
 	
 }ADC_InitTypeDef;
 
 typedef struct
 {
-	u16 return_result;
+	uint16_t return_result;
 	
 }ADC_handle_typedef;
 
-
-
 void HAL_ADC_Init(ADC_InitTypeDef * adc);
 void HAL_ADC_read(ADC_handle_typedef *adc);
-//void HAL_ADC_OFF(void);
+void HAL_ADC_OFF(void);
 
 #endif /* HAL_ADC_AVR_H_ */
