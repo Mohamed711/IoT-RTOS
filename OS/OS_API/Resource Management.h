@@ -43,7 +43,7 @@
   *	\param sema	is a pointer to a semaphore
   *	\param count is the value of the count
   *
-  * \return None
+  * \return SYSERR(-1) if an error occurs or OK (1) if it succeeds
   *
   *****************************************************************************/
  int8_t Csema_init( Csema *sema, int8_t count );
@@ -54,7 +54,7 @@
   *
   *	\param sema	is a pointer to a semaphore
   *
-  * \return None
+  * \return SYSERR(-1) if an error occurs or OK (1) if it succeeds
   *
   *****************************************************************************/
  int8_t Csema_delete( Csema *sema );
@@ -65,7 +65,7 @@
   *
   *	\param sema	is a pointer to a semaphore
   *
-  * \return None
+  * \return SYSERR(-1) if an error occurs or OK (1) if it succeeds
   *
   *****************************************************************************/
  int8_t Csema_wait( Csema *sema );
@@ -77,7 +77,7 @@
   *	\param sema	is a pointer to a semaphore
   *	\param timeout is the time it waits
   *
-  * \return None
+  * \return SYSERR(-1) if an error occurs or OK (1) if it succeeds
   *
   *****************************************************************************/
  int8_t Csema_wait_timed( Csema *sema , uint32_t timeout );
@@ -88,7 +88,7 @@
   *
   *	\param sema	is a pointer to a semaphore
   *
-  * \return None
+  * \return SYSERR(-1) if an error occurs or OK (1) if it succeeds
   *
   *****************************************************************************/
  int8_t Csema_signal( Csema *sema );
