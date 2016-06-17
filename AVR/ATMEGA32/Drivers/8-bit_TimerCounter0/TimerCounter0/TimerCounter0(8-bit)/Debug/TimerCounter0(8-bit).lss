@@ -3,29 +3,29 @@ TimerCounter0(8-bit).elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         0000040e  00000000  00000000  00000094  2**1
+  0 .text         000003f8  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         0000001a  00800060  0000040e  000004a2  2**0
+  1 .data         0000001c  00800060  000003f8  0000048c  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .bss          0000000a  0080007a  0080007a  000004bc  2**0
+  2 .bss          0000000a  0080007c  0080007c  000004a8  2**0
                   ALLOC
-  3 .stab         000006cc  00000000  00000000  000004bc  2**2
+  3 .stab         000006cc  00000000  00000000  000004a8  2**2
                   CONTENTS, READONLY, DEBUGGING
-  4 .stabstr      00000085  00000000  00000000  00000b88  2**0
+  4 .stabstr      00000085  00000000  00000000  00000b74  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_aranges 000000e0  00000000  00000000  00000c10  2**3
+  5 .debug_aranges 000000e0  00000000  00000000  00000c00  2**3
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   00000ac3  00000000  00000000  00000cf0  2**0
+  6 .debug_info   00000acb  00000000  00000000  00000ce0  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 0000042a  00000000  00000000  000017b3  2**0
+  7 .debug_abbrev 000003fa  00000000  00000000  000017ab  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   000005a1  00000000  00000000  00001bdd  2**0
+  8 .debug_line   000006c0  00000000  00000000  00001ba5  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  00000204  00000000  00000000  00002180  2**2
+  9 .debug_frame  000001f8  00000000  00000000  00002268  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    000003e2  00000000  00000000  00002384  2**0
+ 10 .debug_str    00000401  00000000  00000000  00002460  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    000003e0  00000000  00000000  00002766  2**0
+ 11 .debug_loc    000003b1  00000000  00000000  00002861  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -41,8 +41,8 @@ Disassembly of section .text:
   1c:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
   20:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
   24:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
-  28:	0c 94 f5 00 	jmp	0x1ea	; 0x1ea <__vector_10>
-  2c:	0c 94 eb 00 	jmp	0x1d6	; 0x1d6 <__vector_11>
+  28:	0c 94 eb 00 	jmp	0x1d6	; 0x1d6 <__vector_10>
+  2c:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
   30:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
   34:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
   38:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
@@ -65,18 +65,18 @@ Disassembly of section .text:
   60:	10 e0       	ldi	r17, 0x00	; 0
   62:	a0 e6       	ldi	r26, 0x60	; 96
   64:	b0 e0       	ldi	r27, 0x00	; 0
-  66:	ee e0       	ldi	r30, 0x0E	; 14
-  68:	f4 e0       	ldi	r31, 0x04	; 4
+  66:	e8 ef       	ldi	r30, 0xF8	; 248
+  68:	f3 e0       	ldi	r31, 0x03	; 3
   6a:	02 c0       	rjmp	.+4      	; 0x70 <__do_copy_data+0x10>
   6c:	05 90       	lpm	r0, Z+
   6e:	0d 92       	st	X+, r0
-  70:	aa 37       	cpi	r26, 0x7A	; 122
+  70:	ac 37       	cpi	r26, 0x7C	; 124
   72:	b1 07       	cpc	r27, r17
   74:	d9 f7       	brne	.-10     	; 0x6c <__do_copy_data+0xc>
 
 00000076 <__do_clear_bss>:
   76:	10 e0       	ldi	r17, 0x00	; 0
-  78:	aa e7       	ldi	r26, 0x7A	; 122
+  78:	ac e7       	ldi	r26, 0x7C	; 124
   7a:	b0 e0       	ldi	r27, 0x00	; 0
   7c:	01 c0       	rjmp	.+2      	; 0x80 <.do_clear_bss_start>
 
@@ -84,20 +84,20 @@ Disassembly of section .text:
   7e:	1d 92       	st	X+, r1
 
 00000080 <.do_clear_bss_start>:
-  80:	a4 38       	cpi	r26, 0x84	; 132
+  80:	a6 38       	cpi	r26, 0x86	; 134
   82:	b1 07       	cpc	r27, r17
   84:	e1 f7       	brne	.-8      	; 0x7e <.do_clear_bss_loop>
-  86:	0e 94 dd 01 	call	0x3ba	; 0x3ba <main>
-  8a:	0c 94 05 02 	jmp	0x40a	; 0x40a <_exit>
+  86:	0e 94 de 01 	call	0x3bc	; 0x3bc <main>
+  8a:	0c 94 fa 01 	jmp	0x3f4	; 0x3f4 <_exit>
 
 0000008e <__bad_interrupt>:
   8e:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
 
-00000092 <Timer0_Init1ms>:
-static u16 countCompare = 0;
-static u16 no_of_ticks = 0;
+00000092 <timer0Init1ms>:
+static uint16_t no_of_ticks = 0;
 
-void Timer0_Init1ms ()
+
+void timer0Init1ms ()
 {		
 	sei();
   92:	78 94       	sei
@@ -136,27 +136,26 @@ void Timer0_Init1ms ()
   d2:	99 1f       	adc	r25, r25
   d4:	84 2b       	or	r24, r20
   d6:	83 bf       	out	0x33, r24	; 51
-	u8 u8LoopCounter;
-	//u16 no_of_ticks = 0;
+	uint8_t u8LoopCounter;
 	
 	for(u8LoopCounter=0; u8LoopCounter< PRESCALAR_NUM ; u8LoopCounter++)
 	{
 		no_of_ticks = clk1ms[u8LoopCounter].TempFreq;
   d8:	80 91 61 00 	lds	r24, 0x0061
   dc:	90 91 62 00 	lds	r25, 0x0062
-  e0:	90 93 7b 00 	sts	0x007B, r25
-  e4:	80 93 7a 00 	sts	0x007A, r24
+  e0:	90 93 7d 00 	sts	0x007D, r25
+  e4:	80 93 7c 00 	sts	0x007C, r24
 		if (no_of_ticks < 256)
   e8:	8f 3f       	cpi	r24, 0xFF	; 255
   ea:	91 05       	cpc	r25, r1
-  ec:	89 f0       	breq	.+34     	; 0x110 <Timer0_Init1ms+0x7e>
-  ee:	80 f0       	brcs	.+32     	; 0x110 <Timer0_Init1ms+0x7e>
+  ec:	89 f0       	breq	.+34     	; 0x110 <timer0Init1ms+0x7e>
+  ee:	80 f0       	brcs	.+32     	; 0x110 <timer0Init1ms+0x7e>
   f0:	e6 e6       	ldi	r30, 0x66	; 102
   f2:	f0 e0       	ldi	r31, 0x00	; 0
   f4:	81 e0       	ldi	r24, 0x01	; 1
   f6:	90 e0       	ldi	r25, 0x00	; 0
-	u8 u8LoopCounter;
-	//u16 no_of_ticks = 0;
+	TCCR0 |= (((MODE.MODE_NORMAL_CTC & 0x02)>>1)<<WGM01) | ((MODE.MODE_NORMAL_CTC & 0x01)<<WGM00) | (COM00_VALUE<<COM00)|(COM01_VALUE<<COM01);
+	uint8_t u8LoopCounter;
 	
 	for(u8LoopCounter=0; u8LoopCounter< PRESCALAR_NUM ; u8LoopCounter++)
 	{
@@ -167,13 +166,13 @@ void Timer0_Init1ms ()
 		if (no_of_ticks < 256)
   fe:	2f 3f       	cpi	r18, 0xFF	; 255
  100:	31 05       	cpc	r19, r1
- 102:	09 f0       	breq	.+2      	; 0x106 <Timer0_Init1ms+0x74>
- 104:	b8 f4       	brcc	.+46     	; 0x134 <Timer0_Init1ms+0xa2>
- 106:	30 93 7b 00 	sts	0x007B, r19
- 10a:	20 93 7a 00 	sts	0x007A, r18
- 10e:	02 c0       	rjmp	.+4      	; 0x114 <Timer0_Init1ms+0x82>
-	u8 u8LoopCounter;
-	//u16 no_of_ticks = 0;
+ 102:	09 f0       	breq	.+2      	; 0x106 <timer0Init1ms+0x74>
+ 104:	b8 f4       	brcc	.+46     	; 0x134 <timer0Init1ms+0xa2>
+ 106:	30 93 7d 00 	sts	0x007D, r19
+ 10a:	20 93 7c 00 	sts	0x007C, r18
+ 10e:	02 c0       	rjmp	.+4      	; 0x114 <timer0Init1ms+0x82>
+	TCCR0 |= (((MODE.MODE_NORMAL_CTC & 0x02)>>1)<<WGM01) | ((MODE.MODE_NORMAL_CTC & 0x01)<<WGM00) | (COM00_VALUE<<COM00)|(COM01_VALUE<<COM01);
+	uint8_t u8LoopCounter;
 	
 	for(u8LoopCounter=0; u8LoopCounter< PRESCALAR_NUM ; u8LoopCounter++)
 	{
@@ -202,64 +201,62 @@ void Timer0_Init1ms ()
  132:	08 95       	ret
  134:	01 96       	adiw	r24, 0x01	; 1
  136:	35 96       	adiw	r30, 0x05	; 5
+	sei();
+	TCCR0 = 0x00;
 	TCCR0 |= (((MODE.MODE_NORMAL_CTC & 0x02)>>1)<<WGM01) | ((MODE.MODE_NORMAL_CTC & 0x01)<<WGM00) | (COM00_VALUE<<COM00)|(COM01_VALUE<<COM01);
-	//TIMSK = 0x00;
-	u8 u8LoopCounter;
-	//u16 no_of_ticks = 0;
+	uint8_t u8LoopCounter;
 	
 	for(u8LoopCounter=0; u8LoopCounter< PRESCALAR_NUM ; u8LoopCounter++)
  138:	85 30       	cpi	r24, 0x05	; 5
  13a:	91 05       	cpc	r25, r1
- 13c:	e9 f6       	brne	.-70     	; 0xf8 <Timer0_Init1ms+0x66>
- 13e:	30 93 7b 00 	sts	0x007B, r19
- 142:	20 93 7a 00 	sts	0x007A, r18
+ 13c:	e9 f6       	brne	.-70     	; 0xf8 <timer0Init1ms+0x66>
+ 13e:	30 93 7d 00 	sts	0x007D, r19
+ 142:	20 93 7c 00 	sts	0x007C, r18
  146:	08 95       	ret
 
-00000148 <Timer0_Start>:
+00000148 <timer0Start>:
+}
 
-void Timer0_Start (u16 millis, FnPtr timeoutFn)
-{
-	//TCNT0 = 0x00;
-	
+
+void timer0Start (uint16_t millis, FnPtr timeoutFn)
+{	
 	TIMSK = 0x00;
  148:	19 be       	out	0x39, r1	; 57
 	OCR0 = no_of_ticks-1;
- 14a:	20 91 7a 00 	lds	r18, 0x007A
+ 14a:	20 91 7c 00 	lds	r18, 0x007C
  14e:	21 50       	subi	r18, 0x01	; 1
  150:	2c bf       	out	0x3c, r18	; 60
 	TIMSK |= 1<<OCIE0;
  152:	29 b7       	in	r18, 0x39	; 57
  154:	22 60       	ori	r18, 0x02	; 2
  156:	29 bf       	out	0x39, r18	; 57
-	
 	countCompare = millis;
- 158:	90 93 7d 00 	sts	0x007D, r25
- 15c:	80 93 7c 00 	sts	0x007C, r24
+ 158:	90 93 7f 00 	sts	0x007F, r25
+ 15c:	80 93 7e 00 	sts	0x007E, r24
 	TMR_CylicFunPtr = timeoutFn;
- 160:	70 93 7f 00 	sts	0x007F, r23
- 164:	60 93 7e 00 	sts	0x007E, r22
-	//TCNT0 = 0x00;
+ 160:	70 93 81 00 	sts	0x0081, r23
+ 164:	60 93 80 00 	sts	0x0080, r22
 }
  168:	08 95       	ret
 
-0000016a <timer0_Read>:
+0000016a <timer0Read>:
 
-uint8_t timer0_Read()
+uint8_t timer0Read()
 {
 	return TCNT0;
  16a:	82 b7       	in	r24, 0x32	; 50
 }
  16c:	08 95       	ret
 
-0000016e <Timer0_delay1ms>:
-		//}
-		//
-	//}
-	//
-	u16 i;
+0000016e <timer0Delay1ms>:
+
+void timer0Delay1ms(uint16_t millis, FnPtr timeoutFn)
+{
+	
+	uint16_t i;
 	for (i=0 ; i < millis ; i++)
  16e:	00 97       	sbiw	r24, 0x00	; 0
- 170:	09 f1       	breq	.+66     	; 0x1b4 <Timer0_delay1ms+0x46>
+ 170:	09 f1       	breq	.+66     	; 0x1b4 <timer0Delay1ms+0x46>
  172:	20 e0       	ldi	r18, 0x00	; 0
  174:	30 e0       	ldi	r19, 0x00	; 0
 	{
@@ -271,7 +268,7 @@ uint8_t timer0_Read()
 		{ 
 			 TCNT0 = 0;
 			 OCR0 = no_of_ticks-1;
- 17a:	ea e7       	ldi	r30, 0x7A	; 122
+ 17a:	ec e7       	ldi	r30, 0x7C	; 124
  17c:	f0 e0       	ldi	r31, 0x00	; 0
 			 while ((TIFR&0x02)==0);
 			 TIFR = 0x02;
@@ -283,14 +280,14 @@ uint8_t timer0_Read()
 			while ((TIFR&0x01)==0);
 			TIFR = 0x01;
  180:	a1 e0       	ldi	r26, 0x01	; 1
-	//}
-	//
-	u16 i;
+{
+	
+	uint16_t i;
 	for (i=0 ; i < millis ; i++)
 	{
 		if(MODE.MODE_NORMAL_CTC == u8_MODE_NORMAL)
  182:	44 23       	and	r20, r20
- 184:	41 f4       	brne	.+16     	; 0x196 <Timer0_delay1ms+0x28>
+ 184:	41 f4       	brne	.+16     	; 0x196 <timer0Delay1ms+0x28>
 		{
 			TCNT0 = 256 - no_of_ticks;
  186:	50 81       	ld	r21, Z
@@ -299,14 +296,14 @@ uint8_t timer0_Read()
 			while ((TIFR&0x01)==0);
  18c:	08 b6       	in	r0, 0x38	; 56
  18e:	00 fe       	sbrs	r0, 0
- 190:	fd cf       	rjmp	.-6      	; 0x18c <Timer0_delay1ms+0x1e>
+ 190:	fd cf       	rjmp	.-6      	; 0x18c <timer0Delay1ms+0x1e>
 			TIFR = 0x01;
  192:	a8 bf       	out	0x38, r26	; 56
- 194:	0a c0       	rjmp	.+20     	; 0x1aa <Timer0_delay1ms+0x3c>
+ 194:	0a c0       	rjmp	.+20     	; 0x1aa <timer0Delay1ms+0x3c>
 		}		
 		else if (MODE.MODE_NORMAL_CTC == u8_MODE_CTC)
  196:	42 30       	cpi	r20, 0x02	; 2
- 198:	41 f4       	brne	.+16     	; 0x1aa <Timer0_delay1ms+0x3c>
+ 198:	41 f4       	brne	.+16     	; 0x1aa <timer0Delay1ms+0x3c>
 		{ 
 			 TCNT0 = 0;
  19a:	12 be       	out	0x32, r1	; 50
@@ -317,20 +314,20 @@ uint8_t timer0_Read()
 			 while ((TIFR&0x02)==0);
  1a2:	08 b6       	in	r0, 0x38	; 56
  1a4:	01 fe       	sbrs	r0, 1
- 1a6:	fd cf       	rjmp	.-6      	; 0x1a2 <Timer0_delay1ms+0x34>
+ 1a6:	fd cf       	rjmp	.-6      	; 0x1a2 <timer0Delay1ms+0x34>
 			 TIFR = 0x02;
  1a8:	b8 bf       	out	0x38, r27	; 56
-		//}
-		//
-	//}
-	//
-	u16 i;
+
+void timer0Delay1ms(uint16_t millis, FnPtr timeoutFn)
+{
+	
+	uint16_t i;
 	for (i=0 ; i < millis ; i++)
  1aa:	2f 5f       	subi	r18, 0xFF	; 255
  1ac:	3f 4f       	sbci	r19, 0xFF	; 255
  1ae:	28 17       	cp	r18, r24
  1b0:	39 07       	cpc	r19, r25
- 1b2:	39 f7       	brne	.-50     	; 0x182 <Timer0_delay1ms+0x14>
+ 1b2:	39 f7       	brne	.-50     	; 0x182 <timer0Delay1ms+0x14>
 			 OCR0 = no_of_ticks-1;
 			 while ((TIFR&0x02)==0);
 			 TIFR = 0x02;
@@ -342,23 +339,21 @@ uint8_t timer0_Read()
 }
  1b8:	08 95       	ret
 
-000001ba <timer0_readOVFFlag>:
+000001ba <timer0ReadOVFFlag>:
 
 
-u8 timer0_readOVFFlag()
+uint8_t timer0ReadOVFFlag()
 {
 	return (TIFR&0x01);
  1ba:	88 b7       	in	r24, 0x38	; 56
-	//return GETBIT(TIFR,TOV0);
 }
  1bc:	81 70       	andi	r24, 0x01	; 1
  1be:	08 95       	ret
 
-000001c0 <timer0_readCMPFlag>:
+000001c0 <timer0ReadCMPFlag>:
 
-u8 timer0_readCMPFlag()
+uint8_t timer0ReadCMPFlag()
 {
-	//return GETBIT(TIFR,OCF0);
 	return (TIFR&0x02);
  1c0:	88 b7       	in	r24, 0x38	; 56
 }
@@ -367,7 +362,7 @@ u8 timer0_readCMPFlag()
 
 000001c6 <setTCNT0>:
 
-void setTCNT0 (u8 TCNT0_value)
+void setTCNT0 (uint8_t TCNT0_value)
 {
 	TCNT0 = TCNT0_value;
  1c6:	82 bf       	out	0x32, r24	; 50
@@ -376,7 +371,7 @@ void setTCNT0 (u8 TCNT0_value)
 
 000001ca <setOCR0>:
 
-void setOCR0 (u8 OCR0_value)
+void setOCR0 (uint8_t OCR0_value)
 {
 	OCR0 = OCR0_value - 1;
  1ca:	81 50       	subi	r24, 0x01	; 1
@@ -384,9 +379,9 @@ void setOCR0 (u8 OCR0_value)
 }
  1ce:	08 95       	ret
 
-000001d0 <Timer0_stop>:
+000001d0 <timer0Stop>:
 
-void Timer0_stop()
+void timer0Stop()
 {
 	TCCR0 |= (0<<CS02) | (0<<CS01) | (0<<CS00);
  1d0:	83 b7       	in	r24, 0x33	; 51
@@ -394,455 +389,435 @@ void Timer0_stop()
 }
  1d4:	08 95       	ret
 
-000001d6 <__vector_11>:
+000001d6 <__vector_10>:
 
-ISR(TIMER0_OVF_vect)
+
+
+ISR(TIMER0_COMP_vect)
 {
  1d6:	1f 92       	push	r1
  1d8:	0f 92       	push	r0
  1da:	0f b6       	in	r0, 0x3f	; 63
  1dc:	0f 92       	push	r0
  1de:	11 24       	eor	r1, r1
-	
-}
- 1e0:	0f 90       	pop	r0
- 1e2:	0f be       	out	0x3f, r0	; 63
- 1e4:	0f 90       	pop	r0
- 1e6:	1f 90       	pop	r1
- 1e8:	18 95       	reti
-
-000001ea <__vector_10>:
-
-ISR(TIMER0_COMP_vect)
-{
- 1ea:	1f 92       	push	r1
- 1ec:	0f 92       	push	r0
- 1ee:	0f b6       	in	r0, 0x3f	; 63
- 1f0:	0f 92       	push	r0
- 1f2:	11 24       	eor	r1, r1
- 1f4:	2f 93       	push	r18
- 1f6:	3f 93       	push	r19
- 1f8:	4f 93       	push	r20
- 1fa:	5f 93       	push	r21
- 1fc:	6f 93       	push	r22
- 1fe:	7f 93       	push	r23
- 200:	8f 93       	push	r24
- 202:	9f 93       	push	r25
- 204:	af 93       	push	r26
- 206:	bf 93       	push	r27
- 208:	ef 93       	push	r30
- 20a:	ff 93       	push	r31
+ 1e0:	2f 93       	push	r18
+ 1e2:	3f 93       	push	r19
+ 1e4:	4f 93       	push	r20
+ 1e6:	5f 93       	push	r21
+ 1e8:	6f 93       	push	r22
+ 1ea:	7f 93       	push	r23
+ 1ec:	8f 93       	push	r24
+ 1ee:	9f 93       	push	r25
+ 1f0:	af 93       	push	r26
+ 1f2:	bf 93       	push	r27
+ 1f4:	ef 93       	push	r30
+ 1f6:	ff 93       	push	r31
 	count++;
- 20c:	80 91 80 00 	lds	r24, 0x0080
- 210:	90 91 81 00 	lds	r25, 0x0081
- 214:	a0 91 82 00 	lds	r26, 0x0082
- 218:	b0 91 83 00 	lds	r27, 0x0083
- 21c:	01 96       	adiw	r24, 0x01	; 1
- 21e:	a1 1d       	adc	r26, r1
- 220:	b1 1d       	adc	r27, r1
- 222:	80 93 80 00 	sts	0x0080, r24
- 226:	90 93 81 00 	sts	0x0081, r25
- 22a:	a0 93 82 00 	sts	0x0082, r26
- 22e:	b0 93 83 00 	sts	0x0083, r27
+ 1f8:	80 91 82 00 	lds	r24, 0x0082
+ 1fc:	90 91 83 00 	lds	r25, 0x0083
+ 200:	a0 91 84 00 	lds	r26, 0x0084
+ 204:	b0 91 85 00 	lds	r27, 0x0085
+ 208:	01 96       	adiw	r24, 0x01	; 1
+ 20a:	a1 1d       	adc	r26, r1
+ 20c:	b1 1d       	adc	r27, r1
+ 20e:	80 93 82 00 	sts	0x0082, r24
+ 212:	90 93 83 00 	sts	0x0083, r25
+ 216:	a0 93 84 00 	sts	0x0084, r26
+ 21a:	b0 93 85 00 	sts	0x0085, r27
 	if (count == countCompare)
- 232:	40 91 7c 00 	lds	r20, 0x007C
- 236:	50 91 7d 00 	lds	r21, 0x007D
- 23a:	60 e0       	ldi	r22, 0x00	; 0
- 23c:	70 e0       	ldi	r23, 0x00	; 0
- 23e:	84 17       	cp	r24, r20
- 240:	95 07       	cpc	r25, r21
- 242:	a6 07       	cpc	r26, r22
- 244:	b7 07       	cpc	r27, r23
- 246:	69 f4       	brne	.+26     	; 0x262 <__vector_10+0x78>
+ 21e:	40 91 7e 00 	lds	r20, 0x007E
+ 222:	50 91 7f 00 	lds	r21, 0x007F
+ 226:	60 e0       	ldi	r22, 0x00	; 0
+ 228:	70 e0       	ldi	r23, 0x00	; 0
+ 22a:	84 17       	cp	r24, r20
+ 22c:	95 07       	cpc	r25, r21
+ 22e:	a6 07       	cpc	r26, r22
+ 230:	b7 07       	cpc	r27, r23
+ 232:	69 f4       	brne	.+26     	; 0x24e <__vector_10+0x78>
 	{
 		TMR_CylicFunPtr();
- 248:	e0 91 7e 00 	lds	r30, 0x007E
- 24c:	f0 91 7f 00 	lds	r31, 0x007F
- 250:	09 95       	icall
+ 234:	e0 91 80 00 	lds	r30, 0x0080
+ 238:	f0 91 81 00 	lds	r31, 0x0081
+ 23c:	09 95       	icall
 		count = 0;
- 252:	10 92 80 00 	sts	0x0080, r1
- 256:	10 92 81 00 	sts	0x0081, r1
- 25a:	10 92 82 00 	sts	0x0082, r1
- 25e:	10 92 83 00 	sts	0x0083, r1
+ 23e:	10 92 82 00 	sts	0x0082, r1
+ 242:	10 92 83 00 	sts	0x0083, r1
+ 246:	10 92 84 00 	sts	0x0084, r1
+ 24a:	10 92 85 00 	sts	0x0085, r1
 	}
-	//TCNT0 = 0x00;
-}
- 262:	ff 91       	pop	r31
- 264:	ef 91       	pop	r30
- 266:	bf 91       	pop	r27
- 268:	af 91       	pop	r26
- 26a:	9f 91       	pop	r25
- 26c:	8f 91       	pop	r24
- 26e:	7f 91       	pop	r23
- 270:	6f 91       	pop	r22
- 272:	5f 91       	pop	r21
- 274:	4f 91       	pop	r20
- 276:	3f 91       	pop	r19
- 278:	2f 91       	pop	r18
- 27a:	0f 90       	pop	r0
- 27c:	0f be       	out	0x3f, r0	; 63
- 27e:	0f 90       	pop	r0
- 280:	1f 90       	pop	r1
- 282:	18 95       	reti
+ 24e:	ff 91       	pop	r31
+ 250:	ef 91       	pop	r30
+ 252:	bf 91       	pop	r27
+ 254:	af 91       	pop	r26
+ 256:	9f 91       	pop	r25
+ 258:	8f 91       	pop	r24
+ 25a:	7f 91       	pop	r23
+ 25c:	6f 91       	pop	r22
+ 25e:	5f 91       	pop	r21
+ 260:	4f 91       	pop	r20
+ 262:	3f 91       	pop	r19
+ 264:	2f 91       	pop	r18
+ 266:	0f 90       	pop	r0
+ 268:	0f be       	out	0x3f, r0	; 63
+ 26a:	0f 90       	pop	r0
+ 26c:	1f 90       	pop	r1
+ 26e:	18 95       	reti
 
-00000284 <GPIO_InitPortDirection>:
+00000270 <GPIO_InitPortDirection>:
 #define WRITE_REG(Reg,Value,Mask) Reg&=~(Mask); Reg|=(Value & Mask)
 #define READ_REG(Reg,Mask) Reg & Mask
 
 void GPIO_InitPortDirection(u8 PortName,u8 PortDirection,u8 PortMask)
 {
 	switch(PortName)
- 284:	81 30       	cpi	r24, 0x01	; 1
- 286:	89 f0       	breq	.+34     	; 0x2aa <GPIO_InitPortDirection+0x26>
- 288:	81 30       	cpi	r24, 0x01	; 1
- 28a:	28 f0       	brcs	.+10     	; 0x296 <GPIO_InitPortDirection+0x12>
- 28c:	82 30       	cpi	r24, 0x02	; 2
- 28e:	b9 f0       	breq	.+46     	; 0x2be <GPIO_InitPortDirection+0x3a>
- 290:	83 30       	cpi	r24, 0x03	; 3
- 292:	41 f5       	brne	.+80     	; 0x2e4 <GPIO_InitPortDirection+0x60>
- 294:	1e c0       	rjmp	.+60     	; 0x2d2 <GPIO_InitPortDirection+0x4e>
+ 270:	81 30       	cpi	r24, 0x01	; 1
+ 272:	89 f0       	breq	.+34     	; 0x296 <GPIO_InitPortDirection+0x26>
+ 274:	81 30       	cpi	r24, 0x01	; 1
+ 276:	28 f0       	brcs	.+10     	; 0x282 <GPIO_InitPortDirection+0x12>
+ 278:	82 30       	cpi	r24, 0x02	; 2
+ 27a:	b9 f0       	breq	.+46     	; 0x2aa <GPIO_InitPortDirection+0x3a>
+ 27c:	83 30       	cpi	r24, 0x03	; 3
+ 27e:	41 f5       	brne	.+80     	; 0x2d0 <GPIO_InitPortDirection+0x60>
+ 280:	1e c0       	rjmp	.+60     	; 0x2be <GPIO_InitPortDirection+0x4e>
 	{
 		case PA:
 		{
 			WRITE_REG(DDRA,PortDirection,PortMask);
- 296:	8a b3       	in	r24, 0x1a	; 26
- 298:	94 2f       	mov	r25, r20
- 29a:	90 95       	com	r25
- 29c:	89 23       	and	r24, r25
- 29e:	8a bb       	out	0x1a, r24	; 26
- 2a0:	8a b3       	in	r24, 0x1a	; 26
- 2a2:	64 23       	and	r22, r20
- 2a4:	68 2b       	or	r22, r24
- 2a6:	6a bb       	out	0x1a, r22	; 26
+ 282:	8a b3       	in	r24, 0x1a	; 26
+ 284:	94 2f       	mov	r25, r20
+ 286:	90 95       	com	r25
+ 288:	89 23       	and	r24, r25
+ 28a:	8a bb       	out	0x1a, r24	; 26
+ 28c:	8a b3       	in	r24, 0x1a	; 26
+ 28e:	64 23       	and	r22, r20
+ 290:	68 2b       	or	r22, r24
+ 292:	6a bb       	out	0x1a, r22	; 26
 		}
 		break;
- 2a8:	08 95       	ret
+ 294:	08 95       	ret
 		case PB:
 		{
 			WRITE_REG(DDRB,PortDirection,PortMask);
- 2aa:	87 b3       	in	r24, 0x17	; 23
- 2ac:	94 2f       	mov	r25, r20
- 2ae:	90 95       	com	r25
- 2b0:	89 23       	and	r24, r25
- 2b2:	87 bb       	out	0x17, r24	; 23
- 2b4:	87 b3       	in	r24, 0x17	; 23
- 2b6:	64 23       	and	r22, r20
- 2b8:	68 2b       	or	r22, r24
- 2ba:	67 bb       	out	0x17, r22	; 23
+ 296:	87 b3       	in	r24, 0x17	; 23
+ 298:	94 2f       	mov	r25, r20
+ 29a:	90 95       	com	r25
+ 29c:	89 23       	and	r24, r25
+ 29e:	87 bb       	out	0x17, r24	; 23
+ 2a0:	87 b3       	in	r24, 0x17	; 23
+ 2a2:	64 23       	and	r22, r20
+ 2a4:	68 2b       	or	r22, r24
+ 2a6:	67 bb       	out	0x17, r22	; 23
 		}
 		break;
- 2bc:	08 95       	ret
+ 2a8:	08 95       	ret
 		case PC:
 		{
 			WRITE_REG(DDRC,PortDirection,PortMask);
- 2be:	84 b3       	in	r24, 0x14	; 20
- 2c0:	94 2f       	mov	r25, r20
- 2c2:	90 95       	com	r25
- 2c4:	89 23       	and	r24, r25
- 2c6:	84 bb       	out	0x14, r24	; 20
- 2c8:	84 b3       	in	r24, 0x14	; 20
- 2ca:	64 23       	and	r22, r20
- 2cc:	68 2b       	or	r22, r24
- 2ce:	64 bb       	out	0x14, r22	; 20
+ 2aa:	84 b3       	in	r24, 0x14	; 20
+ 2ac:	94 2f       	mov	r25, r20
+ 2ae:	90 95       	com	r25
+ 2b0:	89 23       	and	r24, r25
+ 2b2:	84 bb       	out	0x14, r24	; 20
+ 2b4:	84 b3       	in	r24, 0x14	; 20
+ 2b6:	64 23       	and	r22, r20
+ 2b8:	68 2b       	or	r22, r24
+ 2ba:	64 bb       	out	0x14, r22	; 20
 		}
 		break;
- 2d0:	08 95       	ret
+ 2bc:	08 95       	ret
 		case PD:
 		{
 			WRITE_REG(DDRD,PortDirection,PortMask);
- 2d2:	81 b3       	in	r24, 0x11	; 17
- 2d4:	94 2f       	mov	r25, r20
- 2d6:	90 95       	com	r25
- 2d8:	89 23       	and	r24, r25
- 2da:	81 bb       	out	0x11, r24	; 17
- 2dc:	81 b3       	in	r24, 0x11	; 17
- 2de:	64 23       	and	r22, r20
- 2e0:	68 2b       	or	r22, r24
- 2e2:	61 bb       	out	0x11, r22	; 17
- 2e4:	08 95       	ret
+ 2be:	81 b3       	in	r24, 0x11	; 17
+ 2c0:	94 2f       	mov	r25, r20
+ 2c2:	90 95       	com	r25
+ 2c4:	89 23       	and	r24, r25
+ 2c6:	81 bb       	out	0x11, r24	; 17
+ 2c8:	81 b3       	in	r24, 0x11	; 17
+ 2ca:	64 23       	and	r22, r20
+ 2cc:	68 2b       	or	r22, r24
+ 2ce:	61 bb       	out	0x11, r22	; 17
+ 2d0:	08 95       	ret
 
-000002e6 <GPIO_WritePort>:
+000002d2 <GPIO_WritePort>:
 		break;
 	}	
 }
 void GPIO_WritePort(u8 PortName,u8 PortData,u8 PortMask)
 {
 	switch(PortName)
- 2e6:	81 30       	cpi	r24, 0x01	; 1
- 2e8:	89 f0       	breq	.+34     	; 0x30c <GPIO_WritePort+0x26>
- 2ea:	81 30       	cpi	r24, 0x01	; 1
- 2ec:	28 f0       	brcs	.+10     	; 0x2f8 <GPIO_WritePort+0x12>
- 2ee:	82 30       	cpi	r24, 0x02	; 2
- 2f0:	b9 f0       	breq	.+46     	; 0x320 <GPIO_WritePort+0x3a>
- 2f2:	83 30       	cpi	r24, 0x03	; 3
- 2f4:	41 f5       	brne	.+80     	; 0x346 <GPIO_WritePort+0x60>
- 2f6:	1e c0       	rjmp	.+60     	; 0x334 <GPIO_WritePort+0x4e>
+ 2d2:	81 30       	cpi	r24, 0x01	; 1
+ 2d4:	89 f0       	breq	.+34     	; 0x2f8 <GPIO_WritePort+0x26>
+ 2d6:	81 30       	cpi	r24, 0x01	; 1
+ 2d8:	28 f0       	brcs	.+10     	; 0x2e4 <GPIO_WritePort+0x12>
+ 2da:	82 30       	cpi	r24, 0x02	; 2
+ 2dc:	b9 f0       	breq	.+46     	; 0x30c <GPIO_WritePort+0x3a>
+ 2de:	83 30       	cpi	r24, 0x03	; 3
+ 2e0:	41 f5       	brne	.+80     	; 0x332 <GPIO_WritePort+0x60>
+ 2e2:	1e c0       	rjmp	.+60     	; 0x320 <GPIO_WritePort+0x4e>
 	{
 		case PA:
 		{
 			WRITE_REG(PORTA,PortData,PortMask);
- 2f8:	8b b3       	in	r24, 0x1b	; 27
- 2fa:	94 2f       	mov	r25, r20
- 2fc:	90 95       	com	r25
- 2fe:	89 23       	and	r24, r25
- 300:	8b bb       	out	0x1b, r24	; 27
- 302:	8b b3       	in	r24, 0x1b	; 27
- 304:	64 23       	and	r22, r20
- 306:	68 2b       	or	r22, r24
- 308:	6b bb       	out	0x1b, r22	; 27
+ 2e4:	8b b3       	in	r24, 0x1b	; 27
+ 2e6:	94 2f       	mov	r25, r20
+ 2e8:	90 95       	com	r25
+ 2ea:	89 23       	and	r24, r25
+ 2ec:	8b bb       	out	0x1b, r24	; 27
+ 2ee:	8b b3       	in	r24, 0x1b	; 27
+ 2f0:	64 23       	and	r22, r20
+ 2f2:	68 2b       	or	r22, r24
+ 2f4:	6b bb       	out	0x1b, r22	; 27
 		}
 		break;
- 30a:	08 95       	ret
+ 2f6:	08 95       	ret
 		case PB:
 		{
 			WRITE_REG(PORTB,PortData,PortMask);
- 30c:	88 b3       	in	r24, 0x18	; 24
- 30e:	94 2f       	mov	r25, r20
- 310:	90 95       	com	r25
- 312:	89 23       	and	r24, r25
- 314:	88 bb       	out	0x18, r24	; 24
- 316:	88 b3       	in	r24, 0x18	; 24
- 318:	64 23       	and	r22, r20
- 31a:	68 2b       	or	r22, r24
- 31c:	68 bb       	out	0x18, r22	; 24
+ 2f8:	88 b3       	in	r24, 0x18	; 24
+ 2fa:	94 2f       	mov	r25, r20
+ 2fc:	90 95       	com	r25
+ 2fe:	89 23       	and	r24, r25
+ 300:	88 bb       	out	0x18, r24	; 24
+ 302:	88 b3       	in	r24, 0x18	; 24
+ 304:	64 23       	and	r22, r20
+ 306:	68 2b       	or	r22, r24
+ 308:	68 bb       	out	0x18, r22	; 24
 		}
 		break;
- 31e:	08 95       	ret
+ 30a:	08 95       	ret
 		case PC:
 		{
 			WRITE_REG(PORTC,PortData,PortMask);
- 320:	85 b3       	in	r24, 0x15	; 21
- 322:	94 2f       	mov	r25, r20
- 324:	90 95       	com	r25
- 326:	89 23       	and	r24, r25
- 328:	85 bb       	out	0x15, r24	; 21
- 32a:	85 b3       	in	r24, 0x15	; 21
- 32c:	64 23       	and	r22, r20
- 32e:	68 2b       	or	r22, r24
- 330:	65 bb       	out	0x15, r22	; 21
+ 30c:	85 b3       	in	r24, 0x15	; 21
+ 30e:	94 2f       	mov	r25, r20
+ 310:	90 95       	com	r25
+ 312:	89 23       	and	r24, r25
+ 314:	85 bb       	out	0x15, r24	; 21
+ 316:	85 b3       	in	r24, 0x15	; 21
+ 318:	64 23       	and	r22, r20
+ 31a:	68 2b       	or	r22, r24
+ 31c:	65 bb       	out	0x15, r22	; 21
 		}
 		break;
- 332:	08 95       	ret
+ 31e:	08 95       	ret
 		case PD:
 		{
 			WRITE_REG(PORTD,PortData,PortMask);
- 334:	82 b3       	in	r24, 0x12	; 18
- 336:	94 2f       	mov	r25, r20
- 338:	90 95       	com	r25
- 33a:	89 23       	and	r24, r25
- 33c:	82 bb       	out	0x12, r24	; 18
- 33e:	82 b3       	in	r24, 0x12	; 18
- 340:	64 23       	and	r22, r20
- 342:	68 2b       	or	r22, r24
- 344:	62 bb       	out	0x12, r22	; 18
- 346:	08 95       	ret
+ 320:	82 b3       	in	r24, 0x12	; 18
+ 322:	94 2f       	mov	r25, r20
+ 324:	90 95       	com	r25
+ 326:	89 23       	and	r24, r25
+ 328:	82 bb       	out	0x12, r24	; 18
+ 32a:	82 b3       	in	r24, 0x12	; 18
+ 32c:	64 23       	and	r22, r20
+ 32e:	68 2b       	or	r22, r24
+ 330:	62 bb       	out	0x12, r22	; 18
+ 332:	08 95       	ret
 
-00000348 <GPIO_ReadPort>:
+00000334 <GPIO_ReadPort>:
 	}	
 }
 u8 GPIO_ReadPort(u8 PortName,u8 PortMask)
 {
 	u8 Data = 0;
 	switch(PortName)
- 348:	81 30       	cpi	r24, 0x01	; 1
- 34a:	51 f0       	breq	.+20     	; 0x360 <GPIO_ReadPort+0x18>
- 34c:	81 30       	cpi	r24, 0x01	; 1
- 34e:	28 f0       	brcs	.+10     	; 0x35a <GPIO_ReadPort+0x12>
- 350:	82 30       	cpi	r24, 0x02	; 2
- 352:	49 f0       	breq	.+18     	; 0x366 <GPIO_ReadPort+0x1e>
- 354:	83 30       	cpi	r24, 0x03	; 3
- 356:	69 f4       	brne	.+26     	; 0x372 <GPIO_ReadPort+0x2a>
- 358:	09 c0       	rjmp	.+18     	; 0x36c <GPIO_ReadPort+0x24>
+ 334:	81 30       	cpi	r24, 0x01	; 1
+ 336:	51 f0       	breq	.+20     	; 0x34c <GPIO_ReadPort+0x18>
+ 338:	81 30       	cpi	r24, 0x01	; 1
+ 33a:	28 f0       	brcs	.+10     	; 0x346 <GPIO_ReadPort+0x12>
+ 33c:	82 30       	cpi	r24, 0x02	; 2
+ 33e:	49 f0       	breq	.+18     	; 0x352 <GPIO_ReadPort+0x1e>
+ 340:	83 30       	cpi	r24, 0x03	; 3
+ 342:	69 f4       	brne	.+26     	; 0x35e <GPIO_ReadPort+0x2a>
+ 344:	09 c0       	rjmp	.+18     	; 0x358 <GPIO_ReadPort+0x24>
 	{
 		case PA:
 		{
 			Data = READ_REG(PINA,PortMask);
- 35a:	89 b3       	in	r24, 0x19	; 25
- 35c:	86 23       	and	r24, r22
+ 346:	89 b3       	in	r24, 0x19	; 25
+ 348:	86 23       	and	r24, r22
 		}
 		break;
- 35e:	08 95       	ret
+ 34a:	08 95       	ret
 		case PB:
 		{
 			Data = READ_REG(PINB,PortMask);
- 360:	86 b3       	in	r24, 0x16	; 22
- 362:	86 23       	and	r24, r22
+ 34c:	86 b3       	in	r24, 0x16	; 22
+ 34e:	86 23       	and	r24, r22
 		}
 		break;
- 364:	08 95       	ret
+ 350:	08 95       	ret
 		case PC:
 		{
 			Data = READ_REG(PINC,PortMask);
- 366:	83 b3       	in	r24, 0x13	; 19
- 368:	86 23       	and	r24, r22
+ 352:	83 b3       	in	r24, 0x13	; 19
+ 354:	86 23       	and	r24, r22
 		}
 		break;
- 36a:	08 95       	ret
+ 356:	08 95       	ret
 		case PD:
 		{
 			Data = READ_REG(PIND,PortMask);
- 36c:	80 b3       	in	r24, 0x10	; 16
- 36e:	86 23       	and	r24, r22
+ 358:	80 b3       	in	r24, 0x10	; 16
+ 35a:	86 23       	and	r24, r22
 		}
 		break;
- 370:	08 95       	ret
+ 35c:	08 95       	ret
 		break;
 	}	
 }
 u8 GPIO_ReadPort(u8 PortName,u8 PortMask)
 {
 	u8 Data = 0;
- 372:	80 e0       	ldi	r24, 0x00	; 0
+ 35e:	80 e0       	ldi	r24, 0x00	; 0
 		break;
 		
 	}
 	return Data;
 	
- 374:	08 95       	ret
+ 360:	08 95       	ret
 
-00000376 <HAL_Timer_Init>:
+00000362 <HAL_Timer_Init>:
 #include "8-bit_TimerCounter0.h"
 #include "HAL_Timer_AVR.h"
 
 void HAL_Timer_Init(Timer_InitTypeDef * timer)
 {
-	Timer0_Init1ms();
- 376:	0e 94 49 00 	call	0x92	; 0x92 <Timer0_Init1ms>
+	timer0Init1ms();
+ 362:	0e 94 49 00 	call	0x92	; 0x92 <timer0Init1ms>
 }
- 37a:	08 95       	ret
+ 366:	08 95       	ret
 
-0000037c <HAL_Timer_Delay>:
+00000368 <HAL_Timer_Delay>:
 
 void HAL_Timer_Delay(Timer_HandleTypeDef * timer)
 {
- 37c:	fc 01       	movw	r30, r24
-	Timer0_delay1ms(timer->millis, timer->timeoutFn);
- 37e:	62 81       	ldd	r22, Z+2	; 0x02
- 380:	73 81       	ldd	r23, Z+3	; 0x03
- 382:	80 81       	ld	r24, Z
- 384:	91 81       	ldd	r25, Z+1	; 0x01
- 386:	0e 94 b7 00 	call	0x16e	; 0x16e <Timer0_delay1ms>
+ 368:	fc 01       	movw	r30, r24
+	timer0Delay1ms(timer->millis, timer->timeoutFn);
+ 36a:	62 81       	ldd	r22, Z+2	; 0x02
+ 36c:	73 81       	ldd	r23, Z+3	; 0x03
+ 36e:	80 81       	ld	r24, Z
+ 370:	91 81       	ldd	r25, Z+1	; 0x01
+ 372:	0e 94 b7 00 	call	0x16e	; 0x16e <timer0Delay1ms>
 }
- 38a:	08 95       	ret
+ 376:	08 95       	ret
 
-0000038c <HAL_Timer_Start>:
+00000378 <HAL_Timer_Start>:
 void HAL_Timer_Start (Timer_HandleTypeDef * timer)
 {
- 38c:	fc 01       	movw	r30, r24
-	Timer0_Start(timer->millis, timer->timeoutFn);
- 38e:	62 81       	ldd	r22, Z+2	; 0x02
- 390:	73 81       	ldd	r23, Z+3	; 0x03
- 392:	80 81       	ld	r24, Z
- 394:	91 81       	ldd	r25, Z+1	; 0x01
- 396:	0e 94 a4 00 	call	0x148	; 0x148 <Timer0_Start>
+ 378:	fc 01       	movw	r30, r24
+	timer0Start(timer->millis, timer->timeoutFn);
+ 37a:	62 81       	ldd	r22, Z+2	; 0x02
+ 37c:	73 81       	ldd	r23, Z+3	; 0x03
+ 37e:	80 81       	ld	r24, Z
+ 380:	91 81       	ldd	r25, Z+1	; 0x01
+ 382:	0e 94 a4 00 	call	0x148	; 0x148 <timer0Start>
 }
- 39a:	08 95       	ret
+ 386:	08 95       	ret
 
-0000039c <HAL_Timer_stop>:
-void HAL_Timer_stop(Timer_HandleTypeDef * timer)
+00000388 <HAL_Timer_Stop>:
+void HAL_Timer_Stop(Timer_HandleTypeDef * timer)
 {
-	Timer0_stop();
- 39c:	0e 94 e8 00 	call	0x1d0	; 0x1d0 <Timer0_stop>
- 3a0:	08 95       	ret
+	timer0Stop();
+ 388:	0e 94 e8 00 	call	0x1d0	; 0x1d0 <timer0Stop>
+ 38c:	08 95       	ret
 
-000003a2 <trial_fnOFF>:
-	GPIO_WritePort(PC,0x01,0x01);
-}
-
-void trial_fnOFF()
-{
+0000038e <toggle>:
 	GPIO_WritePort(PC,0x00,0x01);
- 3a2:	82 e0       	ldi	r24, 0x02	; 2
- 3a4:	60 e0       	ldi	r22, 0x00	; 0
- 3a6:	41 e0       	ldi	r20, 0x01	; 1
- 3a8:	0e 94 73 01 	call	0x2e6	; 0x2e6 <GPIO_WritePort>
 }
- 3ac:	08 95       	ret
+static uint8_t state = 0x01;
+void toggle ()
+{
+	state = state ^0x01;
+ 38e:	60 91 7a 00 	lds	r22, 0x007A
+ 392:	81 e0       	ldi	r24, 0x01	; 1
+ 394:	68 27       	eor	r22, r24
+ 396:	60 93 7a 00 	sts	0x007A, r22
+	GPIO_WritePort(PC,state,0x01);
+ 39a:	82 e0       	ldi	r24, 0x02	; 2
+ 39c:	41 e0       	ldi	r20, 0x01	; 1
+ 39e:	0e 94 69 01 	call	0x2d2	; 0x2d2 <GPIO_WritePort>
+}
+ 3a2:	08 95       	ret
 
-000003ae <trial_fnON>:
+000003a4 <trial_fnON>:
 #include "8-bit_TimerCounter0.h"
 #include "HAL_Timer_AVR.h"
 
 void trial_fnON()
 {
 	GPIO_WritePort(PC,0x01,0x01);
- 3ae:	82 e0       	ldi	r24, 0x02	; 2
- 3b0:	61 e0       	ldi	r22, 0x01	; 1
- 3b2:	41 e0       	ldi	r20, 0x01	; 1
- 3b4:	0e 94 73 01 	call	0x2e6	; 0x2e6 <GPIO_WritePort>
+ 3a4:	82 e0       	ldi	r24, 0x02	; 2
+ 3a6:	61 e0       	ldi	r22, 0x01	; 1
+ 3a8:	41 e0       	ldi	r20, 0x01	; 1
+ 3aa:	0e 94 69 01 	call	0x2d2	; 0x2d2 <GPIO_WritePort>
 }
- 3b8:	08 95       	ret
+ 3ae:	08 95       	ret
 
-000003ba <main>:
+000003b0 <trial_fnOFF>:
+
+void trial_fnOFF()
 {
 	GPIO_WritePort(PC,0x00,0x01);
+ 3b0:	82 e0       	ldi	r24, 0x02	; 2
+ 3b2:	60 e0       	ldi	r22, 0x00	; 0
+ 3b4:	41 e0       	ldi	r20, 0x01	; 1
+ 3b6:	0e 94 69 01 	call	0x2d2	; 0x2d2 <GPIO_WritePort>
 }
+ 3ba:	08 95       	ret
+
+000003bc <main>:
+	GPIO_WritePort(PC,state,0x01);
+}
+
 
 int main(void)
 {
- 3ba:	cf 93       	push	r28
- 3bc:	df 93       	push	r29
- 3be:	00 d0       	rcall	.+0      	; 0x3c0 <main+0x6>
- 3c0:	00 d0       	rcall	.+0      	; 0x3c2 <main+0x8>
- 3c2:	cd b7       	in	r28, 0x3d	; 61
- 3c4:	de b7       	in	r29, 0x3e	; 62
+ 3bc:	cf 93       	push	r28
+ 3be:	df 93       	push	r29
+ 3c0:	00 d0       	rcall	.+0      	; 0x3c2 <main+0x6>
+ 3c2:	00 d0       	rcall	.+0      	; 0x3c4 <main+0x8>
+ 3c4:	cd b7       	in	r28, 0x3d	; 61
+ 3c6:	de b7       	in	r29, 0x3e	; 62
+	
 	GPIO_InitPortDirection(PC,0x01,0x01);
- 3c6:	82 e0       	ldi	r24, 0x02	; 2
- 3c8:	61 e0       	ldi	r22, 0x01	; 1
- 3ca:	41 e0       	ldi	r20, 0x01	; 1
- 3cc:	0e 94 42 01 	call	0x284	; 0x284 <GPIO_InitPortDirection>
-	//TimerInit();
+ 3c8:	82 e0       	ldi	r24, 0x02	; 2
+ 3ca:	61 e0       	ldi	r22, 0x01	; 1
+ 3cc:	41 e0       	ldi	r20, 0x01	; 1
+ 3ce:	0e 94 38 01 	call	0x270	; 0x270 <GPIO_InitPortDirection>
+	
 	Timer_InitTypeDef timerInit;
 	Timer_HandleTypeDef timerHandle;
-	timerHandle.millis = 10;
- 3d0:	8a e0       	ldi	r24, 0x0A	; 10
- 3d2:	90 e0       	ldi	r25, 0x00	; 0
- 3d4:	9a 83       	std	Y+2, r25	; 0x02
- 3d6:	89 83       	std	Y+1, r24	; 0x01
+	timerHandle.millis = 1000;
+ 3d2:	88 ee       	ldi	r24, 0xE8	; 232
+ 3d4:	93 e0       	ldi	r25, 0x03	; 3
+ 3d6:	9a 83       	std	Y+2, r25	; 0x02
+ 3d8:	89 83       	std	Y+1, r24	; 0x01
+	
 	
 	HAL_Timer_Init(&timerInit);
- 3d8:	ce 01       	movw	r24, r28
- 3da:	01 96       	adiw	r24, 0x01	; 1
- 3dc:	0e 94 bb 01 	call	0x376	; 0x376 <HAL_Timer_Init>
-	//HAL_Timer_Start (1000, trial_fnON);
+ 3da:	ce 01       	movw	r24, r28
+ 3dc:	01 96       	adiw	r24, 0x01	; 1
+ 3de:	0e 94 b1 01 	call	0x362	; 0x362 <HAL_Timer_Init>
+	
     while(1)
     {	
-		//HAL_Timer_Start(1000,trial_fnON);
-		//int x=0;
-		timerHandle.timeoutFn = trial_fnON;
- 3e0:	07 ed       	ldi	r16, 0xD7	; 215
- 3e2:	11 e0       	ldi	r17, 0x01	; 1
-		HAL_Timer_Delay(&timerHandle);
-		timerHandle.timeoutFn = trial_fnOFF;
- 3e4:	0f 2e       	mov	r0, r31
- 3e6:	f1 ed       	ldi	r31, 0xD1	; 209
- 3e8:	ef 2e       	mov	r14, r31
- 3ea:	f1 e0       	ldi	r31, 0x01	; 1
- 3ec:	ff 2e       	mov	r15, r31
- 3ee:	f0 2d       	mov	r31, r0
-	//HAL_Timer_Start (1000, trial_fnON);
-    while(1)
-    {	
-		//HAL_Timer_Start(1000,trial_fnON);
-		//int x=0;
-		timerHandle.timeoutFn = trial_fnON;
- 3f0:	1c 83       	std	Y+4, r17	; 0x04
- 3f2:	0b 83       	std	Y+3, r16	; 0x03
-		HAL_Timer_Delay(&timerHandle);
- 3f4:	ce 01       	movw	r24, r28
- 3f6:	01 96       	adiw	r24, 0x01	; 1
- 3f8:	0e 94 be 01 	call	0x37c	; 0x37c <HAL_Timer_Delay>
-		timerHandle.timeoutFn = trial_fnOFF;
- 3fc:	fc 82       	std	Y+4, r15	; 0x04
- 3fe:	eb 82       	std	Y+3, r14	; 0x03
-		HAL_Timer_Delay(&timerHandle);
- 400:	ce 01       	movw	r24, r28
- 402:	01 96       	adiw	r24, 0x01	; 1
- 404:	0e 94 be 01 	call	0x37c	; 0x37c <HAL_Timer_Delay>
- 408:	f3 cf       	rjmp	.-26     	; 0x3f0 <main+0x36>
+		
+		timerHandle.timeoutFn = toggle;
+ 3e2:	07 ec       	ldi	r16, 0xC7	; 199
+ 3e4:	11 e0       	ldi	r17, 0x01	; 1
+ 3e6:	1c 83       	std	Y+4, r17	; 0x04
+ 3e8:	0b 83       	std	Y+3, r16	; 0x03
+		/*timerHandle.timeoutFn = trial_fnON;*/
+		HAL_Timer_Start(&timerHandle);
+ 3ea:	ce 01       	movw	r24, r28
+ 3ec:	01 96       	adiw	r24, 0x01	; 1
+ 3ee:	0e 94 bc 01 	call	0x378	; 0x378 <HAL_Timer_Start>
+ 3f2:	f9 cf       	rjmp	.-14     	; 0x3e6 <main+0x2a>
 
-0000040a <_exit>:
- 40a:	f8 94       	cli
+000003f4 <_exit>:
+ 3f4:	f8 94       	cli
 
-0000040c <__stop_program>:
- 40c:	ff cf       	rjmp	.-2      	; 0x40c <__stop_program>
+000003f6 <__stop_program>:
+ 3f6:	ff cf       	rjmp	.-2      	; 0x3f6 <__stop_program>

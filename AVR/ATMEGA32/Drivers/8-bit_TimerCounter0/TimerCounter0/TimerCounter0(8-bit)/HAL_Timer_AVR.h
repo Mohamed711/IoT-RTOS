@@ -2,7 +2,7 @@
  * HAL.h
  *
  * Created: 20-Feb-16 4:36:05 PM
- *  Author: Dell Ultrabook
+ *  Author: Heba Rady
  */ 
 #include "8-bit_TimerCounter0.h"
 
@@ -18,7 +18,7 @@ typedef struct {
 typedef struct {
 	
 	Timer_InitTypeDef instance ;
-	u16 millis; 
+	uint16_t millis; 
 	FnPtr timeoutFn;
 
 	
@@ -27,7 +27,7 @@ typedef struct {
 void HAL_Timer_Init(Timer_InitTypeDef * timer);
 void HAL_Timer_Delay(Timer_HandleTypeDef * timer);
 void HAL_Timer_Start (Timer_HandleTypeDef * timer);
-void HAL_Timer_stop(Timer_HandleTypeDef * timer); 
+void HAL_Timer_Stop(Timer_HandleTypeDef * timer); 
 
 
 

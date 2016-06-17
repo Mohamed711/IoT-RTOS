@@ -2,7 +2,7 @@
  * _8_bit_TimerCounter0.c
  *
  * Created: 1/31/2016 4:29:30 PM
- *  Author: Dell Ultrabook
+ *  Author: Heba Rady
  */ 
 
 #include "8-bit_TimerCounter0.h"
@@ -10,22 +10,27 @@
 #include "8-bit_TimerCounter0_LCFG.h"
 #include "8-bit_TimerCounter0_CFG.h"
 #include "avr/interrupt.h"
-//#include "HAL.h"
 
-static FnPtr TMR_CylicFunPtr; //global ptr2fn to pass it from init to ISR
-//static u16 no_of_ticks = 0;
-static u32 count = 0;
-static u16 countCompare = 0;
-static u16 no_of_ticks = 0;
 
-void Timer0_Init1ms ()
+static FnPtr TMR_CylicFunPtr; /*global ptr2fn to pass it from init to ISR*/
+static uint32_t count = 0;
+static uint16_t countCompare = 0;
+static uint16_t no_of_ticks = 0;
+
+
+/*************************************************************************************************
+*
+*	This function initializes the timer.
+*	
+*	Whether you are using interrupt or not you use this function to initialize the timer
+*
+**************************************************************************************************/
+void timer0Init1ms ()
 {		
 	sei();
 	TCCR0 = 0x00;
 	TCCR0 |= (((MODE.MODE_NORMAL_CTC & 0x02)>>1)<<WGM01) | ((MODE.MODE_NORMAL_CTC & 0x01)<<WGM00) | (COM00_VALUE<<COM00)|(COM01_VALUE<<COM01);
-	//TIMSK = 0x00;
-	u8 u8LoopCounter;
-	//u16 no_of_ticks = 0;
+	uint8_t u8LoopCounter;
 	
 	for(u8LoopCounter=0; u8LoopCounter< PRESCALAR_NUM ; u8LoopCounter++)
 	{
@@ -36,52 +41,57 @@ void Timer0_Init1ms ()
 			break;
 		}		
 	}
-	//TCNT0 = 0x00;
 	
-	//TIMSK |= 1<<OCIE0;
-	//OCR0 = no_of_ticks-1;
-	
-	//countCompare = millis;
-	//TMR_CylicFunPtr = timeoutFn;
 }
 
 
-void Timer0_Start (u16 millis, FnPtr timeoutFn)
-{
-	//TCNT0 = 0x00;
-	
+
+
+/*************************************************************************************************
+*
+*	This function starts the timer. You use this function when you want 
+*	the timer to work with interrupt.
+*
+*	The function takes two parameters :
+*	1) millis: this is the number of milli-seconds you want to timer to count.
+*	2) timeoutFn: this is the function to be executed after the delay
+*
+**************************************************************************************************/
+void timer0Start (uint16_t millis, FnPtr timeoutFn)
+{	
 	TIMSK = 0x00;
 	OCR0 = no_of_ticks-1;
 	TIMSK |= 1<<OCIE0;
-	
 	countCompare = millis;
 	TMR_CylicFunPtr = timeoutFn;
-	//TCNT0 = 0x00;
 }
 
-uint8_t timer0_Read()
+
+
+/*************************************************************************************************
+*
+*	This function reads the current value of the counter and returns it.
+*	
+**************************************************************************************************/
+uint8_t timer0Read()
 {
 	return TCNT0;
 }
 
-void Timer0_delay1ms(u16 millis, FnPtr timeoutFn)
+
+/*************************************************************************************************
+*
+*	This function starts the timer. You use this function when you want to make a software delay.
+*
+*	The function takes two parameters :
+*	1) millis: this is the number of milli-seconds you want to timer to count.
+*	2) timeoutFn: this is the function to be executed after the delay
+*
+**************************************************************************************************/
+void timer0Delay1ms(uint16_t millis, FnPtr timeoutFn)
 {
-	//u8 u8LoopCounter;
-	//u16 x;
-//
-	//for(u8LoopCounter=0; u8LoopCounter< PRESCALAR_NUM ; u8LoopCounter++)
-	//{
-		//x = clk1ms[u8LoopCounter].TempFreq;
-		//
-		//if (x < 256)
-		//{
-			//TCCR0 |= ((clk1ms[u8LoopCounter].RegVal) &0x07);
-			//break;
-		//}
-		//
-	//}
-	//
-	u16 i;
+	
+	uint16_t i;
 	for (i=0 ; i < millis ; i++)
 	{
 		if(MODE.MODE_NORMAL_CTC == u8_MODE_NORMAL)
@@ -102,38 +112,75 @@ void Timer0_delay1ms(u16 millis, FnPtr timeoutFn)
 }
 
 
-u8 timer0_readOVFFlag()
+
+/*************************************************************************************************
+*
+*	This function reads the value of the overflow flag and returns it.
+*
+**************************************************************************************************/
+uint8_t timer0ReadOVFFlag()
 {
 	return (TIFR&0x01);
-	//return GETBIT(TIFR,TOV0);
 }
 
-u8 timer0_readCMPFlag()
+
+
+/*************************************************************************************************
+*
+*	This function reads the value of the compare and match flag and returns it.
+*
+**************************************************************************************************/
+uint8_t timer0ReadCMPFlag()
 {
-	//return GETBIT(TIFR,OCF0);
 	return (TIFR&0x02);
 }
 
-void setTCNT0 (u8 TCNT0_value)
+
+
+/*************************************************************************************************
+*
+*	This function sets the value of the counter.
+*
+**************************************************************************************************/
+void setTCNT0 (uint8_t TCNT0_value)
 {
 	TCNT0 = TCNT0_value;
 }
 
-void setOCR0 (u8 OCR0_value)
+
+
+/*************************************************************************************************
+*
+*	This function sets the value to compare with the TCNT0. So when TCNT0 matches with OCR0 
+*	a flag is set.
+*
+**************************************************************************************************/
+void setOCR0 (uint8_t OCR0_value)
 {
 	OCR0 = OCR0_value - 1;
 }
 
-void Timer0_stop()
+
+
+/*************************************************************************************************
+*
+*	This function stops the timer.
+*
+**************************************************************************************************/
+void timer0Stop()
 {
 	TCCR0 |= (0<<CS02) | (0<<CS01) | (0<<CS00);
 }
 
-ISR(TIMER0_OVF_vect)
-{
-	
-}
 
+
+/*************************************************************************************************
+*
+*	This is the interrupt service routine of the compare and match timer. The 'count' counts the 
+*	number of milli-seconds required. When the 'count' matches the 'countCompare' the required
+*	function is executed. 
+*
+**************************************************************************************************/
 ISR(TIMER0_COMP_vect)
 {
 	count++;
@@ -142,7 +189,4 @@ ISR(TIMER0_COMP_vect)
 		TMR_CylicFunPtr();
 		count = 0;
 	}
-	//TCNT0 = 0x00;
 }
-
-
