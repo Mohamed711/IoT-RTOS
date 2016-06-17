@@ -38,7 +38,7 @@ void adcOff(void)
 }
 
 /*************************************************************************************************************************
-* the function's purpose is Initialize the ADC
+* the function's purpose is to Initialize the ADC
 *
 * \param voltage_ref_sel   Voltage Reference Selection 
 *
@@ -72,7 +72,7 @@ void adcInit(uint8_t voltage_ref_sel , bool enable_interrupt_, uint8_t trigger ,
 	ADCSRA &=0xF8; 
 	ADCSRA |=(clk[u8LoopCount].u8RegVal & 0x03);
 	
-	/* i only support right adjust*/
+	/* i only support right adjust for 10 bit result and left adjust for 8 bit result */
 	/* 3)Set ADC justify */
 	#if ADC_JUSTIFY == 'L'
 	/* Left adjust ADC result to allow easy 8 bit reading */
