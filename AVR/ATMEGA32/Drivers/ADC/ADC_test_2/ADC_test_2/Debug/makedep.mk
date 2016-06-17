@@ -4,9 +4,7 @@
 
 ADC\ADC.c
 
-ADC\ADC_Lcfg.c
+ADC\ADC_main.c
 
-ADC\ADC_test_2.c
-
-ADC\GPIO.c
+ADC\HAL_ADC_AVR.c
 

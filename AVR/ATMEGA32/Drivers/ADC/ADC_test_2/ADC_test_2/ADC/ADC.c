@@ -1,75 +1,177 @@
 
 #include "ADC.h"
-#include "GPIO.h"
-#include "ADC_Lcfg.h"
-#include "ADC_CFG.h"
-
-#include <avr/io.h>
-#include <avr/interrupt.h>
-
-
-static volatile u16 u16_ADC_result;
-
-
-void adc_init(void) 
+const CLK_Rate clk[PRESCALAR_NUM] =
 {
-	// Set ADC reference
-	
-		ADMUX |= (  (( (ADC_volt_config.voltage_ref_sel)&0x02)>>1)<<REFS1 )| (((ADC_volt_config.voltage_ref_sel)&0x01)<<REFS0 ) ;
+{F_CPU/2,0},
+{F_CPU/4,2},
+{F_CPU/8,3},
+{F_CPU/16,4},
+{F_CPU/32,5},
+{F_CPU/64,6},
+{F_CPU/128,7}
+};
+
+/* ADC justify ('L' or 'R') L for only 8 bit precision*/
+
+#if ADC_JUSTIFY == 'L'
+static volatile uint8_t ADC_result;
+#elif ADC_JUSTIFY == 'R'
+static volatile uint16_t ADC_result;
+#endif
+bool  enable_interrupt;
+
+/*************************************************************************************************************************
+*
+*  the function's purpose is to turn off the ADC 
+* 
+*   \param None
+* 
+*   \return None
+*
+**************************************************************************************************************************/
+void adcOff(void)
+{
+	// disable interrupt
+	ADCSRA &= (0 << ADIE);
+	// disable ADC
+	ADCSRA &= (0 << ADEN);
+}
+
+/*************************************************************************************************************************
+* the function's purpose is Initialize the ADC
+*
+* \param voltage_ref_sel   Voltage Reference Selection 
+*
+* \param enable_interrupt_    to set interrupt
+*
+* \param trigger     Auto Trigger Source Selections
+*
+* \param channel to choose the channel on which output is written
+*
+* \param u32MaxFreq  max frequency of the micro
+*
+* \return None
+*
+**************************************************************************************************************************/
+void adcInit(uint8_t voltage_ref_sel , bool enable_interrupt_, uint8_t trigger , uint8_t channel , uint32_t u32MaxFreq ) 
+{
+	/* 1)Set ADC reference */
+	enable_interrupt=enable_interrupt_;
+	ADMUX |= (  (( (voltage_ref_sel)&0x02)>>1)<<REFS1 )| (((voltage_ref_sel)&0x01)<<REFS0 ) ;
 		
+	/* 2)Get the most suitable pre-scalar */ 
 	
-	
-	/*Get the most suitable pre-scalar */
-	
-	u8 u8LoopCount;
+	uint8_t u8LoopCount;
 	for( u8LoopCount = 0; u8LoopCount < PRESCALAR_NUM ;u8LoopCount++)
 	{
-		if(clk[u8LoopCount].u32TempFreq < micro_freq.u32MaxFreq )
+		if(clk[u8LoopCount].u32TempFreq < u32MaxFreq )
 		{
 			break;
 		}
 	}
-	ADCSRA &=0xF8;
+	ADCSRA &=0xF8; 
 	ADCSRA |=(clk[u8LoopCount].u8RegVal & 0x03);
 	
-	
-    
-	
-	// i only support right adjust
-	// Set ADC justify
+	/* i only support right adjust*/
+	/* 3)Set ADC justify */
 	#if ADC_JUSTIFY == 'L'
-	ADMUX |= (1 << ADLAR); // Left adjust ADC result to allow easy 8 bit reading
+	/* Left adjust ADC result to allow easy 8 bit reading */
+	ADMUX |= (1 << ADLAR); 
 	#elif ADC_JUSTIFY == 'R'
-	ADMUX |= (0 << ADLAR); // Right adjust
+    /*Right adjust */
+	ADMUX |= (0 << ADLAR); 
 	#endif
-		
-    // Enable ADC Interrupt
+	/* 4) Enable ADC Interrupt */
+	if( enable_interrupt == 1)
+	{	
 	ADCSRA |= (1 << ADIE);
-	
-	// Enable ADC
+	/* 6) set global interrupt */
+	sei();
+	}	
+	/* enable */ 
+	if(trigger != Free_Running_mode )
+	{	
+	ADCSRA |=(1<<ADATE);
+	}	
+	/* 8)set channel */
+	ADMUX |=((channel)&0x1F);
+	/* 5) Enable ADC */
 	ADCSRA |= (1 << ADEN);
 	
-	//set global interrupt
-	sei();
-	 // Start conversions
+	if( enable_interrupt == 1)	
+	{	
+	/* 7) Start conversions single conversion */
 	ADCSRA |= (1 << ADSC);
+	}	
+	/* set trigger */
+	SFIOR |= ((trigger)&07)<<5;
 	
 }
+/* #if enable_interrupt == 1 */
 ISR(ADC_vect)
-{
+{  
+	 #if ADC_JUSTIFY == 'R'
 	/*read the low byte of the converted data*/
-	u16_ADC_result = ADCL;
+	ADC_result = ADCL;
 	/*read the high byte of the converted data*/
-	u16_ADC_result |= ADCH <<8;
+	ADC_result |= ADCH <<8;
 	
+	#elif ADC_JUSTIFY == 'L'
+	ADC_result = ADCH ;
+	#endif		
 	/* set the start conversion to begin next conversion  */
 	ADCSRA |= (1 << ADSC);
 
 }
-s16 ADC_u16_result(u8 channel)
+
+/*************************************************************************************************************************
+*  in case of right adjust this function is used
+* 
+*  this function Return the 10 bit of the result if (ADC_JUSTIFY == 'R') right justify
+*
+* \param None
+*
+* \return the ADC 10 bit result
+*
+**************************************************************************************************************************/
+uint16_t adcResult_u16()
 {  
-	//set channel 
-	ADMUX |=(channel&0x1F);
+	if( enable_interrupt == 0)
+	{
+		
+	ADCSRA |= (1 << ADSC);
+	while(!(ADCSRA & (1<<ADIF)));
 	
-    return u16_ADC_result;	
+	ADC_result = ADCL;
+	ADC_result |= ADCH<<8;
+	
+	ADCSRA|=(1<<ADIF);
+	} 
+	    
+    return ADC_result;	
+}
+
+/*************************************************************************************************************************
+*   in case of left adjust this function is used
+*
+*   this function Return the 8 bit of the result if (ADC_JUSTIFY == 'L') left justify
+*
+*  \param None
+*
+*  \return the ADC 8 bit result
+*
+**************************************************************************************************************************/
+uint8_t adcResult_u8()
+{
+	if( enable_interrupt == 0)
+	{
+		
+	ADCSRA |= (1 << ADSC);
+	
+	while(!(ADCSRA & (1<<ADIF)));
+	ADC_result = ADCH;
+	ADCSRA|=(1<<ADIF);
+	}	
+		
+	return ADC_result;
 }

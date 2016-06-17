@@ -31,16 +31,14 @@ OUTPUT_FILE_DEP:=
 
 # Every subdirectory with source files must be described here
 SUBDIRS :=  \
-../GPIO \
 ../ADC
 
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
 ../ADC/ADC.c \
-../ADC/ADC_Lcfg.c \
-../ADC/ADC_test_2.c \
-../ADC/GPIO.c
+../ADC/ADC_main.c \
+../ADC/HAL_ADC_AVR.c
 
 
 PREPROCESSING_SRCS += 
@@ -51,30 +49,26 @@ ASM_SRCS +=
 
 OBJS +=  \
 ADC/ADC.o \
-ADC/ADC_Lcfg.o \
-ADC/ADC_test_2.o \
-ADC/GPIO.o
+ADC/ADC_main.o \
+ADC/HAL_ADC_AVR.o
 
 
 OBJS_AS_ARGS +=  \
 ADC/ADC.o \
-ADC/ADC_Lcfg.o \
-ADC/ADC_test_2.o \
-ADC/GPIO.o
+ADC/ADC_main.o \
+ADC/HAL_ADC_AVR.o
 
 
 C_DEPS +=  \
 ADC/ADC.d \
-ADC/ADC_Lcfg.d \
-ADC/ADC_test_2.d \
-ADC/GPIO.d
+ADC/ADC_main.d \
+ADC/HAL_ADC_AVR.d
 
 
 C_DEPS_AS_ARGS +=  \
 ADC/ADC.d \
-ADC/ADC_Lcfg.d \
-ADC/ADC_test_2.d \
-ADC/GPIO.d
+ADC/ADC_main.d \
+ADC/HAL_ADC_AVR.d
 
 
 OUTPUT_FILE_PATH +=ADC_test_2.elf
@@ -86,8 +80,6 @@ ADDITIONAL_DEPENDENCIES:=
 OUTPUT_FILE_DEP:= ./makedep.mk
 
 # AVR32/GNU C Compiler
-
-
 
 
 
