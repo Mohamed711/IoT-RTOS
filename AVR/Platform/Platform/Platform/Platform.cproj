@@ -15,7 +15,8 @@
     <AssemblyName>Platform</AssemblyName>
     <Name>Platform</Name>
     <RootNamespace>Platform</RootNamespace>
-    <ToolchainFlavour>Native</ToolchainFlavour>
+    <ToolchainFlavour>
+    </ToolchainFlavour>
     <KeepTimersRunning>true</KeepTimersRunning>
     <OverrideVtor>false</OverrideVtor>
     <CacheFlash>true</CacheFlash>
@@ -38,6 +39,7 @@
         </dependencies>
       </framework-data>
     </AsfFrameworkConfig>
+    <AsfVersion>3.5.0</AsfVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
