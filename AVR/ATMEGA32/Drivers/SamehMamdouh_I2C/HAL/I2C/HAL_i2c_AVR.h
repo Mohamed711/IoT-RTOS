@@ -5,7 +5,6 @@
  *  Author: sameh
  */ 
 
-
 #ifndef HAL_I2C_AVR_H_
 #define HAL_I2C_AVR_H_
 //#include "StdTypes.h"
@@ -14,7 +13,7 @@
 
 typedef struct
 {
-	bool type;//if type = 0 -> Master , if type =1 -> Slave
+	bool type; /* if type = 0 -> Master , if type =1 -> Slave */
 	uint16_t clock;
 	uint8_t SlaveAddress;	
 	} I2C_InitTypeDef ;
@@ -31,10 +30,7 @@ void HAL_I2C_Init(I2C_InitTypeDef *i2c);
 void HAL_I2C_Master_Transmit(I2C_HandleTypeDef *i2c);
 void HAL_I2C_Master_Receive(I2C_HandleTypeDef *i2c);
 void HAL_I2C_Slave_Transmit(I2C_HandleTypeDef *i2c);
-void HAL_I2C_Slave_receive(I2C_HandleTypeDef *i2c);
-
-
-
+void HAL_I2C_Slave_Receive(I2C_HandleTypeDef *i2c);
 
 
 #endif /* HAL_I2C_AVR_H_ */
