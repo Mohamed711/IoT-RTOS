@@ -1,48 +1,4 @@
-//*****************************************************************************
-//
-// adc.c - Driver for the ADC.
-//
-// Copyright (c) 2005-2015 Texas Instruments Incorporated.  All rights reserved.
-// Software License Agreement
-// 
-//   Redistribution and use in source and binary forms, with or without
-//   modification, are permitted provided that the following conditions
-//   are met:
-// 
-//   Redistributions of source code must retain the above copyright
-//   notice, this list of conditions and the following disclaimer.
-// 
-//   Redistributions in binary form must reproduce the above copyright
-//   notice, this list of conditions and the following disclaimer in the
-//   documentation and/or other materials provided with the  
-//   distribution.
-// 
-//   Neither the name of Texas Instruments Incorporated nor the names of
-//   its contributors may be used to endorse or promote products derived
-//   from this software without specific prior written permission.
-// 
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// 
-// This is part of revision 2.1.2.111 of the Tiva Peripheral Driver Library.
-//
-//*****************************************************************************
 
-//*****************************************************************************
-//
-//! \addtogroup adc_api
-//! @{
-//
-//*****************************************************************************
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -55,12 +11,9 @@
 #include "../debug/debug.h"
 #include "../interrupt/interrupt.h"
 
-//*****************************************************************************
-//
-// These defines are used by the ADC driver to simplify access to the ADC
-// sequencer's registers.
-//
-//*****************************************************************************
+/*
+ These defines are used by the ADC driver to simplify access to the ADC
+*/
 #define ADC_SEQ                 (ADC_O_SSMUX0)
 #define ADC_SEQ_STEP            (ADC_O_SSMUX1 - ADC_O_SSMUX0)
 #define ADC_SSMUX               (ADC_O_SSMUX0 - ADC_O_SSMUX0)
@@ -102,9 +55,7 @@ _ADCIntNumberGet(uint32_t ui32Base, uint32_t ui32SequenceNum)
 {
     uint_fast8_t ui8Int;
 
-    //
-    // Determine the interrupt to register based on the sequence number.
-    //
+
     if(CLASS_IS_TM4C123)
     {
         ui8Int = ((ui32Base == ADC0_BASE) ?
@@ -152,30 +103,28 @@ ADCIntRegister(uint32_t ui32Base, uint32_t ui32SequenceNum,
 {
     uint_fast8_t ui8Int;
 
-    //
-    // Check the arguments.
-    //
+
 	
-	//we have two ADCs ;so we chek that either of theier bases(adcn_base) is our argument
+	/*we have two ADCs ;so we chek that either of theier bases(adcn_base) is our argument*/
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
-	//we have four sequencers for each module(of the two)
+	/*we have four sequencers for each module(of the two)*/
     ASSERT(ui32SequenceNum < 4);
 
-    //
-    // Determine the interrupt to register based on the sequence number.
-    //
-	//if programming for one series,can be replaces by the series' interupt reg directly
+    /*
+     Determine the interrupt to register based on the sequence number.
+    */
+	/*if programming for one series,can be replaces by the series' interupt reg directly*/
     ui8Int = _ADCIntNumberGet(ui32Base, ui32SequenceNum);
     ASSERT(ui8Int != 0);
 
-    //
-    // Register the interrupt handler.
-    //
+    /*
+     Register the interrupt handler.
+    */
     IntRegister(ui8Int, pfnHandler);
 
-    //
-    // Enable the timer interrupt.
-    //
+    /*
+     Enable the timer interrupt.
+    */
     IntEnable(ui8Int);
 }
 
@@ -201,26 +150,26 @@ ADCIntUnregister(uint32_t ui32Base, uint32_t ui32SequenceNum)
 {
     uint_fast8_t ui8Int;
 
-    //
-    // Check the arguments.
-    //
+    /*
+     Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT(ui32SequenceNum < 4);
 
-    //
-    // Determine the interrupt to unregister based on the sequence number.
-    //
+    /*
+     Determine the interrupt to unregister based on the sequence number.
+    */
     ui8Int = _ADCIntNumberGet(ui32Base, ui32SequenceNum);
     ASSERT(ui8Int != 0);
 
-    //
-    // Disable the interrupt.
-    //
+    /*
+     Disable the interrupt.
+    */
     IntDisable(ui8Int);
 
-    //
-    // Unregister the interrupt handler.
-    //
+    /*
+     Unregister the interrupt handler.
+    */
     IntUnregister(ui8Int);
 }
 
@@ -239,19 +188,19 @@ ADCIntUnregister(uint32_t ui32Base, uint32_t ui32SequenceNum)
 void
 ADCIntDisable(uint32_t ui32Base, uint32_t ui32SequenceNum)
 {
-    //
-    // Check the arguments.
-    //
+    /*
+     Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT(ui32SequenceNum < 4);
 
-    //
-    // Disable this sample sequence interrupt.
-    //
+    /*
+     Disable this sample sequence interrupt.
+    */
 	
-	//notify"  the compiler that you are about 
-	//to do a 32bit instruction with an unsigned variable (volatile Unsigned long)
-	
+	/*notify"  the compiler that you are about
+	to do a 32bit instruction with an unsigned variable (volatile Unsigned long)
+	*/
     HWREG(ui32Base + ADC_O_IM) &= ~(1 << ui32SequenceNum);
 }
 
@@ -272,20 +221,20 @@ ADCIntDisable(uint32_t ui32Base, uint32_t ui32SequenceNum)
 void
 ADCIntEnable(uint32_t ui32Base, uint32_t ui32SequenceNum)
 {
-    //
-    // Check the arguments.
-    //
+    /*
+     Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT(ui32SequenceNum < 4);
 
-    //
-    // Clear any outstanding interrupts on this sample sequence.
-    //
+    /*
+     Clear any outstanding interrupts on this sample sequence.
+    */
     HWREG(ui32Base + ADC_O_ISC) = 1 << ui32SequenceNum;
 
-    //
-    // Enable this sample sequence interrupt.
-    //
+    /*
+     Enable this sample sequence interrupt.
+    */
     HWREG(ui32Base + ADC_O_IM) |= 1 << ui32SequenceNum;
 }
 
@@ -310,16 +259,16 @@ ADCIntStatus(uint32_t ui32Base, uint32_t ui32SequenceNum, bool bMasked)
 {
     uint32_t ui32Temp;
 
-    //
-    // Check the arguments.
-    //
+    /*
+     Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT(ui32SequenceNum < 4);
 
-    //
-    // Return either the interrupt status or the raw interrupt status as
-    // requested.
-    //
+    /*
+     Return either the interrupt status or the raw interrupt status as
+     requested.
+    */
     if(bMasked)
     {
         ui32Temp = HWREG(ui32Base + ADC_O_ISC) & (0x10001 << ui32SequenceNum);
@@ -329,10 +278,10 @@ ADCIntStatus(uint32_t ui32Base, uint32_t ui32SequenceNum, bool bMasked)
         ui32Temp = (HWREG(ui32Base + ADC_O_RIS) &
                     (0x10000 | (1 << ui32SequenceNum)));
 
-        //
-        // If the digital comparator status bit is set, reflect it to the
-        // appropriate sequence bit.
-        //
+        /*
+         If the digital comparator status bit is set, reflect it to the
+         appropriate sequence bit.
+        */
         if(ui32Temp & 0x10000)
         {
             ui32Temp |= 0xF0000;
@@ -340,9 +289,9 @@ ADCIntStatus(uint32_t ui32Base, uint32_t ui32SequenceNum, bool bMasked)
         }
     }
 
-    //
-    // Return the interrupt status
-    //
+    /*
+     Return the interrupt status
+    */
     return(ui32Temp);
 }
 
@@ -372,15 +321,15 @@ ADCIntStatus(uint32_t ui32Base, uint32_t ui32SequenceNum, bool bMasked)
 void
 ADCIntClear(uint32_t ui32Base, uint32_t ui32SequenceNum)
 {
-    //
-    // Check the arguments.
-    //
+    /*
+     Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT(ui32SequenceNum < 4);
 
-    //
-    // Clear the interrupt.
-    //
+    /*
+     Clear the interrupt.
+    */
     HWREG(ui32Base + ADC_O_ISC) = 1 << ui32SequenceNum;
 }
 
@@ -400,15 +349,15 @@ ADCIntClear(uint32_t ui32Base, uint32_t ui32SequenceNum)
 void
 ADCSequenceEnable(uint32_t ui32Base, uint32_t ui32SequenceNum)
 {
-    //
-    // Check the arguments.
-    //
+    /*
+     Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT(ui32SequenceNum < 4);
 
-    //
-    // Enable the specified sequence.
-    //
+    /*
+     Enable the specified sequence.
+    */
     HWREG(ui32Base + ADC_O_ACTSS) |= 1 << ui32SequenceNum;
 }
 
@@ -428,15 +377,15 @@ ADCSequenceEnable(uint32_t ui32Base, uint32_t ui32SequenceNum)
 void
 ADCSequenceDisable(uint32_t ui32Base, uint32_t ui32SequenceNum)
 {
-    //
-    // Check the arguments.
-    //
+    /*
+     Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT(ui32SequenceNum < 4);
 
-    //
-    // Disable the specified sequences.
-    //
+    /*
+     Disable the specified sequences.
+    */
     HWREG(ui32Base + ADC_O_ACTSS) &= ~(1 << ui32SequenceNum);
 }
 
@@ -512,9 +461,9 @@ void
 ADCSequenceConfigure(uint32_t ui32Base, uint32_t ui32SequenceNum,
                      uint32_t ui32Trigger, uint32_t ui32Priority)
 {
-    //
-    // Check the arugments.
-    //
+    /*
+     Check the arugments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT(ui32SequenceNum < 4);
     ASSERT(((ui32Trigger & 0xF) == ADC_TRIGGER_PROCESSOR) ||
@@ -532,29 +481,29 @@ ADCSequenceConfigure(uint32_t ui32Base, uint32_t ui32SequenceNum,
            ((ui32Trigger & 0x30) == ADC_TRIGGER_PWM_MOD1));
     ASSERT(ui32Priority < 4);
 
-    //
-    // Compute the shift for the bits that control this sample sequence.
-    //
+    /*
+     Compute the shift for the bits that control this sample sequence.
+    */
     ui32SequenceNum *= 4;
 
-    //
-    // Set the trigger event for this sample sequence.
-    //
+    /*
+     Set the trigger event for this sample sequence.
+    */
     HWREG(ui32Base + ADC_O_EMUX) = ((HWREG(ui32Base + ADC_O_EMUX) &
                                      ~(0xf << ui32SequenceNum)) |
                                     ((ui32Trigger & 0xf) << ui32SequenceNum));
 
-    //
-    // Set the priority for this sample sequence.
-    //
+    /*
+     Set the priority for this sample sequence.
+    */
     HWREG(ui32Base + ADC_O_SSPRI) = ((HWREG(ui32Base + ADC_O_SSPRI) &
                                       ~(0xf << ui32SequenceNum)) |
                                      ((ui32Priority & 0x3) <<
                                       ui32SequenceNum));
 
-    //
-    // Set the source PWM module for this sequence's PWM triggers.
-    //
+    /*
+     Set the source PWM module for this sequence's PWM triggers.
+    */
     ui32SequenceNum *= 2;
     HWREG(ui32Base + ADC_O_TSSEL) = ((HWREG(ui32Base + ADC_O_TSSEL) &
                                       ~(0x30 << ui32SequenceNum)) |
@@ -617,9 +566,7 @@ ADCSequenceStepConfigure(uint32_t ui32Base, uint32_t ui32SequenceNum,
 {
     uint32_t ui32Temp;
 
-    //
-    // Check the arguments.
-    //
+
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT(ui32SequenceNum < 4);
     ASSERT(((ui32SequenceNum == 0) && (ui32Step < 8)) ||
@@ -627,14 +574,14 @@ ADCSequenceStepConfigure(uint32_t ui32Base, uint32_t ui32SequenceNum,
            ((ui32SequenceNum == 2) && (ui32Step < 4)) ||
            ((ui32SequenceNum == 3) && (ui32Step < 1)));
 
-    //
-    // Get the offset of the sequence to be configured.
-    //
+    /*
+     Get the offset of the sequence to be configured.
+    */
     ui32Base += ADC_SEQ + (ADC_SEQ_STEP * ui32SequenceNum);
 
-    //
-    // Compute the shift for the bits that control this step.
-    //
+    /*
+     Compute the shift for the bits that control this step.
+    */
     ui32Step *= 4;
 
     //
@@ -644,51 +591,51 @@ ADCSequenceStepConfigure(uint32_t ui32Base, uint32_t ui32SequenceNum,
                                     ~(0x0000000f << ui32Step)) |
                                    ((ui32Config & 0x0f) << ui32Step));
 
-    //
-    // Set the upper bits of the analog mux value for this step.
-    //
+    /*
+      Set the upper bits of the analog mux value for this step.
+    */
     HWREG(ui32Base + ADC_SSEMUX) = ((HWREG(ui32Base + ADC_SSEMUX) &
                                      ~(0x0000000f << ui32Step)) |
                                     (((ui32Config & 0xf00) >> 8) << ui32Step));
 
-    //
-    // Set the control value for this step.
-    //
+    /*
+     Set the control value for this step.
+    */
     HWREG(ui32Base + ADC_SSCTL) = ((HWREG(ui32Base + ADC_SSCTL) &
                                     ~(0x0000000f << ui32Step)) |
                                    (((ui32Config & 0xf0) >> 4) << ui32Step));
 
-    //
-    // Set the sample and hold time for this step.  This is not available on
-    // all devices, however on devices that do not support this feature these
-    // reserved bits are ignored on write access.
-    //
+    /*
+     Set the sample and hold time for this step.  This is not available on
+     all devices, however on devices that do not support this feature these
+     reserved bits are ignored on write access.
+    */
     HWREG(ui32Base + ADC_SSTSH) = ((HWREG(ui32Base + ADC_SSTSH) &
                                     ~(0x0000000f << ui32Step)) |
                                 (((ui32Config & 0xf00000) >> 20) << ui32Step));
 
-    //
-    // Enable digital comparator if specified in the ui32Config bit-fields.
-    //
+    /*
+     Enable digital comparator if specified in the ui32Config bit-fields.
+    */
     if(ui32Config & 0x000F0000)
     {
-        //
-        // Program the comparator for the specified step.
-        //
+    	 /*
+         Program the comparator for the specified step.
+       */
         ui32Temp = HWREG(ui32Base + ADC_SSDC);
         ui32Temp &= ~(0xF << ui32Step);
         ui32Temp |= (((ui32Config & 0x00070000) >> 16) << ui32Step);
         HWREG(ui32Base + ADC_SSDC) = ui32Temp;
 
-        //
-        // Enable the comparator.
-        //
+        /*
+         Enable the comparator.
+        */
         HWREG(ui32Base + ADC_SSOP) |= (1 << ui32Step);
     }
 
-    //
-    // Disable digital comparator if not specified.
-    //
+    /*
+     Disable digital comparator if not specified.
+    */
     else
     {
         HWREG(ui32Base + ADC_SSOP) &= ~(1 << ui32Step);
@@ -713,15 +660,15 @@ ADCSequenceStepConfigure(uint32_t ui32Base, uint32_t ui32SequenceNum,
 int32_t
 ADCSequenceOverflow(uint32_t ui32Base, uint32_t ui32SequenceNum)
 {
-    //
-    // Check the arguments.
-    //
+    /*
+     Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT(ui32SequenceNum < 4);
 
-    //
-    // Determine if there was an overflow on this sequence.
-    //
+    /*
+     Determine if there was an overflow on this sequence.
+    */
     return(HWREG(ui32Base + ADC_O_OSTAT) & (1 << ui32SequenceNum));
 }
 
@@ -742,15 +689,15 @@ ADCSequenceOverflow(uint32_t ui32Base, uint32_t ui32SequenceNum)
 void
 ADCSequenceOverflowClear(uint32_t ui32Base, uint32_t ui32SequenceNum)
 {
-    //
-    // Check the arguments.
-    //
+    /*
+     Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT(ui32SequenceNum < 4);
 
-    //
-    // Clear the overflow condition for this sequence.
-    //
+    /*
+      Clear the overflow condition for this sequence.
+    */
     HWREG(ui32Base + ADC_O_OSTAT) = 1 << ui32SequenceNum;
 }
 
@@ -771,15 +718,15 @@ ADCSequenceOverflowClear(uint32_t ui32Base, uint32_t ui32SequenceNum)
 int32_t
 ADCSequenceUnderflow(uint32_t ui32Base, uint32_t ui32SequenceNum)
 {
-    //
-    // Check the arguments.
-    //
+	/*
+      Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT(ui32SequenceNum < 4);
 
-    //
-    // Determine if there was an underflow on this sequence.
-    //
+    /*
+      Determine if there was an underflow on this sequence.
+    */
     return(HWREG(ui32Base + ADC_O_USTAT) & (1 << ui32SequenceNum));
 }
 
@@ -800,15 +747,15 @@ ADCSequenceUnderflow(uint32_t ui32Base, uint32_t ui32SequenceNum)
 void
 ADCSequenceUnderflowClear(uint32_t ui32Base, uint32_t ui32SequenceNum)
 {
-    //
-    // Check the arguments.
-    //
+	/*
+      Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT(ui32SequenceNum < 4);
 
-    //
-    // Clear the underflow condition for this sequence.
-    //
+    /*
+      Clear the underflow condition for this sequence.
+    */
     HWREG(ui32Base + ADC_O_USTAT) = 1 << ui32SequenceNum;
 }
 
@@ -836,38 +783,38 @@ ADCSequenceDataGet(uint32_t ui32Base, uint32_t ui32SequenceNum,
 {
     uint32_t ui32Count;
 
-    //
-    // Check the arguments.
-    //
+    /*
+     Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT(ui32SequenceNum < 4);
 
-    //
-    // Get the offset of the sequence to be read.
-    //
+    /*
+     Get the offset of the sequence to be read.
+    */
     ui32Base += ADC_SEQ + (ADC_SEQ_STEP * ui32SequenceNum);
 
-    //
-    // Read samples from the FIFO until it is empty.
-    //
+    /*
+     Read samples from the FIFO until it is empty.
+    */
     ui32Count = 0;
     while(!(HWREG(ui32Base + ADC_SSFSTAT) & ADC_SSFSTAT0_EMPTY) &&
           (ui32Count < 8))
     {
-        //
-        // Read the FIFO and copy it to the destination.
-        //
+    	/*
+        Read the FIFO and copy it to the destination.
+        */
         *pui32Buffer++ = HWREG(ui32Base + ADC_SSFIFO);
 
-        //
-        // Increment the count of samples read.
-        //
+        /*
+          Increment the count of samples read.
+        */
         ui32Count++;
     }
 
-    //
-    // Return the number of samples read.
-    //
+    /*
+      Return the number of samples read.
+    */
     return(ui32Count);
 }
 
@@ -893,15 +840,15 @@ ADCSequenceDataGet(uint32_t ui32Base, uint32_t ui32SequenceNum,
 void
 ADCProcessorTrigger(uint32_t ui32Base, uint32_t ui32SequenceNum)
 {
-    //
-    // Check the arguments.
-    //
+	/*
+      Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT(ui32SequenceNum < 4);
 
-    //
-    // Generate a processor trigger for this sample sequence.
-    //
+    /*
+     Generate a processor trigger for this sample sequence.
+    */
     HWREG(ui32Base + ADC_O_PSSI) |= ((ui32SequenceNum & 0xffff0000) |
                                      (1 << (ui32SequenceNum & 0xf)));
 }
@@ -935,25 +882,25 @@ ADCSoftwareOversampleConfigure(uint32_t ui32Base, uint32_t ui32SequenceNum,
 {
     uint32_t ui32Value;
 
-    //
-    // Check the arguments.
-    //
+    /*
+      Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT(ui32SequenceNum < 3);
     ASSERT(((ui32Factor == 2) || (ui32Factor == 4) || (ui32Factor == 8)) &&
            ((ui32SequenceNum == 0) || (ui32Factor != 8)));
 
-    //
-    // Convert the oversampling factor to a shift factor.
-    //
+    /*
+      Convert the oversampling factor to a shift factor.
+    */
     for(ui32Value = 0, ui32Factor >>= 1; ui32Factor;
         ui32Value++, ui32Factor >>= 1)
     {
     }
 
-    //
-    // Save the shift factor.
-    //
+    /*
+      Save the shift factor.
+    */
     g_pui8OversampleFactor[ui32SequenceNum] = ui32Value;
 }
 
@@ -978,50 +925,50 @@ void
 ADCSoftwareOversampleStepConfigure(uint32_t ui32Base, uint32_t ui32SequenceNum,
                                    uint32_t ui32Step, uint32_t ui32Config)
 {
-    //
-    // Check the arguments.
-    //
+	/*
+      Check the arguments.
+   */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT(ui32SequenceNum < 3);
     ASSERT(((ui32SequenceNum == 0) &&
             (ui32Step < (8 >> g_pui8OversampleFactor[ui32SequenceNum]))) ||
            (ui32Step < (4 >> g_pui8OversampleFactor[ui32SequenceNum])));
 
-    //
-    // Get the offset of the sequence to be configured.
-    //
+    /*
+      Get the offset of the sequence to be configured.
+    */
     ui32Base += ADC_SEQ + (ADC_SEQ_STEP * ui32SequenceNum);
 
-    //
-    // Compute the shift for the bits that control this step.
-    //
+    /*
+      Compute the shift for the bits that control this step.
+    */
     ui32Step *= 4 << g_pui8OversampleFactor[ui32SequenceNum];
 
-    //
-    // Loop through the hardware steps that make up this step of the software
-    // oversampled sequence.
-    //
+    /*
+      Loop through the hardware steps that make up this step of the software
+      oversampled sequence.
+    */
     for(ui32SequenceNum = 1 << g_pui8OversampleFactor[ui32SequenceNum];
         ui32SequenceNum; ui32SequenceNum--)
     {
-        //
-        // Set the analog mux value for this step.
-        //
+        /*
+         Set the analog mux value for this step.
+        */
         HWREG(ui32Base + ADC_SSMUX) = ((HWREG(ui32Base + ADC_SSMUX) &
                                         ~(0x0000000f << ui32Step)) |
                                        ((ui32Config & 0x0f) << ui32Step));
 
-        //
-        // Set the upper bits of the analog mux value for this step.
-        //
+        /*
+          Set the upper bits of the analog mux value for this step.
+        */
         HWREG(ui32Base + ADC_SSEMUX) = ((HWREG(ui32Base + ADC_SSEMUX) &
                                          ~(0x0000000f << ui32Step)) |
                                         (((ui32Config & 0xf00) >> 8) <<
                                          ui32Step));
 
-        //
-        // Set the control value for this step.
-        //
+        /*
+          Set the control value for this step.
+        */
         HWREG(ui32Base + ADC_SSCTL) = ((HWREG(ui32Base + ADC_SSCTL) &
                                         ~(0x0000000f << ui32Step)) |
                                        (((ui32Config & 0xf0) >> 4) <<
@@ -1032,9 +979,9 @@ ADCSoftwareOversampleStepConfigure(uint32_t ui32Base, uint32_t ui32SequenceNum,
                                               ADC_SSCTL0_END0) << ui32Step);
         }
 
-        //
-        // Go to the next hardware step.
-        //
+        /*
+          Go to the next hardware step.
+        */
         ui32Step += 4;
     }
 }
@@ -1065,41 +1012,41 @@ ADCSoftwareOversampleDataGet(uint32_t ui32Base, uint32_t ui32SequenceNum,
 {
     uint32_t ui32Idx, ui32Accum;
 
-    //
-    // Check the arguments.
-    //
+    /*
+      Check the arguments.
+   */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT(ui32SequenceNum < 3);
     ASSERT(((ui32SequenceNum == 0) &&
             (ui32Count < (8 >> g_pui8OversampleFactor[ui32SequenceNum]))) ||
            (ui32Count < (4 >> g_pui8OversampleFactor[ui32SequenceNum])));
 
-    //
-    // Get the offset of the sequence to be read.
-    //
+    /*
+      Get the offset of the sequence to be read.
+    */
     ui32Base += ADC_SEQ + (ADC_SEQ_STEP * ui32SequenceNum);
 
-    //
-    // Read the samples from the FIFO until it is empty.
-    //
+    /*
+      Read the samples from the FIFO until it is empty.
+    */
     while(ui32Count--)
     {
-        //
-        // Compute the sum of the samples.
-        //
+    	/*
+         Compute the sum of the samples.
+        */
         ui32Accum = 0;
         for(ui32Idx = 1 << g_pui8OversampleFactor[ui32SequenceNum]; ui32Idx;
             ui32Idx--)
         {
-            //
-            // Read the FIFO and add it to the accumulator.
-            //
+        	/*
+              Read the FIFO and add it to the accumulator.
+            */
             ui32Accum += HWREG(ui32Base + ADC_SSFIFO);
         }
 
-        //
-        // Write the averaged sample to the output buffer.
-        //
+        /*
+          Write the averaged sample to the output buffer.
+        */
         *pui32Buffer++ = ui32Accum >> g_pui8OversampleFactor[ui32SequenceNum];
     }
 }
@@ -1135,25 +1082,25 @@ ADCHardwareOversampleConfigure(uint32_t ui32Base, uint32_t ui32Factor)
 {
     uint32_t ui32Value;
 
-    //
-    // Check the arguments.
-    //
+    /*
+      Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT(((ui32Factor == 0) || (ui32Factor == 2) || (ui32Factor == 4) ||
             (ui32Factor == 8) || (ui32Factor == 16) || (ui32Factor == 32) ||
             (ui32Factor == 64)));
 
-    //
-    // Convert the oversampling factor to a shift factor.
-    //
+    /*
+      Convert the oversampling factor to a shift factor.
+    */
     for(ui32Value = 0, ui32Factor >>= 1; ui32Factor;
         ui32Value++, ui32Factor >>= 1)
     {
     }
 
-    //
-    // Write the shift factor to the ADC to configure the hardware oversampler.
-    //
+    /*
+      Write the shift factor to the ADC to configure the hardware oversampler.
+    */
     HWREG(ui32Base + ADC_O_SAC) = ui32Value;
 }
 
@@ -1232,15 +1179,15 @@ void
 ADCComparatorConfigure(uint32_t ui32Base, uint32_t ui32Comp,
                        uint32_t ui32Config)
 {
-    //
-    // Check the arguments.
-    //
+	/*
+      Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT(ui32Comp < 8);
 
-    //
-    // Save the new setting.
-    //
+    /*
+     Save the new setting.
+    */
     HWREG(ui32Base + ADC_O_DCCTL0 + (ui32Comp * 4)) = ui32Config;
 }
 
@@ -1268,17 +1215,17 @@ void
 ADCComparatorRegionSet(uint32_t ui32Base, uint32_t ui32Comp,
                        uint32_t ui32LowRef, uint32_t ui32HighRef)
 {
-    //
-    // Check the arguments.
-    //
+	/*
+      Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT(ui32Comp < 8);
     ASSERT((ui32LowRef < 4096) && (ui32LowRef <= ui32HighRef));
     ASSERT(ui32HighRef < 4096);
 
-    //
-    // Save the new region settings.
-    //
+    /*
+     Save the new region settings.
+    */
     HWREG(ui32Base + ADC_O_DCCMP0 + (ui32Comp * 4)) = ((ui32HighRef << 16) |
                                                        ui32LowRef);
 }
@@ -1305,16 +1252,16 @@ ADCComparatorReset(uint32_t ui32Base, uint32_t ui32Comp, bool bTrigger,
 {
     uint32_t ui32Temp;
 
-    //
-    // Check the arguments.
-    //
+    /*
+     Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT(ui32Comp < 8);
 
-    //
-    // Set the appropriate bits to reset the trigger and/or interrupt
-    // comparator conditions.
-    //
+    /*
+      Set the appropriate bits to reset the trigger and/or interrupt
+      comparator conditions.
+    */
     ui32Temp = 0;
     if(bTrigger)
     {
@@ -1343,15 +1290,15 @@ ADCComparatorReset(uint32_t ui32Base, uint32_t ui32Comp, bool bTrigger,
 void
 ADCComparatorIntDisable(uint32_t ui32Base, uint32_t ui32SequenceNum)
 {
-    //
-    // Check the arguments.
-    //
+    /*
+     Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT(ui32SequenceNum < 4);
 
-    //
-    // Disable this sample sequence comparator interrupt.
-    //
+    /*
+     Disable this sample sequence comparator interrupt.
+    */
     HWREG(ui32Base + ADC_O_IM) &= ~(0x10000 << ui32SequenceNum);
 }
 
@@ -1370,15 +1317,15 @@ ADCComparatorIntDisable(uint32_t ui32Base, uint32_t ui32SequenceNum)
 void
 ADCComparatorIntEnable(uint32_t ui32Base, uint32_t ui32SequenceNum)
 {
-    //
-    // Check the arguments.
-    //
+	/*
+      Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT(ui32SequenceNum < 4);
 
-    //
-    // Enable this sample sequence interrupt.
-    //
+    /*
+     Enable this sample sequence interrupt.
+    */
     HWREG(ui32Base + ADC_O_IM) |= 0x10000 << ui32SequenceNum;
 }
 
@@ -1397,14 +1344,14 @@ ADCComparatorIntEnable(uint32_t ui32Base, uint32_t ui32SequenceNum)
 uint32_t
 ADCComparatorIntStatus(uint32_t ui32Base)
 {
-    //
-    // Check the arguments.
-    //
+    /*
+     Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
 
-    //
-    // Return the digital comparator interrupt status.
-    //
+    /*
+     Return the digital comparator interrupt status.
+    */
     return(HWREG(ui32Base + ADC_O_DCISC));
 }
 
@@ -1423,14 +1370,14 @@ ADCComparatorIntStatus(uint32_t ui32Base)
 void
 ADCComparatorIntClear(uint32_t ui32Base, uint32_t ui32Status)
 {
-    //
-    // Check the arguments.
-    //
+    /*
+     Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
 
-    //
-    // Clear the interrupt.
-    //
+    /*
+     Clear the interrupt.
+    */
     HWREG(ui32Base + ADC_O_DCISC) = ui32Status;
 }
 
@@ -1470,14 +1417,14 @@ ADCComparatorIntClear(uint32_t ui32Base, uint32_t ui32Status)
 void
 ADCIntDisableEx(uint32_t ui32Base, uint32_t ui32IntFlags)
 {
-    //
-    // Check the arguments.
-    //
+    /*
+     Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
 
-    //
-    // Disable the requested interrupts.
-    //
+    /*
+     Disable the requested interrupts.
+    */
     HWREG(ui32Base + ADC_O_IM) &= ~ui32IntFlags;
 }
 
@@ -1517,14 +1464,14 @@ ADCIntDisableEx(uint32_t ui32Base, uint32_t ui32IntFlags)
 void
 ADCIntEnableEx(uint32_t ui32Base, uint32_t ui32IntFlags)
 {
-    //
-    // Check the arguments.
-    //
+    /*
+     Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
 
-    //
-    // Enable the requested interrupts.
-    //
+    /*
+     Enable the requested interrupts.
+    */
     HWREG(ui32Base + ADC_O_IM) |= ui32IntFlags;
 }
 
@@ -1549,35 +1496,35 @@ ADCIntStatusEx(uint32_t ui32Base, bool bMasked)
 {
     uint32_t ui32Temp;
 
-    //
-    // Check the arguments.
-    //
+    /*
+     Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
 
-    //
-    // Return either the masked interrupt status or the raw interrupt status as
-    // requested.
-    //
+    /*
+     Return either the masked interrupt status or the raw interrupt status as
+     requested.
+    */
     if(bMasked)
     {
         ui32Temp = HWREG(ui32Base + ADC_O_ISC);
     }
     else
     {
-        //
-        // Read the Raw interrupt status to see if a digital comparator
-        // interrupt is active.
-        //
+        /*
+         Read the Raw interrupt status to see if a digital comparator
+         interrupt is active.
+        */
         ui32Temp = HWREG(ui32Base + ADC_O_RIS);
 
-        //
-        // Since, the raw interrupt status only indicates that any one of the
-        // digital comparators caused an interrupt, if the raw interrupt status
-        // is set then the return value is modified to indicate that all sample
-        // sequences have a pending digital comparator interrupt.
-        // This is exactly how the hardware works so the return code is
-        // modified to match this behavior.
-        //
+        /*
+         Since, the raw interrupt status only indicates that any one of the
+         digital comparators caused an interrupt, if the raw interrupt status
+         is set then the return value is modified to indicate that all sample
+         sequences have a pending digital comparator interrupt.
+         This is exactly how the hardware works so the return code is
+         modified to match this behavior.
+        */
         if(ui32Temp & ADC_RIS_INRDC)
         {
             ui32Temp |= (ADC_INT_DCON_SS3 | ADC_INT_DCON_SS2 |
@@ -1615,11 +1562,11 @@ ADCIntStatusEx(uint32_t ui32Base, bool bMasked)
 void
 ADCIntClearEx(uint32_t ui32Base, uint32_t ui32IntFlags)
 {
-    //
-    // Note: The interrupt bits are "W1C" so we DO NOT use a logical OR
-    // here to clear the requested bits. Doing so would clear all outstanding
-    // interrupts rather than just those which the caller has specified.
-    //
+    /*
+     Note: The interrupt bits are "W1C" so we DO NOT use a logical OR
+     here to clear the requested bits. Doing so would clear all outstanding
+     interrupts rather than just those which the caller has specified.
+    */
     HWREG(ui32Base + ADC_O_ISC) = ui32IntFlags;
 }
 
@@ -1646,15 +1593,15 @@ ADCIntClearEx(uint32_t ui32Base, uint32_t ui32IntFlags)
 void
 ADCReferenceSet(uint32_t ui32Base, uint32_t ui32Ref)
 {
-    //
-    // Check the arguments.
-    //
+    /*
+     Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT((ui32Ref == ADC_REF_INT) || (ui32Ref == ADC_REF_EXT_3V));
 
-    //
-    // Set the reference.
-    //
+    /*
+     Set the reference.
+    */
     HWREG(ui32Base + ADC_O_CTL) =
         (HWREG(ui32Base + ADC_O_CTL) & ~ADC_CTL_VREF_M) | ui32Ref;
 }
@@ -1678,14 +1625,14 @@ ADCReferenceSet(uint32_t ui32Base, uint32_t ui32Ref)
 uint32_t
 ADCReferenceGet(uint32_t ui32Base)
 {
-    //
-    // Check the arguments.
-    //
+    /*
+     Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
 
-    //
-    // Return the value of the reference.
-    //
+    /*
+     Return the value of the reference.
+    */
     return(HWREG(ui32Base + ADC_O_CTL) & ADC_CTL_VREF_M);
 }
 
@@ -1718,9 +1665,9 @@ ADCReferenceGet(uint32_t ui32Base)
 void
 ADCPhaseDelaySet(uint32_t ui32Base, uint32_t ui32Phase)
 {
-    //
-    // Check the arguments.
-    //
+    /*
+     Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT((ui32Phase == ADC_PHASE_0) || (ui32Phase == ADC_PHASE_22_5) ||
            (ui32Phase == ADC_PHASE_45) || (ui32Phase == ADC_PHASE_67_5) ||
@@ -1731,9 +1678,9 @@ ADCPhaseDelaySet(uint32_t ui32Base, uint32_t ui32Phase)
            (ui32Phase == ADC_PHASE_270) || (ui32Phase == ADC_PHASE_292_5) ||
            (ui32Phase == ADC_PHASE_315) || (ui32Phase == ADC_PHASE_337_5));
 
-    //
-    // Set the phase delay.
-    //
+    /*
+     Set the phase delay.
+    */
     HWREG(ui32Base + ADC_O_SPC) = ui32Phase;
 }
 
@@ -1756,14 +1703,14 @@ ADCPhaseDelaySet(uint32_t ui32Base, uint32_t ui32Phase)
 uint32_t
 ADCPhaseDelayGet(uint32_t ui32Base)
 {
-    //
-    // Check the arguments.
-    //
+    /*
+     Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
 
-    //
-    // Return the phase delay.
-    //
+    /*
+     Return the phase delay.
+    */
     return(HWREG(ui32Base + ADC_O_SPC));
 }
 
@@ -1783,15 +1730,15 @@ ADCPhaseDelayGet(uint32_t ui32Base)
 void
 ADCSequenceDMAEnable(uint32_t ui32Base, uint32_t ui32SequenceNum)
 {
-    //
-    // Check the arguments.
-    //
+    /*
+     Check the arguments.
+    /
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT(ui32SequenceNum < 4);
 
-    //
-    // Enable the DMA on the specified sequencer.
-    //
+    /*
+     Enable the DMA on the specified sequencer.
+    */
     HWREG(ui32Base + ADC_O_ACTSS) |= 0x100 << ui32SequenceNum;
 }
 
@@ -1810,15 +1757,15 @@ ADCSequenceDMAEnable(uint32_t ui32Base, uint32_t ui32SequenceNum)
 void
 ADCSequenceDMADisable(uint32_t ui32Base, uint32_t ui32SequenceNum)
 {
-    //
-    // Check the arguments.
-    //
+    /*
+     Check the arguments.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT(ui32SequenceNum < 4);
 
-    //
-    // Disable the DMA on the specified sequencer.
-    //
+    /*
+     Disable the DMA on the specified sequencer.
+    */
     HWREG(ui32Base + ADC_O_ACTSS) &= ~(0x100 << ui32SequenceNum);
 }
 
@@ -1845,14 +1792,14 @@ ADCSequenceDMADisable(uint32_t ui32Base, uint32_t ui32SequenceNum)
 bool
 ADCBusy(uint32_t ui32Base)
 {
-    //
-    // Check the argument.
-    //
+    /*
+     Check the argument.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
 
-    //
-    // Determine if the ADC is busy.
-    //
+    /*
+     Determine if the ADC is busy.
+    */
     return((HWREG(ui32Base + ADC_O_ACTSS) & ADC_ACTSS_BUSY) ? true : false);
 }
 
@@ -1928,25 +1875,25 @@ void
 ADCClockConfigSet(uint32_t ui32Base, uint32_t ui32Config,
                   uint32_t ui32ClockDiv)
 {
-    //
-    // Check the argument.
-    //
+    /*
+     Check the argument.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
     ASSERT((ui32ClockDiv - 1) <= (ADC_CC_CLKDIV_M >> ADC_CC_CLKDIV_S));
 
-    //
-    // A rate must be supplied.
-    //
+    /*
+     A rate must be supplied.
+    */
     ASSERT((ui32Config & ADC_CLOCK_RATE_FULL) != 0);
 
-    //
-    // Write the sample conversion rate.
-    //
+    /*
+     Write the sample conversion rate.
+    */
     HWREG(ui32Base + ADC_O_PC) = (ui32Config >> 4) & ADC_PC_SR_M;
 
-    //
-    // Write the clock select and divider.
-    //
+    /*
+     Write the clock select and divider.
+    */
     HWREG(ui32Base + ADC_O_CC) = (ui32Config & ADC_CC_CS_M) |
                                  (((ui32ClockDiv - 1) << ADC_CC_CLKDIV_S)) ;
 }
@@ -1987,33 +1934,33 @@ ADCClockConfigGet(uint32_t ui32Base, uint32_t *pui32ClockDiv)
 {
     uint32_t ui32Config;
 
-    //
-    // Check the argument.
-    //
+    /*
+     Check the argument.
+    */
     ASSERT((ui32Base == ADC0_BASE) || (ui32Base == ADC1_BASE));
 
-    //
-    // Read the current configuration.
-    //
+    /*
+     Read the current configuration.
+    */
     ui32Config = HWREG(ui32Base + ADC_O_CC);
 
-    //
-    // If the clock divider was requested provide the current value.
-    //
+    /*
+     If the clock divider was requested provide the current value.
+    */
     if(pui32ClockDiv)
     {
         *pui32ClockDiv =
                     ((ui32Config & ADC_CC_CLKDIV_M) >> ADC_CC_CLKDIV_S) + 1;
     }
 
-    //
-    // Clear out the divider bits.
-    //
+    /*
+     Clear out the divider bits.
+    */
     ui32Config &= ~ADC_CC_CLKDIV_M;
 
-    //
-    // Add in the sample interval to the configuration.
-    //
+    /*
+     Add in the sample interval to the configuration.
+    */
     ui32Config = (HWREG(ui32Base + ADC_O_PC) & ADC_PC_SR_M) << 4;
 
     return(ui32Config);

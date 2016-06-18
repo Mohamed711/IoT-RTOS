@@ -1,9 +1,3 @@
-/*
- * ADC_HAL_TIVA.h
- *
- *  Created on: Feb 21, 2016
- *      Author: Mina
- */
 
 #ifndef DRIVERS_ADC_ADC_HAL_TIVA_H_
 #define DRIVERS_ADC_ADC_HAL_TIVA_H_

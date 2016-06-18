@@ -1,9 +1,3 @@
-/*
- * ADC_HAL_TIVA.c
- *
- *  Created on: Feb 21, 2016
- *      Author: Mina
- */
 
 
 #include"ADC_HAL_TIVA.h"
@@ -12,7 +6,7 @@ void HAL_ADC_Init(ADC_InitTypeDef *adc)
 
 
 	uint32_t ADCn_BASE;
-	SysCtlPeripheralEnable(adc->ADCn); //enabling adc periph
+	SysCtlPeripheralEnable(adc->ADCn); /*enabling adc periph*/
 
 	switch(adc->ADCn)
 	{
@@ -52,14 +46,7 @@ void HAL_ADC_Init(ADC_InitTypeDef *adc)
 
 
 	ADCSequenceEnable(ADCn_BASE, adc->seq);
-/*
-	while(1)
-	{
-		ADCIntClear(ADC0_BASE, 1);
-		ADCProcessorTrigger(ADC0_BASE, 1);
 
-	}
-	*/
 }
 void HAL_ADC_read(ADC_InitTypeDef *adc)
 {
@@ -78,29 +65,16 @@ void HAL_ADC_read(ADC_InitTypeDef *adc)
 			ADCIntClear(ADCn_BASE,adc->seq);
 			ADCProcessorTrigger(ADCn_BASE,adc->seq);
 
-			//maybe use interrupt
+			/*maybe use interrupt*/
 			while(!ADCIntStatus(ADCn_BASE, 1, 0))
 			{
 			}
 
 
-			//adc->ui32ADCnValue = malloc(sizeof(uint32_t) * adc->steps);
 
-			// do something with ar
-
-
-
-			//return value
-			//uint32_t ui32ADCtValue;
 			ADCSequenceDataGet(ADCn_BASE,adc->seq, (adc->ui32ADCnValue));
 			int8_t counting;
-			/*for( counting=0;counting<adc->steps;counting++)
-			{
-				(adc->ui32ADCnValue)[counting]
-									 =*( (&ui32ADCtValue)+counting);
-			}*/
 
-			//free(adc->steps)
 }
 
 
