@@ -62,7 +62,7 @@ int main(void)
 */
 
 //I2C TEST
-/*
+
 int main(void)
 {
 	DDRA = 0xFF;	//port A as output
@@ -70,21 +70,20 @@ int main(void)
 	I2C_InitTypeDef init;
 	init.clock=9600; // setting clock rate 
 	init.SlaveAddress=0x40; // write to slave 
-	init.type=0;
 	
 	I2C_HandleTypeDef handle;
 	handle.slaveAddress=0x40;
 	handle.Txdata=0x55;
 	
-	HAL_I2C_Init(&init);
+	i2cmasterinit(init);
 
 	while (1)
 	{
-		HAL_I2C_Master_Transmit(&handle);
+		i2cmastersend(handle);
 		_delay_ms(1000);
 	}
 }
-*/
+
 	
 //TIMER TEST
 /*
