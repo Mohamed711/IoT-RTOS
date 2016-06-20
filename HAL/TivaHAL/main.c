@@ -3,7 +3,7 @@
 
 #include "tivaHAL.h"
 
-
+/*
 int main()
 {
 	Uart_InitTypeDef initConf;
@@ -23,7 +23,7 @@ int main()
 	transmit.Tx='A';
 	HAL_UART_Send(&transmit);
 }
-
+*/
 //WATCHDOG TIMER TEST
 /*
 int main()
@@ -55,7 +55,7 @@ int main()
 */
 
 //TIMER TEST
-/*
+
 void IntFn()
 {
 	if(GPIOPinRead(GPIO_PORTF_BASE, GPIO_PIN_2))
@@ -80,12 +80,12 @@ int main(void) {
 	 timerHandle.timeInMillis=1000;
 	 timerHandle.timeoutFn = IntFn;
 
-	 HAL_TIMER_Init(&timerInit);
+	 timerinit(&timerInit);
 	 //turns a led purple after 5 ms
-	 HAL_TIMER_Start(&timerHandle);
+	 timerstart(&timerHandle);
 
 	while(1);
-}*/
+}
 
 /*
 uint32_t j =0;

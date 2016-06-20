@@ -1,3 +1,25 @@
+/******************************************************************************
+*	OurOS V 0.0.0 - Copyright (C) 2016
+*  Computer and systems department
+*  Ain Shams University
+*
+*  All rights reserved
+*
+*  VISIT http://www.OurRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
+*
+*  Redistribution and use in source and binary forms, with or without
+*  modification, are permitted provided that the following conditions
+*  are met:
+*
+*  Redistributions of source code must retain the above copyright
+*  notice, this list of conditions and the following disclaimer.
+*
+*  Redistributions in binary form must reproduce the above copyright
+*  notice, this list of conditions and the following disclaimer in the
+*  documentation and/or other materials provided with the
+*  distribution.
+*****************************************************************************/
+
 #include "HAL_I2C_TivaC.h"
 #include <stdint.h>
 #include <stdbool.h>
@@ -23,7 +45,7 @@
 * 	\return none
 *
 *****************************************************************************/
-void HAL_I2C_Master_Init(I2C_InitTypeDef * i2c)
+void i2cmasterinit(I2C_InitTypeDef * i2c)
 {
 	uint32_t baseAddress = i2c->baseAddress;
 
@@ -156,7 +178,7 @@ void HAL_I2C_Master_Init(I2C_InitTypeDef * i2c)
 * 	\return none
 *
 *****************************************************************************/
-void HAL_I2C_Slave_Init(I2C_InitTypeDef * i2c)
+void i2cslaveinit(I2C_InitTypeDef * i2c)
 {
 	uint32_t baseAddress = i2c->baseAddress;
 	uint32_t SlaveAddr = i2c->slaveAddress1;
@@ -258,7 +280,7 @@ void HAL_I2C_Slave_Init(I2C_InitTypeDef * i2c)
 * 	\return none
 *
 *****************************************************************************/
-void HAL_I2C_Master_Transmit(I2C_HandleTypeDef *i2c)
+void i2cmastersend(I2C_HandleTypeDef *i2c)
 {
 	uint32_t baseAddress = i2c->instance.baseAddress;
 	uint32_t slaveAddress = i2c->slaveAddress;
@@ -289,7 +311,7 @@ void HAL_I2C_Master_Transmit(I2C_HandleTypeDef *i2c)
 * 	\return the received character
 *
 *****************************************************************************/
-uint8_t HAL_I2C_Master_Receive(I2C_HandleTypeDef *i2c)
+uint8_t i2cmasterreceive(I2C_HandleTypeDef *i2c)
 {
 	uint32_t baseAddress = i2c->instance.baseAddress;
 	uint32_t slaveAddress = i2c->slaveAddress;
@@ -330,7 +352,7 @@ uint8_t HAL_I2C_Master_Receive(I2C_HandleTypeDef *i2c)
 * 	\return none
 *
 *****************************************************************************/
-void HAL_I2C_Slave_Transmit(I2C_HandleTypeDef *i2c)
+void i2cslavesend(I2C_HandleTypeDef *i2c)
 {
 	uint32_t baseAddress = i2c->instance.baseAddress;
 	uint8_t data = i2c->Txdata;
@@ -349,7 +371,7 @@ void HAL_I2C_Slave_Transmit(I2C_HandleTypeDef *i2c)
 * 	\return the received char
 *
 *****************************************************************************/
-uint8_t HAL_I2C_Slave_Receive(I2C_HandleTypeDef *i2c)
+uint8_t i2cslavereceive(I2C_HandleTypeDef *i2c)
 {
 	uint32_t baseAddress = i2c->instance.baseAddress;
 	/*wait till the master sends some data*/

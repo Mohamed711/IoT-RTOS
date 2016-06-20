@@ -42,7 +42,7 @@
 *
 * \return None.
 ******************************************************************************/
-void HAL_WDT_Init(WDT_InitTypeDef  * wdt)
+void wdtinit(WDT_InitTypeDef  * wdt)
 {
 	HAL_WDT_CLK_ENABLE();
 	WatchdogReloadSet(wdt->watchdogBaseAddress , wdt->reloadValue);
@@ -98,7 +98,7 @@ void HAL_WDT_Init(WDT_InitTypeDef  * wdt)
 *
 * \return None.
 ******************************************************************************/
-void HAL_WDT_Start(WDT_HandleTypeDef * params)
+void wdtstart(WDT_HandleTypeDef * params)
 {
 	WatchdogEnable(params->watchdogBaseAddress);
 
@@ -117,7 +117,7 @@ void HAL_WDT_Start(WDT_HandleTypeDef * params)
 *
 * \return None.
 ******************************************************************************/
-void HAL_WDT_Refresh(WDT_HandleTypeDef * params)
+void wdtrefresh(WDT_HandleTypeDef * params)
 {
 	WatchdogReloadSet(params->watchdogBaseAddress,WatchdogReloadGet(params->watchdogBaseAddress));
 }
@@ -136,7 +136,7 @@ void HAL_WDT_Refresh(WDT_HandleTypeDef * params)
 * \b true if the watchdog is running
 * \b false if its not.
 ******************************************************************************/
-bool HAL_WDT_State(WDT_HandleTypeDef * params)
+bool wdtstate(WDT_HandleTypeDef * params)
 {
 	return WatchdogRunning(params->watchdogBaseAddress);
 }
@@ -152,7 +152,7 @@ bool HAL_WDT_State(WDT_HandleTypeDef * params)
 *
 * \return \uint32_t the reload value of the watchdog timer.
 ******************************************************************************/
-uint32_t HAL_WDT_ReloadGet(WDT_HandleTypeDef * params)
+uint32_t wdtreloadget(WDT_HandleTypeDef * params)
 {
 	return WatchdogReloadGet(params->watchdogBaseAddress);
 }
@@ -168,7 +168,7 @@ uint32_t HAL_WDT_ReloadGet(WDT_HandleTypeDef * params)
 *
 * \return \uint32_t the current value of the watchdog timer.
 ******************************************************************************/
-uint32_t HAL_WDT_ValueGet(WDT_HandleTypeDef * params)
+uint32_t wdtvalueget(WDT_HandleTypeDef * params)
 {
 	return WatchdogValueGet(params->watchdogBaseAddress);
 }

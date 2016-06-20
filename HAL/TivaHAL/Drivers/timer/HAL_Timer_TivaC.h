@@ -1,4 +1,26 @@
-#include "Timer_TivaC.h"
+/******************************************************************************
+*	OurOS V 0.0.0 - Copyright (C) 2016
+*  Computer and systems department
+*  Ain Shams University
+*
+*  All rights reserved
+*
+*  VISIT http://www.OurRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
+*
+*  Redistribution and use in source and binary forms, with or without
+*  modification, are permitted provided that the following conditions
+*  are met:
+*
+*  Redistributions of source code must retain the above copyright
+*  notice, this list of conditions and the following disclaimer.
+*
+*  Redistributions in binary form must reproduce the above copyright
+*  notice, this list of conditions and the following disclaimer in the
+*  documentation and/or other materials provided with the
+*  distribution.
+*****************************************************************************/
+#include <stdint.h>
+typedef void (*FnPtr)(void);
 
 typedef struct{
 
@@ -11,7 +33,12 @@ typedef struct{
 
 } Timer_HandleTypeDef;
 
-void HAL_Timer_Init(Timer_InitTypeDef * timer);
-void HAL_Timer_Start(Timer_HandleTypeDef * timer);
-void HAL_Timer_Delay(Timer_HandleTypeDef * timer);
-void HAL_Timer_Stop(Timer_HandleTypeDef * timer);
+/*****************************************************************************
+*
+* Prototypes for the APIs.
+*
+******************************************************************************/
+void timerinit(Timer_InitTypeDef * timer);
+void timerstart(Timer_HandleTypeDef * timer);
+void timerstart(Timer_HandleTypeDef * timer);
+void timerstop(Timer_HandleTypeDef * timer);
