@@ -13,16 +13,6 @@ typedef struct
 	uint8_t u8RegVal;
 }SPI_CLK_Rate;
 
-typedef struct
-{
-	uint32_t u32MaxFreq;
-	uint8_t u8Mode;
-	uint8_t u8DataOrder;
-	//uint8_t u8Master_OR_SLAVE;
-	//uint8_t ENABLE_INTERRUPT_OR_NOT;
-}SPI_ConfigType;
-
-extern const SPI_ConfigType SPI_InitConfig;
 extern const SPI_CLK_Rate spi_clk[PRESCALAR_NUM];
 
 

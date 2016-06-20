@@ -1,14 +1,6 @@
 ﻿
 #include "SPI_Lcfg.h"
 
-const SPI_ConfigType SPI_InitConfig = 
-{
-	2000000UL,
-	u8MODE_1,
-	u8DOR_MSB
-};
-
-
 const SPI_CLK_Rate spi_clk[7] =
 {
 	{F_CPU/2,4},

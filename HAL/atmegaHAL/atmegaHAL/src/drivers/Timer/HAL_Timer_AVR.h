@@ -13,7 +13,7 @@ typedef struct {
 typedef struct {
 	
 	Timer_InitTypeDef instance ;
-	uint16_t millis; 
+	uint16_t timeInMillis; 
 	FnPtr timeoutFn;
 
 	

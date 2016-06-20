@@ -2,8 +2,8 @@
 #ifndef SPI_CONFIG_H_
 #define SPI_CONFIG_H_
 
-#include <stdint.h>
-#include <stdbool.h>
+ #include <stdint.h>
+ #include <stdbool.h>
 
 // SPI Registers
 #define SPCR_REG		*((uint8_t volatile *const)0x2D)
@@ -21,9 +21,9 @@
 #define PRESCALAR_NUM	0x07
 
 // clock polarity and clock phase setup
-#define u8MODE_0		0x00		// Sample (Rising) Setup (Falling)
+#define u8MODE_0		0x00		// Sample (Rising) Setup (Falling) 
 #define u8MODE_1		0x04		// Setup (Rising) Sample (Falling)
-#define u8MODE_2		0x08		//Sample (Falling) Setup (Rising)
+#define u8MODE_2		0x08		//Sample (Falling) Setup (Rising) 
 #define u8MODE_3		0x0C		//Setup (Falling) Sample (Rising)
 
 //enable master or slave
@@ -34,15 +34,15 @@
 #define u8DOR_MSB		0x00
 #define u8DOR_LSB		0x20
 
-#define SPI_INT_EN		0x80		//Enable execution of SPI interrupt
+#define SPI_INT_EN		0x80		//Enable execution of SPI interrupt 
 #define SPI_EN			0x40		//SPI Enabled
-#define SPI_INT_Disable		0x00	
+#define SPI_INT_Disable		0x00
 
 
-#define Master_Or_Slave			SPI_SLAVE_EN		//Determine whether it's Master or Slave
-#define ENABLE_INTERRUPT_OR_NOT SPI_INT_Disable		//Determine whether or not the interrupt is enabled
+#define Master_Or_Slave			SPI_SLAVE_EN
+#define ENABLE_INTERRUPT_OR_NOT SPI_INT_Disable
 
-
+//#define SPI_INT_FL		0x80		//SPI Interrupt Flag 
 #define SPI_DOUBLE_SP	0x01		//?Double SPI Speed Bit for Master
 
 
