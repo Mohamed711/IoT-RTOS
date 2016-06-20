@@ -35,7 +35,7 @@
 * Parameters to be passed for the initialization of the watchdog timer.
 *
 ******************************************************************************/
-typedef struct WDT_PARAMS
+typedef struct WDT_INIT_PARAMS
 {
 	uint32_t watchdogBaseAddress;
 	uint32_t reloadValue;
@@ -45,7 +45,19 @@ typedef struct WDT_PARAMS
 	bool interruptEnable;
 	uint32_t interruptType;
 	void (*pfnHandler)(void);
+}WDT_InitTypeDef;
+
+
+/*****************************************************************************
+*
+* Parameters to be passed for the functions of the watchdog timer.
+*
+******************************************************************************/
+typedef struct WDT_HANDLE_PARAMS
+{
+	uint32_t watchdogBaseAddress;
 }WDT_HandleTypeDef;
+
 
 /*****************************************************************************
 *
@@ -53,11 +65,11 @@ typedef struct WDT_PARAMS
 *
 ******************************************************************************/
 
-void HAL_WDT_Init(WDT_HandleTypeDef * wdt);
-void HAL_WDT_Start(uint32_t wdt_base_address);
-void HAL_WDT_Refresh(uint32_t wdt_base_address);
-bool HAL_WDT_State(uint32_t wdt_base_address);
-uint32_t HAL_WDT_ReloadGet(uint32_t wdt_base_address);
-uint32_t HAL_WDT_ValueGet(uint32_t wdt_base_address);
+void HAL_WDT_Init(WDT_InitTypeDef  * wdt);
+void HAL_WDT_Start(WDT_HandleTypeDef * params);
+void HAL_WDT_Refresh(WDT_HandleTypeDef * params);
+bool HAL_WDT_State(WDT_HandleTypeDef * params);
+uint32_t HAL_WDT_ReloadGet(WDT_HandleTypeDef * params);
+uint32_t HAL_WDT_ValueGet(WDT_HandleTypeDef * params);
 
 

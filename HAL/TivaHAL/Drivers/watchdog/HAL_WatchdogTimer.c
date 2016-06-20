@@ -42,7 +42,7 @@
 *
 * \return None.
 ******************************************************************************/
-void HAL_WDT_Init(WDT_HandleTypeDef * wdt)
+void HAL_WDT_Init(WDT_InitTypeDef  * wdt)
 {
 	HAL_WDT_CLK_ENABLE();
 	WatchdogReloadSet(wdt->watchdogBaseAddress , wdt->reloadValue);
@@ -98,9 +98,10 @@ void HAL_WDT_Init(WDT_HandleTypeDef * wdt)
 *
 * \return None.
 ******************************************************************************/
-void HAL_WDT_Start(uint32_t wdt_base_address)
+void HAL_WDT_Start(WDT_HandleTypeDef * params)
 {
-	WatchdogEnable(wdt_base_address);
+	WatchdogEnable(params->watchdogBaseAddress);
+
 }
 
 
@@ -116,9 +117,9 @@ void HAL_WDT_Start(uint32_t wdt_base_address)
 *
 * \return None.
 ******************************************************************************/
-void HAL_WDT_Refresh(uint32_t wdt_base_address)
+void HAL_WDT_Refresh(WDT_HandleTypeDef * params)
 {
-	WatchdogReloadSet(wdt_base_address,WatchdogReloadGet(wdt_base_address));
+	WatchdogReloadSet(params->watchdogBaseAddress,WatchdogReloadGet(params->watchdogBaseAddress));
 }
 
 
@@ -135,9 +136,9 @@ void HAL_WDT_Refresh(uint32_t wdt_base_address)
 * \b true if the watchdog is running
 * \b false if its not.
 ******************************************************************************/
-bool HAL_WDT_State(uint32_t wdt_base_address)
+bool HAL_WDT_State(WDT_HandleTypeDef * params)
 {
-	return WatchdogRunning(wdt_base_address);
+	return WatchdogRunning(params->watchdogBaseAddress);
 }
 
 
@@ -151,9 +152,9 @@ bool HAL_WDT_State(uint32_t wdt_base_address)
 *
 * \return \uint32_t the reload value of the watchdog timer.
 ******************************************************************************/
-uint32_t HAL_WDT_ReloadGet(uint32_t wdt_base_address)
+uint32_t HAL_WDT_ReloadGet(WDT_HandleTypeDef * params)
 {
-	return WatchdogReloadGet(wdt_base_address);
+	return WatchdogReloadGet(params->watchdogBaseAddress);
 }
 
 
@@ -167,7 +168,7 @@ uint32_t HAL_WDT_ReloadGet(uint32_t wdt_base_address)
 *
 * \return \uint32_t the current value of the watchdog timer.
 ******************************************************************************/
-uint32_t HAL_WDT_ValueGet(uint32_t wdt_base_address)
+uint32_t HAL_WDT_ValueGet(WDT_HandleTypeDef * params)
 {
-	return WatchdogValueGet(wdt_base_address);
+	return WatchdogValueGet(params->watchdogBaseAddress);
 }

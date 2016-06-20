@@ -11,7 +11,7 @@ typedef struct{
 
 } Timer_HandleTypeDef;
 
-void HAL_TIMER_Init(Timer_InitTypeDef * timer);
-void HAL_TIMER_Start(Timer_HandleTypeDef * timer);
-void HAL_TIMER_Delay(Timer_HandleTypeDef * timer);
-void HAL_TIMER_Stop(Timer_HandleTypeDef * timer);
+void HAL_Timer_Init(Timer_InitTypeDef * timer);
+void HAL_Timer_Start(Timer_HandleTypeDef * timer);
+void HAL_Timer_Delay(Timer_HandleTypeDef * timer);
+void HAL_Timer_Stop(Timer_HandleTypeDef * timer);
