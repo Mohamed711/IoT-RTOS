@@ -1,0 +1,122 @@
+#include "atmegaHAL.h"
+
+
+/*
+UART_InitTypeDef uart_init_config;
+UART_HandleTypeDef uart_handle;
+
+int main(void)
+{
+	uart_init_config.Baud = 9600;
+	uart_init_config.DataBits = DATA_BIT_8;
+	uart_init_config.StopBits = STOP_BIT_1;
+	uart_init_config.Parity = PARITY_DISABLE;
+	uart_init_config.EnableInterrupt = 1;
+	uart_init_config.U2X_State = U2X_DISABLE;
+	
+	HAL_UART_Init(&uart_init_config);
+	while(1)
+	{
+		unsigned char x;
+		HAL_UART_Receive(&uart_handle);
+		x = uart_handle.Rx;
+		if (x == 'v')
+		{
+			uart_handle.Tx = 'T';
+			HAL_UART_Send(&uart_handle);
+		}
+		else
+		{
+			uart_handle.Tx = 'F';
+			HAL_UART_Send(&uart_handle);
+		}
+	}
+}
+*/
+
+//I2C TEST
+/*
+int main(void)
+{
+	DDRA = 0xFF;	//port A as output
+
+	I2C_InitTypeDef init;
+	init.clock=9600; // setting clock rate 
+	init.SlaveAddress=0x40; // write to slave 
+	init.type=0;
+	
+	I2C_HandleTypeDef handle;
+	handle.slaveAddress=0x40;
+	handle.Txdata=0x55;
+	
+	HAL_I2C_Init(&init);
+
+	while (1)
+	{
+		HAL_I2C_Master_Transmit(&handle);
+		_delay_ms(1000);
+	}
+}
+*/
+	
+//TIMER TEST
+
+void toggle ()
+{
+	if (PORTA == 0xFF)
+	{
+		PORTA = 0x00;
+	}
+	else if (PORTA == 0x00)
+	{
+		PORTA = 0xFF;
+	}		
+}
+
+int main(void)
+{
+	
+	DDRA = 0xFF;
+	PORTA = 0xFF;
+		
+	Timer_InitTypeDef timerInit;
+	Timer_HandleTypeDef timerHandle;
+	timerHandle.millis = 10;
+	
+	HAL_Timer_Init(&timerInit);
+	
+	timerHandle.timeoutFn = toggle;
+	HAL_Timer_Start(&timerHandle);
+	while(1);
+}
+
+//ADC TEST 
+/*
+int main(void)
+{
+	uint16_t result;
+	DDRA &=(~(0xFF));
+	
+	DDRC |=0xFF;
+	DDRD |=0xFF;
+	
+	ADC_InitTypeDef handle;
+	handle.channel=ch_ADC0;
+	handle.enable_interrupt= false;
+	handle.trigger=Free_Running_mode;
+	handle.voltage_ref_sel=Internal_2_dot_56V_Voltage_Reference_with_external_cap_at_AREF_pin;
+	handle.u32MaxFreq=75000000UL;
+	ADC_handle_typedef res;
+	res.return_result=0x00;
+	HAL_ADC_Init(&handle);
+    while(1)
+    {
+	    HAL_ADC_read(&res);
+	   
+	    result =res.return_result;
+	 
+	 PORTC =(result &0xFF);
+	 PORTD =((result)>>8);
+}
+	}
+*/
