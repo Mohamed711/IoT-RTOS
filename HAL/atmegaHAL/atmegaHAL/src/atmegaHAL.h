@@ -15,6 +15,9 @@
 
 #include "drivers/UART/HAL_UART.h"
 
+#include "drivers/SPI/HAL_SPI_AVR.h"
+#include "drivers/SPI/SPI.h"
+
 #include <util/delay.h>
 #include <avr/io.h>
 

@@ -1,6 +1,33 @@
 #include "atmegaHAL.h"
 
 
+//SPI TEST
+/*
+volatile uint8_t SPI_DATA;
+SPI_InitTypeDef spi =
+{
+	2000000UL,
+	u8MODE_1,
+	u8DOR_MSB
+};
+
+void main()
+{
+	DIO_InitPortDirection(PA,0xFF,0xFF);
+	SPI_HandleTypeDef SPIDATA ;
+	HAL_SPI_Init( &spi);
+	while(1)
+	{
+		PORTA=HAL_SPI_Receive(&SPIDATA);
+		SPIDATA.Txdata=7;
+		PORTA=HAL_SPI_Receive(&SPIDATA);
+		
+		SPIDATA.Txdata=16;
+	}
+}
+*/
+
+//UART TEST
 /*
 UART_InitTypeDef uart_init_config;
 UART_HandleTypeDef uart_handle;
@@ -60,7 +87,7 @@ int main(void)
 */
 	
 //TIMER TEST
-
+/*
 void toggle ()
 {
 	if (PORTA == 0xFF)
@@ -81,15 +108,15 @@ int main(void)
 		
 	Timer_InitTypeDef timerInit;
 	Timer_HandleTypeDef timerHandle;
-	timerHandle.millis = 10;
+	timerHandle.timeInMillis = 10;
 	
-	HAL_Timer_Init(&timerInit);
+	timerinit(timerInit);
 	
 	timerHandle.timeoutFn = toggle;
-	HAL_Timer_Start(&timerHandle);
+	timerstart(timerHandle);
 	while(1);
 }
-
+*/
 //ADC TEST 
 /*
 int main(void)
@@ -107,13 +134,10 @@ int main(void)
 	handle.voltage_ref_sel=Internal_2_dot_56V_Voltage_Reference_with_external_cap_at_AREF_pin;
 	handle.u32MaxFreq=75000000UL;
 	ADC_handle_typedef res;
-	res.return_result=0x00;
-	HAL_ADC_Init(&handle);
+	adcinit(handle);
     while(1)
     {
-	    HAL_ADC_read(&res);
-	   
-	    result =res.return_result;
+	    result = adcread(res);
 	 
 	 PORTC =(result &0xFF);
 	 PORTD =((result)>>8);

@@ -15,12 +15,11 @@ typedef struct
 
 typedef struct
 {
-	uint16_t return_result;
 	
 }ADC_handle_typedef;
 
-void HAL_ADC_Init(ADC_InitTypeDef * adc);
-void HAL_ADC_read(ADC_handle_typedef *adc);
-void HAL_ADC_OFF(void);
+#define adcinit(x) adcInit( x.voltage_ref_sel , x.enable_interrupt , x.trigger ,  x.channel , x.u32MaxFreq)
+#define adcread(x) adcResult_u16()
+#define adcoff() adcOff()
 
 #endif /* HAL_ADC_AVR_H_ */
