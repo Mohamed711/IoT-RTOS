@@ -29,8 +29,6 @@
 
 typedef struct {
 	uint8_t slaveAddress1;
-	uint8_t slaveAddress2;
-	uint16_t clockRate;
 	uint32_t baseAddress;
 } I2C_InitTypeDef;
 

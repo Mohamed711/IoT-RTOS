@@ -25,7 +25,15 @@ typedef struct{
 	uint8_t Rxdata;	
 	}SPI_HandleTypeDef;
 
-void HAL_SPI_Init(SPI_InitTypeDef * spi);
+SPI_InitTypeDef *spiy;
+SPI_HandleTypeDef *spiz;
+
+#define spimasterinit(x) spiy = x; spiInitMaster(spiy->u32MaxFreq, spiy->u8Mode, spiy->u8DataOrder)
+#define spislaveinit(x) spiy = x; spiInitMaster(spiy->u32MaxFreq, spiy->u8Mode, spiy->u8DataOrder)
+#define spiinterruptenable()  SPIInterruptInit()
+#define spimastertransmit(x) spiz = x; spiMasterTransmit(spiz->Txdata)
+#define spireceive(x) spiTranceiver(spiz->Txdata); spiz=x;
+
 void HAL_SPI_InterruptInit();
 void HAL_SPI_Transmit(SPI_HandleTypeDef * SPIDATA);
 uint8_t HAL_SPI_Receive(SPI_HandleTypeDef * SPIDATA);

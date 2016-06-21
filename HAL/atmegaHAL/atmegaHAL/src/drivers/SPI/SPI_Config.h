@@ -39,12 +39,10 @@
 #define SPI_INT_Disable		0x00
 
 
-#define Master_Or_Slave			SPI_SLAVE_EN
-#define ENABLE_INTERRUPT_OR_NOT SPI_INT_Disable
-
 //#define SPI_INT_FL		0x80		//SPI Interrupt Flag 
 #define SPI_DOUBLE_SP	0x01		//?Double SPI Speed Bit for Master
 
-
+#define Master_Or_Slave			SPI_SLAVE_EN
+#define ENABLE_INTERRUPT_OR_NOT SPI_INT_Disable
 
 #endif /* SPI_CONFIG_H_ */

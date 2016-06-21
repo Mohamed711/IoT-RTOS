@@ -15,23 +15,25 @@ void main()
 {
 	DIO_InitPortDirection(PA,0xFF,0xFF);
 	SPI_HandleTypeDef SPIDATA ;
-	HAL_SPI_Init( &spi);
-	while(1)
+	spimasterinit(&spi);
+while(1)
 	{
+		//SPIDATA.Txdata=8;
 		PORTA=HAL_SPI_Receive(&SPIDATA);
 		SPIDATA.Txdata=7;
 		PORTA=HAL_SPI_Receive(&SPIDATA);
 		
 		SPIDATA.Txdata=16;
+		
 	}
 }
 */
 
 //UART TEST
-
+/*
 UART_InitTypeDef uart_init_config;
 UART_HandleTypeDef uart_handle;
-/*
+
 int main(void)
 {
 	DIO_InitPortDirection(0x00,0xFF,0xFF);
@@ -130,7 +132,7 @@ int main(void)
 }
 */
 //ADC TEST 
-
+/*
 int main(void)
 {
 	uint16_t result;
@@ -155,3 +157,4 @@ int main(void)
 	 PORTD =((result)>>8);
 }
 	}
+*/

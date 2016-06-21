@@ -20,10 +20,19 @@
 *  distribution.
 *****************************************************************************/
 #include"ADC_HAL_TIVA.h"
-void HAL_ADC_Init(ADC_InitTypeDef *adc)
+
+/******************************************************************************
+*
+*	The function's purpose is to initialize the adc
+*
+*	\param i2c		pointer to structure that contains all the data needed
+*					to initialize the adc
+*
+* 	\return none
+*
+*****************************************************************************/
+void adcinit(ADC_InitTypeDef *adc)
 {
-
-
 	uint32_t ADCn_BASE;
 	SysCtlPeripheralEnable(adc->ADCn); /*enabling adc periph*/
 
@@ -37,11 +46,7 @@ void HAL_ADC_Init(ADC_InitTypeDef *adc)
 		break;
 	}
 
-
-
-
 	ADCSequenceConfigure(ADCn_BASE, adc->seq, adc->ADC_TRIGGER, adc->prio);
-
 
 	int8_t count;
 	adc->steps=4;
@@ -59,15 +64,19 @@ void HAL_ADC_Init(ADC_InitTypeDef *adc)
 		ADCSequenceStepConfigure(ADCn_BASE, adc->seq, count, adc->src|((1 & adc->diff)<<1));
 	}
 
-
-
 	ADCSequenceStepConfigure(ADCn_BASE,adc->seq,adc->steps-1,adc->src|ADC_CTL_IE|ADC_CTL_END|((1 & adc->diff)<<1));
 
-
 	ADCSequenceEnable(ADCn_BASE, adc->seq);
-
 }
-void HAL_ADC_read(ADC_InitTypeDef *adc)
+
+/******************************************************************************
+*
+*	The function's purpose is to read the adc's return value
+*
+* 	\return none
+*
+*****************************************************************************/
+uint32_t  adcread(ADC_InitTypeDef *adc)
 {
 	uint32_t ADCn_BASE;
 	switch(adc->ADCn)
@@ -80,7 +89,6 @@ void HAL_ADC_read(ADC_InitTypeDef *adc)
 			break;
 		}
 
-
 			ADCIntClear(ADCn_BASE,adc->seq);
 			ADCProcessorTrigger(ADCn_BASE,adc->seq);
 
@@ -89,26 +97,34 @@ void HAL_ADC_read(ADC_InitTypeDef *adc)
 			{
 			}
 
+			uint32_t *ui32ADCnValue;
+			uint32_t value;
+			ADCSequenceDataGet(ADCn_BASE,adc->seq, ui32ADCnValue);
 
-
-			ADCSequenceDataGet(ADCn_BASE,adc->seq, (adc->ui32ADCnValue));
-			int8_t counting;
-
+			value =  (ui32ADCnValue[0] + ui32ADCnValue[1] + ui32ADCnValue[2] + ui32ADCnValue[3] + 2)/4;
+			value = (1475 - ((2475 * value)) / 4096)/10;
+			return value;
 }
 
-
-bool HAL_ADC_OFF()
+/******************************************************************************
+*
+*	The function's purpose is to turn off the adc
+*
+* 	\return none
+*
+*****************************************************************************/
+void adcoff()
 {
 	/*Before using this function, it is highly recommended that the event trigger
 	is changed to ADC_TRIGGER_NEVER on all enabled sequencers to prevent the ADC from
 	starting after checking the busy status*/
 
-
 	if(ADCBusy(ADC0_BASE)||ADCBusy(ADC1_BASE))
-	{ return false;}
+	{
+		return false;
+	}
 	else
 	{
-
 		return true;
 	}
 }

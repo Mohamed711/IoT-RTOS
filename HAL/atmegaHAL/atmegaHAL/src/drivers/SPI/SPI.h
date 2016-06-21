@@ -16,7 +16,8 @@
 #include "SPI_Lcfg.h"
 #include "HAL_SPI_AVR.h"
 
-void spiInit(uint32_t u32MaxFreq, uint8_t u8Mode, uint8_t u8DataOrder);
+void spiInitMaster(uint32_t u32MaxFreq, uint8_t u8Mode, uint8_t u8DataOrder);
+void spiInitSlave(uint32_t u32MaxFreq, uint8_t u8Mode, uint8_t u8DataOrder);
 void SPIInterruptInit();
 void spiMasterTransmit(uint8_t data);	//for both with and without interrupt
 //void SPI_SlaveTransmit(uint8_t data);	//with interrupt

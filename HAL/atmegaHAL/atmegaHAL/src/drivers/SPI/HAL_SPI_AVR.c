@@ -1,10 +1,6 @@
 
 #include "HAL_SPI_AVR.h"
 
-void HAL_SPI_Init(SPI_InitTypeDef * spi)
-{
-	spiInit(spi->u32MaxFreq, spi->u8Mode, spi->u8DataOrder);
-}
 
 void HAL_SPI_InterruptInit()
 {

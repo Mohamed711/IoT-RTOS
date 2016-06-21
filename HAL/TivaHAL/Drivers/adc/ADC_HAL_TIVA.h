@@ -35,7 +35,6 @@ typedef struct
 	uint32_t prio;
 	uint32_t steps;
 	uint32_t src;
-	uint32_t *ui32ADCnValue;
 	bool diff;
 	}ADC_InitTypeDef;
 
@@ -50,7 +49,7 @@ typedef struct
 *
 ******************************************************************************/
 void adcinit(ADC_InitTypeDef *adc);
-void adcread(ADC_InitTypeDef *adc);
+uint32_t adcread(ADC_InitTypeDef *adc);
 void adcoff();
 
 

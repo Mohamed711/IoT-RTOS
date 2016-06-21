@@ -31,9 +31,9 @@ bool  enable_interrupt;
 **************************************************************************************************************************/
 void adcOff(void)
 {
-	// disable interrupt
+	/* disable interrupt*/
 	ADCSRA &= (0 << ADIE);
-	// disable ADC
+	/* disable ADC*/
 	ADCSRA &= (0 << ADEN);
 }
 
