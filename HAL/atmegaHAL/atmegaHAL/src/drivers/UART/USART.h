@@ -14,7 +14,7 @@
 
 volatile uint8_t value;
 
-void uartInit(UART_InitTypeDef* usart_init_config);
+void uartInit(uint32_t Baud, uint8_t DataBits, uint8_t StopBits, uint8_t Parity, uint8_t EnableInterrupt, uint8_t U2X_State);
 void uartSend(unsigned char x);
 unsigned char uartReceive(void);
 

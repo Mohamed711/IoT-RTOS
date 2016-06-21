@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 #include "USART_CFG.h"
+#include "USART.h"
 
 #define F_CPU 8000000ul
 
@@ -31,13 +32,15 @@ typedef struct
 typedef struct
 {
 	uint8_t Tx;
-	uint8_t Rx;
 } UART_HandleTypeDef;
 
 typedef unsigned char HAL_DataType;
 
-void HAL_UART_Init(UART_InitTypeDef* uart);
-void HAL_UART_Send(UART_HandleTypeDef* uart);
-void HAL_UART_Receive(UART_HandleTypeDef* uart);
+UART_InitTypeDef *uarty;
+UART_HandleTypeDef *uartz;
+
+#define uartinit(x) uarty = x; uartInit(uarty->Baud, uarty->DataBits, uarty->StopBits, uarty->Parity, uarty->EnableInterrupt, uarty->U2X_State)
+#define uartsend(x) uartz = x; uartSend(uartz->Tx)
+#define uartreceive(x)  uartReceive(); uartz = x
 
 #endif /* HAL_UART_H_ */

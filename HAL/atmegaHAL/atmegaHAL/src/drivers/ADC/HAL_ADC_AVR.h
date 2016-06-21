@@ -16,10 +16,13 @@ typedef struct
 typedef struct
 {
 	
-}ADC_handle_typedef;
+}ADC_HandleTypeDef;
 
-#define adcinit(x) adcInit( x.voltage_ref_sel , x.enable_interrupt , x.trigger ,  x.channel , x.u32MaxFreq)
-#define adcread(x) adcResult_u16()
+ADC_InitTypeDef *adcy;
+ADC_HandleTypeDef *adcz;
+
+#define adcinit(x) adcy = x; adcInit( adcy->voltage_ref_sel , adcy->enable_interrupt , adcy->trigger ,  adcy->channel , adcy->u32MaxFreq)
+#define adcread(x)  adcResult_u16(); adcz = x
 #define adcoff() adcOff()
 
 #endif /* HAL_ADC_AVR_H_ */

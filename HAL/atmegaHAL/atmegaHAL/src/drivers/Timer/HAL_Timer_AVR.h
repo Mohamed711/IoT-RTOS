@@ -19,9 +19,12 @@ typedef struct {
 	
 	}Timer_HandleTypeDef;
 	
-#define timerinit(x) timer0Init1ms()
-#define timerdelay(x) timer0Delay1ms(x.timeInMillis, x.timeoutFn)
-#define timerstart(x) timer0Start(x.timeInMillis, x.timeoutFn)
-#define timerstop(x) timer0Stop()
+Timer_InitTypeDef *timery;
+Timer_HandleTypeDef *timerz;
+	
+#define timerinit(x) timery = x; timer0Init1ms()
+#define timerdelay(x) timerz = x; timer0Delay1ms(timerz->timeInMillis, timerz->timeoutFn)
+#define timerstart(x) timerz = x; timer0Start(timerz->timeInMillis, timerz->timeoutFn)
+#define timerstop(x) timerz = x; timer0Stop()
 
 #endif /* HAL_H_ */

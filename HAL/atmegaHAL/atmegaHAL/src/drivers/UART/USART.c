@@ -27,16 +27,16 @@
 *
 *	return	\none                                                         
 ************************************************************************/
-void uartInit(UART_InitTypeDef* usart_init_config)
+void uartInit(uint32_t Baud, uint8_t DataBits, uint8_t StopBits, uint8_t Parity, uint8_t EnableInterrupt, uint8_t U2X_State)
 {
 	uint16_t UBRR_VALUE;
-	if(usart_init_config->U2X_State != 0)	/*if Double speed state is enabled*/
+	if(U2X_State != 0)	/*if Double speed state is enabled*/
 	{
-		UBRR_VALUE = (uint16_t)((F_CPU + usart_init_config->Baud*4UL)/(usart_init_config->Baud*8UL) - 1UL);
+		UBRR_VALUE = (uint16_t)((F_CPU + Baud*4UL)/(Baud*8UL) - 1UL);
 	}
 	else	/*if Normal speed state is enabled*/
 	{
-		UBRR_VALUE = (uint16_t)((F_CPU + usart_init_config->Baud*8UL)/(usart_init_config->Baud*16UL) - 1UL);
+		UBRR_VALUE = (uint16_t)((F_CPU + Baud*8UL)/(Baud*16UL) - 1UL);
 	}
 
 	UCSRC_REG = UBRR_SELECT;	/*URSEL is set to zero to update UBRRH*/
@@ -46,11 +46,11 @@ void uartInit(UART_InitTypeDef* usart_init_config)
 	uartEnable();
 	
 	UCSRC_REG = UCSRC_SELECT;	/*URSEL is set to one to update the UCSRC settings*/
-	UCSRC_REG |= usart_init_config->DataBits | usart_init_config->StopBits | usart_init_config->Parity;
+	UCSRC_REG |= DataBits | StopBits | Parity;
 	
-	UCSRA_REG |= usart_init_config->U2X_State;
+	UCSRA_REG |= U2X_State;
 	
-	if(usart_init_config->EnableInterrupt)	/*if interrupt is enabled*/
+	if(EnableInterrupt)	/*if interrupt is enabled*/
 	{
 		cli();
 		uartEnableInterruptRx();	/*enable receive interrupt*/
