@@ -1,4 +1,24 @@
-
+/******************************************************************************
+ *	OurOS V 0.0.0 - Copyright (C) 2016
+ *  Computer and systems department
+ *  Ain Shams University
+ *
+ *  All rights reserved
+ *
+ *  VISIT http://www.OurRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *  Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *  Redistributions in binary form must reproduce the above copyright
+ *  notice, this list of conditions and the following disclaimer in the
+ *  documentation and/or other materials provided with the
+ *  distribution.
+ *****************************************************************************/
 #include "8-bit_TimerCounter0.h"
 
 
@@ -19,12 +39,9 @@ typedef struct {
 	
 	}Timer_HandleTypeDef;
 	
-Timer_InitTypeDef *timery;
-Timer_HandleTypeDef *timerz;
-	
-#define timerinit(x) timery = x; timer0Init1ms()
-#define timerdelay(x) timerz = x; timer0Delay1ms(timerz->timeInMillis, timerz->timeoutFn)
-#define timerstart(x) timerz = x; timer0Start(timerz->timeInMillis, timerz->timeoutFn)
-#define timerstop(x) timerz = x; timer0Stop()
+#define timerinit(x) timer0Init1ms()
+#define timerdelay(x) timer0Delay1ms((*x).timeInMillis, (*x).timeoutFn)
+#define timerstart(x) timer0Start((*x).timeInMillis, (*x).timeoutFn)
+#define timerstop(x)  timer0Stop()
 
 #endif /* HAL_H_ */

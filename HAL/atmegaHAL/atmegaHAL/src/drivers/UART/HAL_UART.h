@@ -1,11 +1,24 @@
-/*
- * HAL_UART.h
+/******************************************************************************
+ *	OurOS V 0.0.0 - Copyright (C) 2016
+ *  Computer and systems department
+ *  Ain Shams University
  *
- * Created: 2/20/2016 3:09:34 PM
- *  Author: Mark
- */ 
-
-
+ *  All rights reserved
+ *
+ *  VISIT http://www.OurRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *  Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *  Redistributions in binary form must reproduce the above copyright
+ *  notice, this list of conditions and the following disclaimer in the
+ *  documentation and/or other materials provided with the
+ *  distribution.
+ *****************************************************************************/
 #ifndef HAL_UART_H_
 #define HAL_UART_H_
 
@@ -36,11 +49,8 @@ typedef struct
 
 typedef unsigned char HAL_DataType;
 
-UART_InitTypeDef *uarty;
-UART_HandleTypeDef *uartz;
-
-#define uartinit(x) uarty = x; uartInit(uarty->Baud, uarty->DataBits, uarty->StopBits, uarty->Parity, uarty->EnableInterrupt, uarty->U2X_State)
-#define uartsend(x) uartz = x; uartSend(uartz->Tx)
-#define uartreceive(x)  uartReceive(); uartz = x
+#define uartinit(x) uartInit((*x).Baud, (*x).DataBits, (*x).StopBits, (*x).Parity,(*x).EnableInterrupt,(*x).U2X_State)
+#define uartsend(x) uartSend((*x).Tx)
+#define uartreceive(x)  uartReceive()
 
 #endif /* HAL_UART_H_ */

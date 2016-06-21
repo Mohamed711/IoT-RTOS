@@ -49,6 +49,23 @@
     <OverrideVtor>false</OverrideVtor>
     <OverrideVtorValue />
     <eraseonlaunchrule>0</eraseonlaunchrule>
+    <avrtoolinterface />
+    <avrtool>com.atmel.avrdbg.tool.simulator</avrtool>
+    <com_atmel_avrdbg_tool_simulator>
+      <ToolType xmlns="">com.atmel.avrdbg.tool.simulator</ToolType>
+      <ToolName xmlns="">AVR Simulator</ToolName>
+      <ToolNumber xmlns="">
+      </ToolNumber>
+      <KeepTimersRunning xmlns="">true</KeepTimersRunning>
+      <OverrideVtor xmlns="">false</OverrideVtor>
+      <OverrideVtorValue xmlns="">
+      </OverrideVtorValue>
+      <Channel xmlns="">
+        <host>127.0.0.1</host>
+        <port>10372</port>
+        <ssl>False</ssl>
+      </Channel>
+    </com_atmel_avrdbg_tool_simulator>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
@@ -184,9 +201,6 @@
     <Compile Include="src\drivers\ADC\ADC_CFG.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="src\drivers\ADC\HAL_ADC_AVR.c">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="src\drivers\ADC\HAL_ADC_AVR.h">
       <SubType>compile</SubType>
     </Compile>
@@ -200,9 +214,6 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\drivers\GPIO\GPIO.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="src\drivers\I2C\HAL_i2c_AVR.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\drivers\I2C\HAL_i2c_AVR.h">
@@ -221,6 +232,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\drivers\I2C\I2C_Lcfg.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\drivers\SPI\HAL_SPI_AVR.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\drivers\SPI\HAL_SPI_AVR.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\drivers\SPI\SPI.c">
@@ -253,13 +270,7 @@
     <Compile Include="src\drivers\Timer\8-bit_TimerCounter0_LCFG.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="src\drivers\Timer\HAL_Timer_AVR.c">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="src\drivers\Timer\HAL_Timer_AVR.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="src\drivers\UART\HAL_UART.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\drivers\UART\HAL_UART.h">
@@ -278,6 +289,21 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\drivers\UART\USART_config.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\drivers\watchdog\HAL_Watchdog_AVR.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\drivers\watchdog\HAL_Watchdog_AVR.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\drivers\watchdog\Watchdog.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\drivers\watchdog\Watchdog.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\drivers\watchdog\Watchdog_cfg.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\main.c">
@@ -340,6 +366,7 @@
     <Folder Include="src\drivers\I2C" />
     <Folder Include="src\drivers\GPIO" />
     <Folder Include="src\drivers\DIO" />
+    <Folder Include="src\drivers\watchdog" />
     <Folder Include="src\drivers\SPI" />
     <Folder Include="src\drivers\UART" />
     <Folder Include="src\drivers\Timer" />

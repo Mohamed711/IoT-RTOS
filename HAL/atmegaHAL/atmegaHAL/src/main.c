@@ -2,7 +2,7 @@
 #include "drivers/DIO/DIO.h"
 
 //SPI TEST
-/*
+
 volatile uint8_t SPI_DATA;
 SPI_InitTypeDef spi =
 {
@@ -27,7 +27,7 @@ while(1)
 		
 	}
 }
-*/
+
 
 //UART TEST
 /*
@@ -85,16 +85,17 @@ int main(void)
 	
 	I2C_HandleTypeDef handle;
 	handle.slaveAddress=0x40;
-	handle.Txdata=0x55;
 	
 	i2cmasterinit(&init);
 
 	while (1)
 	{
+		handle.Txdata=0x55;
 		i2cmastersend(&handle);
 		_delay_ms(10000);
-		handle.Txdata = 0x45;
+		handle.Txdata = 0x28;
 		i2cmastersend(&handle);
+		_delay_ms(10000);
 	}
 }
 */
@@ -129,8 +130,8 @@ int main(void)
 	timerstart(&timerHandle);
 	//timerdelay(&timerHandle);
 	while(1);
-}
-*/
+}*/
+
 //ADC TEST 
 /*
 int main(void)

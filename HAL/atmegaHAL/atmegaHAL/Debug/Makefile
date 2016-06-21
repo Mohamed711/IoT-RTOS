@@ -50,6 +50,7 @@ SUBDIRS :=  \
 ../src/drivers/I2C \
 ../src/drivers/GPIO \
 ../src/drivers/DIO \
+../src/drivers/watchdog \
 ../src/drivers/SPI \
 ../src/drivers/UART \
 ../src/drivers/Timer
@@ -59,20 +60,19 @@ SUBDIRS :=  \
 C_SRCS +=  \
 ../src/asf/mega/boards/stk600/rcx_x/init.c \
 ../src/drivers/ADC/ADC.c \
-../src/drivers/ADC/HAL_ADC_AVR.c \
 ../src/drivers/DIO/DIO.c \
 ../src/drivers/GPIO/GPIO.c \
-../src/drivers/I2C/HAL_i2c_AVR.c \
 ../src/drivers/I2C/I2C.c \
 ../src/drivers/I2C/I2C_Lcfg.c \
+../src/drivers/SPI/HAL_SPI_AVR.c \
 ../src/drivers/SPI/SPI.c \
 ../src/drivers/SPI/SPI_Lcfg.c \
 ../src/drivers/Timer/8-bit_TimerCounter0.c \
 ../src/drivers/Timer/8-bit_TimerCounter0_LCFG.c \
-../src/drivers/Timer/HAL_Timer_AVR.c \
-../src/drivers/UART/HAL_UART.c \
 ../src/drivers/UART/USART.c \
 ../src/drivers/UART/USART_config.c \
+../src/drivers/watchdog/HAL_Watchdog_AVR.c \
+../src/drivers/watchdog/Watchdog.c \
 ../src/main.c
 
 
@@ -85,80 +85,76 @@ ASM_SRCS +=
 OBJS +=  \
 src/asf/mega/boards/stk600/rcx_x/init.o \
 src/drivers/ADC/ADC.o \
-src/drivers/ADC/HAL_ADC_AVR.o \
 src/drivers/DIO/DIO.o \
 src/drivers/GPIO/GPIO.o \
-src/drivers/I2C/HAL_i2c_AVR.o \
 src/drivers/I2C/I2C.o \
 src/drivers/I2C/I2C_Lcfg.o \
+src/drivers/SPI/HAL_SPI_AVR.o \
 src/drivers/SPI/SPI.o \
 src/drivers/SPI/SPI_Lcfg.o \
 src/drivers/Timer/8-bit_TimerCounter0.o \
 src/drivers/Timer/8-bit_TimerCounter0_LCFG.o \
-src/drivers/Timer/HAL_Timer_AVR.o \
-src/drivers/UART/HAL_UART.o \
 src/drivers/UART/USART.o \
 src/drivers/UART/USART_config.o \
+src/drivers/watchdog/HAL_Watchdog_AVR.o \
+src/drivers/watchdog/Watchdog.o \
 src/main.o
 
 
 OBJS_AS_ARGS +=  \
 src/asf/mega/boards/stk600/rcx_x/init.o \
 src/drivers/ADC/ADC.o \
-src/drivers/ADC/HAL_ADC_AVR.o \
 src/drivers/DIO/DIO.o \
 src/drivers/GPIO/GPIO.o \
-src/drivers/I2C/HAL_i2c_AVR.o \
 src/drivers/I2C/I2C.o \
 src/drivers/I2C/I2C_Lcfg.o \
+src/drivers/SPI/HAL_SPI_AVR.o \
 src/drivers/SPI/SPI.o \
 src/drivers/SPI/SPI_Lcfg.o \
 src/drivers/Timer/8-bit_TimerCounter0.o \
 src/drivers/Timer/8-bit_TimerCounter0_LCFG.o \
-src/drivers/Timer/HAL_Timer_AVR.o \
-src/drivers/UART/HAL_UART.o \
 src/drivers/UART/USART.o \
 src/drivers/UART/USART_config.o \
+src/drivers/watchdog/HAL_Watchdog_AVR.o \
+src/drivers/watchdog/Watchdog.o \
 src/main.o
 
 
 C_DEPS +=  \
 src/asf/mega/boards/stk600/rcx_x/init.d \
 src/drivers/ADC/ADC.d \
-src/drivers/ADC/HAL_ADC_AVR.d \
 src/drivers/DIO/DIO.d \
 src/drivers/GPIO/GPIO.d \
-src/drivers/I2C/HAL_i2c_AVR.d \
 src/drivers/I2C/I2C.d \
 src/drivers/I2C/I2C_Lcfg.d \
+src/drivers/SPI/HAL_SPI_AVR.d \
 src/drivers/SPI/SPI.d \
 src/drivers/SPI/SPI_Lcfg.d \
 src/drivers/Timer/8-bit_TimerCounter0.d \
 src/drivers/Timer/8-bit_TimerCounter0_LCFG.d \
-src/drivers/Timer/HAL_Timer_AVR.d \
-src/drivers/UART/HAL_UART.d \
 src/drivers/UART/USART.d \
 src/drivers/UART/USART_config.d \
+src/drivers/watchdog/HAL_Watchdog_AVR.d \
+src/drivers/watchdog/Watchdog.d \
 src/main.d
 
 
 C_DEPS_AS_ARGS +=  \
 src/asf/mega/boards/stk600/rcx_x/init.d \
 src/drivers/ADC/ADC.d \
-src/drivers/ADC/HAL_ADC_AVR.d \
 src/drivers/DIO/DIO.d \
 src/drivers/GPIO/GPIO.d \
-src/drivers/I2C/HAL_i2c_AVR.d \
 src/drivers/I2C/I2C.d \
 src/drivers/I2C/I2C_Lcfg.d \
+src/drivers/SPI/HAL_SPI_AVR.d \
 src/drivers/SPI/SPI.d \
 src/drivers/SPI/SPI_Lcfg.d \
 src/drivers/Timer/8-bit_TimerCounter0.d \
 src/drivers/Timer/8-bit_TimerCounter0_LCFG.d \
-src/drivers/Timer/HAL_Timer_AVR.d \
-src/drivers/UART/HAL_UART.d \
 src/drivers/UART/USART.d \
 src/drivers/UART/USART_config.d \
+src/drivers/watchdog/HAL_Watchdog_AVR.d \
+src/drivers/watchdog/Watchdog.d \
 src/main.d
 
 
@@ -171,8 +167,6 @@ ADDITIONAL_DEPENDENCIES:=
 OUTPUT_FILE_DEP:= ./makedep.mk
 
 # AVR32/GNU C Compiler
-
-
 
 
 
@@ -249,6 +243,12 @@ src/drivers/Timer/%.o: ../src/drivers/Timer/%.c
 	@echo Finished building: $<
 
 src/drivers/UART/%.o: ../src/drivers/UART/%.c
+	@echo Building file: $<
+	@echo Invoking: AVR/GNU C Compiler : (AVR_8_bit_GNU_Toolchain_3.4.1_830) 4.6.2
+	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Studio 6.0\extensions\Atmel\AVRGCC\3.4.1.95\AVRToolchain\bin\avr-gcc.exe$(QUOTE) -DBOARD=STK600_MEGA  -I"../src" -I"../src/asf/common/applications/user_application/atmega32_stk600-mega" -I"../src/asf/common/boards" -I"../src/asf/common/utils" -I"../src/asf/mega/utils" -I"../src/config"  -O1 -fdata-sections -ffunction-sections -g3 -Wall -c -Werror-implicit-function-declaration -Wmissing-prototypes -Wpointer-arith -Wstrict-prototypes -mrelax -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"  -mmcu=atmega32   -o"$@" "$<" 
+	@echo Finished building: $<
+
+src/drivers/watchdog/%.o: ../src/drivers/watchdog/%.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler : (AVR_8_bit_GNU_Toolchain_3.4.1_830) 4.6.2
 	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Studio 6.0\extensions\Atmel\AVRGCC\3.4.1.95\AVRToolchain\bin\avr-gcc.exe$(QUOTE) -DBOARD=STK600_MEGA  -I"../src" -I"../src/asf/common/applications/user_application/atmega32_stk600-mega" -I"../src/asf/common/boards" -I"../src/asf/common/utils" -I"../src/asf/mega/utils" -I"../src/config"  -O1 -fdata-sections -ffunction-sections -g3 -Wall -c -Werror-implicit-function-declaration -Wmissing-prototypes -Wpointer-arith -Wstrict-prototypes -mrelax -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"  -mmcu=atmega32   -o"$@" "$<" 

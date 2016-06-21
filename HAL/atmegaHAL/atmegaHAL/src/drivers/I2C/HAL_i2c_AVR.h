@@ -1,4 +1,24 @@
-
+/******************************************************************************
+ *	OurOS V 0.0.0 - Copyright (C) 2016
+ *  Computer and systems department
+ *  Ain Shams University
+ *
+ *  All rights reserved
+ *
+ *  VISIT http://www.OurRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *  Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *  Redistributions in binary form must reproduce the above copyright
+ *  notice, this list of conditions and the following disclaimer in the
+ *  documentation and/or other materials provided with the
+ *  distribution.
+ *****************************************************************************/
 #ifndef HAL_I2C_AVR_H_
 #define HAL_I2C_AVR_H_
 #include <stdint.h>
@@ -16,14 +36,11 @@ typedef struct
 	uint8_t Txdata;
 	} I2C_HandleTypeDef;
 
-I2C_InitTypeDef *i2cy;
-I2C_HandleTypeDef *i2cz;
-
-#define i2cmasterinit(x) i2cy = x; masterInit(i2cy->clock)
-#define i2cslaveinit(x) i2cy = x; slaveInit(i2cy->SlaveAddress)
-#define i2cmastersend(x) i2cz = x; masterTransmit(i2cz->slaveAddress ,i2cz->Txdata)
-#define i2cmasterreceive(x)  masterReceive(); i2cz = x
-#define i2cslavetsend(x) i2cz = x; slaveTransmit(i2cz->Txdata)
-#define i2cslavereceive(x)  slaveReceive(); i2cz = x
+#define i2cmasterinit(x) masterInit((*x).clock)
+#define i2cslaveinit(x) slaveInit((*x).SlaveAddress)
+#define i2cmastersend(x)  masterTransmit((*x).slaveAddress ,(*x).Txdata)
+#define i2cmasterreceive(x)  masterReceive(); 
+#define i2cslavetsend(x)  slaveTransmit((*x).Txdata)
+#define i2cslavereceive(x)  slaveReceive(); 
 
 #endif /* HAL_I2C_AVR_H_ */

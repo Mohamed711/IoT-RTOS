@@ -1,13 +1,35 @@
-
+/******************************************************************************
+ *	OurOS V 0.0.0 - Copyright (C) 2016
+ *  Computer and systems department
+ *  Ain Shams University
+ *
+ *  All rights reserved
+ *
+ *  VISIT http://www.OurRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *  Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *  Redistributions in binary form must reproduce the above copyright
+ *  notice, this list of conditions and the following disclaimer in the
+ *  documentation and/or other materials provided with the
+ *  distribution.
+ *****************************************************************************/
 #ifndef I2C_CFG_H_
 #define I2C_CFG_H_
 
+#include <stdint.h>
+
 /* TWI stands for "Two Wire Interface" or "TWI Was I2C(tm)" */
-#define TWBR_REG *((uint8_t volatile *const)0x00)
-#define TWSR_REG *((uint8_t volatile *const)0x01)
-#define TWAR_REG *((uint8_t volatile *const)0x02)
-#define TWDR_REG *((uint8_t volatile *const)0x03)
-#define TWCR_REG *((uint8_t volatile *const)0x36)
+#define TWBR_REG *((uint8_t volatile *const)0x20)
+#define TWSR_REG *((uint8_t volatile *const)0x21)
+#define TWAR_REG *((uint8_t volatile *const)0x22)
+#define TWDR_REG *((uint8_t volatile *const)0x23)
+#define TWCR_REG *((uint8_t volatile *const)0x56)
 
 /* TWCR */
 #define TWINT   7
