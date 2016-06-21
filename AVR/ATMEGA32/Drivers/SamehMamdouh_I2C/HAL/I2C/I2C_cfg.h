@@ -11,11 +11,11 @@
 #include "StdTypes.h"
 
 /* TWI stands for "Two Wire Interface" or "TWI Was I2C(tm)" */
-#define TWBR_REG *((u8 volatile *const)0x00)
-#define TWSR_REG *((u8 volatile *const)0x01)
-#define TWAR_REG *((u8 volatile *const)0x02)
-#define TWDR_REG *((u8 volatile *const)0x03)
-#define TWCR_REG *((u8 volatile *const)0x36)
+#define TWBR *((u8 volatile *const)0x20)
+#define TWSR *((u8 volatile *const)0x21)
+#define TWAR *((u8 volatile *const)0x22)
+#define TWDR *((u8 volatile *const)0x23)
+#define TWCR *((u8 volatile *const)0x56)
 
 /* TWCR */
 #define TWINT   7
