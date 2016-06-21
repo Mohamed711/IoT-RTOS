@@ -45,14 +45,7 @@ typedef bool sysCall;
 
 #define OK 1
 #define SYSERR -1
+#define TIMEOUT 0
 
 #endif
-
-
-
-
-
-
-
-
 

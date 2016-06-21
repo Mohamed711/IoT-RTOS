@@ -30,12 +30,12 @@ qid16 suspendedlist;
 
 //#define SYSERR (0);
 #ifndef NQENT
-
 #define NQENT   (NPROC + 4 + NSEM + NSEM)
 #endif
+
 #define EMPTY   (-1)            /* Null value for qnext or qprev index  */
 #define MAXKEY  0x7FFFFFFF      /* Max key that can be stored in queue  */
-#define MINKEY  0x80000000      /* Min key that can be stored in queue  */
+#define MINKEY  (-1)      /* Min key that can be stored in queue  */
 
 struct  qentry  {               /* One per process plus two per list    */
 	    s32   qkey;           /* Key on which the queue is ordered    */

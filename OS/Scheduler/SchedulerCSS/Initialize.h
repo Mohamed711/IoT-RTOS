@@ -30,4 +30,10 @@ u32 prcount;
 struct procent proctab[NPROC];			/*table of processes	*/
 struct qentry queuetab[NQENT];        /* Table of process queues      */
 
+
+
+
+
+
+
 #endif /* INITIALIZE_H_ */

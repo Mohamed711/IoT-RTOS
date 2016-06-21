@@ -27,9 +27,9 @@
 
 #define ARM 1
 
-#define NSEM 120 //semaphore dummy
+#define NSEM 10 //semaphore dummy
 #define preemptive 0
-#define NPROC 4
+#define NPROC 5
 #define	QUANTUM	2
 #define	MAXSECONDS	2147483		/* Max seconds per 32-bit msec	*/
 

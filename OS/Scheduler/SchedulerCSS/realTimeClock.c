@@ -21,8 +21,6 @@
 *****************************************************************************/
 
 #include "headers.h"
-#include "drivers/Timer/HAL_Timer_TivaC.h"
-
 /******************************************************************************
 *
 *	The function's purpose is to insert a processes in the sleep queue
@@ -206,14 +204,14 @@ sysCall	unsleep(pid32 pid)
 void wakeup(void)
 {
 	/* Awaken all processes that have no more time to sleep */
+	reSched();
 
-	//resched_cntl(DEFER_START);
 	while (nonempty(sleepq) && (firstkey(sleepq) <= 0))
 	{
 		processSetReady(dequeue(sleepq));
 	}
+
 	reSched();
-	//resched_cntl(DEFER_STOP);
 	return;
 }
 
@@ -234,6 +232,7 @@ void clkhandler(void)
 		clktime++;
 		/* Reset the local ms counter for the next second */
 		count1000 = 1000;
+		
 	}
 	/* Handle sleeping processes if any exist */
 	if(!isempty(sleepq))
@@ -247,11 +246,13 @@ void clkhandler(void)
 	}
 	/* Decrement the preemption counter, and reschedule when the */
 	/* remaining time reaches zero */
+
 	if((--preempt) <= 0)
 	{
 		preempt = QUANTUM;
 		reSched();
 	}
+	
 }
 
 /******************************************************************************
@@ -271,14 +272,14 @@ void clkinit(void)
 	/* Initialize the time since boot to zero */
 	clktime = 0;
 
-	//Timer_InitTypeDef timerInit;
+	Timer_InitTypeDef timerInit;
 
 	Timer_HandleTypeDef  timerHandle;
-	//timerHandle.timeInMillis=1000;
+	timerHandle.timeInMillis=1;
 	timerHandle.timeoutFn = clkhandler;
 
-	//HAL_Timer_Init(&timerInit);
-	HAL_Timer_1ms(&timerHandle);
+	HAL_Timer_Init(&timerInit);
+	HAL_Timer_Start(&timerHandle);
 
 
 	return;

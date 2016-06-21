@@ -22,7 +22,6 @@
 *****************************************************************************/
 
 #include "headers.h"
-
 /******************************************************************************
 *
 *	The function's purpose is to get the pid of the current process
@@ -87,10 +86,11 @@ pid32 processCreate(void *funcAddr, u32 ssize, pri16 priority, char *name)
 	u32 *saddr;
 
 	if (ssize < MINSTK)
-		ssize = MINSTK;
-
+	ssize = MINSTK;
+	
 	pid = processNewPid();
-//	saddr = (u32 *)memoryGetStack(ssize); // sameh hy3mlha
+	int z= ssize;
+	saddr= pvPortMalloc(ssize);
 
 	if ((priority < 1) || pid == (pid32)SYSERR || saddr == (u32 *)SYSERR)
 	{
@@ -110,8 +110,8 @@ pid32 processCreate(void *funcAddr, u32 ssize, pri16 priority, char *name)
 	{
 		;
 	}
-	prptr->prsem = -1;
-	prptr->prhasmsg = false;
+
+
 
 	return pid;
 }
@@ -137,9 +137,9 @@ sysCall processTerminate(pid32 pid)
 		|| ((prptr = &proctab[pid])->prstate) == PR_FREE) {
 		return SYSERR;
 	}
-	if (--prcount <= 1) { /* Last user process completes */
+	//if (--prcount <= 1) { /* Last user process completes */
 		//xdone(); //lsa mt3mltsh 
-	}
+	
 
 	switch (prptr->prstate) {
 	case PR_CURR:
@@ -155,6 +155,8 @@ sysCall processTerminate(pid32 pid)
 		/* Fall through */
 	case PR_READY:
 		getitem(pid); /* Remove from queue */
+		prptr->prstate = PR_FREE;
+		break;
 		/* Fall through */
 	default:
 		prptr->prstate = PR_FREE;
@@ -266,18 +268,53 @@ sysCall	processSuspend(pid32 pid) 		/* ID of process to suspend	*/
 		getitem(pid);		    /* Remove a ready process	*/
 					    /*   from the ready list	*/
 		prptr->prstate = PR_SUSP;
-		enqueue(pid,suspendedlist); //lw 3wzen n keep track lel suspended processes
+		//enqueue(pid,suspendedlist); //lw 3wzen n keep track lel suspended processes
 	}
 	else
 	{
 		prptr->prstate = PR_SUSP;   /* Mark the current process	*/
-		enqueue(pid,suspendedlist); //lw 3wzen n keep track lel suspended processes
+	//	enqueue(pid,suspendedlist); //lw 3wzen n keep track lel suspended processes
 		reSched();		    /*   suspended and resched.	*/
 	}
 	prio = prptr->prprio;
 	//restore(mask);
 	return prio;
 }
+
+sysCall	processWaiting(pid32 pid) 		/* ID of process waiting for semaphore	*/
+{
+	//intmask	mask;			/* Saved interrupt mask		*/
+	struct	procent *prptr;		/* Ptr to process' table entry	*/
+	pri16	prio;			/* Priority to return		*/
+
+	//mask = disable();
+	if (isbadpid(pid) || (pid == NULLPROC))
+	{
+		//	restore(mask);
+		return SYSERR;
+	}
+
+	/* Only wait a process that is current  */
+
+	prptr = &proctab[pid];
+	if (prptr->prstate != PR_CURR)
+	{
+		//	restore(mask);
+		return SYSERR;
+	}
+
+	else
+	{
+		prptr->prstate = PR_WAIT;   /* Mark the current process	*/
+		//enqueue(pid,waitinglist); //lw 3wzen n keep track lel suspended processes
+		reSched();		    /*   suspended and resched.	*/
+	}
+	prio = prptr->prprio;
+	//restore(mask);
+	return prio;
+}
+
+
 
 /******************************************************************************
 *

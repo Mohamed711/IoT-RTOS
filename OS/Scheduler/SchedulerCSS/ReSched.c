@@ -20,7 +20,10 @@
 *  distribution.
 *****************************************************************************/
 #include "headers.h"
-
+	
+	 volatile char* pxCurrentTCB_Old;
+	 volatile char* pxCurrentTCB_New;
+	
 /******************************************************************************
 *
 *	The function's purpose is to reschedule the processes
@@ -33,11 +36,9 @@
 *****************************************************************************/
 void reSched(void) /* Assumes interrupts are disabled */
 {
-
-	struct procent *ptold; /* Ptr to table entry for old process */
-	struct procent *ptnew; /* Ptr to table entry for new process */
-	ptold = &proctab[currpid];
-
+struct procent *ptold; /* Ptr to table entry for old process */
+struct procent *ptnew; /* Ptr to table entry for new process */
+ptold = &proctab[currpid];
 	if (ptold->prstate == PR_CURR)
 	{ 	/* Process remains eligible */
 		if (ptold->prprio > firstkey(readylist))
@@ -52,9 +53,11 @@ void reSched(void) /* Assumes interrupts are disabled */
 	currpid = dequeue(readylist);
 	ptnew = &proctab[currpid];
 	ptnew->prstate = PR_CURR;
+	
 
-	preempt = QUANTUM;		/* Reset time slice for process	*/
+	/*preempt = QUANTUM;		/* Reset time slice for process	*/
+
 	//contextSwitch(&ptold->prstkptr, &ptnew->prstkptr);
-
+	
 	return;
 }

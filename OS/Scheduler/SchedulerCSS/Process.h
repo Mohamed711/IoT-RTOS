@@ -43,13 +43,15 @@
 #define PNMLEN 16 /* Length of process "name" */
 #define NULLPROC 0 /* ID of the null process */
 
+#define	NULLSTK		100	/* stack size for null process		*/
+
 #define NULLCH 0 /*Null Characte to mark the end of the process' name*/
 
 /* Process initialization constants */
 #define INITPRIO 20 /* Initial process priority */
 #define INITRET userret /* Address to which process returns */
-#define INITSTK 65536 /* Initial process stack size */
-#define MINSTK	4096  /*Minimum stack size*/
+#define INITSTK 100 /* Initial process stack size */
+#define MINSTK	10  /*Minimum stack size*/
 
 
 /*Inline code to check process ID (assumes interrupts are disabled) */
@@ -60,19 +62,18 @@
 /* Number of device descriptors a process can have open */
 #define NDESC 5 /* must be odd to make procent 4N bytes */
 
- struct procent {                /* Entry in the process table           */
+ struct procent
+ {                /* Entry in the process table           */
 	void (*processFunction)(void);
 	u16 prstate;         /* Process state: PR_CURR, etc.         */
 	u32   prprio;         /* Process priority                     */
-	char    *prstkptr;      /* Saved stack pointer                  */
-	char    *prstkbase;     /* Base of run time stack               */
+	u16    *prstkptr;      /* Saved stack pointer                  */
+	u16    *prstkbase;     /* Base of run time stack               */
 	u16  prstklen;       /* Stack length in bytes                */
 	char    prname[PNMLEN]; /* Process name                         */
-	u32   prsem;          /* Semaphore on which process waits     */
 	u16   prparent;       /* ID of the creating process           */
-	u32  prmsg;          /* Message sent to this process         */
-	bool   prhasmsg;       /* Nonzero iff msg is valid             */
-	u16   prdesc[NDESC];  /* Device descriptors for process       */
+
+
 };
 
 
@@ -85,5 +86,6 @@ pri16 processResume(pid32 pid);
 sysCall	processSuspend(pid32 pid);
 void processSuspendAll(void);
 void processResumeAll(void);
+sysCall	processWaiting(pid32 pid);
 
 #endif

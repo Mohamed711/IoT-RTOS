@@ -103,15 +103,15 @@ S64_DEPS__QUOTED :=
 # Every subdirectory with source files must be described here
 SUBDIRS := \
 . \
-Drivers/uart \
-Drivers/sysctl \
-Drivers/rvmdk \
-Drivers/interrupt \
-Drivers/i2c \
-Drivers/gpio \
-Drivers/gcc \
-Drivers/ewarm/Exe \
-Drivers/cpu \
-Drivers/ccs/Debug \
-Drivers/Timer \
+TivaDrivers/uart \
+TivaDrivers/sysctl \
+TivaDrivers/rvmdk \
+TivaDrivers/interrupt \
+TivaDrivers/i2c \
+TivaDrivers/gpio \
+TivaDrivers/gcc \
+TivaDrivers/ewarm/Exe \
+TivaDrivers/cpu \
+TivaDrivers/ccs/Debug \
+TivaDrivers/Timer \
 

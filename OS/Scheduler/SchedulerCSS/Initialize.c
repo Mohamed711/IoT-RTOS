@@ -1,4 +1,3 @@
-
 /******************************************************************************
 *	OurOS V 0.0.0 - Copyright (C) 2016
 *  Computer and systems department
@@ -20,29 +19,15 @@
 *  documentation and/or other materials provided with the
 *  distribution.
 *****************************************************************************/
-#include "headers.h"
 
-extern void contextSwitch(char *oldStackPointer, char *newStackPointer)
+/******************************************************************************
+*
+*	The function's purpose is to initialie the operating system
+*
+* 	\return none
+*
+*****************************************************************************/
+void initializeOS(void)
 {
-
-	asm volatile (  "	push	{r0-r12, lr}		\n\t"		/* Push regs 0 - 12 and lr	*/
-					"	push	{lr}				\n\t"			/* Push return address		*/
-					"	mrs	r2, IAPSR	            \n\t"		/* Obtain status from coprocess, it must be psr but we can't access it*/
-					"	push	{r2}				\n\t"			/*   and push onto stack	*/
-				   "	str	sp, [r0]				\n\t"		/* Save old process's SP	*/
-					"	ldr	sp, [r1]				\n\t"		/* Pick up new process's SP	*/
-					"	pop	{r0}					\n\t"			/* Use status as argument and	*/
-					"   msr IAPSR, r0               \n\t" /*it must be psr instead */
-					"	pop	{lr}					\n\t"			/* Pick up the return address	*/
-					"	pop	{r0-r12}				\n\t"		/* Restore other registers	*/
-					"	mov	pc, lr 		     		\n\t"			/* Return to the new process	*/
-			);
+	clkinit();
 }
-
-
-
-
-
-
-
-

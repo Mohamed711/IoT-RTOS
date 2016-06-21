@@ -23,7 +23,8 @@
 #define RESCHED_H_
 
 #include "headers.h"
-
+extern volatile char* pxCurrentTCB_Old;
+extern volatile char* pxCurrentTCB_New;
 void reSched(void);
 
 #endif
