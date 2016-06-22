@@ -12,23 +12,20 @@ $(GEN_CMDS__FLAG) \
 "./tm4c123gh6pm_startup_ccs.obj" \
 "./Drivers/watchdog/HAL_WatchdogTimer.obj" \
 "./Drivers/watchdog/watchdog.obj" \
-"./Drivers/watchdog/watchdog_test.obj" \
 "./Drivers/uart/HAL_UART.obj" \
 "./Drivers/uart/uart.obj" \
-"./Drivers/uart/uartTest.obj" \
 "./Drivers/timer/HAL_Timer_TivaC.obj" \
-"./Drivers/timer/Timer_TivaC.obj" \
 "./Drivers/timer/timer.obj" \
 "./Drivers/sysctl/sysctl.obj" \
+"./Drivers/spi/SPI_HAL_TivaC.obj" \
+"./Drivers/spi/ssi.obj" \
 "./Drivers/interrupt/interrupt.obj" \
 "./Drivers/i2c/HAL_i2c_TivaC.obj" \
 "./Drivers/i2c/i2c.obj" \
-"./Drivers/i2c/i2c_test.obj" \
 "./Drivers/gpio/gpio.obj" \
 "./Drivers/cpu/cpu.obj" \
 "./Drivers/adc/ADC_HAL_TIVA.obj" \
 "./Drivers/adc/adc.obj" \
-"./Drivers/adc/adc_test.obj" \
 "../tm4c123gh6pm.cmd" \
 "../Drivers/rvmdk/driverlib.lib" \
 "../Drivers/ccs/Debug/driverlib.lib" \
@@ -46,6 +43,7 @@ RMDIR := RMDIR /S/Q
 -include Drivers/uart/subdir_vars.mk
 -include Drivers/timer/subdir_vars.mk
 -include Drivers/sysctl/subdir_vars.mk
+-include Drivers/spi/subdir_vars.mk
 -include Drivers/rvmdk/subdir_vars.mk
 -include Drivers/interrupt/subdir_vars.mk
 -include Drivers/i2c/subdir_vars.mk
@@ -60,6 +58,7 @@ RMDIR := RMDIR /S/Q
 -include Drivers/uart/subdir_rules.mk
 -include Drivers/timer/subdir_rules.mk
 -include Drivers/sysctl/subdir_rules.mk
+-include Drivers/spi/subdir_rules.mk
 -include Drivers/rvmdk/subdir_rules.mk
 -include Drivers/interrupt/subdir_rules.mk
 -include Drivers/i2c/subdir_rules.mk
@@ -188,8 +187,8 @@ TivaHAL.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)$(BIN_OUTPUTS__QUOTED)
-	-$(RM) "main.pp" "tm4c123gh6pm_startup_ccs.pp" "Drivers\watchdog\HAL_WatchdogTimer.pp" "Drivers\watchdog\watchdog.pp" "Drivers\watchdog\watchdog_test.pp" "Drivers\uart\HAL_UART.pp" "Drivers\uart\uart.pp" "Drivers\uart\uartTest.pp" "Drivers\timer\HAL_Timer_TivaC.pp" "Drivers\timer\Timer_TivaC.pp" "Drivers\timer\timer.pp" "Drivers\sysctl\sysctl.pp" "Drivers\interrupt\interrupt.pp" "Drivers\i2c\HAL_i2c_TivaC.pp" "Drivers\i2c\i2c.pp" "Drivers\i2c\i2c_test.pp" "Drivers\gpio\gpio.pp" "Drivers\cpu\cpu.pp" "Drivers\adc\ADC_HAL_TIVA.pp" "Drivers\adc\adc.pp" "Drivers\adc\adc_test.pp" 
-	-$(RM) "main.obj" "tm4c123gh6pm_startup_ccs.obj" "Drivers\watchdog\HAL_WatchdogTimer.obj" "Drivers\watchdog\watchdog.obj" "Drivers\watchdog\watchdog_test.obj" "Drivers\uart\HAL_UART.obj" "Drivers\uart\uart.obj" "Drivers\uart\uartTest.obj" "Drivers\timer\HAL_Timer_TivaC.obj" "Drivers\timer\Timer_TivaC.obj" "Drivers\timer\timer.obj" "Drivers\sysctl\sysctl.obj" "Drivers\interrupt\interrupt.obj" "Drivers\i2c\HAL_i2c_TivaC.obj" "Drivers\i2c\i2c.obj" "Drivers\i2c\i2c_test.obj" "Drivers\gpio\gpio.obj" "Drivers\cpu\cpu.obj" "Drivers\adc\ADC_HAL_TIVA.obj" "Drivers\adc\adc.obj" "Drivers\adc\adc_test.obj" 
+	-$(RM) "main.pp" "tm4c123gh6pm_startup_ccs.pp" "Drivers\watchdog\HAL_WatchdogTimer.pp" "Drivers\watchdog\watchdog.pp" "Drivers\uart\HAL_UART.pp" "Drivers\uart\uart.pp" "Drivers\timer\HAL_Timer_TivaC.pp" "Drivers\timer\timer.pp" "Drivers\sysctl\sysctl.pp" "Drivers\spi\SPI_HAL_TivaC.pp" "Drivers\spi\ssi.pp" "Drivers\interrupt\interrupt.pp" "Drivers\i2c\HAL_i2c_TivaC.pp" "Drivers\i2c\i2c.pp" "Drivers\gpio\gpio.pp" "Drivers\cpu\cpu.pp" "Drivers\adc\ADC_HAL_TIVA.pp" "Drivers\adc\adc.pp" 
+	-$(RM) "main.obj" "tm4c123gh6pm_startup_ccs.obj" "Drivers\watchdog\HAL_WatchdogTimer.obj" "Drivers\watchdog\watchdog.obj" "Drivers\uart\HAL_UART.obj" "Drivers\uart\uart.obj" "Drivers\timer\HAL_Timer_TivaC.obj" "Drivers\timer\timer.obj" "Drivers\sysctl\sysctl.obj" "Drivers\spi\SPI_HAL_TivaC.obj" "Drivers\spi\ssi.obj" "Drivers\interrupt\interrupt.obj" "Drivers\i2c\HAL_i2c_TivaC.obj" "Drivers\i2c\i2c.obj" "Drivers\gpio\gpio.obj" "Drivers\cpu\cpu.obj" "Drivers\adc\ADC_HAL_TIVA.obj" "Drivers\adc\adc.obj" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

@@ -3,6 +3,33 @@
 
 #include "tivaHAL.h"
 
+int main()
+{
+	char *pcChars = "SSI Master send data.";
+
+
+	SPI_InitTypeDef init;
+	SPI_HandleTypeDef handle;
+
+	init.ui32Base = SSI0_BASE;
+	init.ui32SSIClk = SysCtlClockGet();
+	init.ui32Protocol = SSI_FRF_MOTO_MODE_0;
+	init.ui32BitRate = 2000000;
+	init.ui32DataWidth = 8;
+
+	handle.TxData = 0;
+	spimasterinit(&init);
+
+	char *str = "hello";
+	int32_t i = 0;
+	while(str[i])
+	{
+		handle.TxData = str[i];
+		spimastersend(&handle);
+		i++;
+	}
+}
+
 /*
 int main()
 {
@@ -55,7 +82,7 @@ int main()
 */
 
 //TIMER TEST
-
+/*
 void IntFn()
 {
 	if(GPIOPinRead(GPIO_PORTF_BASE, GPIO_PIN_2))
@@ -86,7 +113,7 @@ int main(void) {
 
 	while(1);
 }
-
+*/
 /*
 uint32_t j =0;
 void firstFunction(void)

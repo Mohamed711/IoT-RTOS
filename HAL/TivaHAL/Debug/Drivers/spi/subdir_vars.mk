@@ -4,27 +4,27 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../Drivers/adc/ADC_HAL_TIVA.c \
-../Drivers/adc/adc.c 
+../Drivers/spi/SPI_HAL_TivaC.c \
+../Drivers/spi/ssi.c 
 
 OBJS += \
-./Drivers/adc/ADC_HAL_TIVA.obj \
-./Drivers/adc/adc.obj 
+./Drivers/spi/SPI_HAL_TivaC.obj \
+./Drivers/spi/ssi.obj 
 
 C_DEPS += \
-./Drivers/adc/ADC_HAL_TIVA.pp \
-./Drivers/adc/adc.pp 
+./Drivers/spi/SPI_HAL_TivaC.pp \
+./Drivers/spi/ssi.pp 
 
 C_DEPS__QUOTED += \
-"Drivers\adc\ADC_HAL_TIVA.pp" \
-"Drivers\adc\adc.pp" 
+"Drivers\spi\SPI_HAL_TivaC.pp" \
+"Drivers\spi\ssi.pp" 
 
 OBJS__QUOTED += \
-"Drivers\adc\ADC_HAL_TIVA.obj" \
-"Drivers\adc\adc.obj" 
+"Drivers\spi\SPI_HAL_TivaC.obj" \
+"Drivers\spi\ssi.obj" 
 
 C_SRCS__QUOTED += \
-"../Drivers/adc/ADC_HAL_TIVA.c" \
-"../Drivers/adc/adc.c" 
+"../Drivers/spi/SPI_HAL_TivaC.c" \
+"../Drivers/spi/ssi.c" 
 
 

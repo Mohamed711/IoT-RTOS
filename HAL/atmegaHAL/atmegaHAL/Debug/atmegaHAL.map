@@ -12,12 +12,8 @@ c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/a
 Allocating common symbols
 Common symbol       size              file
 
-spiy                0x2               src/drivers/SPI/HAL_SPI_AVR.o
-spiz                0x2               src/drivers/SPI/HAL_SPI_AVR.o
 enable_interrupt    0x1               src/drivers/ADC/ADC.o
 SPI_DATA            0x1               src/drivers/SPI/SPI.o
-uart_handle         0x1               src/main.o
-uart_init_config    0x9               src/main.o
 value               0x1               src/drivers/UART/USART.o
 
 Discarded input sections
@@ -76,27 +72,18 @@ Discarded input sections
                 0x00000000        0x6 src/drivers/SPI/HAL_SPI_AVR.o
  .text.HAL_SPI_Transmit
                 0x00000000        0xa src/drivers/SPI/HAL_SPI_AVR.o
- .text.HAL_SPI_Receive
-                0x00000000        0xa src/drivers/SPI/HAL_SPI_AVR.o
- COMMON         0x00000000        0x4 src/drivers/SPI/HAL_SPI_AVR.o
  .text          0x00000000        0x0 src/drivers/SPI/SPI.o
  .bss           0x00000000        0x0 src/drivers/SPI/SPI.o
- .text.spiInitMaster
-                0x00000000       0xa2 src/drivers/SPI/SPI.o
  .text.spiInitSlave
                 0x00000000       0xa2 src/drivers/SPI/SPI.o
  .text.SPIInterruptInit
                 0x00000000        0x8 src/drivers/SPI/SPI.o
  .text.spiMasterTransmit
                 0x00000000        0x8 src/drivers/SPI/SPI.o
- .text.spiTranceiver
-                0x00000000        0xa src/drivers/SPI/SPI.o
  .bss.u8LoopCount
                 0x00000000        0x1 src/drivers/SPI/SPI.o
  .text          0x00000000        0x0 src/drivers/SPI/SPI_Lcfg.o
  .bss           0x00000000        0x0 src/drivers/SPI/SPI_Lcfg.o
- .rodata.spi_clk
-                0x00000000       0x23 src/drivers/SPI/SPI_Lcfg.o
  .text          0x00000000        0x0 src/drivers/Timer/8-bit_TimerCounter0.o
  .bss           0x00000000        0x0 src/drivers/Timer/8-bit_TimerCounter0.o
  .text.timer0Init1ms
@@ -125,6 +112,10 @@ Discarded input sections
                 0x00000000       0x19 src/drivers/Timer/8-bit_TimerCounter0_LCFG.o
  .text          0x00000000        0x0 src/drivers/UART/USART.o
  .bss           0x00000000        0x0 src/drivers/UART/USART.o
+ .text.uartInit
+                0x00000000       0xfe src/drivers/UART/USART.o
+ .text.uartReceive
+                0x00000000        0x8 src/drivers/UART/USART.o
  COMMON         0x00000000        0x1 src/drivers/UART/USART.o
  .text          0x00000000        0x0 src/drivers/UART/USART_config.o
  .bss           0x00000000        0x0 src/drivers/UART/USART_config.o
@@ -134,6 +125,8 @@ Discarded input sections
                 0x00000000        0x6 src/drivers/UART/USART_config.o
  .text.uartDisableTx
                 0x00000000        0x6 src/drivers/UART/USART_config.o
+ .text.uartEnable
+                0x00000000        0x8 src/drivers/UART/USART_config.o
  .text.uartEnableRx
                 0x00000000        0x4 src/drivers/UART/USART_config.o
  .text.uartEnableTx
@@ -142,6 +135,8 @@ Discarded input sections
                 0x00000000        0x6 src/drivers/UART/USART_config.o
  .text.uartEnableInterrupt
                 0x00000000        0x8 src/drivers/UART/USART_config.o
+ .text.uartEnableInterruptRx
+                0x00000000        0x4 src/drivers/UART/USART_config.o
  .text          0x00000000        0x0 src/drivers/watchdog/HAL_Watchdog_AVR.o
  .bss           0x00000000        0x0 src/drivers/watchdog/HAL_Watchdog_AVR.o
  .text.HAL_Watchdog_Init
@@ -166,6 +161,7 @@ Discarded input sections
  .bss           0x00000000        0x0 src/main.o
  .text          0x00000000        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_udivmodsi4.o)
  .bss           0x00000000        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_udivmodsi4.o)
+ .text.libgcc   0x00000000       0x44 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_udivmodsi4.o)
  .text          0x00000000        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
  .bss           0x00000000        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
  .text.libgcc   0x00000000        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
@@ -302,7 +298,7 @@ LOAD c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0x46a
+.text           0x00000000      0x366
  *(.vectors)
  .vectors       0x00000000       0x54 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/../../../../avr/lib/avr5/crtm32.o
                 0x00000000                __vector_default
@@ -383,39 +379,34 @@ LOAD c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1
  .text.DIO_InitPortDirection
                 0x000000dc       0x62 src/drivers/DIO/DIO.o
                 0x000000dc                DIO_InitPortDirection
+ .text.HAL_SPI_Receive
+                0x0000013e        0x6 src/drivers/SPI/HAL_SPI_AVR.o
+                0x0000013e                HAL_SPI_Receive
+ .text.spiInitMaster
+                0x00000144       0xa0 src/drivers/SPI/SPI.o
+                0x00000144                spiInitMaster
  .text.__vector_12
-                0x0000013e       0x1e src/drivers/SPI/SPI.o
-                0x0000013e                __vector_12
+                0x000001e4       0x1e src/drivers/SPI/SPI.o
+                0x000001e4                __vector_12
+ .text.spiTranceiver
+                0x00000202        0xa src/drivers/SPI/SPI.o
+                0x00000202                spiTranceiver
  .text.__vector_10
-                0x0000015c       0x9a src/drivers/Timer/8-bit_TimerCounter0.o
-                0x0000015c                __vector_10
- .text.uartInit
-                0x000001f6       0xf6 src/drivers/UART/USART.o
-                0x000001f6                uartInit
+                0x0000020c       0x9a src/drivers/Timer/8-bit_TimerCounter0.o
+                0x0000020c                __vector_10
  .text.uartSend
-                0x000002ec        0x8 src/drivers/UART/USART.o
-                0x000002ec                uartSend
- .text.uartReceive
-                0x000002f4        0x8 src/drivers/UART/USART.o
-                0x000002f4                uartReceive
+                0x000002a6        0x8 src/drivers/UART/USART.o
+                0x000002a6                uartSend
  .text.__vector_13
-                0x000002fc       0x6e src/drivers/UART/USART.o
-                0x000002fc                __vector_13
- .text.uartEnable
-                0x0000036a        0x8 src/drivers/UART/USART_config.o
-                0x0000036a                uartEnable
- .text.uartEnableInterruptRx
-                0x00000372        0x4 src/drivers/UART/USART_config.o
-                0x00000372                uartEnableInterruptRx
- .text.main     0x00000376       0xac src/main.o
-                0x00000376                main
- .text.libgcc   0x00000422       0x44 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_udivmodsi4.o)
-                0x00000422                __udivmodsi4
-                0x00000466                . = ALIGN (0x2)
+                0x000002ae       0x6e src/drivers/UART/USART.o
+                0x000002ae                __vector_13
+ .text.main     0x0000031c       0x46 src/main.o
+                0x0000031c                main
+                0x00000362                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x00000466        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
-                0x00000466                _exit
-                0x00000466                exit
+ .fini9         0x00000362        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
+                0x00000362                _exit
+                0x00000362                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -434,11 +425,11 @@ LOAD c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x00000466        0x4 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
+ .fini0         0x00000362        0x4 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
  *(.fini0)
-                0x0000046a                _etext = .
+                0x00000366                _etext = .
 
-.data           0x00800060        0x0 load address 0x0000046a
+.data           0x00800060       0x2a load address 0x00000366
                 0x00800060                PROVIDE (__data_start, .)
  *(.data)
  .data          0x00800060        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/../../../../avr/lib/avr5/crtm32.o
@@ -463,40 +454,43 @@ LOAD c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1
  .data          0x00800060        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_copy_data.o)
  .data          0x00800060        0x0 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_clear_bss.o)
  *(.data*)
+ .data.spi      0x00800060        0x6 src/main.o
+                0x00800060                spi
  *(.rodata)
  *(.rodata*)
+ .rodata.spi_clk
+                0x00800066       0x23 src/drivers/SPI/SPI_Lcfg.o
+                0x00800066                spi_clk
  *(.gnu.linkonce.d*)
-                0x00800060                . = ALIGN (0x2)
-                0x00800060                _edata = .
-                0x00800060                PROVIDE (__data_end, .)
+                0x0080008a                . = ALIGN (0x2)
+ *fill*         0x00800089        0x1 00
+                0x0080008a                _edata = .
+                0x0080008a                PROVIDE (__data_end, .)
 
-.bss            0x00800060       0x15
-                0x00800060                PROVIDE (__bss_start, .)
+.bss            0x0080008a        0xb
+                0x0080008a                PROVIDE (__bss_start, .)
  *(.bss)
  *(.bss*)
  .bss.ADC_result
-                0x00800060        0x2 src/drivers/ADC/ADC.o
+                0x0080008a        0x2 src/drivers/ADC/ADC.o
  .bss.countCompare
-                0x00800062        0x2 src/drivers/Timer/8-bit_TimerCounter0.o
+                0x0080008c        0x2 src/drivers/Timer/8-bit_TimerCounter0.o
  .bss.TMR_CylicFunPtr
-                0x00800064        0x2 src/drivers/Timer/8-bit_TimerCounter0.o
- .bss.count     0x00800066        0x4 src/drivers/Timer/8-bit_TimerCounter0.o
+                0x0080008e        0x2 src/drivers/Timer/8-bit_TimerCounter0.o
+ .bss.count     0x00800090        0x4 src/drivers/Timer/8-bit_TimerCounter0.o
  *(COMMON)
- COMMON         0x0080006a        0x1 src/drivers/SPI/SPI.o
-                0x0080006a                SPI_DATA
- COMMON         0x0080006b        0xa src/main.o
-                0x0080006b                uart_handle
-                0x0080006c                uart_init_config
-                0x00800075                PROVIDE (__bss_end, .)
-                0x0000046a                __data_load_start = LOADADDR (.data)
-                0x0000046a                __data_load_end = (__data_load_start + SIZEOF (.data))
+ COMMON         0x00800094        0x1 src/drivers/SPI/SPI.o
+                0x00800094                SPI_DATA
+                0x00800095                PROVIDE (__bss_end, .)
+                0x00000366                __data_load_start = LOADADDR (.data)
+                0x00000390                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x00800075        0x0
-                0x00800075                PROVIDE (__noinit_start, .)
+.noinit         0x00800095        0x0
+                0x00800095                PROVIDE (__noinit_start, .)
  *(.noinit*)
-                0x00800075                PROVIDE (__noinit_end, .)
-                0x00800075                _end = .
-                0x00800075                PROVIDE (__heap_start, .)
+                0x00800095                PROVIDE (__noinit_end, .)
+                0x00800095                _end = .
+                0x00800095                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000        0x0
  *(.eeprom*)
@@ -589,7 +583,7 @@ LOAD c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000     0x1aea
+.debug_info     0x00000000     0x1901
  *(.debug_info)
  .debug_info    0x00000000       0x7b src/asf/mega/boards/stk600/rcx_x/init.o
  .debug_info    0x0000007b      0x1f8 src/drivers/ADC/ADC.o
@@ -597,23 +591,23 @@ LOAD c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1
  .debug_info    0x000003b3      0x140 src/drivers/GPIO/GPIO.o
  .debug_info    0x000004f3      0x16f src/drivers/I2C/I2C.o
  .debug_info    0x00000662       0xa6 src/drivers/I2C/I2C_Lcfg.o
- .debug_info    0x00000708      0x184 src/drivers/SPI/HAL_SPI_AVR.o
- .debug_info    0x0000088c      0x2dc src/drivers/SPI/SPI.o
- .debug_info    0x00000b68       0xcf src/drivers/SPI/SPI_Lcfg.o
- .debug_info    0x00000c37      0x2ef src/drivers/Timer/8-bit_TimerCounter0.o
- .debug_info    0x00000f26      0x108 src/drivers/Timer/8-bit_TimerCounter0_LCFG.o
- .debug_info    0x0000102e      0x21a src/drivers/UART/USART.o
- .debug_info    0x00001248      0x125 src/drivers/UART/USART_config.o
- .debug_info    0x0000136d       0xfe src/drivers/watchdog/HAL_Watchdog_AVR.o
- .debug_info    0x0000146b       0xd7 src/drivers/watchdog/Watchdog.o
- .debug_info    0x00001542      0x234 src/main.o
- .debug_info    0x00001776       0xdd c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_udivmodsi4.o)
- .debug_info    0x00001853       0xdd c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
- .debug_info    0x00001930       0xdd c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_copy_data.o)
- .debug_info    0x00001a0d       0xdd c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_clear_bss.o)
+ .debug_info    0x00000708      0x10d src/drivers/SPI/HAL_SPI_AVR.o
+ .debug_info    0x00000815      0x23e src/drivers/SPI/SPI.o
+ .debug_info    0x00000a53       0xcf src/drivers/SPI/SPI_Lcfg.o
+ .debug_info    0x00000b22      0x2ef src/drivers/Timer/8-bit_TimerCounter0.o
+ .debug_info    0x00000e11      0x108 src/drivers/Timer/8-bit_TimerCounter0_LCFG.o
+ .debug_info    0x00000f19      0x21a src/drivers/UART/USART.o
+ .debug_info    0x00001133      0x125 src/drivers/UART/USART_config.o
+ .debug_info    0x00001258       0xfe src/drivers/watchdog/HAL_Watchdog_AVR.o
+ .debug_info    0x00001356       0xd7 src/drivers/watchdog/Watchdog.o
+ .debug_info    0x0000142d      0x160 src/main.o
+ .debug_info    0x0000158d       0xdd c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_udivmodsi4.o)
+ .debug_info    0x0000166a       0xdd c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
+ .debug_info    0x00001747       0xdd c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_copy_data.o)
+ .debug_info    0x00001824       0xdd c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_clear_bss.o)
  *(.gnu.linkonce.wi.*)
 
-.debug_abbrev   0x00000000      0xbdf
+.debug_abbrev   0x00000000      0xbaf
  *(.debug_abbrev)
  .debug_abbrev  0x00000000       0x43 src/asf/mega/boards/stk600/rcx_x/init.o
  .debug_abbrev  0x00000043      0x12b src/drivers/ADC/ADC.o
@@ -621,22 +615,22 @@ LOAD c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1
  .debug_abbrev  0x00000204       0x96 src/drivers/GPIO/GPIO.o
  .debug_abbrev  0x0000029a       0xba src/drivers/I2C/I2C.o
  .debug_abbrev  0x00000354       0x6d src/drivers/I2C/I2C_Lcfg.o
- .debug_abbrev  0x000003c1       0xc3 src/drivers/SPI/HAL_SPI_AVR.o
- .debug_abbrev  0x00000484      0x14d src/drivers/SPI/SPI.o
- .debug_abbrev  0x000005d1       0x7f src/drivers/SPI/SPI_Lcfg.o
- .debug_abbrev  0x00000650      0x145 src/drivers/Timer/8-bit_TimerCounter0.o
- .debug_abbrev  0x00000795       0x7f src/drivers/Timer/8-bit_TimerCounter0_LCFG.o
- .debug_abbrev  0x00000814      0x142 src/drivers/UART/USART.o
- .debug_abbrev  0x00000956       0x4e src/drivers/UART/USART_config.o
- .debug_abbrev  0x000009a4       0x99 src/drivers/watchdog/HAL_Watchdog_AVR.o
- .debug_abbrev  0x00000a3d       0x89 src/drivers/watchdog/Watchdog.o
- .debug_abbrev  0x00000ac6       0xc9 src/main.o
- .debug_abbrev  0x00000b8f       0x14 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_udivmodsi4.o)
- .debug_abbrev  0x00000ba3       0x14 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
- .debug_abbrev  0x00000bb7       0x14 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_copy_data.o)
- .debug_abbrev  0x00000bcb       0x14 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_clear_bss.o)
+ .debug_abbrev  0x000003c1       0xb0 src/drivers/SPI/HAL_SPI_AVR.o
+ .debug_abbrev  0x00000471      0x144 src/drivers/SPI/SPI.o
+ .debug_abbrev  0x000005b5       0x7f src/drivers/SPI/SPI_Lcfg.o
+ .debug_abbrev  0x00000634      0x145 src/drivers/Timer/8-bit_TimerCounter0.o
+ .debug_abbrev  0x00000779       0x7f src/drivers/Timer/8-bit_TimerCounter0_LCFG.o
+ .debug_abbrev  0x000007f8      0x142 src/drivers/UART/USART.o
+ .debug_abbrev  0x0000093a       0x4e src/drivers/UART/USART_config.o
+ .debug_abbrev  0x00000988       0x99 src/drivers/watchdog/HAL_Watchdog_AVR.o
+ .debug_abbrev  0x00000a21       0x89 src/drivers/watchdog/Watchdog.o
+ .debug_abbrev  0x00000aaa       0xb5 src/main.o
+ .debug_abbrev  0x00000b5f       0x14 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_udivmodsi4.o)
+ .debug_abbrev  0x00000b73       0x14 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
+ .debug_abbrev  0x00000b87       0x14 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_copy_data.o)
+ .debug_abbrev  0x00000b9b       0x14 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_clear_bss.o)
 
-.debug_line     0x00000000     0x306f
+.debug_line     0x00000000     0x306d
  *(.debug_line)
  .debug_line    0x00000000      0x377 src/asf/mega/boards/stk600/rcx_x/init.o
  .debug_line    0x00000377      0x3c1 src/drivers/ADC/ADC.o
@@ -653,13 +647,13 @@ LOAD c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1
  .debug_line    0x00002138      0x32b src/drivers/UART/USART_config.o
  .debug_line    0x00002463      0x209 src/drivers/watchdog/HAL_Watchdog_AVR.o
  .debug_line    0x0000266c      0x2e5 src/drivers/watchdog/Watchdog.o
- .debug_line    0x00002951      0x4cf src/main.o
- .debug_line    0x00002e20       0xa8 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_udivmodsi4.o)
- .debug_line    0x00002ec8       0x88 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
- .debug_line    0x00002f50       0x91 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_copy_data.o)
- .debug_line    0x00002fe1       0x8e c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_clear_bss.o)
+ .debug_line    0x00002951      0x4cd src/main.o
+ .debug_line    0x00002e1e       0xa8 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_udivmodsi4.o)
+ .debug_line    0x00002ec6       0x88 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_exit.o)
+ .debug_line    0x00002f4e       0x91 c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_copy_data.o)
+ .debug_line    0x00002fdf       0x8e c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1.95/avrtoolchain/bin/../lib/gcc/avr/4.6.2/avr5\libgcc.a(_clear_bss.o)
 
-.debug_frame    0x00000000      0x618
+.debug_frame    0x00000000      0x628
  *(.debug_frame)
  .debug_frame   0x00000000       0x24 src/asf/mega/boards/stk600/rcx_x/init.o
  .debug_frame   0x00000024       0xa8 src/drivers/ADC/ADC.o
@@ -673,9 +667,9 @@ LOAD c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1
  .debug_frame   0x000004a8       0xa4 src/drivers/UART/USART_config.o
  .debug_frame   0x0000054c       0x54 src/drivers/watchdog/HAL_Watchdog_AVR.o
  .debug_frame   0x000005a0       0x54 src/drivers/watchdog/Watchdog.o
- .debug_frame   0x000005f4       0x24 src/main.o
+ .debug_frame   0x000005f4       0x34 src/main.o
 
-.debug_str      0x00000000      0x8c6
+.debug_str      0x00000000      0x87b
  *(.debug_str)
  .debug_str     0x00000000       0xb5 src/asf/mega/boards/stk600/rcx_x/init.o
                                  0xe9 (size before relaxing)
@@ -689,28 +683,28 @@ LOAD c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1
                                 0x156 (size before relaxing)
  .debug_str     0x000002f4       0x3d src/drivers/I2C/I2C_Lcfg.o
                                  0xf9 (size before relaxing)
- .debug_str     0x00000331       0xad src/drivers/SPI/HAL_SPI_AVR.o
-                                0x17c (size before relaxing)
- .debug_str     0x000003de       0x8f src/drivers/SPI/SPI.o
-                                0x1d1 (size before relaxing)
- .debug_str     0x0000046d       0x1e src/drivers/SPI/SPI_Lcfg.o
+ .debug_str     0x00000331       0x80 src/drivers/SPI/HAL_SPI_AVR.o
+                                0x13b (size before relaxing)
+ .debug_str     0x000003b1       0xa2 src/drivers/SPI/SPI.o
+                                0x197 (size before relaxing)
+ .debug_str     0x00000453       0x1e src/drivers/SPI/SPI_Lcfg.o
                                 0x10c (size before relaxing)
- .debug_str     0x0000048b      0x143 src/drivers/Timer/8-bit_TimerCounter0.o
+ .debug_str     0x00000471      0x143 src/drivers/Timer/8-bit_TimerCounter0.o
                                 0x225 (size before relaxing)
- .debug_str     0x000005ce       0x30 src/drivers/Timer/8-bit_TimerCounter0_LCFG.o
+ .debug_str     0x000005b4       0x30 src/drivers/Timer/8-bit_TimerCounter0_LCFG.o
                                 0x136 (size before relaxing)
- .debug_str     0x000005fe       0xc3 src/drivers/UART/USART.o
+ .debug_str     0x000005e4       0xc3 src/drivers/UART/USART.o
                                 0x1a6 (size before relaxing)
- .debug_str     0x000006c1       0xaf src/drivers/UART/USART_config.o
+ .debug_str     0x000006a7       0xaf src/drivers/UART/USART_config.o
                                 0x16a (size before relaxing)
- .debug_str     0x00000770       0x9d src/drivers/watchdog/HAL_Watchdog_AVR.o
+ .debug_str     0x00000756       0x9d src/drivers/watchdog/HAL_Watchdog_AVR.o
                                 0x158 (size before relaxing)
- .debug_str     0x0000080d       0x65 src/drivers/watchdog/Watchdog.o
+ .debug_str     0x000007f3       0x65 src/drivers/watchdog/Watchdog.o
                                 0x120 (size before relaxing)
- .debug_str     0x00000872       0x54 src/main.o
-                                0x1b4 (size before relaxing)
+ .debug_str     0x00000858       0x23 src/main.o
+                                0x142 (size before relaxing)
 
-.debug_loc      0x00000000      0xc0b
+.debug_loc      0x00000000      0xc35
  *(.debug_loc)
  .debug_loc     0x00000000      0x18c src/drivers/ADC/ADC.o
  .debug_loc     0x0000018c      0x18a src/drivers/DIO/DIO.o
@@ -722,9 +716,9 @@ LOAD c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1
  .debug_loc     0x0000091b      0x297 src/drivers/UART/USART.o
  .debug_loc     0x00000bb2       0x28 src/drivers/watchdog/HAL_Watchdog_AVR.o
  .debug_loc     0x00000bda       0x13 src/drivers/watchdog/Watchdog.o
- .debug_loc     0x00000bed       0x1e src/main.o
+ .debug_loc     0x00000bed       0x48 src/main.o
 
-.debug_macinfo  0x00000000    0x537a9
+.debug_macinfo  0x00000000    0x53710
  *(.debug_macinfo)
  .debug_macinfo
                 0x00000000     0x9e4d src/asf/mega/boards/stk600/rcx_x/init.o
@@ -739,25 +733,25 @@ LOAD c:/program files (x86)/atmel/atmel studio 6.0/extensions/atmel/avrgcc/3.4.1
  .debug_macinfo
                 0x0001e13d     0x28e5 src/drivers/I2C/I2C_Lcfg.o
  .debug_macinfo
-                0x00020a22     0x601f src/drivers/SPI/HAL_SPI_AVR.o
+                0x00020a22     0x5fec src/drivers/SPI/HAL_SPI_AVR.o
  .debug_macinfo
-                0x00026a41     0x601f src/drivers/SPI/SPI.o
+                0x00026a0e     0x5fec src/drivers/SPI/SPI.o
  .debug_macinfo
-                0x0002ca60     0x2ba7 src/drivers/SPI/SPI_Lcfg.o
+                0x0002c9fa     0x2ba7 src/drivers/SPI/SPI_Lcfg.o
  .debug_macinfo
-                0x0002f607     0x5c8f src/drivers/Timer/8-bit_TimerCounter0.o
+                0x0002f5a1     0x5c8f src/drivers/Timer/8-bit_TimerCounter0.o
  .debug_macinfo
-                0x00035296     0x29ca src/drivers/Timer/8-bit_TimerCounter0_LCFG.o
+                0x00035230     0x29ca src/drivers/Timer/8-bit_TimerCounter0_LCFG.o
  .debug_macinfo
-                0x00037c60     0x63c2 src/drivers/UART/USART.o
+                0x00037bfa     0x63c2 src/drivers/UART/USART.o
  .debug_macinfo
-                0x0003e022     0x5de7 src/drivers/UART/USART_config.o
+                0x0003dfbc     0x5de7 src/drivers/UART/USART_config.o
  .debug_macinfo
-                0x00043e09     0x2972 src/drivers/watchdog/HAL_Watchdog_AVR.o
+                0x00043da3     0x2972 src/drivers/watchdog/HAL_Watchdog_AVR.o
  .debug_macinfo
-                0x0004677b     0x5d38 src/drivers/watchdog/Watchdog.o
+                0x00046715     0x5d38 src/drivers/watchdog/Watchdog.o
  .debug_macinfo
-                0x0004c4b3     0x72f6 src/main.o
+                0x0004c44d     0x72c3 src/main.o
 OUTPUT(atmegaHAL.elf elf32-avr)
 LOAD linker stubs
 

@@ -107,6 +107,7 @@ Drivers/watchdog \
 Drivers/uart \
 Drivers/timer \
 Drivers/sysctl \
+Drivers/spi \
 Drivers/rvmdk \
 Drivers/interrupt \
 Drivers/i2c \
