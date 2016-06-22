@@ -36,16 +36,15 @@ void *pvReturn = NULL;
 	//try to put anything here it'll be ignored due to processResumeAll() after fixing it remove next line
 	int x=xNextFreeByte ;
 	
-	#if( configUSE_MALLOC_FAILED_HOOK == 1 )
-	{
+	
 		if( pvReturn == NULL )
 		{
-			//A function'll be added in the main or we'll make one (source cde in main.c of freertos)
-		//	extern void vApplicationMallocFailedHook( void );
-		//	vApplicationMallocFailedHook();
+			EnterCriticalSection();
+			for(;;);
+			ExitCriticalSection();
 		}
-	}
-	#endif
+	
+	
 
 	
 	return pvReturn;
