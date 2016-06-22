@@ -48,7 +48,7 @@ typedef struct{
 #define spimasterinit(x) spiInitMaster((*x).u32MaxFreq, (*x).u8Mode, (*x).u8DataOrder)
 #define spislaveinit(x) spiInitMaster((*x).u32MaxFreq, (*x).u8Mode, (*x).u8DataOrder)
 #define spiinterruptenable()  SPIInterruptInit()
-#define spimastertransmit(x) spiMasterTransmit((*x).Txdata)
+#define spimastersend(x) spiMasterTransmit((*x).Txdata)
 #define spireceive(x) spiTranceiver((*x).Txdata)
 
 void HAL_SPI_InterruptInit();
