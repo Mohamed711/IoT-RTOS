@@ -25,6 +25,7 @@
 #include "ipc_cfg.h"
 #include "ipc.h"
 
+/*
 int main(void) {
 	
 	uint8_t uxLength, uxItemSize, xVal, debugValue;
@@ -60,4 +61,4 @@ int main(void) {
 	return 0;
 }
 
-
+*/

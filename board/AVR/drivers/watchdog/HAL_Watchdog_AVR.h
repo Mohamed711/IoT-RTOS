@@ -25,7 +25,7 @@
 typedef struct 
 {
 	uint8_t timeout2;
-	} WDT_InitTypeDef;
+} WDT_InitTypeDef;
 	
 void HAL_WDT_Enable(WDT_InitTypeDef * watchdogen);
 

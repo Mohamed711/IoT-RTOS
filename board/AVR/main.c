@@ -10,7 +10,7 @@ SPI_InitTypeDef spi =
 	u8MODE_1,
 	u8DOR_MSB
 };
-
+/*
 void main()
 {
 	DIO_InitPortDirection(PA,0xFF,0xFF);
@@ -27,7 +27,7 @@ while(1)
 		
 	}
 }
-
+*/
 
 //UART TEST
 /*

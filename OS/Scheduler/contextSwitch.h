@@ -23,7 +23,6 @@
 #ifndef CONTEXTSWITCH_H_
 #define CONTEXTSWITCH_H_
 
-#include "headers.h"
 
 void contextSwitch(char *oldStackPointer, char *newStackPointer);
 

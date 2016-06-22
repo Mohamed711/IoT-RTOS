@@ -30,12 +30,12 @@
 #include "../gpio/gpio.h"
 #include "timer.h"
 
-volatile uint32_t millis=0;
+volatile static uint32_t millis=0;
 volatile uint32_t max_millis;
 volatile FnPtr function;
-volatile bool delayFlag=false;
+volatile static bool delayFlag=false;
 
-void ISR(void)
+static void ISR(void)
 {
 	TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
 	millis++;

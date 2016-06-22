@@ -65,9 +65,9 @@ typedef struct WDT_HANDLE_PARAMS
 *
 ******************************************************************************/
 
-void wdtinit(WDT_InitTypeDef  * wdt);
-void wdtstart(WDT_HandleTypeDef * params);
-void wdtrefresh(WDT_HandleTypeDef * params);
+void HAL_Watchdog_Init(WDT_InitTypeDef  * wdt);
+void HAL_WDT_Enable(WDT_HandleTypeDef * params);
+void HAL_Watchdog_Reset(WDT_HandleTypeDef * params);
 bool wdtstate(WDT_HandleTypeDef * params);
 uint32_t wdtreloadget(WDT_HandleTypeDef * params);
 uint32_t wdtvalueget(WDT_HandleTypeDef * params);

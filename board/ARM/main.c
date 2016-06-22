@@ -2,7 +2,7 @@
 #include <stdbool.h>
 
 #include "tivaHAL.h"
-
+/*
 int main()
 {
 	char *pcChars = "SSI Master send data.";
@@ -29,7 +29,7 @@ int main()
 		i++;
 	}
 }
-
+*/
 /*
 int main()
 {
@@ -95,7 +95,7 @@ void IntFn()
 	}
 }
 
-
+/*
 int main(void) {
 
 	 SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);

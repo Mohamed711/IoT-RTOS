@@ -21,14 +21,13 @@
 *****************************************************************************/
 #ifndef INITIALIZE_H_
 #define INITIALIZE_H_
-#include "headers.h"
 
 
 pid32 currpid;
 u32 prcount;
 
-struct procent proctab[NPROC];			/*table of processes	*/
-struct qentry queuetab[NQENT];        /* Table of process queues      */
+extern struct procent proctab[NPROC];			/*table of processes	*/
+extern struct qentry queuetab[NQENT];        /* Table of process queues      */
 
 
 
