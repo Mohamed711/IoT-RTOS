@@ -22,8 +22,11 @@
 *****************************************************************************/
 #include "headers.h"
 
+#if 0	// this file is related to the board so its location must be changed to the board folder
+
 extern void contextSwitch(char *oldStackPointer, char *newStackPointer)
 {
+
 
 	asm volatile (  "	push	{r0-r12, lr}		\n\t"		/* Push regs 0 - 12 and lr	*/
 					"	push	{lr}				\n\t"			/* Push return address		*/
@@ -37,10 +40,11 @@ extern void contextSwitch(char *oldStackPointer, char *newStackPointer)
 					"	pop	{r0-r12}				\n\t"		/* Restore other registers	*/
 					"	mov	pc, lr 		     		\n\t"			/* Return to the new process	*/
 			);
+
 }
 
 
-
+#endif
 
 
 

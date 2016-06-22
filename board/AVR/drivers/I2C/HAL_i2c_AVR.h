@@ -26,6 +26,7 @@
 
 typedef struct
 {
+	bool type;
 	uint16_t clock;
 	uint8_t SlaveAddress;	
 	} I2C_InitTypeDef ;
@@ -34,7 +35,9 @@ typedef struct
 {
 	uint8_t slaveAddress;
 	uint8_t Txdata;
-	} I2C_HandleTypeDef;
+	uint8_t Rxdata;
+
+} I2C_HandleTypeDef;
 
 #define i2cmasterinit(x) masterInit((*x).clock)
 #define i2cslaveinit(x) slaveInit((*x).SlaveAddress)

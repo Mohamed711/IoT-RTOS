@@ -26,7 +26,7 @@
 
 #include <stdint.h>
 
-#include "OS/Scheduler/queue.h"
+#include "../Scheduler/queue.h"
 
 
  typedef struct {
