@@ -20,8 +20,8 @@
  *  distribution.
  *****************************************************************************/
 
-#include "headers.h"
-#include "Csema.h"
+#include "OS/Scheduler/headers.h"
+#include "Resource Management.h"
 #include <stdio.h>
 
 int8_t Csema_init( Csema *sema, int8_t count )

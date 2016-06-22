@@ -68,7 +68,7 @@ void IntFn()
 	}
 }
 
-
+/*
 int main(void) {
 
 	 SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
@@ -86,7 +86,7 @@ int main(void) {
 
 	while(1);
 }
-
+*/
 /*
 uint32_t j =0;
 void firstFunction(void)

@@ -2,12 +2,16 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "TivaDrivers/inc/hw_memmap.h"
-#include "TivaDrivers/inc/hw_types.h"
-#include "TivaDrivers/sysctl/sysctl.h"
-#include "TivaDrivers/gpio/gpio.h"
-
 #include "headers.h"
+
+#include "board/ARM/drivers/inc/hw_memmap.h"
+#include "board/ARM/drivers/inc/hw_types.h"
+#include "board/ARM/drivers/sysctl/sysctl.h"
+#include "board/ARM/drivers/gpio/gpio.h"
+
+struct procent proctab[NPROC];			/*table of processes	*/
+struct qentry queuetab[NQENT];        /* Table of process queues      */
+
 
 
 void LED1()
@@ -55,6 +59,7 @@ void nullProc()
 	
 }
 
+/*
 int main(void) {
 
 	readylist = newqueue();
@@ -85,3 +90,4 @@ int main(void) {
 	}
 	return 0;
 }
+*/

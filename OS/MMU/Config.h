@@ -41,6 +41,4 @@
 #error "Invalid portBYTE_ALIGNMENT definition"
 #endif
 
-
-
 #endif /* CONFIG_H_ */

@@ -21,12 +21,18 @@
  *****************************************************************************/
 
 
-#ifndef DEFAULT_INITIALIZATION_H_
-#define DEFAULT_INITIALIZATION_H_
-
-#define UART_DEFAULT_VAL {10,10,10,10,10}
 
 
 
 
-#endif
+
+int main()
+{
+
+
+
+
+
+
+	return 0;
+}
