@@ -14,6 +14,7 @@
 #include "drivers/adc/ADC_HAL_TIVA.h"
 #include "drivers/watchdog/HAL_WatchdogTimer.h"
 #include "drivers/uart/HAL_UART.h"
+#include "drivers/spi/SPI_HAL_TivaC.h"
 
 #include "drivers/inc/hw_memmap.h"
 #include "drivers/inc/hw_types.h"
