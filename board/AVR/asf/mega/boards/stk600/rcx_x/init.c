@@ -42,9 +42,9 @@
  * \asf_license_stop
  *
  */
-#include <board.h>
-#include <compiler.h>
-#include <conf_board.h>
+//#include <board.h>
+//#include <compiler.h>
+//#include <conf_board.h>
 
 
 void board_init(void)
