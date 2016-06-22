@@ -33,7 +33,6 @@ void HAL_Watchdog_Enable(WDT_InitTypeDef * watchdogen)
 
 void HAL_Watchdog_Disable()
 {
-	
 	watchdogDisable();
 }
 

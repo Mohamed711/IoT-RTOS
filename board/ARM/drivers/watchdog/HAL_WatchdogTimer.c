@@ -42,7 +42,7 @@
 *
 * \return None.
 ******************************************************************************/
-void wdtinit(WDT_InitTypeDef  * wdt)
+void HAL_Watchdog_Init(WDT_InitTypeDef  * wdt)
 {
 	HAL_WDT_CLK_ENABLE();
 	WatchdogReloadSet(wdt->watchdogBaseAddress , wdt->reloadValue);
@@ -98,7 +98,7 @@ void wdtinit(WDT_InitTypeDef  * wdt)
 *
 * \return None.
 ******************************************************************************/
-void wdtstart(WDT_HandleTypeDef * params)
+void HAL_WDT_Enable(WDT_HandleTypeDef * params)
 {
 	WatchdogEnable(params->watchdogBaseAddress);
 
@@ -117,7 +117,7 @@ void wdtstart(WDT_HandleTypeDef * params)
 *
 * \return None.
 ******************************************************************************/
-void wdtrefresh(WDT_HandleTypeDef * params)
+void HAL_Watchdog_Reset(WDT_HandleTypeDef * params)
 {
 	WatchdogReloadSet(params->watchdogBaseAddress,WatchdogReloadGet(params->watchdogBaseAddress));
 }
