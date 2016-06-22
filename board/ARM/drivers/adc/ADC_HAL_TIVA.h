@@ -19,14 +19,11 @@
 *  documentation and/or other materials provided with the
 *  distribution.
 *****************************************************************************/
+
 #ifndef DRIVERS_ADC_ADC_HAL_TIVA_H_
 #define DRIVERS_ADC_ADC_HAL_TIVA_H_
 
-#include<stdint.h>
-#include<stdbool.h>
-#include"adc.h"
-#include "../sysctl/sysctl.h"
-#include "../inc/hw_memmap.h"
+
 typedef struct
 {
 	uint32_t ADCn;
@@ -36,22 +33,21 @@ typedef struct
 	uint32_t steps;
 	uint32_t src;
 	bool diff;
-	}ADC_InitTypeDef;
+}ADC_InitTypeDef;
 
 typedef struct
 {
 
-	}ADC_handle_typedef;
+}ADC_HandleTypeDef;
 
 /*****************************************************************************
 *
 * Prototypes for the APIs.
 *
 ******************************************************************************/
-void adcinit(ADC_InitTypeDef *adc);
-uint32_t adcread(ADC_InitTypeDef *adc);
-void adcoff();
-
+void ADC_Init(ADC_InitTypeDef *adc);
+uint32_t ADC_Read(ADC_InitTypeDef *adc);
+//void ADC_Off();
 
 
 #endif /* DRIVERS_ADC_ADC_HAL_TIVA_H_ */

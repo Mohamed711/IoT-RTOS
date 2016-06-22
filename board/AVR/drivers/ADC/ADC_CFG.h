@@ -24,14 +24,15 @@
 #define ADC_CFG_H_
 
 #define PRESCALAR_NUM	0x07
-/* ADC Registers*/
+
+/* ADC Registers */
 #define ADMUX_REG	 *((uint8_t volatile *const)0x07)
 #define ADCSRA_REG	 *((uint8_t volatile *const)0x06)
 #define ADCL_REG	 *((uint8_t volatile *const)0x04)
 #define ADCH_REG	 *((uint8_t volatile *const)0x05)
 #define SFIOR_REG    *((uint8_t volatile *const)0x30)
 
-/* ADMUX register*/
+/* ADMUX register */
 #define REFS1  7
 #define REFS0  6
 #define ADLAR  5
@@ -40,6 +41,7 @@
 #define MUX2   2
 #define MUX1   1
 #define MUX0   0
+
 /* ADCSRA  (ADR Control and status Register) */
 #define ADEN   7
 #define ADSC   6
@@ -50,7 +52,7 @@
 #define ADPS1  1
 #define ADPSO  0
 
-/*channel */
+/* channel */
 #define ch_ADC0 0b00000
 #define ch_ADC1 0b00001
 #define ch_ADC2 0b00010
@@ -86,15 +88,12 @@
 #define ch_122v 0b11110
 #define ch_0v 0b11111
 
-
-
-
-
+/* ADC Auto trigger Source Selection */
 #define AREF_Internal_Vref_turned_off  0x00
 #define AVCC_with_external_capacitor_at_AREF_pin  0x01
 #define Internal_2_dot_56V_Voltage_Reference_with_external_cap_at_AREF_pin  0x03
-/* ADC Auto trigger Source Selection*/
 
+/* ADC Mode */
 #define Free_Running_mode 0b000
 #define Analog_comparator 0b001
 #define Eternal_Interrupt_Request0 0b010
@@ -103,7 +102,6 @@
 #define Timer_conter1_compare_match_B 0b101
 #define Timer_conter1_overflow  0b110
 #define Timer_conter0_capture_Event 0b111
-
 
 #define ADC_JUSTIFY 'R'
 
