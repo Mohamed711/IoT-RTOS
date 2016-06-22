@@ -20,9 +20,10 @@ void HAL_I2C_Master_Transmit(I2C_HandleTypeDef *i2c)
 	masterTransmit(i2c->slaveAddress ,i2c->Txdata);
 }
 
-void HAL_I2C_Master_Receive(I2C_HandleTypeDef *i2c)
+uint8_t HAL_I2C_Master_Receive(I2C_HandleTypeDef *i2c)
 {
-	i2c->Rxdata = masterReceive();	
+	i2c->Rxdata = masterReceive();
+	return i2c->Rxdata;
 }
 
 void HAL_I2C_Slave_Transmit(I2C_HandleTypeDef *i2c)
@@ -30,7 +31,8 @@ void HAL_I2C_Slave_Transmit(I2C_HandleTypeDef *i2c)
 	slaveTransmit(i2c->Txdata);
 }
 
-void HAL_I2C_Slave_Receive(I2C_HandleTypeDef *i2c)
+uint8_t HAL_I2C_Slave_Receive(I2C_HandleTypeDef *i2c)
 {
 	i2c->Rxdata = slaveReceive();
+	return i2c->Rxdata;
 }
