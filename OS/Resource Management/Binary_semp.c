@@ -19,7 +19,7 @@
  *  documentation and/or other materials provided with the  
  *  distribution.
  *****************************************************************************/
-#include "headers.h"
+#include "../Scheduler/headers.h"
 #include "Resource Management.h"
 
 
@@ -38,7 +38,7 @@ void vid_Binary_semp_Bsem_signal(Bsem_t *S)
 	S->count++;
 	if (S->count <= 0)
 	{
-		s32 processid= dequeue(S->Bsem_queue); 
+		int32_t processid= dequeue(S->Bsem_queue);
 		/*sysCall resume_return =*/ processResume(processid /*curent process id  */);
 	}
 }

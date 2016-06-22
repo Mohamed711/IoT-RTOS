@@ -25,17 +25,17 @@
 
 #include "headers.h"
 
-u32	clktime;	/* current time in secs since boot	*/
+uint32_t	clktime;	/* current time in secs since boot	*/
 qid16	sleepq;		/* queue for sleeping processes		*/
-u32 ctr1000;
-s32	slnonempty;	/* nonzero if sleepq is nonempty	*/
-s32	*sltop;		/* ptr to key in first item on sleepq	*/
-u32	preempt;	/* preemption counter			*/
+uint32_t ctr1000;
+int32_t	slnonempty;	/* nonzero if sleepq is nonempty	*/
+int32_t	*sltop;		/* ptr to key in first item on sleepq	*/
+uint32_t	preempt;	/* preemption counter			*/
 
-sysCall	insertd(pid32 pid, qid16 q,s32 key);
+sysCall	insertd(pid32 pid, qid16 q,int32_t key);
 sysCall	yield(void);
-sysCall	sleep(s32 delay);
-sysCall	sleepms(s32	delay);
+sysCall	sleep(int32_t delay);
+sysCall	sleepms(int32_t	delay);
 sysCall	unsleep(pid32 pid);
 void wakeup(void);
 void clkhandler(void);

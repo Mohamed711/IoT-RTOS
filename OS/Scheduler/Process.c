@@ -48,7 +48,7 @@ pid32 pocessGetPid()
 *****************************************************************************/
 pid32 processNewPid(void)
 {
-	u32 i; /* Iterate through all processes*/
+	uint32_t i; /* Iterate through all processes*/
 	static pid32 nextpid = 1; /* Position in table to try or */
 	/* one beyond end of table */
 	/* Check all NPROC slots */
@@ -78,12 +78,12 @@ pid32 processNewPid(void)
 * 	\return the pid of the created process
 *
 *****************************************************************************/
-pid32 processCreate(void *funcAddr, u32 ssize, pri16 priority, char *name)
+pid32 processCreate(void *funcAddr, uint32_t ssize, pri16 priority, char *name)
 {
 	pid32 pid; /* Stores new process id */
 	struct procent *prptr; /* Pointer to process table entry */
-	s32 i;
-	u32 *saddr;
+	int32_t i;
+	uint32_t *saddr;
 
 	if (ssize < MINSTK)
 	ssize = MINSTK;
@@ -92,7 +92,7 @@ pid32 processCreate(void *funcAddr, u32 ssize, pri16 priority, char *name)
 	int z= ssize;
 	saddr= pvPortMalloc(ssize);
 
-	if ((priority < 1) || pid == (pid32)SYSERR || saddr == (u32 *)SYSERR)
+	if ((priority < 1) || pid == (pid32)SYSERR || saddr == (uint32_t *)SYSERR)
 	{
 		return (pid32)SYSERR;
 	}
@@ -131,7 +131,7 @@ pid32 processCreate(void *funcAddr, u32 ssize, pri16 priority, char *name)
 sysCall processTerminate(pid32 pid)
 {
 	struct procent *prptr; /* Ptr to process’ table entry */
-	//u32 i; /* Index into descriptors */
+	//uint32_t i; /* Index into descriptors */
 
 	if (isbadpid(pid) || (pid == NULLPROC)
 		|| ((prptr = &proctab[pid])->prstate) == PR_FREE) {
@@ -173,7 +173,7 @@ sysCall processTerminate(pid32 pid)
 * 	\return 0 if there's an error, -1 if there's no error
 *
 *****************************************************************************/
-sysCall	processSetReady(u32 pid)
+sysCall	processSetReady(uint32_t pid)
 {
 	register struct procent *prptr; //optimazation for fast memory access
 

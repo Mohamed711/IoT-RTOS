@@ -34,10 +34,10 @@
 * 	\return 0 if there's an error, -1 if there's no error
 *
 *****************************************************************************/
-sysCall	insertd(  pid32	pid,  qid16	q, s32	key)
+sysCall	insertd(  pid32	pid,  qid16	q, int32_t	key)
 {
-	s32	next;			/* Runs through the delta list	*/
-	s32	prev;			/* Follows next through the list*/
+	int32_t	next;			/* Runs through the delta list	*/
+	int32_t	prev;			/* Follows next through the list*/
 
 	if (isbadqid(q) || isbadpid(pid))
 	{
@@ -95,7 +95,7 @@ sysCall	yield(void)
 * 	\return system call
 *
 *****************************************************************************/
-sysCall	sleep(s32 delay)
+sysCall	sleep(int32_t delay)
 {
 	if ( (delay < 0) || (delay > MAXSECONDS) )
 	{
@@ -114,7 +114,7 @@ sysCall	sleep(s32 delay)
 * 	\return 0 if there's an error, -1 if there's no error
 *
 *****************************************************************************/
-sysCall	sleepms(s32	delay)
+sysCall	sleepms(int32_t	delay)
 {
 	//intmask	mask;			/* Saved interrupt mask		*/
 
@@ -224,7 +224,7 @@ void wakeup(void)
 *****************************************************************************/
 void clkhandler(void)
 {
-	static u32 count1000 = 1000; /* Count to 1000 ms */
+	static uint32_t count1000 = 1000; /* Count to 1000 ms */
 	/* Decrement the ms counter, and see if a second has passed */
 	if((--count1000) <= 0)
 	{

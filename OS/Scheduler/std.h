@@ -31,15 +31,7 @@ typedef uint32_t umsg32;
 typedef bool bool8;
 typedef	uint32_t intmask;
 
-typedef uint32_t u32;
-typedef uint16_t u16;
-typedef uint8_t u8;
 typedef uint16_t qid16;
-
-
-typedef int32_t s32;
-typedef int16_t s16;
-typedef int8_t s8;
 
 typedef bool sysCall;
 

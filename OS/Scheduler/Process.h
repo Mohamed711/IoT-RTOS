@@ -65,13 +65,13 @@
  struct procent
  {                /* Entry in the process table           */
 	void (*processFunction)(void);
-	u16 prstate;         /* Process state: PR_CURR, etc.         */
-	u32   prprio;         /* Process priority                     */
-	u16    *prstkptr;      /* Saved stack pointer                  */
-	u16    *prstkbase;     /* Base of run time stack               */
-	u16  prstklen;       /* Stack length in bytes                */
+	uint16_t prstate;         /* Process state: PR_CURR, etc.         */
+	uint32_t   prprio;         /* Process priority                     */
+	uint16_t    *prstkptr;      /* Saved stack pointer                  */
+	uint16_t    *prstkbase;     /* Base of run time stack               */
+	uint16_t  prstklen;       /* Stack length in bytes                */
 	char    prname[PNMLEN]; /* Process name                         */
-	u16   prparent;       /* ID of the creating process           */
+	uint16_t   prparent;       /* ID of the creating process           */
 
 
 };
@@ -79,9 +79,9 @@
 
 pid32 pocessGetPid();
 pid32 processNewPid();
-pid32 processCreate(void *funcaddr, u32 ssize, pri16 priority, char *name);
+pid32 processCreate(void *funcaddr, uint32_t ssize, pri16 priority, char *name);
 sysCall processTerminate(pid32 pid);
-sysCall	processSetReady(u32 pid);
+sysCall	processSetReady(uint32_t pid);
 pri16 processResume(pid32 pid);
 sysCall	processSuspend(pid32 pid);
 void processSuspendAll(void);

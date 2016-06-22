@@ -24,7 +24,7 @@
 
 
 pid32 currpid;
-u32 prcount;
+uint32_t prcount;
 
 extern struct procent proctab[NPROC];			/*table of processes	*/
 extern struct qentry queuetab[NQENT];        /* Table of process queues      */
