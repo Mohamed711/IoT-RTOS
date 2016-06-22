@@ -34,14 +34,14 @@
 #include "delay.h"
 #include "contextSwitch.h"
 #include "ReSched.h"
-#include "OS/MMU/mmu.h"
+#include "../MMU/mmu.h"
 #include "Config.h"
 //#include "contextSwitch.h"
 #include "realTimeClock.h"
 //extern	void	ctxsw(void *, void *);
 
 #if ARM
-#include "board/ARM/drivers/timer/HAL_Timer_TivaC.h"
+#include "../../board/ARM/drivers/timer/HAL_Timer_TivaC.h"
 #else
 #include "AvrDrivers/Timer/HAL_Timer_AVR.h"
 #endif

@@ -25,7 +25,7 @@
 
 // Ensure the configuration file is included before including this file
 /// LOOK HERE ///
-#ifndef IPC_CFG_H
+#ifndef IPC_CFG_H_
 	#error "include xxxxxx.h" must appear in source files before "include ipc.h"
 #endif
 

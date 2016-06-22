@@ -45,6 +45,8 @@ typedef struct
 typedef struct
 {
 	uint8_t Tx;
+	uint8_t Rx;
+
 } UART_HandleTypeDef;
 
 typedef unsigned char HAL_DataType;

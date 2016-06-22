@@ -19,6 +19,12 @@
 *  documentation and/or other materials provided with the
 *  distribution.
 *****************************************************************************/
+
+#include<stdint.h>
+#include<stdbool.h>
+#include"adc.h"
+#include "../sysctl/sysctl.h"
+#include "../inc/hw_memmap.h"
 #include"ADC_HAL_TIVA.h"
 
 /******************************************************************************
@@ -31,19 +37,19 @@
 * 	\return none
 *
 *****************************************************************************/
-void adcinit(ADC_InitTypeDef *adc)
+void ADC_Init(ADC_InitTypeDef *adc)
 {
 	uint32_t ADCn_BASE;
 	SysCtlPeripheralEnable(adc->ADCn); /*enabling adc periph*/
 
 	switch(adc->ADCn)
 	{
-	case SYSCTL_PERIPH_ADC0 :
-		ADCn_BASE = ADC0_BASE;
-		break;
-	case SYSCTL_PERIPH_ADC1 :
-		ADCn_BASE = ADC1_BASE;
-		break;
+		case SYSCTL_PERIPH_ADC0 :
+				ADCn_BASE = ADC0_BASE;
+				break;
+		case SYSCTL_PERIPH_ADC1 :
+				ADCn_BASE = ADC1_BASE;
+				break;
 	}
 
 	ADCSequenceConfigure(ADCn_BASE, adc->seq, adc->ADC_TRIGGER, adc->prio);
@@ -76,7 +82,7 @@ void adcinit(ADC_InitTypeDef *adc)
 * 	\return none
 *
 *****************************************************************************/
-uint32_t  adcread(ADC_InitTypeDef *adc)
+uint32_t ADC_Read(ADC_InitTypeDef *adc)
 {
 	uint32_t ADCn_BASE;
 	switch(adc->ADCn)
@@ -113,7 +119,8 @@ uint32_t  adcread(ADC_InitTypeDef *adc)
 * 	\return none
 *
 *****************************************************************************/
-void adcoff()
+#if 0	/* NEED MODIFICATION */
+void ADC_Off()
 {
 	/*Before using this function, it is highly recommended that the event trigger
 	is changed to ADC_TRIGGER_NEVER on all enabled sequencers to prevent the ADC from
@@ -128,3 +135,4 @@ void adcoff()
 		return true;
 	}
 }
+#endif

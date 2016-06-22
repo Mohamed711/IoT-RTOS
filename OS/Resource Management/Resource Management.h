@@ -26,7 +26,7 @@
 
 #include <stdint.h>
 
-#include "OS/Scheduler/queue.h"
+#include "../Scheduler/queue.h"
 
 
  typedef struct {
@@ -92,5 +92,60 @@
   *
   *****************************************************************************/
  int8_t Csema_signal( Csema *sema );
+
+
+
+/*********************************************************************************************************************************/
+
+
+/*************************	BINARY SEMAPHORE	***************************/
+
+typedef struct
+{
+	qid16 Bsem_queue ;
+	//Queue *Bsem_queue = createQueue(10);
+	int8_t count;	
+}Bsem_t;
+
+/***********************************************************************************************
+*
+*	This function initializes the semaphore
+*
+*	Parameters:		
+*				p_Bsem: a pointer to a semaphore struct
+*
+************************************************************************************************/
+
+static inline void vid_Binary_semp_Bsem_init(Bsem_t *p_Bsem)
+{
+	// need to check
+	p_Bsem->Bsem_queue = newqueue();
+	p_Bsem->count=1;
+		
+}
+
+
+/***********************************************************************************************
+*
+*	This function waits for a binary semaphore to be available 
+*
+*	Parameters:
+*				p_Bsem: a pointer to a semaphore struct
+*
+************************************************************************************************/
+
+void vid_Binary_semp_Bsem_wait (Bsem_t *S);
+
+
+/***********************************************************************************************
+*
+*	This function releases a binary semaphore
+*
+*	Parameters:
+*				p_Bsem: a pointer to a semaphore struct
+*
+************************************************************************************************/
+
+void vid_Binary_semp_Bsem_signal(Bsem_t *S);
 
 #endif /* CSEMA_H_ */

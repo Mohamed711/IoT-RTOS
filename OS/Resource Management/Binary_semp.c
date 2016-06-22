@@ -1,8 +1,8 @@
 /******************************************************************************
- *	OurOS V 0.0.0 - Copyright (C) 2016
+ *	OurOS V 0.0.0 - Copyright (C) 2016 
  *  Computer and systems department
  *  Ain Shams University
- *
+ *  
  *  All rights reserved
  *
  *  VISIT http://www.OurRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -10,40 +10,35 @@
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
  *  are met:
- *
+ * 
  *  Redistributions of source code must retain the above copyright
  *  notice, this list of conditions and the following disclaimer.
- *
+ * 
  *  Redistributions in binary form must reproduce the above copyright
  *  notice, this list of conditions and the following disclaimer in the
- *  documentation and/or other materials provided with the
+ *  documentation and/or other materials provided with the  
  *  distribution.
  *****************************************************************************/
-#ifndef HAL_I2C_AVR_H_
-#define HAL_I2C_AVR_H_
-#include <stdint.h>
-#include <stdbool.h>
+#include "headers.h"
+#include "Resource Management.h"
 
-typedef struct
+
+void vid_Binary_semp_Bsem_wait (Bsem_t *S)
 {
-	bool type;
-	uint16_t clock;
-	uint8_t SlaveAddress;	
-	} I2C_InitTypeDef ;
-
-typedef struct
+	S->count--;
+	if (S->count < 0)
+	{ 
+		enqueue(currpid /*current process*/,S->Bsem_queue);
+		
+		/*pri16*/ /*sysCall suspend_return =*/ processSuspend(currpid);
+	}
+}
+void vid_Binary_semp_Bsem_signal(Bsem_t *S)
 {
-	uint8_t slaveAddress;
-	uint8_t Txdata;
-	uint8_t Rxdata;
-
-} I2C_HandleTypeDef;
-
-#define i2cmasterinit(x) masterInit((*x).clock)
-#define i2cslaveinit(x) slaveInit((*x).SlaveAddress)
-#define i2cmastersend(x)  masterTransmit((*x).slaveAddress ,(*x).Txdata)
-#define i2cmasterreceive(x)  masterReceive(); 
-#define i2cslavetsend(x)  slaveTransmit((*x).Txdata)
-#define i2cslavereceive(x)  slaveReceive(); 
-
-#endif /* HAL_I2C_AVR_H_ */
+	S->count++;
+	if (S->count <= 0)
+	{
+		s32 processid= dequeue(S->Bsem_queue); 
+		/*sysCall resume_return =*/ processResume(processid /*curent process id  */);
+	}
+}

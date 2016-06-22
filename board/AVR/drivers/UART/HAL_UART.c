@@ -10,7 +10,7 @@
 
 void HAL_UART_Init(UART_InitTypeDef* uart)
 {
-	uartInit(uart);
+	// uartInit(uart);
 }
 
 void HAL_UART_Send(UART_HandleTypeDef* uart)

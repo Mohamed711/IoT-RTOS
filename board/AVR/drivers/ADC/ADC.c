@@ -23,13 +23,13 @@
 #include "ADC.h"
 const ADC_CLK_Rate adc_clk[PRESCALAR_NUM] =
 {
-{F_CPU/2,0},
-{F_CPU/4,2},
-{F_CPU/8,3},
-{F_CPU/16,4},
-{F_CPU/32,5},
-{F_CPU/64,6},
-{F_CPU/128,7}
+	{F_CPU/2,0},
+	{F_CPU/4,2},
+	{F_CPU/8,3},
+	{F_CPU/16,4},
+	{F_CPU/32,5},
+	{F_CPU/64,6},
+	{F_CPU/128,7}
 };
 
 /* ADC justify ('L' or 'R') L for only 8 bit precision*/
@@ -39,6 +39,7 @@ static volatile uint8_t ADC_result;
 #elif ADC_JUSTIFY == 'R'
 static volatile uint16_t ADC_result;
 #endif
+
 bool  enable_interrupt;
 
 /*************************************************************************************************************************

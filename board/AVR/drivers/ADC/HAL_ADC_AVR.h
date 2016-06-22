@@ -23,6 +23,7 @@
 #define HAL_ADC_AVR_H_
 
 #include "ADC.h"
+
 typedef struct
 {
 	uint8_t voltage_ref_sel ;
@@ -38,8 +39,8 @@ typedef struct
 	
 }ADC_HandleTypeDef;
 
-#define adcinit(x) adcInit( (*x).voltage_ref_sel , (*x).enable_interrupt , (*x).trigger ,  (*x).channel , (*x).u32MaxFreq)
-#define adcread(x)  adcResult_u16();
-#define adcoff() adcOff()
+#define ADC_Init(x) adcInit( (*x).voltage_ref_sel, (*x).enable_interrupt, (*x).trigger, (*x).channel, (*x).u32MaxFreq )
+#define ADC_Read(x) adcResult_u16();
+#define ADC_Off() 	adcOff()
 
 #endif /* HAL_ADC_AVR_H_ */
