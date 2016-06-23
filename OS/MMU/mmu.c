@@ -34,19 +34,14 @@ void *pvReturn = NULL;
 			xNextFreeByte += xWantedSize;			
 		}	
 	processResumeAll();
-	//try to put anything here it'll be ignored due to processResumeAll() after fixing it remove next line
-	int x=xNextFreeByte ;
-	
-	
-		if( pvReturn == NULL )
-		{
-			EnterCriticalSection();
-			for(;;);
-			ExitCriticalSection();
-		}
-	
-	
 
+	
+	if( pvReturn == NULL )
+	{
+		EnterCriticalSection();
+		for(;;);
+		ExitCriticalSection();
+	}
 	
 	return pvReturn;
 }

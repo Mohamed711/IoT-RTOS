@@ -18,6 +18,4 @@ void vPortInitialiseBlocks(void);	//to clear heap and reallocate it
 size_t xPortGetFreeHeapSize(void);	//get the free heap size( size of unallocated heap)
 
 
-
-
 #endif /* MMU_H_ */

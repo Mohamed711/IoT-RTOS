@@ -23,8 +23,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-// include of the task header file which can be used to transfer the task between modules
-#include "ipc_cfg.h"
+#include "../RTOS.h"
 #include "ipc_trace.h"
 #include "ipc.h"
 

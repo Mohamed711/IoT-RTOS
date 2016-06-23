@@ -36,6 +36,11 @@ typedef uint8_t UBaseType_t ; 	// unsigned basetype is important datatype used
 #define pdFALSE	0x00			// false return
 #define pdPASS	0x01			// return value that the function carried out correctly
 #define pdFAIL 	0x00			// return fail
+#define errQUEUE_FULL	0x00	// error value indicates that the queue is full
+#define errQUEUE_EMPTY 	0x00	// error the queue is empty
+typedef uint8_t TimeOut_t;
+typedef uint8_t TickType_t ;	// ticktype is a structure for the tick
+
 
 
 #define EnterCriticalSection()

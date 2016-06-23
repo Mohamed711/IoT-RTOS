@@ -22,11 +22,11 @@
 
 #include <stdint.h>
 
-#include "ipc_cfg.h"
+#include "../RTOS.h"
 #include "ipc.h"
 
-/*
-int main(void) {
+void ipc_test()
+ {
 	
 	uint8_t uxLength, uxItemSize, xVal, debugValue;
 	QueueHandle_t queue;
@@ -57,8 +57,5 @@ int main(void) {
 
 	debugValue = xVal;
 
-
-	return 0;
 }
 
-*/
