@@ -19,12 +19,15 @@
 *  documentation and/or other materials provided with the
 *  distribution.
 *****************************************************************************/
+#ifndef HAL_TIMER_
+#define HAL_TIMER_
+
 #include <stdint.h>
 typedef void (*FnPtr)(void);
 
 typedef struct{
 
-} Timer_InitTypeDef;
+}Timer_InitTypeDef;
 
 typedef struct{
 	Timer_InitTypeDef  instance;
@@ -42,3 +45,5 @@ void timerinit(Timer_InitTypeDef * timer);
 void timerstart(Timer_HandleTypeDef * timer);
 void timerstart(Timer_HandleTypeDef * timer);
 void timerstop(Timer_HandleTypeDef * timer);
+
+#endif

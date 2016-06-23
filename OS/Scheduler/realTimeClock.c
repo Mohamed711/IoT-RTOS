@@ -20,7 +20,12 @@
 *  distribution.
 *****************************************************************************/
 
-#include "headers.h"
+#include "queue.h"
+#include "ReSched.h"
+#include "realTimeClock.h"
+#include "Process.h"
+#include "../../board/ARM/drivers/timer/HAL_Timer_TivaC.h"
+
 /******************************************************************************
 *
 *	The function's purpose is to insert a processes in the sleep queue
@@ -278,8 +283,8 @@ void clkinit(void)
 	timerHandle.timeInMillis=1;
 	timerHandle.timeoutFn = clkhandler;
 
-	HAL_Timer_Init(&timerInit);
-	HAL_Timer_Start(&timerHandle);
+	timerinit(&timerInit);
+	timerstart(&timerHandle);
 
 
 	return;

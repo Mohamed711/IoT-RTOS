@@ -55,7 +55,8 @@ ptold = &proctab[currpid];
 	ptnew->prstate = PR_CURR;
 	
 
-	/*preempt = QUANTUM;		/* Reset time slice for process	*/
+	/*preempt = QUANTUM;	*/
+	/* Reset time slice for process	*/
 
 	//contextSwitch(&ptold->prstkptr, &ptnew->prstkptr);
 	
