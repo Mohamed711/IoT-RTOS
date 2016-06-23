@@ -20,8 +20,10 @@
  *  distribution.
  *****************************************************************************/
 
-#include "Resource Management.h"
 #include <stdio.h>
+
+#include "Resource Management.h"
+#include "../Scheduler/Process.h"
 
 extern pid32 currpid;
 

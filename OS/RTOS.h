@@ -37,6 +37,9 @@ typedef uint8_t UBaseType_t ; 	// unsigned basetype is important datatype used
 #define pdPASS	0x01			// return value that the function carried out correctly
 #define pdFAIL 	0x00			// return fail
 
+
+#define EnterCriticalSection()
+#define ExitCriticalSection()
 #define mtCOVERAGE_TEST_MARKER()// just an empty for the else part of the if statement
 #define PRIVILEGED_FUNCTION		// to the memory protection unit
 #define configUSE_PREEMPTION 0	// config the scheduler to be preemptive or cooperative
@@ -72,13 +75,14 @@ void heap_init(Heap_Init *size);
 
 #if KitType == 0 // atmega32
 	#define configTOTAL_HEAP_SIZE 1500
+#define portBYTE_ALIGNMENT  4 //because we want it work on 32 bit word alignment
 #endif
 #if KitType == 1 //tivaC
 	#define configTOTAL_HEAP_SIZE 30000
+#define portBYTE_ALIGNMENT  8 //till we know if it's automatically or not
 #endif
 
 
-#define portBYTE_ALIGNMENT  8 //till we know if it's automatically or not
 
 /*portBYTE_ALIGNMENT defined by user but for default value portBYTE_ALIGNMENT=8  need to implement this as structure*/
 #if portBYTE_ALIGNMENT == 8

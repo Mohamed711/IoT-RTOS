@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include"mmu.h"
+#include "mmu.h"
+#include "../Scheduler/Process.h"
 
 /* void* means that it's a generic type it can return any type or you can say It is a pointer with unknown type.
 	It's used here as the memory is typeless(because it does not have a properly constructed object in it yet).
