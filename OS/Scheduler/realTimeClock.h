@@ -24,7 +24,7 @@
 #define TIMER_H_
 
 #include <stdint.h>
-#include "std.h"
+#include "../RTOS.h"
 
 sysCall	insertd(pid32 pid, qid16 q,int32_t key);
 sysCall	yield(void);

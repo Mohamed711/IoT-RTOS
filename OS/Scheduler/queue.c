@@ -24,7 +24,8 @@
 #include "queue.h"
 #include "Process.h"
 
-
+qid16 readylist;
+qid16 suspendedlist;
 extern struct procent proctab[NPROC];		  /* table of processes */
 
 /******************************************************************************

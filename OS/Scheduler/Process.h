@@ -23,7 +23,7 @@
 #define PROCESS_H_
 
 #include <stdint.h>
-#include "std.h"
+#include "../RTOS.h"
 
 /* Process state constants */
 #define PR_FREE 0 		/* Process table entry is unused */

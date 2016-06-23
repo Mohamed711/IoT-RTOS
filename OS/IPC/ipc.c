@@ -210,7 +210,7 @@ QueueHandle_t xQueueGenericCreate( const UBaseType_t uxQueueLength, const UBaseT
 BaseType_t xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQueue, TickType_t xTicksToWait, const BaseType_t xCopyPosition )
 {
 	BaseType_t xEntryTimeSet = pdFALSE;
-	TimeOut_t xTimeOut;
+	//TimeOut_t xTimeOut;
 	Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 
 			configASSERT( pxQueue );
@@ -301,7 +301,7 @@ BaseType_t xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQ
 BaseType_t xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer, TickType_t xTicksToWait, const BaseType_t xJustPeeking )
 {
 	BaseType_t xEntryTimeSet = pdFALSE;
-		TimeOut_t xTimeOut;
+	//	TimeOut_t xTimeOut;
 		int8_t *pcOriginalReadPosition;
 		Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 
@@ -553,11 +553,11 @@ BaseType_t xReturn;
 
 void vQueueDelete( QueueHandle_t xQueue )
 {
-	Queue_t * const pxQueue = ( Queue_t * ) xQueue;
+	//Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 
-	configASSERT( pxQueue );
+	//configASSERT( pxQueue );
 
-	traceQUEUE_DELETE( pxQueue );
+	//traceQUEUE_DELETE( pxQueue );
 
 	/// LOOK HERE ///
 	// free the part of the pxQueue

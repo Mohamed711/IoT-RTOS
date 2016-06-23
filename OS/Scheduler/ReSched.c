@@ -23,12 +23,13 @@
 #include "ReSched.h"
 #include "Process.h"
 #include "queue.h"
-#include "std.h"
+#include "../RTOS.h"
 
 volatile char* pxCurrentTCB_Old;
 volatile char* pxCurrentTCB_New;
 extern pid32 currpid;
 extern struct procent proctab[NPROC];		  /* table of processes */
+extern qid16 readylist;
 	
 /******************************************************************************
 *

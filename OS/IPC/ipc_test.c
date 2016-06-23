@@ -57,5 +57,7 @@ void ipc_test()
 
 	debugValue = xVal;
 
+	debugValue += 1;
+
 }
 

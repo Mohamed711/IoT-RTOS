@@ -22,12 +22,7 @@
 #ifndef QUEUE_H_
 #define QUEUE_H_
 
-#include "std.h"
 #include "../RTOS.h"
-
-qid16 readylist;
-qid16 suspendedlist;
-
 
 //#define SYSERR (0);
 #ifndef NQENT

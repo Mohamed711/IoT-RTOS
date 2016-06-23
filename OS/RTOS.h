@@ -21,6 +21,7 @@
  *****************************************************************************/
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #ifndef RTOS_H_
 #define RTOS_H_
@@ -58,6 +59,21 @@ typedef uint8_t TickType_t ;	// ticktype is a structure for the tick
 #define NPROC 5
 #define	QUANTUM	2
 #define	MAXSECONDS	2147483		/* Max seconds per 32-bit msec	*/
+
+typedef int32_t pid32;
+typedef uint16_t pri16;
+typedef uint32_t sid32;
+typedef uint32_t umsg32;
+typedef bool bool8;
+typedef	uint32_t intmask;
+
+typedef uint16_t qid16;
+
+typedef bool sysCall;
+
+#define OK 1
+#define SYSERR -1
+#define TIMEOUT 0
 
 
 #ifndef configUSE_MALLOC_FAILED_HOOK
