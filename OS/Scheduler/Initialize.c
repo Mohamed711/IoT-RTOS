@@ -20,6 +20,13 @@
 *  distribution.
 *****************************************************************************/
 
+#include "realTimeClock.h"
+#include "Process.h"
+#include "queue.h"
+
+struct procent proctab[NPROC];		  /* table of processes */
+struct qentry queuetab[NQENT];        /* Table of process queues */
+
 /******************************************************************************
 *
 *	The function's purpose is to initialie the operating system

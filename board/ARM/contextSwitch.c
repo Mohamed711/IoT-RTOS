@@ -20,7 +20,8 @@
 *  documentation and/or other materials provided with the
 *  distribution.
 *****************************************************************************/
-#include "headers.h"
+
+#include "../../OS/Scheduler/contextSwitch.h"
 
 #if 0	// this file is related to the board so its location must be changed to the board folder
 

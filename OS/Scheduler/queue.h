@@ -22,7 +22,8 @@
 #ifndef QUEUE_H_
 #define QUEUE_H_
 
-#include "headers.h"
+#include "std.h"
+#include "../RTOS.h"
 
 qid16 readylist;
 qid16 suspendedlist;
@@ -35,12 +36,12 @@ qid16 suspendedlist;
 
 #define EMPTY   (-1)            /* Null value for qnext or qprev index  */
 #define MAXKEY  0x7FFFFFFF      /* Max key that can be stored in queue  */
-#define MINKEY  (-1)      /* Min key that can be stored in queue  */
+#define MINKEY  (-1)      		/* Min key that can be stored in queue  */
 
 struct  qentry  {               /* One per process plus two per list    */
-	    s32   qkey;           /* Key on which the queue is ordered    */
-        s16   qnext;          /* Index of next process or tail        */
-        s16   qprev;          /* Index of previous process or head    */
+	    int32_t   qkey;         /* Key on which the queue is ordered    */
+        int16_t   qnext;        /* Index of next process or tail        */
+        int16_t   qprev;        /* Index of previous process or head    */
 };
 
 extern  struct qentry   queuetab[];
@@ -56,7 +57,7 @@ extern  struct qentry   queuetab[];
 #define lastkey(q)      (queuetab[ lastid(q)].qkey)
 
 /* Inline to check queue id assumes interrupts are disabled */
-#define isbadqid(x)     (((s32)(x) < 0) || (s32)(x) >= NQENT-1)
+#define isbadqid(x)     (((int32_t)(x) < 0) || (int32_t)(x) >= NQENT-1)
 
 
 /******************************************************************************
@@ -68,9 +69,9 @@ extern  struct qentry   queuetab[];
 * 	\return the removed process's ID
 *
 *****************************************************************************/
-inline s32 getitem(s32 pid)
+inline int32_t getitem(int32_t pid)
 {
-	s32   prev, next;
+	int32_t   prev, next;
 	next = queuetab[pid].qnext;  /* Following node in list  */
 	prev = queuetab[pid].qprev;  /* Previous node in list   */
 	queuetab[prev].qnext = next;
@@ -88,9 +89,9 @@ inline s32 getitem(s32 pid)
 * 	\return the removed process's ID
 *
 *****************************************************************************/
-inline s32 getfirst( s16 q )
+inline int32_t getfirst( int16_t q )
 {
-	s32  head;
+	int32_t  head;
 	if (isempty(q))
 	{
 		return EMPTY;
@@ -109,9 +110,9 @@ inline s32 getfirst( s16 q )
 * 	\return the removed process's ID
 *
 *****************************************************************************/
-inline s32 getlast(s16 q)
+inline int32_t getlast(int16_t q)
 {
-	s16 tail;
+	int16_t tail;
 	if (isempty(q))
 	{
 		return EMPTY;
@@ -120,9 +121,9 @@ inline s32 getlast(s16 q)
 	return getitem(queuetab[tail].qprev);
 }
 
-s32 dequeue(s16 q);
-s32 enqueue(s32 pid,s16 q );
-sysCall	insert(pid32 pid, qid16 q, s32 key);
+int32_t dequeue(int16_t q);
+int32_t enqueue(int32_t pid,int16_t q );
+sysCall	insert(pid32 pid, qid16 q, int32_t key);
 qid16 newqueue(void);
 
 #endif

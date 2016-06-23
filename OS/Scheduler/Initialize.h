@@ -22,17 +22,6 @@
 #ifndef INITIALIZE_H_
 #define INITIALIZE_H_
 
-
-pid32 currpid;
-u32 prcount;
-
-extern struct procent proctab[NPROC];			/*table of processes	*/
-extern struct qentry queuetab[NQENT];        /* Table of process queues      */
-
-
-
-
-
-
+void initializeOS(void);
 
 #endif /* INITIALIZE_H_ */

@@ -41,7 +41,7 @@
 * static functions prototype.
 *
 ******************************************************************************/
-void static delay(uint32_t delay);
+static void delay(uint32_t delay);
 
 
 /*****************************************************************************
@@ -152,7 +152,7 @@ void WDT_ON()
 * \return None.
 ******************************************************************************/
 
-void static delay(uint32_t delay)
+void delay(uint32_t delay)
 {
 	uint32_t i,j;
 	for (i = 0 ; i < delay ; i++)

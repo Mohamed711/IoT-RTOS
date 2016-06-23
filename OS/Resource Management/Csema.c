@@ -20,9 +20,13 @@
  *  distribution.
  *****************************************************************************/
 
-#include "../Scheduler/headers.h"
-#include "Resource Management.h"
 #include <stdio.h>
+
+#include "Resource Management.h"
+#include "../Scheduler/Process.h"
+
+extern pid32 currpid;
+
 
 int8_t Csema_init( Csema *sema, int8_t count )
 {

@@ -25,6 +25,7 @@
 
 // include of the task header file which can be used to transfer the task between modules
 #include "ipc_cfg.h"
+#include "ipc_trace.h"
 #include "ipc.h"
 
 #if( configUSE_PREEMPTION == 0 )

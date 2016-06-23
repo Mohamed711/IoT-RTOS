@@ -3,7 +3,9 @@
 #include "i2c_test.h"
 #include "i2c.h"
 
-//#include "../tm4c123gh6pm.h"
+#include "../uart/uart.h"
+#include "../uart/HAL_UART.h"
+
 #include "../inc/hw_i2c.h"
 #include "../inc/hw_memmap.h"
 #include "../inc/hw_types.h"
@@ -12,7 +14,6 @@
 #include "../sysctl/sysctl.h"
 #include "../gpio/gpio.h"
 #include "../pin_map/pin_map.h"
-#include "../uart/uart.h"
 
 
 /******************************************************************************
