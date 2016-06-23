@@ -62,7 +62,7 @@ int main()
 	handle.lock = 0;
 	handle.stallEnable = 1;
 
-	HAL_WDT_Init(&handle);
+	WDT_Init(&handle);
 }*/
 
 //ADC TEST
