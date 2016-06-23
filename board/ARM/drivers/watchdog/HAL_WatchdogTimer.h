@@ -50,7 +50,7 @@ typedef struct WDT_INIT_PARAMS
 
 /*****************************************************************************
 *
-* Parameters to be passed for the functions of the watchdog timer.
+* Parameters to be passed to the functions of the watchdog timer.
 *
 ******************************************************************************/
 typedef struct WDT_HANDLE_PARAMS
@@ -65,11 +65,12 @@ typedef struct WDT_HANDLE_PARAMS
 *
 ******************************************************************************/
 
-void HAL_Watchdog_Init(WDT_InitTypeDef  * wdt);
-void HAL_WDT_Enable(WDT_HandleTypeDef * params);
-void HAL_Watchdog_Reset(WDT_HandleTypeDef * params);
-bool wdtstate(WDT_HandleTypeDef * params);
-uint32_t wdtreloadget(WDT_HandleTypeDef * params);
-uint32_t wdtvalueget(WDT_HandleTypeDef * params);
+void WDT_Init(WDT_InitTypeDef  * wdt);
+void WDT_Enable(WDT_HandleTypeDef * params);
+void WDT_Reset(WDT_HandleTypeDef * params);
+void WDT_Disable();
+bool WDT_State(WDT_HandleTypeDef * params);
+uint32_t WDT_ReloadGet(WDT_HandleTypeDef * params);
+uint32_t WDT_ValueGet(WDT_HandleTypeDef * params);
 
 

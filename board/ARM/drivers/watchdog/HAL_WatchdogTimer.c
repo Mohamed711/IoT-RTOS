@@ -42,7 +42,7 @@
 *
 * \return None.
 ******************************************************************************/
-void HAL_Watchdog_Init(WDT_InitTypeDef  * wdt)
+void WDT_Init(WDT_InitTypeDef  * wdt)
 {
 	HAL_WDT_CLK_ENABLE();
 	WatchdogReloadSet(wdt->watchdogBaseAddress , wdt->reloadValue);
@@ -83,8 +83,6 @@ void HAL_Watchdog_Init(WDT_InitTypeDef  * wdt)
 	{
 		WatchdogIntUnregister(wdt->watchdogBaseAddress);
 	}
-
-
 }
 
 
@@ -98,10 +96,9 @@ void HAL_Watchdog_Init(WDT_InitTypeDef  * wdt)
 *
 * \return None.
 ******************************************************************************/
-void HAL_WDT_Enable(WDT_HandleTypeDef * params)
+void WDT_Enable(WDT_HandleTypeDef * params)
 {
 	WatchdogEnable(params->watchdogBaseAddress);
-
 }
 
 
@@ -117,7 +114,7 @@ void HAL_WDT_Enable(WDT_HandleTypeDef * params)
 *
 * \return None.
 ******************************************************************************/
-void HAL_Watchdog_Reset(WDT_HandleTypeDef * params)
+void WDT_Reset(WDT_HandleTypeDef * params)
 {
 	WatchdogReloadSet(params->watchdogBaseAddress,WatchdogReloadGet(params->watchdogBaseAddress));
 }
@@ -136,7 +133,7 @@ void HAL_Watchdog_Reset(WDT_HandleTypeDef * params)
 * \b true if the watchdog is running
 * \b false if its not.
 ******************************************************************************/
-bool wdtstate(WDT_HandleTypeDef * params)
+bool WDT_State(WDT_HandleTypeDef * params)
 {
 	return WatchdogRunning(params->watchdogBaseAddress);
 }
@@ -152,7 +149,7 @@ bool wdtstate(WDT_HandleTypeDef * params)
 *
 * \return \uint32_t the reload value of the watchdog timer.
 ******************************************************************************/
-uint32_t wdtreloadget(WDT_HandleTypeDef * params)
+uint32_t WDT_ReloadGet(WDT_HandleTypeDef * params)
 {
 	return WatchdogReloadGet(params->watchdogBaseAddress);
 }
@@ -168,7 +165,7 @@ uint32_t wdtreloadget(WDT_HandleTypeDef * params)
 *
 * \return \uint32_t the current value of the watchdog timer.
 ******************************************************************************/
-uint32_t wdtvalueget(WDT_HandleTypeDef * params)
+uint32_t WDT_ValueGet(WDT_HandleTypeDef * params)
 {
 	return WatchdogValueGet(params->watchdogBaseAddress);
 }

@@ -19,24 +19,28 @@
  *  documentation and/or other materials provided with the
  *  distribution.
  *****************************************************************************/
+
+#if (FAST_HAL == 0)
 #include "HAL_Watchdog_AVR.h"
 
-void HAL_Watchdog_Init()
+void WDT_Init()
 {
 	watchdogInit();
 }
 
-void HAL_Watchdog_Enable(WDT_InitTypeDef * watchdogen)
+void WDT_Enable(WDT_InitTypeDef * watchdogen)
 {
 	watchdogEnable(watchdogen->timeout2);
 }
 
-void HAL_Watchdog_Disable()
+void WDT_Disable()
 {
 	watchdogDisable();
 }
 
-void HAL_Watchdog_Reset()
+void WDT_Reset()
 {
 	watchdogReset();
 }
+
+#endif

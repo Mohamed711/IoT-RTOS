@@ -70,6 +70,6 @@ void watchdogReset()
 void watchdogDisable()
 {   
 	watchdogReset(); 
-	WDTCR_Reg |= ( 1 << WDT_En) | ( 1 << WDT_TurnOFF_Enable) ;
+	WDTCR_Reg |= ( 1 << WDT_En ) | ( 1 << WDT_TurnOFF_Enable ) ;
 	WDTCR_Reg = 0x00;
 }
