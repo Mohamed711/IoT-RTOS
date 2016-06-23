@@ -19,8 +19,12 @@
 *  documentation and/or other materials provided with the
 *  distribution.
 *****************************************************************************/
-#include "headers.h"
 	
+#include "ReSched.h"
+#include "Process.h"
+#include "queue.h"
+#include "std.h"
+
 	 volatile char* pxCurrentTCB_Old;
 	 volatile char* pxCurrentTCB_New;
 	 extern pid32 currpid;

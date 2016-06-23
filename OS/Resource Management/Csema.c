@@ -20,7 +20,6 @@
  *  distribution.
  *****************************************************************************/
 
-#include "../Scheduler/headers.h"
 #include "Resource Management.h"
 #include <stdio.h>
 

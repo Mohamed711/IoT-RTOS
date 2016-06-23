@@ -21,7 +21,8 @@
 *  distribution.
 *****************************************************************************/
 
-#include "headers.h"
+#include "Process.h"
+#include "queue.h"
 
 pid32 currpid;
 extern struct procent proctab[NPROC];		  /* table of processes */

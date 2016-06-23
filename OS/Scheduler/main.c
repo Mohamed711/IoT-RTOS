@@ -2,8 +2,6 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "headers.h"
-
 #include "../../board/ARM/drivers/inc/hw_memmap.h"
 #include "../../board/ARM/drivers/inc/hw_types.h"
 #include "../../board/ARM/drivers/sysctl/sysctl.h"

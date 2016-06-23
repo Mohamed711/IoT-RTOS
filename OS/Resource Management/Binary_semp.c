@@ -19,7 +19,7 @@
  *  documentation and/or other materials provided with the  
  *  distribution.
  *****************************************************************************/
-#include "../Scheduler/headers.h"
+
 #include "Resource Management.h"
 
 extern pid32 currpid;

@@ -22,8 +22,8 @@
 #ifndef PROCESS_H_
 #define PROCESS_H_
 
-#include "headers.h"
-
+#include <stdint.h>
+#include "std.h"
 
 #ifndef NPROC
 #define NPROC 8

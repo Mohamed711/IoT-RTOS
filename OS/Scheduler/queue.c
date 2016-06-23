@@ -19,8 +19,9 @@
 *  documentation and/or other materials provided with the
 *  distribution.
 *****************************************************************************/
-#include "headers.h"
 
+#include <stdint.h>
+#include "queue.h"
 extern struct procent proctab[NPROC];		  /* table of processes */
 
 /******************************************************************************
