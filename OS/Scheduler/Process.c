@@ -23,6 +23,9 @@
 
 #include "Process.h"
 #include "queue.h"
+#include "ReSched.h"
+#include "realTimeClock.h"
+#include "../MMU/mmu.h"
 
 pid32 currpid;
 extern struct procent proctab[NPROC];		  /* table of processes */
@@ -94,8 +97,7 @@ pid32 processCreate(void *funcAddr, uint32_t ssize, pri16 priority, char *name)
 	ssize = MINSTK;
 	
 	pid = processNewPid();
-	int z= ssize;
-	saddr= pvPortMalloc(ssize);
+	saddr= (uint32_t *)pvPortMalloc(ssize);
 
 	if ((priority < 1) || pid == (pid32)SYSERR || saddr == (uint32_t *)SYSERR)
 	{
@@ -114,8 +116,6 @@ pid32 processCreate(void *funcAddr, uint32_t ssize, pri16 priority, char *name)
 	{
 		;
 	}
-
-
 
 	return pid;
 }
