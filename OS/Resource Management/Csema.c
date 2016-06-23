@@ -24,6 +24,9 @@
 #include "Resource Management.h"
 #include <stdio.h>
 
+extern pid32 currpid;
+
+
 int8_t Csema_init( Csema *sema, int8_t count )
 {
 	if(sema==NULL)

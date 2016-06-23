@@ -22,6 +22,10 @@
 *****************************************************************************/
 
 #include "headers.h"
+
+pid32 currpid;
+extern struct procent proctab[NPROC];		  /* table of processes */
+
 /******************************************************************************
 *
 *	The function's purpose is to get the pid of the current process
@@ -96,7 +100,6 @@ pid32 processCreate(void *funcAddr, uint32_t ssize, pri16 priority, char *name)
 	{
 		return (pid32)SYSERR;
 	}
-	prcount++;
 	prptr = &proctab[pid];
 
 	/* Initialize process table entry for new process */

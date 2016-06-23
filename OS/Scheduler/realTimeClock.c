@@ -26,6 +26,10 @@
 #include "Process.h"
 #include "../../board/ARM/drivers/timer/HAL_Timer_TivaC.h"
 
+extern pid32 currpid;
+extern struct procent proctab[NPROC];		  /* table of processes */
+
+
 /******************************************************************************
 *
 *	The function's purpose is to insert a processes in the sleep queue

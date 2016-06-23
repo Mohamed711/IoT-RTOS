@@ -9,10 +9,6 @@
 #include "../../board/ARM/drivers/sysctl/sysctl.h"
 #include "../../board/ARM/drivers/gpio/gpio.h"
 
-struct procent proctab[NPROC];			/*table of processes	*/
-struct qentry queuetab[NQENT];        /* Table of process queues      */
-
-
 
 void LED1()
 {

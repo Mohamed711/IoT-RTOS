@@ -23,6 +23,9 @@
 #ifndef TIMER_H_
 #define TIMER_H_
 
+#include <stdint.h>
+#include "std.h"
+
 uint32_t	clktime;	/* current time in secs since boot	*/
 qid16	sleepq;		/* queue for sleeping processes		*/
 uint32_t ctr1000;
