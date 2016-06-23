@@ -43,6 +43,7 @@ typedef uint8_t UBaseType_t ; 	// unsigned basetype is important datatype used
 #define portYIELD_WITHIN_API()	// check for the tasks to take the higher priority one
 
 #define ARM 1
+//#define AVR 0
 
 #define NSEM 10 //semaphore dummy
 #define preemptive 0
@@ -100,5 +101,12 @@ void heap_init(Heap_Init *size);
 	#error "Invalid portBYTE_ALIGNMENT definition"
 #endif
 
+#ifdef ARM
+	#include "../board/ARM/drivers/timer/HAL_Timer_TivaC.h"
+#endif
+
+#ifdef AVR
+	#include "../board/AVR/drivers/timer/HAL_Timer_TivaC.h"
+#endif
 
 #endif

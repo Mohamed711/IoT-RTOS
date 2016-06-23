@@ -36,12 +36,12 @@ qid16 suspendedlist;
 
 #define EMPTY   (-1)            /* Null value for qnext or qprev index  */
 #define MAXKEY  0x7FFFFFFF      /* Max key that can be stored in queue  */
-#define MINKEY  (-1)      /* Min key that can be stored in queue  */
+#define MINKEY  (-1)      		/* Min key that can be stored in queue  */
 
 struct  qentry  {               /* One per process plus two per list    */
-	    int32_t   qkey;           /* Key on which the queue is ordered    */
-        int16_t   qnext;          /* Index of next process or tail        */
-        int16_t   qprev;          /* Index of previous process or head    */
+	    int32_t   qkey;         /* Key on which the queue is ordered    */
+        int16_t   qnext;        /* Index of next process or tail        */
+        int16_t   qprev;        /* Index of previous process or head    */
 };
 
 extern  struct qentry   queuetab[];

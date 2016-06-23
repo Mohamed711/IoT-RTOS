@@ -25,15 +25,14 @@
 #include <stdint.h>
 typedef void (*FnPtr)(void);
 
-typedef struct{
+typedef struct Timer_InitTypeDef{
 
 }Timer_InitTypeDef;
 
-typedef struct{
+typedef struct Timer_HandleTypeDef{
 	Timer_InitTypeDef  instance;
 	uint32_t timeInMillis;
 	FnPtr timeoutFn;
-
 } Timer_HandleTypeDef;
 
 /*****************************************************************************

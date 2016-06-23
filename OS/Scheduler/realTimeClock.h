@@ -26,13 +26,6 @@
 #include <stdint.h>
 #include "std.h"
 
-uint32_t	clktime;	/* current time in secs since boot	*/
-qid16	sleepq;		/* queue for sleeping processes		*/
-uint32_t ctr1000;
-int32_t	slnonempty;	/* nonzero if sleepq is nonempty	*/
-int32_t	*sltop;		/* ptr to key in first item on sleepq	*/
-uint32_t	preempt;	/* preemption counter			*/
-
 sysCall	insertd(pid32 pid, qid16 q,int32_t key);
 sysCall	yield(void);
 sysCall	sleep(int32_t delay);

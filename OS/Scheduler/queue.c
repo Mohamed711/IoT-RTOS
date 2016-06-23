@@ -22,6 +22,9 @@
 
 #include <stdint.h>
 #include "queue.h"
+#include "Process.h"
+
+
 extern struct procent proctab[NPROC];		  /* table of processes */
 
 /******************************************************************************

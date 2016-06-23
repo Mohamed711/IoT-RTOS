@@ -25,11 +25,10 @@
 #include "queue.h"
 #include "std.h"
 
-	 volatile char* pxCurrentTCB_Old;
-	 volatile char* pxCurrentTCB_New;
-	 extern pid32 currpid;
-	 extern struct procent proctab[NPROC];		  /* table of processes */
-
+volatile char* pxCurrentTCB_Old;
+volatile char* pxCurrentTCB_New;
+extern pid32 currpid;
+extern struct procent proctab[NPROC];		  /* table of processes */
 	
 /******************************************************************************
 *

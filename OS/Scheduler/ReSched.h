@@ -22,8 +22,6 @@
 #ifndef RESCHED_H_
 #define RESCHED_H_
 
-extern volatile char * pxCurrentTCB_Old;
-extern volatile char * pxCurrentTCB_New;
 void reSched(void);
 
 #endif

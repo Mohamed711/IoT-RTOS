@@ -24,7 +24,14 @@
 #include "ReSched.h"
 #include "realTimeClock.h"
 #include "Process.h"
-#include "../../board/ARM/drivers/timer/HAL_Timer_TivaC.h"
+#include "../RTOS.h"
+
+uint32_t	clktime;		/* current time in secs since boot	*/
+qid16		sleepq;			/* queue for sleeping processes		*/
+uint32_t 	ctr1000;
+int32_t		slnonempty;		/* nonzero if sleepq is nonempty	*/
+int32_t		*sltop;			/* ptr to key in first item on sleepq	*/
+uint32_t	preempt;		/* preemption counter			*/
 
 extern pid32 currpid;
 extern struct procent proctab[NPROC];		  /* table of processes */
