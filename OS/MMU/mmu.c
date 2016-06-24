@@ -2,69 +2,61 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include"mmu.h"
-#include"Config.h"
+#include "mmu.h"
+#include "../Scheduler/Process.h"
+
+/* Allocate the memory for the heap. */
+static uint8_t ucHeap[ configTOTAL_HEAP_SIZE ];	//create the heap array with size of the heap. It's static as it'll be used for all
+static size_t xNextFreeByte = ( size_t ) 0;	//initialize the heap
 
 
+/* void* means that it's a generic type it can return any type or you can say It is a pointer with unknown type.
+	It's used here as the memory is typeless(because it does not have a properly constructed object in it yet).
+   The function returns: a pointer to the start address of the allocated memory. */
 void *pvPortMalloc( size_t xWantedSize )
 {
-void *pvReturn = NULL;
-static uint8_t *pucAlignedHeap = NULL;
+void *pvReturn = NULL; 
 
-	/* Ensure that blocks are always aligned to the required number of bytes. */
+	/* just to check if the byte alignment type is 1 byte or another type as in 1 byte type you don't need to make byte alignment */
 	#if portBYTE_ALIGNMENT != 1
-		if( xWantedSize & portBYTE_ALIGNMENT_MASK )
+		if( xWantedSize & portBYTE_ALIGNMENT_MASK ) 
 		{
-			/* Byte alignment required. */
+			/* the aim of this operation is to check if the size is divisible by the byte alignment number */
+			/* if he entered here then Byte alignment is required to make the size can be divisible by the byte alignment number*/
 			xWantedSize += ( portBYTE_ALIGNMENT - ( xWantedSize & portBYTE_ALIGNMENT_MASK ) );
 		}
 	#endif
 
-	vTaskSuspendAll();
-	{
-		if( pucAlignedHeap == NULL )
-		{
-			/* Ensure the heap starts on a correctly aligned boundary. */
-			pucAlignedHeap = ( uint8_t * ) ( ( ( portPOINTER_SIZE_TYPE ) &ucHeap[ portBYTE_ALIGNMENT ] ) & ( ( portPOINTER_SIZE_TYPE ) ~portBYTE_ALIGNMENT_MASK ) );
-		}
-
-		/* Check there is enough room left for the allocation. */
-		if( ( ( xNextFreeByte + xWantedSize ) < configADJUSTED_HEAP_SIZE ) &&
+	processSuspendAll();	
+	
+		/* Check if the wanted size is available or not */
+		if( ( ( xNextFreeByte + xWantedSize ) < configTOTAL_HEAP_SIZE ) &&
 			( ( xNextFreeByte + xWantedSize ) > xNextFreeByte )	)/* Check for overflow. */
 		{
-			/* Return the next free byte then increment the index past this
-			block. */
-			pvReturn = pucAlignedHeap + xNextFreeByte;
-			xNextFreeByte += xWantedSize;
-		}
+			/* pvReturn now points to the address of the first allocated byte */ 
+			pvReturn = &( ucHeap[ xNextFreeByte ] );
+			/* increment the index of the allocated memory with the size newly allocated */
+			xNextFreeByte += xWantedSize;			
+		}	
+	processResumeAll();
 
-		traceMALLOC( pvReturn, xWantedSize );
-	}
-	( void ) xTaskResumeAll();
-
-	#if( configUSE_MALLOC_FAILED_HOOK == 1 )
+	
+	if( pvReturn == NULL )
 	{
-		if( pvReturn == NULL )
-		{
-			extern void vApplicationMallocFailedHook( void );
-			vApplicationMallocFailedHook();
-		}
+		EnterCriticalSection();
+		for(;;);
+		ExitCriticalSection();
 	}
-	#endif
-
+	
 	return pvReturn;
 }
 /*-----------------------------------------------------------*/
 
-void vPortFree(void *pv)
-{
-	(void)pv;
-}
 /*-----------------------------------------------------------*/
 
 void vPortInitialiseBlocks(void)
 {
-	/* Only required when static memory is not cleared. */
+	/* Only required when static memory is not cleared */
 	xNextFreeByte = (size_t)0;
 }
 /*-----------------------------------------------------------*/
