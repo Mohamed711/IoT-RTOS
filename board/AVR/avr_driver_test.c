@@ -10,8 +10,8 @@ SPI_InitTypeDef spi =
 	u8MODE_1,
 	u8DOR_MSB
 };
-/*
-void main()
+
+void spi_avr_test()
 {
 	DIO_InitPortDirection(PA,0xFF,0xFF);
 	SPI_HandleTypeDef SPIDATA ;
@@ -27,14 +27,14 @@ while(1)
 		
 	}
 }
-*/
+
 
 //UART TEST
-/*
+
 UART_InitTypeDef uart_init_config;
 UART_HandleTypeDef uart_handle;
 
-int main(void)
+void uart_avr_test(void)
 {
 	DIO_InitPortDirection(0x00,0xFF,0xFF);
 	
@@ -71,11 +71,11 @@ while(1)
 	}
 }
 }
-*/
+
 
 //I2C TEST
-/*
-int main(void)
+
+void i2c_avr_test(void)
 {
 	DIO_InitPortDirection(0x00,0xFF,0xFF);	//port A as output
 	
@@ -98,10 +98,10 @@ int main(void)
 		_delay_ms(10000);
 	}
 }
-*/
+
 	
 //TIMER TEST
-/*
+
 void toggle ()
 {
 	if (PORTA == 0xFF)
@@ -114,7 +114,7 @@ void toggle ()
 	}		
 }
 
-int main(void)
+void timer_avr_test(void)
 {
 	
 	DDRA = 0xFF;
@@ -130,11 +130,11 @@ int main(void)
 	timerstart(&timerHandle);
 	//timerdelay(&timerHandle);
 	while(1);
-}*/
+}
 
 //ADC TEST 
-/*
-int main(void)
+
+void adc_avr_tes(void)
 {
 	uint16_t result;
 	DDRA &=(~(0xFF));
@@ -149,13 +149,13 @@ int main(void)
 	handle.voltage_ref_sel=Internal_2_dot_56V_Voltage_Reference_with_external_cap_at_AREF_pin;
 	handle.u32MaxFreq=75000000UL;
 	ADC_HandleTypeDef res;
-	adcinit(&handle);
+	ADC_Init(&handle);
     while(1)
     {
-	    result = adcread(&res);
+	    result = ADC_Read(&res);
 	 
 	 PORTC =(result &0xFF);
 	 PORTD =((result)>>8);
 }
 	}
-*/
+

@@ -27,17 +27,13 @@
 
 typedef struct {
 	
+}Timer_InitTypeDef;
 	
-	}Timer_InitTypeDef;
-	
-typedef struct {
-	
+typedef struct {	
 	Timer_InitTypeDef instance ;
 	uint16_t timeInMillis; 
 	FnPtr timeoutFn;
-
-	
-	}Timer_HandleTypeDef;
+}Timer_HandleTypeDef;
 	
 #define timerinit(x) timer0Init1ms()
 #define timerdelay(x) timer0Delay1ms((*x).timeInMillis, (*x).timeoutFn)

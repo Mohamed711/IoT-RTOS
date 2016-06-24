@@ -19,15 +19,10 @@
  *  documentation and/or other materials provided with the
  *  distribution.
  *****************************************************************************/
+#include "RTOS_Headers.h"
 
-
-
-
-int main()
+int main(void)
 {
 
-
-
-
-	return 0;
+	
 }

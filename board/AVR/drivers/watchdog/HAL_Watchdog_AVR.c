@@ -20,8 +20,9 @@
  *  distribution.
  *****************************************************************************/
 
-#if (FAST_HAL == 0)
 #include "HAL_Watchdog_AVR.h"
+
+#if (FAST_HAL == 0)
 
 void WDT_Init()
 {

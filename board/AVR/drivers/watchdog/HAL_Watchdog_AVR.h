@@ -34,12 +34,12 @@ typedef struct
 * Prototypes for the APIs.
 *
 ******************************************************************************/
-#if FAST_HAL
-	#define WDT_Enable(WDT_InitTypeDef * watchdogen)	watchdogEnable((*watchdogen).timeout2);
+#if (FAST_HAL == 1)
+	#define WDT_Enable(watchdogen)	watchdogEnable(*(watchdogen).timeout2);
 	#define WDT_Init()			watchdogInit()
 	#define WDT_Disable()		watchdogDisable()
 	#define WDT_Reset()			watchdogReset()
-#elif
+#else
 	void WDT_Enable(WDT_InitTypeDef * watchdogen);
 	void WDT_Init();
 	void WDT_Disable();

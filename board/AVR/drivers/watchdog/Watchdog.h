@@ -21,6 +21,7 @@
  *****************************************************************************/
 #ifndef WATCHDOG_H_
 #define WATCHDOG_H_
+
 #include <stdint.h>
 #include <stdbool.h>
 

@@ -5,6 +5,11 @@
 #include "mmu.h"
 #include "../Scheduler/Process.h"
 
+/* Allocate the memory for the heap. */
+static uint8_t ucHeap[ configTOTAL_HEAP_SIZE ];	//create the heap array with size of the heap. It's static as it'll be used for all
+static size_t xNextFreeByte = ( size_t ) 0;	//initialize the heap
+
+
 /* void* means that it's a generic type it can return any type or you can say It is a pointer with unknown type.
 	It's used here as the memory is typeless(because it does not have a properly constructed object in it yet).
    The function returns: a pointer to the start address of the allocated memory. */

@@ -3,6 +3,9 @@
 #define ATMEGAHAL_H_
 
 
+#include <util/delay.h>
+#include <avr/io.h>
+
 #include "drivers/ADC/ADC.h"
 #include "drivers/ADC/ADC_CFG.h"
 #include "drivers/ADC/HAL_ADC_AVR.h"
@@ -18,7 +21,5 @@
 #include "drivers/SPI/HAL_SPI_AVR.h"
 #include "drivers/SPI/SPI.h"
 
-#include <util/delay.h>
-#include <avr/io.h>
 
 #endif /* ATMEGAHAL_H_ */
