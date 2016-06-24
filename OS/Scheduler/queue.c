@@ -26,6 +26,7 @@
 
 qid16 readylist;
 qid16 suspendedlist;
+
 extern struct procent proctab[NPROC];		  /* table of processes */
 
 /******************************************************************************
@@ -69,7 +70,7 @@ int32_t enqueue(int32_t pid, int16_t q)
 *****************************************************************************/
 int32_t dequeue(int16_t q)
 {
-	int32_t   pid;                    /* ID of process removed        */
+	int32_t   pid;                    /* ID of process removed */
 	if (isbadqid(q))
 	{
 		return SYSERR;
@@ -93,12 +94,12 @@ int32_t dequeue(int16_t q)
 *	\param q			ID of queue to use
 *	\param key			the key used to sort the processes in the queue
 *
-* 	\return 0 if there's an error, -1 if there's no error
+* 	\return SYSERR if there's an error, OK if there's no error
 *
 *****************************************************************************/
 sysCall	insert(pid32 pid, qid16 q, int32_t key)
 {
-	int16_t	curr;			/* Runs through items in a queue*/
+	int16_t	curr;			/* Runs through items in a queue */
 	int16_t	prev;			/* Holds previous node index	*/
 
 	if (isbadqid(q) || isbadpid(pid))
@@ -114,7 +115,7 @@ sysCall	insert(pid32 pid, qid16 q, int32_t key)
 
 	/* Insert process between curr node and previous node */
 
-	prev = queuetab[curr].qprev;	/* Get index of previous node	*/
+	prev = queuetab[curr].qprev;	/* Get index of previous node */
 	queuetab[pid].qnext = curr;
 	queuetab[pid].qprev = prev;
 	queuetab[pid].qkey = key;
@@ -132,16 +133,16 @@ sysCall	insert(pid32 pid, qid16 q, int32_t key)
 *****************************************************************************/
 qid16 newqueue(void)
 {
-	static qid16 nextqid = NPROC; /* Next list in queuetab to use */
-	qid16 q; /* ID of allocated queue */
-	q = nextqid;
+	static qid16 nextqid = NPROC; 	/* Next list in queuetab to use */
+	qid16 q; 						/* ID of allocated queue */
 
+	q = nextqid;
 	if (q > NQENT)
 	{ /* Check for table overflow */
 		return (qid16)SYSERR;
 	}
 
-	nextqid += 2; /* Increment index for next call*/
+	nextqid += 2; /* Increment index for next call */
 
 	/* Initialize head and tail nodes to form an empty queue */
 	queuetab[queuehead(q)].qnext = queuetail(q);
