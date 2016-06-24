@@ -20,11 +20,24 @@
  *  distribution.
  *****************************************************************************/
 
-#ifndef IOT_RTOS_USER_CONFIG_H_
-#define IOT_RTOS_USER_CONFIG_H_
+#ifndef IOT_RTOS_RTOS_HEADERS_H_
+#define IOT_RTOS_RTOS_HEADERS_H_
 
-#define FAST_HAL 1		/* This to use macros in HAL instead of the functions */
-#define ARM 					1
+#include "User_Config.h"
+
+#ifdef ARM
+	#include "board/ARM/tivaHAL.h"
+#endif
+
+#ifdef AVR
+	#include "board/AVR/atmegaHAL.h"
+#endif
+
+#include "OS/RTOS.h"
+#include "OS/IPC/ipc.h"
+#include "OS/MMU/mmu.h"
+#include "OS/Resource Management/Resource Management.h"
+#include "OS/Scheduler/*.h"
 
 
-#endif /* IOT_RTOS_USER_CONFIG_H_ */
+#endif /* IOT_RTOS_RTOS_HEADERS_H_ */

@@ -1,9 +1,31 @@
+/******************************************************************************
+ *	OurOS V 0.0.0 - Copyright (C) 2016
+ *  Computer and systems department
+ *  Ain Shams University
+ *
+ *  All rights reserved
+ *
+ *  VISIT http://www.OurRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *  Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *
+ *  Redistributions in binary form must reproduce the above copyright
+ *  notice, this list of conditions and the following disclaimer in the
+ *  documentation and/or other materials provided with the
+ *  distribution.
+ *****************************************************************************/
+
 #include <stdint.h>
 #include <stdbool.h>
 
 #include "tivaHAL.h"
-/*
-int main()
+
+void spi_arm_test()
 {
 	char *pcChars = "SSI Master send data.";
 
@@ -29,9 +51,9 @@ int main()
 		i++;
 	}
 }
-*/
-/*
-int main()
+
+
+void uart_arm_test()
 {
 	Uart_InitTypeDef initConf;
 	initConf.BaudRate=115200;
@@ -41,21 +63,21 @@ int main()
 	initConf.BaseAddress=UART0_BASE;
 	initConf.clock=SysCtlClockGet();
 
-	HAL_UART_Init(&initConf);
+	UART_Init(&initConf);
 
 	initConf.BaseAddress=UART0_BASE;
 
 	Uart_HandleTypeDef transmit;
 	transmit.init = initConf;
 	transmit.Tx='A';
-	HAL_UART_Send(&transmit);
+	UART_Send(&transmit);
 }
-*/
+
 //WATCHDOG TIMER TEST
-/*
-int main()
+
+void watchdog_arm_test()
 {
-	WDT_HandleTypeDef handle;
+	WDT_InitTypeDef handle;
 	handle.watchdogBaseAddress = WATCHDOG0_BASE;
 	handle.reloadValue = 0x01000000;
 	handle.resetEnable = 1;
@@ -63,26 +85,26 @@ int main()
 	handle.stallEnable = 1;
 
 	WDT_Init(&handle);
-}*/
+}
 
 //ADC TEST
-/*
-int main()
+
+void adc_arm_test()
 {
 	ADC_InitTypeDef handle;
 
 	handle.ADCn = SYSCTL_PERIPH_ADC0;
 	handle.seq = 1;
-	handle.ADC_TRIGGER = ADC_TRIGGER_PROCESSOR;
+//	handle.ADC_TRIGGER = ADC_TRIGGER_PROCESSOR;
 	handle.prio = 0;
 	handle.src = 0;
-	HAL_ADC_Init(&handle);
-	HAL_ADC_read(&handle);
+	ADC_Init(&handle);
+	ADC_Read(&handle);
 }
-*/
+
 
 //TIMER TEST
-/*
+
 void IntFn()
 {
 	if(GPIOPinRead(GPIO_PORTF_BASE, GPIO_PIN_2))
@@ -95,8 +117,8 @@ void IntFn()
 	}
 }
 
-/*
-int main(void) {
+
+void timer_arm_test(void) {
 
 	 SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
 	 GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
@@ -113,8 +135,8 @@ int main(void) {
 
 	while(1);
 }
-*/
-/*
+
+
 uint32_t j =0;
 void firstFunction(void)
 {
@@ -123,13 +145,14 @@ void firstFunction(void)
 }
 uint32_t i;
 
+/*
 void IntFn(void)
 {
 	i = 0x8;
 
 }
-
-int main(void)
+*/
+void timer_2_main_test(void)
 {
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
 		 GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
@@ -151,7 +174,5 @@ int main(void)
 		((void(*)(void))firstFunction)();
 	}
 
-
-	return 0;
 }
-*/
+

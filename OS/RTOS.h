@@ -20,39 +20,52 @@
  *  distribution.
  *****************************************************************************/
 
-#include <stdint.h>
-#include <stdbool.h>
-
 #ifndef RTOS_H_
 #define RTOS_H_
 
+
+#include <stdint.h>
+#include <stdbool.h>
+
+#include "../User_Config.h"
+
+#ifdef ARM
+	#include "../board/ARM/drivers/timer/HAL_Timer_TivaC.h"
+	#include "../board/ARM/board_config.h"
+#endif
+
+#ifdef AVR
+	#include "../board/AVR/drivers/timer/HAL_Timer_TivaC.h"
+	#include "../board/AVR/board_config.h"
+#endif
+
+
+typedef uint8_t TimeOut_t;
+typedef uint8_t TickType_t ;	// ticktype is a structure for the tick
 /* the basetype must be defined some where */
 typedef int8_t BaseType_t ;		// signed basetype is the base datatype
 typedef uint8_t UBaseType_t ; 	// unsigned basetype is important datatype used
+typedef int32_t pid32;
+typedef uint16_t pri16;
+typedef uint32_t sid32;
+typedef uint32_t umsg32;
+typedef bool bool8;
+typedef	uint32_t intmask;
+typedef uint16_t qid16;
+typedef bool sysCall;
 
 #define configASSERT(x)			// configAssert check the condition x is true or return the file and line number
-#define taskENTER_CRITICAL()	// enable critical section
-#define taskEXIT_CRITICAL()		// disable critical section
 #define pdTRUE	0x01			// true return
 #define pdFALSE	0x00			// false return
 #define pdPASS	0x01			// return value that the function carried out correctly
 #define pdFAIL 	0x00			// return fail
 #define errQUEUE_FULL	0x00	// error value indicates that the queue is full
 #define errQUEUE_EMPTY 	0x00	// error the queue is empty
-typedef uint8_t TimeOut_t;
-typedef uint8_t TickType_t ;	// ticktype is a structure for the tick
-
-
-
-#define EnterCriticalSection()
-#define ExitCriticalSection()
 #define mtCOVERAGE_TEST_MARKER()// just an empty for the else part of the if statement
 #define PRIVILEGED_FUNCTION		// to the memory protection unit
 #define configUSE_PREEMPTION 0	// config the scheduler to be preemptive or cooperative
 #define portYIELD_WITHIN_API()	// check for the tasks to take the higher priority one
 
-#define ARM 1
-//#define AVR 0
 
 #define NSEM 10 //semaphore dummy
 #define preemptive 0
@@ -60,21 +73,9 @@ typedef uint8_t TickType_t ;	// ticktype is a structure for the tick
 #define	QUANTUM	2
 #define	MAXSECONDS	2147483		/* Max seconds per 32-bit msec	*/
 
-typedef int32_t pid32;
-typedef uint16_t pri16;
-typedef uint32_t sid32;
-typedef uint32_t umsg32;
-typedef bool bool8;
-typedef	uint32_t intmask;
-
-typedef uint16_t qid16;
-
-typedef bool sysCall;
-
 #define OK 1
 #define SYSERR -1
 #define TIMEOUT 0
-
 
 #ifndef configUSE_MALLOC_FAILED_HOOK
 	#define configUSE_MALLOC_FAILED_HOOK 0
@@ -91,19 +92,6 @@ typedef struct
 void heap_init(Heap_Init *size);
 */
 /*-----------------------------------------*/
-
-#define KitType  0  //till we know how to define the kit
-
-#if KitType == 0 // atmega32
-	#define configTOTAL_HEAP_SIZE 1500
-#define portBYTE_ALIGNMENT  4 //because we want it work on 32 bit word alignment
-#endif
-#if KitType == 1 //tivaC
-	#define configTOTAL_HEAP_SIZE 30000
-#define portBYTE_ALIGNMENT  8 //till we know if it's automatically or not
-#endif
-
-
 
 /*portBYTE_ALIGNMENT defined by user but for default value portBYTE_ALIGNMENT=8  need to implement this as structure*/
 #if portBYTE_ALIGNMENT == 8
@@ -126,12 +114,5 @@ void heap_init(Heap_Init *size);
 	#error "Invalid portBYTE_ALIGNMENT definition"
 #endif
 
-#ifdef ARM
-	#include "../board/ARM/drivers/timer/HAL_Timer_TivaC.h"
-#endif
-
-#ifdef AVR
-	#include "../board/AVR/drivers/timer/HAL_Timer_TivaC.h"
-#endif
 
 #endif
