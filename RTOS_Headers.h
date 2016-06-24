@@ -37,7 +37,13 @@
 #include "OS/IPC/ipc.h"
 #include "OS/MMU/mmu.h"
 #include "OS/Resource Management/Resource Management.h"
-#include "OS/Scheduler/*.h"
+#include "OS/Scheduler/contextSwitch.h"
+#include "OS/Scheduler/Initialize.h"
+#include "OS/Scheduler/Process.h"
+#include "OS/Scheduler/queue.h"
+#include "OS/Scheduler/realTimeClock.h"
+#include "OS/Scheduler/ReSched.h"
+
 
 
 #endif /* IOT_RTOS_RTOS_HEADERS_H_ */

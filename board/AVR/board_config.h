@@ -25,6 +25,7 @@
 
 #define configTOTAL_HEAP_SIZE 	1500
 #define portBYTE_ALIGNMENT  	 4 //because we want it work on 32 bit word alignment
+#define F_CPU 8000000UL
 #define EnterCriticalSection()
 #define ExitCriticalSection()
 

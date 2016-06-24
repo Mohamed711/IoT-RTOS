@@ -8,9 +8,7 @@
 
 #include "../RTOS.h"
 
-/* Allocate the memory for the heap. */
-static uint8_t ucHeap[ configTOTAL_HEAP_SIZE ];	//create the heap array with size of the heap. It's static as it'll be used for all
-static size_t xNextFreeByte = ( size_t ) 0;	//initialize the heap
+
 /*-----------------------------------------------------------*/
 
 void *pvPortMalloc(size_t xWantedSize);	//allocate the desired size for a process

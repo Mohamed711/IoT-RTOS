@@ -26,8 +26,6 @@
 #include "USART_CFG.h"
 #include "USART.h"
 
-#define F_CPU 8000000ul
-
 /************************************************************************
 * Set the Baud Rate, number of data bits, number of stop bits,
 * parity state, Interrupt state, speed state if normal or double speed

@@ -35,7 +35,7 @@
 #endif
 
 #ifdef AVR
-	#include "../board/AVR/drivers/timer/HAL_Timer_TivaC.h"
+	#include "../board/AVR/drivers/Timer/HAL_Timer_AVR.h"
 	#include "../board/AVR/board_config.h"
 #endif
 
