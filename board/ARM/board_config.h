@@ -20,18 +20,12 @@
  *  distribution.
  *****************************************************************************/
 
-#ifndef IPC_CFG_H_
-#define IPC_CFG_H_
+#ifndef IOT_RTOS_BOARD_ARM_BOARD_CONFIG_H_
+#define IOT_RTOS_BOARD_ARM_BOARD_CONFIG_H_
 
-#include <stdint.h>
-#include "../RTOS.h"
-#include "ipc_trace.h"
+#define configTOTAL_HEAP_SIZE 30000
+#define portBYTE_ALIGNMENT  	8 //till we know if it's automatically or not
+#define EnterCriticalSection()
+#define ExitCriticalSection()
 
-typedef uint8_t TimeOut_t;
-typedef uint8_t TickType_t ;	// ticktype is a structure for the tick
-
-#define errQUEUE_FULL	0x00	// error value indicates that the queue is full
-#define errQUEUE_EMPTY 	0x00	// error the queue is empty
-#define configUSE_QUEUE_LOCKS 1	// configure the locks
-
-#endif
+#endif /* IOT_RTOS_BOARD_ARM_BOARD_CONFIG_H_ */

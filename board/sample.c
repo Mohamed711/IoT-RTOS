@@ -20,11 +20,11 @@ void passingInitStructure(UART_InitTypeDef* x)
 	printf("%d %d %d %d %d \n",x->baud_rate,x->parity,x->start,x->stop_bits,x->activate);
 }	
 
-/*
-void main()
+
+void getParams_test()
 {
 
 UART_INIT(stop_bits = 25, activate = 13);
 
 }
-*/
+

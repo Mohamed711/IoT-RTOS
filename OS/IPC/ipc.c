@@ -23,8 +23,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-// include of the task header file which can be used to transfer the task between modules
-#include "ipc_cfg.h"
+#include "../RTOS.h"
 #include "ipc_trace.h"
 #include "ipc.h"
 
@@ -101,7 +100,7 @@ BaseType_t xQueueGenericReset( QueueHandle_t xQueue, BaseType_t xNewQueue )
 
 	configASSERT( pxQueue );
 
-	taskENTER_CRITICAL();
+	EnterCriticalSection();
 	{
 		pxQueue->pcTail = pxQueue->pcHead + ( pxQueue->uxLength * pxQueue->uxItemSize );
 		pxQueue->uxMessagesWaiting = ( UBaseType_t ) 0U;
@@ -153,7 +152,7 @@ BaseType_t xQueueGenericReset( QueueHandle_t xQueue, BaseType_t xNewQueue )
 			// save the address or the number of queues in the datastructure itself
 		}
 	}
-	taskEXIT_CRITICAL();
+	ExitCriticalSection();
 
 	/* A value is returned for calling semantic consistency with previous
 	versions. */
@@ -211,7 +210,7 @@ QueueHandle_t xQueueGenericCreate( const UBaseType_t uxQueueLength, const UBaseT
 BaseType_t xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQueue, TickType_t xTicksToWait, const BaseType_t xCopyPosition )
 {
 	BaseType_t xEntryTimeSet = pdFALSE;
-	TimeOut_t xTimeOut;
+	//TimeOut_t xTimeOut;
 	Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 
 			configASSERT( pxQueue );
@@ -219,7 +218,7 @@ BaseType_t xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQ
 
 			for( ;; )
 			{
-				taskENTER_CRITICAL();
+				EnterCriticalSection();
 				{
 					/* Is there room on the queue now?  To be running we must be
 					the highest priority task wanting to access the queue. */
@@ -250,14 +249,14 @@ BaseType_t xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQ
 							mtCOVERAGE_TEST_MARKER();
 						}
 
-						taskEXIT_CRITICAL();
+						ExitCriticalSection();
 						return pdPASS;
 					}
 					else
 					{
 						if( xTicksToWait == ( TickType_t ) 0 )
 						{
-							taskEXIT_CRITICAL();
+							ExitCriticalSection();
 							return errQUEUE_FULL;
 						}
 						else if( xEntryTimeSet == pdFALSE )
@@ -268,9 +267,9 @@ BaseType_t xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQ
 						}
 					}
 				}
-				taskEXIT_CRITICAL();
+				ExitCriticalSection();
 
-				taskENTER_CRITICAL();
+				EnterCriticalSection();
 				{
 					if( /* xTaskCheckForTimeOut( &xTimeOut, &xTicksToWait ) == pdFALSE  */ 0 == 1 )
 					{
@@ -288,12 +287,12 @@ BaseType_t xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQ
 					}
 					else
 					{
-						taskEXIT_CRITICAL();
+						ExitCriticalSection();
 						traceQUEUE_SEND_FAILED( pxQueue );
 						return errQUEUE_FULL;
 					}
 				}
-				taskEXIT_CRITICAL();
+				ExitCriticalSection();
 			}
 }
 
@@ -302,7 +301,7 @@ BaseType_t xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQ
 BaseType_t xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer, TickType_t xTicksToWait, const BaseType_t xJustPeeking )
 {
 	BaseType_t xEntryTimeSet = pdFALSE;
-		TimeOut_t xTimeOut;
+	//	TimeOut_t xTimeOut;
 		int8_t *pcOriginalReadPosition;
 		Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 
@@ -311,7 +310,7 @@ BaseType_t xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer, Ti
 
 			for( ;; )
 			{
-				taskENTER_CRITICAL();
+				EnterCriticalSection();
 				{
 					if( pxQueue->uxMessagesWaiting > ( UBaseType_t ) 0 )
 					{
@@ -373,14 +372,14 @@ BaseType_t xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer, Ti
 							}
 						}
 
-						taskEXIT_CRITICAL();
+						ExitCriticalSection();
 						return pdPASS;
 					}
 					else
 					{
 						if( xTicksToWait == ( TickType_t ) 0 )
 						{
-							taskEXIT_CRITICAL();
+							ExitCriticalSection();
 							// trace Queue
 							// traceQUEUE_RECEIVE_FAILED( pxQueue );
 							return errQUEUE_EMPTY;
@@ -393,9 +392,9 @@ BaseType_t xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer, Ti
 						}
 					}
 				}
-				taskEXIT_CRITICAL();
+				ExitCriticalSection();
 
-				taskENTER_CRITICAL();
+				EnterCriticalSection();
 				{
 					// compare if the timeout has passed
 					if( /* xTaskCheckForTimeOut( &xTimeOut, &xTicksToWait )*/ pdTRUE == pdFALSE )
@@ -415,13 +414,13 @@ BaseType_t xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer, Ti
 					}
 					else
 					{
-						taskEXIT_CRITICAL();
+						ExitCriticalSection();
 						// trace Queue
 						// traceQUEUE_RECEIVE_FAILED( pxQueue );
 						return errQUEUE_EMPTY;
 					}
 				}
-				taskEXIT_CRITICAL();
+				ExitCriticalSection();
 			}
 }
 
@@ -433,11 +432,11 @@ UBaseType_t uxReturn;
 
 	configASSERT( xQueue );
 
-	taskENTER_CRITICAL();
+	EnterCriticalSection();
 	{
 		uxReturn = ( ( Queue_t * ) xQueue )->uxMessagesWaiting;
 	}
-	taskEXIT_CRITICAL();
+	ExitCriticalSection();
 
 	return uxReturn;
 }
@@ -451,11 +450,11 @@ UBaseType_t uxQueueSpacesAvailable( const QueueHandle_t xQueue )
 	pxQueue = ( Queue_t * ) xQueue;
 	configASSERT( pxQueue );
 
-	taskENTER_CRITICAL();
+	EnterCriticalSection();
 	{
 		uxReturn = pxQueue->uxLength - pxQueue->uxMessagesWaiting;
 	}
-	taskEXIT_CRITICAL();
+	ExitCriticalSection();
 
 	return uxReturn;
 } /*lint !e818 Pointer cannot be declared const as xQueue is a typedef not pointer. */
@@ -478,7 +477,7 @@ static BaseType_t prvIsQueueEmpty( const Queue_t *pxQueue )
 {
 BaseType_t xReturn;
 
-	taskENTER_CRITICAL();
+	EnterCriticalSection();
 	{
 		if( pxQueue->uxMessagesWaiting == ( UBaseType_t )  0 )
 		{
@@ -489,7 +488,7 @@ BaseType_t xReturn;
 			xReturn = pdFALSE;
 		}
 	}
-	taskEXIT_CRITICAL();
+	ExitCriticalSection();
 
 	return xReturn;
 }
@@ -517,7 +516,7 @@ static BaseType_t prvIsQueueFull( const Queue_t *pxQueue )
 {
 BaseType_t xReturn;
 
-	taskENTER_CRITICAL();
+	EnterCriticalSection();
 	{
 		if( pxQueue->uxMessagesWaiting == pxQueue->uxLength )
 		{
@@ -528,7 +527,7 @@ BaseType_t xReturn;
 			xReturn = pdFALSE;
 		}
 	}
-	taskEXIT_CRITICAL();
+	ExitCriticalSection();
 
 	return xReturn;
 }
@@ -554,11 +553,11 @@ BaseType_t xReturn;
 
 void vQueueDelete( QueueHandle_t xQueue )
 {
-	Queue_t * const pxQueue = ( Queue_t * ) xQueue;
+	//Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 
-	configASSERT( pxQueue );
+	//configASSERT( pxQueue );
 
-	traceQUEUE_DELETE( pxQueue );
+	//traceQUEUE_DELETE( pxQueue );
 
 	/// LOOK HERE ///
 	// free the part of the pxQueue

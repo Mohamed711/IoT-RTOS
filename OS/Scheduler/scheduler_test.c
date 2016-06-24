@@ -2,11 +2,16 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "Process.h"
 #include "../../board/ARM/drivers/inc/hw_memmap.h"
 #include "../../board/ARM/drivers/inc/hw_types.h"
 #include "../../board/ARM/drivers/sysctl/sysctl.h"
 #include "../../board/ARM/drivers/gpio/gpio.h"
+#include "Process.h"
+#include "../RTOS.h"
+extern pid32 currpid;
+extern struct procent proctab[NPROC];		  /* table of processes */
+extern qid16 readylist;
+extern qid16 suspendedlist;
 
 
 void LED1()
@@ -54,8 +59,8 @@ void nullProc()
 	
 }
 
-/*
-int main(void) {
+
+void scheduler_test() {
 
 	readylist = newqueue();
 	suspendedlist = newqueue();
@@ -83,6 +88,4 @@ int main(void) {
 		pf = proctab[currpid].processFunction;
 		pf();
 	}
-	return 0;
 }
-*/
