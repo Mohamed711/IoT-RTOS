@@ -19,10 +19,16 @@
 *  documentation and/or other materials provided with the
 *  distribution.
 *****************************************************************************/
-#include "headers.h"
 	
-	 volatile char* pxCurrentTCB_Old;
-	 volatile char* pxCurrentTCB_New;
+#include "ReSched.h"
+#include "Process.h"
+#include "queue.h"
+#include "std.h"
+
+volatile char* pxCurrentTCB_Old;
+volatile char* pxCurrentTCB_New;
+extern pid32 currpid;
+extern struct procent proctab[NPROC];		  /* table of processes */
 	
 /******************************************************************************
 *
@@ -55,9 +61,12 @@ ptold = &proctab[currpid];
 	ptnew->prstate = PR_CURR;
 	
 
-	/*preempt = QUANTUM;		/* Reset time slice for process	*/
+	/*preempt = QUANTUM;	*/
+	/* Reset time slice for process	*/
 
 	//contextSwitch(&ptold->prstkptr, &ptnew->prstkptr);
-	
+	void(*pf)(void);
+pf = proctab[currpid].processFunction;
+pf();
 	return;
 }

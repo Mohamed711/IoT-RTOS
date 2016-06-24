@@ -19,8 +19,13 @@
 *  documentation and/or other materials provided with the
 *  distribution.
 *****************************************************************************/
-#include "headers.h"
 
+#include <stdint.h>
+#include "queue.h"
+#include "Process.h"
+
+
+extern struct procent proctab[NPROC];		  /* table of processes */
 
 /******************************************************************************
 *
@@ -34,9 +39,9 @@
 * 	\return the pid of the inserted process
 *
 *****************************************************************************/
-s32 enqueue(s32 pid, s16 q)
+int32_t enqueue(int32_t pid, int16_t q)
 {
-	s16   tail, prev;             /* Tail & previous node indexes */
+	int16_t   tail, prev;             /* Tail & previous node indexes */
     if (isbadqid(q) || isbadpid(pid))
     {
     	return SYSERR;
@@ -61,9 +66,9 @@ s32 enqueue(s32 pid, s16 q)
 * 	\return the pid of the inserted process
 *
 *****************************************************************************/
-s32 dequeue(s16 q)
+int32_t dequeue(int16_t q)
 {
-	s32   pid;                    /* ID of process removed        */
+	int32_t   pid;                    /* ID of process removed        */
 	if (isbadqid(q))
 	{
 		return SYSERR;
@@ -90,10 +95,10 @@ s32 dequeue(s16 q)
 * 	\return 0 if there's an error, -1 if there's no error
 *
 *****************************************************************************/
-sysCall	insert(pid32 pid, qid16 q, s32 key)
+sysCall	insert(pid32 pid, qid16 q, int32_t key)
 {
-	s16	curr;			/* Runs through items in a queue*/
-	s16	prev;			/* Holds previous node index	*/
+	int16_t	curr;			/* Runs through items in a queue*/
+	int16_t	prev;			/* Holds previous node index	*/
 
 	if (isbadqid(q) || isbadpid(pid))
 	{

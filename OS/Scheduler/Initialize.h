@@ -21,18 +21,16 @@
 *****************************************************************************/
 #ifndef INITIALIZE_H_
 #define INITIALIZE_H_
-
-
-pid32 currpid;
-u32 prcount;
-
-extern struct procent proctab[NPROC];			/*table of processes	*/
-extern struct qentry queuetab[NQENT];        /* Table of process queues      */
-
-
-
-
-
-
-
+#include "realTimeClock.h"
+#include "Process.h"
+#include "queue.h"
+void initializeOS(void);
+extern struct procent proctab[NPROC];		  /* table of processes */
+#ifdef AVR
+#define portFLAGS_INT_ENABLED					( ( uint16_t ) 0x80 )
+typedef void (*pdTASK_CODE)( void * ); // pointer to the task function
+extern portSTACK_TYPE *InitialiseStack( portSTACK_TYPE *saddr, pdTASK_CODE pxCode);
+extern volatile uint8_t* pxCurrentTCB_H;
+extern volatile uint8_t* pxCurrentTCB_L;
+#endif
 #endif /* INITIALIZE_H_ */
