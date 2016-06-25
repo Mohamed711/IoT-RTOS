@@ -146,13 +146,16 @@ void adc_avr_tes(void)
 	handle.channel=ch_ADC0;
 	handle.enable_interrupt= false;
 	handle.trigger=Free_Running_mode;
-	handle.voltage_ref_sel=Internal_2_dot_56V_Voltage_Reference_with_external_cap_at_AREF_pin;
+	handle.voltage_ref_sel=Internal_Voltage_Reference;
 	handle.u32MaxFreq=75000000UL;
 	ADC_HandleTypeDef res;
-	ADC_Init(&handle);
+	//ADC_Init(&handle);
+	HAL_ADC_Init(&handle);
     while(1)
     {
-	    result = ADC_Read(&res);
+	    //result = ADC_Read(&res);
+		HAL_ADC_read(&res);
+		result=res.return_result;
 	 
 	 PORTC =(result &0xFF);
 	 PORTD =((result)>>8);
