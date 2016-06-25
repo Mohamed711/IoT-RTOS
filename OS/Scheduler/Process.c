@@ -27,8 +27,9 @@
 #include "realTimeClock.h"
 #include "../MMU/mmu.h"
 
-pid32 currpid;
+pid32 currpid; 	/* process running id */
 extern struct procent proctab[NPROC];		  /* table of processes */
+
 extern qid16 readylist;
 extern qid16 suspendedlist;
 
@@ -88,7 +89,7 @@ pid32 processNewPid(void)
 * 	\return the pid of the created process
 *
 *****************************************************************************/
-pid32 processCreate(void *funcAddr, uint32_t ssize, pri16 priority, char *name)
+pid32 processCreate(void (*funcAddr)(void), uint32_t ssize, pri16 priority, char *name)
 {
 	pid32 pid; /* Stores new process id */
 	struct procent *prptr; /* Pointer to process table entry */
@@ -136,7 +137,7 @@ pid32 processCreate(void *funcAddr, uint32_t ssize, pri16 priority, char *name)
 *****************************************************************************/
 sysCall processTerminate(pid32 pid)
 {
-	struct procent *prptr; /* Ptr to process’ table entry */
+	struct procent *prptr; /* Ptr to process table entry */
 	//uint32_t i; /* Index into descriptors */
 
 	if (isbadpid(pid) || (pid == NULLPROC)
@@ -147,25 +148,26 @@ sysCall processTerminate(pid32 pid)
 		//xdone(); //lsa mt3mltsh 
 	
 
-	switch (prptr->prstate) {
-	case PR_CURR:
-		prptr->prstate = PR_FREE; /* Suicide */
-		reSched();
-	case PR_SLEEP:
-	case PR_RECTIM:
-		unsleep(pid);
-		prptr->prstate = PR_FREE;
-		break;
-	case PR_WAIT:
-		//semtab[prptr->prsem].scount++;
-		/* Fall through */
-	case PR_READY:
-		getitem(pid); /* Remove from queue */
-		prptr->prstate = PR_FREE;
-		break;
-		/* Fall through */
-	default:
-		prptr->prstate = PR_FREE;
+	switch (prptr->prstate)
+	{
+		case PR_CURR:
+			prptr->prstate = PR_FREE; /* Suicide */
+			reSched();
+		case PR_SLEEP:
+		case PR_RECTIM:
+			unsleep(pid);
+			prptr->prstate = PR_FREE;
+			break;
+		case PR_WAIT:
+			//semtab[prptr->prsem].scount++;
+			/* Fall through */
+		case PR_READY:
+			getitem(pid); /* Remove from queue */
+			prptr->prstate = PR_FREE;
+			break;
+			/* Fall through */
+		default:
+			prptr->prstate = PR_FREE;
 	}
 	return OK;
 }
@@ -210,7 +212,7 @@ pri16 processResume(pid32 pid)
 {
 	//intmask	mask;			/* Saved interrupt mask		*/
 	struct	procent *prptr;		/* Ptr to process' table entry	*/
-	pri16	prio;			/* Priority to return		*/
+	pri16	prio;				/* Priority to return		*/
 
 	//mask = disable();
 	/*
