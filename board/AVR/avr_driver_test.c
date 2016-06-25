@@ -149,13 +149,13 @@ void adc_avr_tes(void)
 	handle.voltage_ref_sel=Internal_Voltage_Reference;
 	handle.u32MaxFreq=75000000UL;
 	ADC_HandleTypeDef res;
-	//ADC_Init(&handle);
-	HAL_ADC_Init(&handle);
+	ADC_Init(&handle);
+	//HAL_ADC_Init(&handle);
     while(1)
     {
-	    //result = ADC_Read(&res);
-		HAL_ADC_read(&res);
-		result=res.return_result;
+	    result = ADC_Read(&res);
+		/*HAL_ADC_read(&res);
+		result=res.return_result;*/
 	 
 	 PORTC =(result &0xFF);
 	 PORTD =((result)>>8);

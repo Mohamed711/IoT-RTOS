@@ -31,13 +31,13 @@ typedef struct
 	
 }ADC_HandleTypeDef;
 
-void HAL_ADC_Init(ADC_InitTypeDef * adc);
-void HAL_ADC_read(ADC_HandleTypeDef *adc);
-void HAL_ADC_OFF(void);
+//void HAL_ADC_Init(ADC_InitTypeDef * adc);
+//void HAL_ADC_read(ADC_HandleTypeDef *adc);
+//void HAL_ADC_OFF(void);
 
-//#define ADC_Init(x) adcInit( (*x).voltage_ref_sel, (*x).enable_interrupt, (*x).trigger, (*x).channel, (*x).u32MaxFreq )
-//#define ADC_Read(x) adcResult_u16();
-//#define ADC_Off() 	adcOff()
+#define ADC_Init(x) adcInit( (*x).voltage_ref_sel, (*x).enable_interrupt, (*x).trigger, (*x).channel, (*x).u32MaxFreq )
+#define ADC_Read(x) adcResult_u16(   (*x).return_result );
+#define ADC_Off() 	adcOff()
 
 
 #endif /* HAL_ADC_AVR_H_ */
