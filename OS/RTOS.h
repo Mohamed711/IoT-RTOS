@@ -64,12 +64,16 @@ typedef bool sysCall;
 #define mtCOVERAGE_TEST_MARKER()// just an empty for the else part of the if statement
 #define PRIVILEGED_FUNCTION		// to the memory protection unit
 #define configUSE_PREEMPTION 0	// config the scheduler to be preemptive or cooperative
+#define preemptive 0
+
 #define portYIELD_WITHIN_API()	// check for the tasks to take the higher priority one
 
 
-#define NSEM 10 //semaphore dummy
-#define preemptive 0
+/* this values to be computed by a separate program isa */
+#define NSEM 10
 #define NPROC 5
+#define NQENT   (NPROC + 4 + NSEM + NSEM)
+
 #define	QUANTUM	2
 #define	MAXSECONDS	2147483		/* Max seconds per 32-bit msec	*/
 
