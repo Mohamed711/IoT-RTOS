@@ -1,35 +1,14 @@
-/******************************************************************************
- *	OurOS V 0.0.0 - Copyright (C) 2016
- *  Computer and systems department
- *  Ain Shams University
- *
- *  All rights reserved
- *
- *  VISIT http://www.OurRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *  Redistributions of source code must retain the above copyright
- *  notice, this list of conditions and the following disclaimer.
- *
- *  Redistributions in binary form must reproduce the above copyright
- *  notice, this list of conditions and the following disclaimer in the
- *  documentation and/or other materials provided with the
- *  distribution.
- *****************************************************************************/
 
 #include "ADC.h"
-const ADC_CLK_Rate adc_clk[PRESCALAR_NUM] =
+const CLK_Rate clk[PRESCALAR_NUM] =
 {
-	{F_CPU/2,0},
-	{F_CPU/4,2},
-	{F_CPU/8,3},
-	{F_CPU/16,4},
-	{F_CPU/32,5},
-	{F_CPU/64,6},
-	{F_CPU/128,7}
+{F_CPU/2,0},
+{F_CPU/4,2},
+{F_CPU/8,3},
+{F_CPU/16,4},
+{F_CPU/32,5},
+{F_CPU/64,6},
+{F_CPU/128,7}
 };
 
 /* ADC justify ('L' or 'R') L for only 8 bit precision*/
@@ -39,8 +18,7 @@ static volatile uint8_t ADC_result;
 #elif ADC_JUSTIFY == 'R'
 static volatile uint16_t ADC_result;
 #endif
-
-bool  enable_interrupt;
+static bool  enable_interrupt;
 
 /*************************************************************************************************************************
 *
@@ -53,14 +31,14 @@ bool  enable_interrupt;
 **************************************************************************************************************************/
 void adcOff(void)
 {
-	/* disable interrupt*/
-	ADCSRA &= (0 << ADIE);
-	/* disable ADC*/
-	ADCSRA &= (0 << ADEN);
+	// disable interrupt
+	ADCSRA_REG &= (0 << ADIE);
+	// disable ADC
+	ADCSRA_REG &= (0 << ADEN);
 }
 
 /*************************************************************************************************************************
-* the function's purpose is Initialize the ADC
+* the function's purpose is to Initialize the ADC
 *
 * \param voltage_ref_sel   Voltage Reference Selection 
 *
@@ -79,54 +57,54 @@ void adcInit(uint8_t voltage_ref_sel , bool enable_interrupt_, uint8_t trigger ,
 {
 	/* 1)Set ADC reference */
 	enable_interrupt=enable_interrupt_;
-	ADMUX |= (  (( (voltage_ref_sel)&0x02)>>1)<<REFS1 )| (((voltage_ref_sel)&0x01)<<REFS0 ) ;
+	ADMUX_REG |= (  (( (voltage_ref_sel)&0x02)>>1)<<REFS1 )| (((voltage_ref_sel)&0x01)<<REFS0 ) ;
 		
 	/* 2)Get the most suitable pre-scalar */ 
 	
 	uint8_t u8LoopCount;
 	for( u8LoopCount = 0; u8LoopCount < PRESCALAR_NUM ;u8LoopCount++)
 	{
-		if(adc_clk[u8LoopCount].u32TempFreq < u32MaxFreq )
+		if(clk[u8LoopCount].u32TempFreq < u32MaxFreq )
 		{
 			break;
 		}
 	}
-	ADCSRA &=0xF8; 
-	ADCSRA |=(adc_clk[u8LoopCount].u8RegVal & 0x03);
+	ADCSRA_REG &=0xF8; 
+	ADCSRA_REG |=(clk[u8LoopCount].u8RegVal & 0x03);
 	
-	/* i only support right adjust*/
+	/* i only support right adjust for 10 bit result and left adjust for 8 bit result */
 	/* 3)Set ADC justify */
 	#if ADC_JUSTIFY == 'L'
 	/* Left adjust ADC result to allow easy 8 bit reading */
-	ADMUX |= (1 << ADLAR); 
+	ADMUX_REG |= (1 << ADLAR); 
 	#elif ADC_JUSTIFY == 'R'
     /*Right adjust */
-	ADMUX |= (0 << ADLAR); 
+	ADMUX_REG |= (0 << ADLAR); 
 	#endif
 	/* 4) Enable ADC Interrupt */
 	if( enable_interrupt == 1)
 	{	
-	ADCSRA |= (1 << ADIE);
+	ADCSRA_REG |= (1 << ADIE);
 	/* 6) set global interrupt */
 	sei();
 	}	
 	/* enable */ 
 	if(trigger != Free_Running_mode )
 	{	
-	ADCSRA |=(1<<ADATE);
+	ADCSRA_REG |=(1<<ADATE);
 	}	
 	/* 8)set channel */
-	ADMUX |=((channel)&0x1F);
+	ADMUX_REG |=((channel)&0x1F);
 	/* 5) Enable ADC */
-	ADCSRA |= (1 << ADEN);
+	ADCSRA_REG |= (1 << ADEN);
 	
 	if( enable_interrupt == 1)	
 	{	
 	/* 7) Start conversions single conversion */
-	ADCSRA |= (1 << ADSC);
+	ADCSRA_REG |= (1 << ADSC);
 	}	
 	/* set trigger */
-	SFIOR |= ((trigger)&07)<<5;
+	SFIOR_REG |= ((trigger)&07)<<5;
 	
 }
 /* #if enable_interrupt == 1 */
@@ -134,15 +112,15 @@ ISR(ADC_vect)
 {  
 	 #if ADC_JUSTIFY == 'R'
 	/*read the low byte of the converted data*/
-	ADC_result = ADCL;
+	ADC_result = ADCL_REG;
 	/*read the high byte of the converted data*/
-	ADC_result |= ADCH <<8;
+	ADC_result |= ADCH_REG <<8;
 	
 	#elif ADC_JUSTIFY == 'L'
 	ADC_result = ADCH ;
 	#endif		
 	/* set the start conversion to begin next conversion  */
-	ADCSRA |= (1 << ADSC);
+	ADCSRA_REG |= (1 << ADSC);
 
 }
 
@@ -161,13 +139,13 @@ uint16_t adcResult_u16()
 	if( enable_interrupt == 0)
 	{
 		
-	ADCSRA |= (1 << ADSC);
-	while(!(ADCSRA & (1<<ADIF)));
+	ADCSRA_REG |= (1 << ADSC);
+	while(!(ADCSRA_REG & (1<<ADIF)));
 	
-	ADC_result = ADCL;
-	ADC_result |= ADCH<<8;
+	ADC_result = ADCL_REG;
+	ADC_result |= ADCH_REG<<8;
 	
-	ADCSRA|=(1<<ADIF);
+	ADCSRA_REG|=(1<<ADIF);
 	} 
 	    
     return ADC_result;	
@@ -188,11 +166,11 @@ uint8_t adcResult_u8()
 	if( enable_interrupt == 0)
 	{
 		
-	ADCSRA |= (1 << ADSC);
+	ADCSRA_REG |= (1 << ADSC);
 	
-	while(!(ADCSRA & (1<<ADIF)));
-	ADC_result = ADCH;
-	ADCSRA|=(1<<ADIF);
+	while(!(ADCSRA_REG & (1<<ADIF)));
+	ADC_result = ADCH_REG;
+	ADCSRA_REG|=(1<<ADIF);
 	}	
 		
 	return ADC_result;
