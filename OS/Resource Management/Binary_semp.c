@@ -35,7 +35,7 @@ void vid_Binary_semp_Bsem_wait (Bsem_t *S)
 }
 void vid_Binary_semp_Bsem_signal(Bsem_t *S)
 {
-	S->count++;
+	S->count=1;
 	if (S->count <= 0)
 	{
 		s32 processid= dequeue(S->Bsem_queue); 
