@@ -49,11 +49,16 @@
 * so making a structure for them decrease the memory for 4*Word per queue
 * 11) A function to initialize the default queues suspended, ready, ...
 * is missing and the processes entries.
+* 12) check if insertion in the readylist then rescheduling
+* 13) when inserting a process in a queue you should change its state automatically
+* 14) you should hashDefine of all processes to change their states or be responsible
+* for changing the state
 *****************************************************************************/
 
 #define EMPTY   (-1)            /* Null value for qnext or qprev index  */
 #define MAXKEY  0x7FFFFFFF      /* Max key that can be stored in queue  */
 #define MINKEY  (-1)      		/* Min key that can be stored in queue  */
+
 
 struct  qentry  {               /* One per process plus two per list    */
 	    int32_t   qkey;         /* Key on which the queue is ordered    */
@@ -61,7 +66,9 @@ struct  qentry  {               /* One per process plus two per list    */
         int16_t   qprev;        /* Index of previous process or head    */
 };
 
+extern qid16 readylist;
 extern struct qentry queuetab[];
+
 
 /* Inline queue manipulation functions */
 #define queuehead(q)    (q)

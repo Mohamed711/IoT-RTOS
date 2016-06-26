@@ -26,6 +26,13 @@
 #include <stdint.h>
 #include "../RTOS.h"
 
+/******************************************************************************
+* NOTES BY MOHAMED AHMED
+* 1)
+*****************************************************************************/
+
+
+
 sysCall	insertd(pid32 pid, qid16 q,int32_t key);
 sysCall	yield(void);
 sysCall	sleep(int32_t delay);

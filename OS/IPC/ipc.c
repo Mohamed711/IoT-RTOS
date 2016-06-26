@@ -26,13 +26,21 @@
 #include "../RTOS.h"
 #include "ipc_trace.h"
 #include "ipc.h"
+#include "../Scheduler/queue.h"
+#include "../Scheduler/ReSched.h"
+#include "../MMU/mmu.h"
+#include "../Scheduler/Process.h"
+
+
+extern struct procent proctab[NPROC];		  /* table of processes */
+
 
 #if( configUSE_PREEMPTION == 0 )
 	/* If the cooperative scheduler is being used then a yield should not be
 	performed just because a higher priority task has been woken. */
 	#define queueYIELD_IF_USING_PREEMPTION()
 #else
-	#define queueYIELD_IF_USING_PREEMPTION() portYIELD_WITHIN_API()
+	#define queueYIELD_IF_USING_PREEMPTION() reSched()
 #endif
 
 
@@ -47,16 +55,8 @@ typedef struct QueueDefinition
 	int8_t *pcWriteTo;				/*< Points to the free next place in the storage area. */
 	int8_t *pcReadFrom;			/*< Points to the last place that a queued item was read from when the structure is used as a queue. */
 
-
-// Two lists of processes one for the tasks waiting to send and other waiting to receive
-/// LOOK HERE ///
-// debugging code till merge
-	uint32_t xTasksWaitingToSend[5];
-	uint32_t xTasksWaitingToReceive[5];
-	uint8_t send_index;
-	uint8_t receive_index;
-//	List_t xTasksWaitingToSend;		/*< List of tasks that are blocked waiting to post onto this queue.  Stored in priority order. */
-//	List_t xTasksWaitingToReceive;	/*< List of tasks that are blocked waiting to read from this queue.  Stored in priority order. */
+	UBaseType_t xTasksWaitingToSend;		/* Queue Number of tasks waiting to send */
+	UBaseType_t xTasksWaitingToReceive;	/* Queue Number of tasks waiting to receive */
 
 	volatile UBaseType_t uxMessagesWaiting;/*< The number of items currently in the queue. */
 	UBaseType_t uxLength;			/*< The length of the queue defined as the number of items it will hold, not the number of bytes. */
@@ -103,38 +103,24 @@ BaseType_t xQueueGenericReset( QueueHandle_t xQueue, BaseType_t xNewQueue )
 	EnterCriticalSection();
 	{
 		pxQueue->pcTail = pxQueue->pcHead + ( pxQueue->uxLength * pxQueue->uxItemSize );
+		pxQueue->pcReadFrom = pxQueue->pcTail - pxQueue->uxItemSize;
 		pxQueue->uxMessagesWaiting = ( UBaseType_t ) 0U;
 		pxQueue->pcWriteTo = pxQueue->pcHead;
-		pxQueue->pcReadFrom = pxQueue->pcHead + ( ( pxQueue->uxLength - ( UBaseType_t ) 1U ) * pxQueue->uxItemSize );
-
-		/// LOOK HERE ///
-		pxQueue->send_index = ( UBaseType_t ) 0U;
-		pxQueue->receive_index = ( UBaseType_t ) 0U;
 
 		if( xNewQueue == pdFALSE )
 		{
+			/* Resetting an already existing queue */
 			/* If there are tasks blocked waiting to read from the queue, then
 			the tasks will remain blocked as after this function exits the queue
 			will still be empty.  If there are tasks blocked waiting to write to
 			the queue, then one should be unblocked as after this function exits
 			it will be possible to write to it. */
 
-			// check for the list of waiting to send tasks is empty
-			// check list is empty
-			/// LOOK HERE ///
-			// check if the sending state is not empty
-			if( /* listLIST_IS_EMPTY( &(  pxQueue->xTasksWaitingToSend  ) ) == pdFALSE */ pxQueue->send_index != 0 )
+			if( isempty( pxQueue->xTasksWaitingToSend ) == pdFALSE )
 			{
-				// remove a process from waiting to send on the queue as you reset the queue so its empty
-				if( /* xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToSend  ) ) */ pdTRUE == pdTRUE )
-				{
-					// check in case of preemption if it has high priority
-					queueYIELD_IF_USING_PREEMPTION();
-				}
-				else
-				{
-					mtCOVERAGE_TEST_MARKER();
-				}
+				pid32 ProcessId = dequeue( pxQueue->xTasksWaitingToSend );
+				insert( ProcessId , readylist , proctab[ProcessId].prprio );
+		    	queueYIELD_IF_USING_PREEMPTION();
 			}
 			else
 			{
@@ -143,13 +129,8 @@ BaseType_t xQueueGenericReset( QueueHandle_t xQueue, BaseType_t xNewQueue )
 		}
 		else
 		{
-			/* Ensure the event queues start in the correct state. */
-			// make two lists for tasks, one waiting to send and the other is waiting to receive
-			//	vListInitialise( &( pxQueue->xTasksWaitingToSend ) );
-			//	vListInitialise( &( pxQueue->xTasksWaitingToReceive ) );
-			/// LOOK HERE ///
-			// create two queues by newqueue which return the number
-			// save the address or the number of queues in the datastructure itself
+			pxQueue->xTasksWaitingToSend = ( UBaseType_t ) newqueue();
+			pxQueue->xTasksWaitingToReceive = ( UBaseType_t ) newqueue();
 		}
 	}
 	ExitCriticalSection();
@@ -174,10 +155,7 @@ QueueHandle_t xQueueGenericCreate( const UBaseType_t uxQueueLength, const UBaseT
 
 
 	/* Allocate the new queue structure and storage area. */
-	// reserve the amount in memory for the queue
-	/// LOOK HERE ///
-	pxNewQueue = (Queue_t * ) malloc( sizeof ( Queue_t ) + xQueueSizeInBytes );
-	//	pxNewQueue = ( Queue_t * ) pvPortMalloc( sizeof( Queue_t ) + xQueueSizeInBytes );
+	pxNewQueue = ( Queue_t * ) pvPortMalloc( sizeof( Queue_t ) + xQueueSizeInBytes );
 
 	if( pxNewQueue != NULL )
 	{
@@ -187,7 +165,7 @@ QueueHandle_t xQueueGenericCreate( const UBaseType_t uxQueueLength, const UBaseT
 		pxNewQueue->pcHead = ( ( int8_t * ) pxNewQueue ) + sizeof( Queue_t );
 
 
-		/* Initialise the queue members as described above where the queue type
+		/* Initialize the queue members as described above where the queue type
 		is defined. */
 		pxNewQueue->uxLength = uxQueueLength;
 		pxNewQueue->uxItemSize = uxItemSize;
@@ -213,13 +191,13 @@ BaseType_t xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQ
 	//TimeOut_t xTimeOut;
 	Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 
-			configASSERT( pxQueue );
-			configASSERT( !( ( pvItemToQueue == NULL ) && ( pxQueue->uxItemSize != ( UBaseType_t ) 0U ) ) );
+	configASSERT( pxQueue );
+	configASSERT( !( ( pvItemToQueue == NULL ) && ( pxQueue->uxItemSize != ( UBaseType_t ) 0U ) ) );
 
-			for( ;; )
+	for( ;; )
+		{
+			EnterCriticalSection();
 			{
-				EnterCriticalSection();
-				{
 					/* Is there room on the queue now?  To be running we must be
 					the highest priority task wanting to access the queue. */
 					if( pxQueue->uxMessagesWaiting < pxQueue->uxLength )
@@ -229,20 +207,11 @@ BaseType_t xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQ
 
 						/* If there was a task waiting for data to arrive on the
 						queue then unblock it now. */
-						// look for waiting tasks to receive
-						if( /* listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToReceive ) ) == pdFALSE */ pxQueue->receive_index != 0 )
+						if( isempty ( pxQueue->xTasksWaitingToReceive ) == pdFALSE )
 						{
-							// wake up a task
-							if( /* xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToReceive ) ) == pdTRUE */ 0 == 0 )
-							{
-								/* The unblocked task has a priority higher than
-								our own so yield immediately. */
-								portYIELD_WITHIN_API();
-							}
-							else
-							{
-								mtCOVERAGE_TEST_MARKER();
-							}
+							pid32 ProcessId = dequeue( pxQueue->xTasksWaitingToReceive );
+							insert( ProcessId , readylist , proctab[ProcessId].prprio );
+							queueYIELD_IF_USING_PREEMPTION();
 						}
 						else
 						{
