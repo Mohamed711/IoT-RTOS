@@ -1,19 +1,16 @@
-BOARD_SIZE = 8 ; 
- void under_attack(col,queens)  {  
-left = right = col ; 
- for (r,c in reversed(queens))  {  
-left,right = left-1,right+1 ; 
- if (c in (left,col,right))  {  
- return True ; 
+ char add(x1,x2) { 
+ char x3=x1+x2 ; 
+x3=3+4 ; 
+ return x3 ; 
+ } 
+ char check(x1,x2) { 
+ char x3=add(x1,x2) ; 
+ if (x3>10) { 
+ return 'y' ; 
+ } 
+ else  { 
+ return 'n' ; 
  } 
  } 
- return False ; 
- } 
- void solve(n)  {  
- if (n==0)  {  
- return [[]] ; 
- } 
-smaller_solutions = solve(n-1) ; 
- return solution ; 
- } 
-ENDMARKER
+ int w=3+4 ; 
+add(x,y) ; 

@@ -1,142 +1,7 @@
 
 
-#include <iostream>
-#include <string>
-#include <list>
-#include "scanner.h"
+#include "parcer.h"
 
-using namespace std ;
-
- // function proto tybe for recursion
-void single_input();
-void file_inpute();
-void eval_inpute();
-void decorator();
-void decorators();
-void async_funcdef();
-void funcdef();
-void parameters();
-void typedargslist();
-void tfpdef();
-void varargslist();
-void vfpdef();
-void stmt();
-void simple_stmt();
-void small_stmt();
-void expr_stmt();
-void testlist_star_expr();
-void augassign();
-void del_stmt();
-void pass_stmt();
-void flow_stmt();
-void break_stmt();
-void continue_stmt();
-void return_stmt();
-void yield_stmt();
-void raise_stmt();
-void import_stmt();
-void import_name();
-void import_from();
-void import_as_name();
-void dotted_as_name();	
-void import_as_names();
-void dotted_as_names();
-void dotted_name();
-void global_stmt();
-void nonlocal_stmt();
-void assert_stmt();
-void compound_stmt();
-void async_stmt();
-void if_stmt();
-void while_stmt();
-void for_stmt();
-void try_stmt();
-void with_stmt();
-void with_item();
-void except_clause();
-
-void suite();
-
-void test();
-void test_nocond();
-
-
-void lambdef();
-void lambdef_nocond();
-void or_test();
-void and_test();
-void not_test();
-void comparison();
-void comp_op();
-void star_expr();
-void expr(); 
-void xor_expr();
-void and_expr();
-void shift_expr();
-void arith_expr();
-void term();
-void factor();
-void power();
-void atom_expr();
-void atom();
-void testlist_comp();
-void trailer();
-void subscriptlist(){cout<<"not support"<<endl;}
-void subscript();
-void sliceop();
-void exprlist();
-void testlist();
-void dictorsetmaker();
-void classdef();
-void arglist();
-void argument();
-void comp_iter();
-void comp_for();
-void comp_if();
-void encoding_decl();
-void yield_expr(); 
-void yield_arg();
-
-void NAME();
-
-
-void NEWLINE();
-
-
-// global variable
-list<string> kk;
-
-string token;
-string token_value;
-ifstream input_file ;
-ifstream value_file ;
-string value[300];
-string token_value_list[300];
-int i=0;
-
-int n=0;
-
-ofstream parcer_output;
-ofstream c_out;
-//////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-////////////////////////
-
-
-
-
-static enum StringValue { number, identifier, until, End, read ,IF,repeat,write ,bracket };
-static map< string, StringValue> terminal;
-//////////////////////////////////////////////////////
-string pythonWord[]={"else","for","yield","if","then","else","end","repeat","until" ,
-		                  "read", "write","while","return","in","not"};
 	
 // read all file and put it in one list
 void init()
@@ -185,7 +50,7 @@ void init()
 
 }
 
-/////////////////////////////
+/////////////////////////////////////////////////////////////////////
 void error(void)
 {
 	cout<<"match ERROR"<<endl;
@@ -194,20 +59,24 @@ void error(void)
 	exit(1);
 
 }
-/////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 bool match (string t)
 {  
 	if (!(token.compare(t)))
 	{  
 		bool printed=false;
-		if (token=="def"){c_out<<" void ";}
+		if (token=="def"){printed=true;}
 		else if(token!="NAME" && token!="NUMBER"&&token != ":" && token!="NEWLINE" && token!="INDENT" && token!="DEDENT"&&token!="def")
 		{ 
-			for(int k=0;k <17 ;k++)
+			for(int k=0;k <30 ;k++)
 				{  
 					if(token==pythonWord[k])
 					{
-						c_out<<" "<<token<<" ";
+						string t=" ";
+						t.append(token);
+						t.append(" ");
+						add_in_stmt_array(t);
 						printed=true;
 						break;
 					}
@@ -220,11 +89,24 @@ bool match (string t)
 		{
 			printed=true;
 			token_value=token_value_list[i];
-			c_out<<""<<token_value<<"";
+			//c_out<<""<<token_value<<"";
+			add_in_stmt_array(token_value);
+			if(token=="NAME")
+			{
+				check_if_defined=check_if_in_defined_array(token_value);
+			}
+			else if(token=="NUMBER")
+			{
+
+			}
 		}
 		if(printed==false && token != ":" && token!="NEWLINE" &&
 			token!="INDENT" && token!="DEDENT"&&token!="def")
-		{c_out<<token;}
+		{
+			//c_out<<token;
+			add_in_stmt_array(token);
+		
+		}
 
 		token=value[++i];	
 		return true;
@@ -236,7 +118,127 @@ bool match (string t)
 	}
 
 }
+//////////////////////////////////////////////////////
+bool check_if_in_defined_array(string NAME_value)
+{
+	bool defined=false;
+	int x;
+	for(x=0;x<=p_defined_int_array;x++)
+	{
+		if(defined_int_array[x]==NAME_value)
+		{
+			defined=true;
+			break;
+		}
+	}
+	for(x=0;x<=p_defined_string_array;x++)
+	{
+		if(defined_string_array[x]==NAME_value)
+		{
+			defined=true;
+			break;
+		}
+	}
+	if(defined==false)
+	{
+		add_in_undefined_array(NAME_value);
+	}
+	return defined;
+}
+////////////////////////////////////////////////////////
+void add_in_undefined_array(string Name)
+{
+	undefined_NAME_arry[p_undefined_NAME_array++]=Name;
+	
+}
+////////////////////////////////////////////////////////
+void insert_type_in_stmt_arry(int position,string type)
+{
+
+	int len=p_stmt_array; //3lshan l pointer now byshawer 3la 2welmkan fady y7ot fe
+	int index=position;
+	int indexOfLast=len-1;
+
+	if ((index>=0)&&(index<=len)){
+
+		for(indexOfLast;indexOfLast>=index;indexOfLast--){
+			//cout<<"fg\n";
+			stmt_array[indexOfLast+1]=stmt_array[indexOfLast];
+		}
+		stmt_array[index]=type;
+	}
+	else
+		cout<<"\nPosition does not exist\n";
+	p_stmt_array++;
+}
+/////////////////////////////////////////////////////////////////////////////////
+string check_type(string value)  //mo2ktaan
+{  
+	string return_value;
+	/* int i=0;
+	char s=value[i];
+	
+	while(s ==' ')
+	{
+		s=value[i++];
+	}
+		if (s=='0'||s=='1'||s=='2'||s=='3'||s=='4'||s=='5'||s=='6'||s=='7'||s=='8'||s=='9')
+		{
+			return_value= " int ";
+		}
+		else if (isalpha(s))
+		{
+			return_value= " string ";
+		}
+		
+	*/
+	if (token=="NAME")
+	{
+
+		return_value=" char ";
+	}
+	else if (token=="NUMBER")
+	{
+		return_value=" int ";
+	}
+
+		return return_value;
+}
+/////////////////////////////////////////////////////////////////////////////////
+void print_stmt_array()
+{ 
+	int i;
+	for(i=0;i<p_stmt_array;i++)
+	{
+		c_out<<stmt_array[i];
+	}
+	p_stmt_array=0;
+
+
+}
 /////////////////////////////////////////////////
+void add_in_stmt_array(string token)
+{
+	stmt_array[p_stmt_array++]=token;
+}
+/////////////////////////////////////////////////////////////////////////////////
+void change_from_undefined_to_defined(int position_of_undefined_array,string type)
+{ 
+
+	if(type==" int ")
+	{  
+		while(p_undefined_NAME_array>position_of_undefined_array){
+		defined_int_array[p_defined_int_array++]=undefined_NAME_arry[--p_undefined_NAME_array];
+		}
+	}
+	else if(type==" char ")
+	{  
+		while(p_undefined_NAME_array>position_of_undefined_array){
+		defined_string_array[p_defined_string_array++]=undefined_NAME_arry[--p_undefined_NAME_array];
+		}
+	}
+}
+///////////////////////////////////////////////////////////////////////////////////
 void unmatch()
 {
 	i--;
@@ -276,13 +278,16 @@ void file_input()
 	while(token=="NEWLINE"||token!="ENDMARKER")
 	{
 		if(token=="NEWLINE"){match("NEWLINE");}
-		else if(token !="ENDMARKER"){stmt(); }
+		else if(token !="ENDMARKER"){
+		stmt();
+		print_stmt_array();
+		}
 
 	}
-	match("ENDMARKER");
+	//match("ENDMARKER");
 
 }
-////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 void eval_input()
 {
 	testlist();
@@ -292,13 +297,44 @@ void eval_input()
 	}
 	match("ENDMARKER");
 }
+/////////////////////////////////////////////////////////////////////
+void decorator()
+{
+	match("@");
+	dotted_name();
+	if(token=="(")
+	{
+		match("(");
+		arglist();
+		match(")");
+	}
+	match("NEWLINE");
 
+}
+//////////////////////////////////////////////////////////////////////////
+void decorators()
+{
+	decorator();
+    if(token=="@")
+	{
+		decorator();
+	}
+	
+}
+/////////////////////////////////////////////////////////////////
+void async_funcdef()
+{
+	match("ASYNC");
+	funcdef();
+}
 ////////////////////////////////////////////////////////////////////////////////////////////
 void funcdef()
 {
+	int p_funcdef_begin=p_stmt_array;
 	cout<<"start funcdef"<<endl;
 	match("def");
 	match("NAME");
+
 	parameters();
 	if (token=="->")
 	{
@@ -307,11 +343,14 @@ void funcdef()
 	match(":");
 	suite();
 	cout<<"eennnnnnnnnnnnnnnnnnnnnnnnnnnd of funcdef"<<endl;
+	insert_type_in_stmt_arry(p_funcdef_begin,function_return_type);
+	function_return_type=" void ";
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void parameters()
 {
 	match("(");
+	
 	if (token=="NAME")
 	{
 	typedargslist();
@@ -322,12 +361,18 @@ void parameters()
 void typedargslist()
 {
 	cout<<"typedargslist start"<<endl;
+	
+	string type;
 	tfpdef();
 	if(token=="=")
 	{
 		match("=");
+		
+
+
 		test();
 	}
+
 	while(token==",")
 	{
 		match(",");
@@ -585,12 +630,18 @@ void small_stmt()
 	//else if(token=="nonlocal"){nonlocal_stmt();}
 	//else if(token=="assert"){assert_stmt();}
 	
-	c_out<<" ; "<<endl;
+	//c_out<<" ; "<<endl;
+	add_in_stmt_array(" ; \n");
 
 }
 ///////////////////////////////////////////////////////////////////////////////////////
 void expr_stmt()
-{
+{  
+	int p_expr_stmt_begain = p_stmt_array;
+	int xx=0;
+	int p_undefined_array_expr_stmt_begin=p_undefined_NAME_array;
+	string type;
+
 	testlist_star_expr();
 	if (token=="+="||token=="-="||token=="*="||token=="@="||token=="/="||
 		token=="%="||token=="&="||token=="|="||token=="^="||token=="<<="||
@@ -611,9 +662,17 @@ void expr_stmt()
 	}
 	else if(token=="=")
 	{
+		
 		while(token=="=")
 		{
 			match("=");
+			if(xx==0){
+			
+			 type=check_type(token);
+			xx++;
+			}
+			
+
 			if(token=="yield")
 			{
 				yield_expr();
@@ -621,13 +680,16 @@ void expr_stmt()
 			else if (token=="not"||token=="+"||token=="-" ||token=="~"||token=="AWAIT" 
 					||token=="("||token=="["||token=="{"||token=="NAME"||token=="NUMBER"
 					||token=="STRING"||token=="..."||token=="None"||token=="True"||token=="False"||token=="*")
-			{
+			{ 
+
 				testlist_star_expr();
 			}
 		}
 
 	}
-
+	if(!check_if_defined){
+		insert_type_in_stmt_arry(p_expr_stmt_begain,type);}
+	change_from_undefined_to_defined(p_undefined_array_expr_stmt_begin,type);
 }
 ////////////////////////////////////////////////////////////////////////////////////////
 void testlist_star_expr()
@@ -666,10 +728,7 @@ void testlist_star_expr()
 	}
 }
 ///////////////////////////////
-void star_expr()
-{
-	match("*"); expr();
-}
+
 /////////////////////////////////////////////////////////////
 void testlist()
 {
@@ -727,6 +786,7 @@ void return_stmt()
 					||token=="("||token=="["||token=="{"||token=="NAME"||token=="NUMBER"
 					||token=="STRING"||token=="..."||token=="None"||token=="True"||token=="False")
 	{
+		function_return_type=check_type(token);
 		testlist();
 	}
 
@@ -753,10 +813,115 @@ void raise_stmt()
 ////////////////////////////////////////////////////////////////////////
 void import_stmt()//mosh kmlaaa
 {
-	if (token=="import"){/*import_name();*/}
-	//else if()
+	if (token=="import"){import_name();}
+	else if (token=="from"){import_from();}
+	
 }
-////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
+void import_name()
+{
+	match("import");
+	dotted_as_name();
+}
+//////////////////////////////////////////////////////
+void import_from()
+{
+	match("from");
+	while(token=="."||token=="...")
+	{
+		match(token);
+		if(token=="NAME")
+		{
+			dotted_name();
+		}
+	}
+	match("import");
+	if(token=="*"){match("*");}
+	else if(token=="("){match("(");import_as_names();match(")");}
+	else if (token=="NAME"){import_as_names();}
+}
+////////////////////////////////////////////////////////
+void import_as_name()
+{
+	match("NAME");
+	if (token=="as"){match("as");NAME();}
+}
+//////////////////////////////////////////////////////////
+void dotted_as_name()
+{
+	dotted_name();
+	if(token=="as")
+	{
+		match("as");NAME();
+	}
+}
+////////////////////////////////////////////////////////
+void import_as_names()
+{
+	import_as_name();
+	while (token==",")
+	{
+		match(",");
+		if(token=="NAME")
+		{
+			import_as_name();
+		}
+	}
+}
+////////////////////////////////////////////////////////
+void dotted_as_names()
+{
+	dotted_as_name();
+	while(token==",")
+	{
+		match(",");
+		dotted_as_name();
+	}
+}
+///////////////////////////////////////////////////////////
+void dotted_name()
+{
+	NAME();
+	while(token==".")
+	{
+		match(".");
+		NAME();
+	}
+}
+///////////////////////////////////////////////////////
+void global_stmt()
+{
+	match("global");
+	NAME();
+	while(",")
+	{
+		match(",");
+		NAME();
+	}
+}
+////////////////////////////////////////////////////////
+void nonlocal_stmt()
+{
+	match("nonlocal");
+	NAME();
+	while(token==",")
+	{
+		match(",");
+		NAME();
+	}
+}
+//////////////////////////////////////////////////////
+void assert_stmt()
+{
+	match("assert");
+	test();
+	if(token==",")
+	{
+		match(",");
+		test();
+	}
+}
+///////////////////////////////////////////////////////
 void compound_stmt()
 {
 	if (token=="if"){if_stmt();}
@@ -766,21 +931,33 @@ void compound_stmt()
 	else if (token=="with"){/*with_stmt();*/}
 	else if (token=="def"){funcdef();}
 }
-/////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+void async_stmt()
+{
+	match("ASYNC");
+	if(token=="def"){funcdef();}
+	else if(token=="with"){with_stmt();}
+	else if(token=="for"){for_stmt();}
+}
+///////////////////////////////////////////////////////////
 void if_stmt()
 {
 	match("if");
-	c_out<<"(";
+	//c_out<<"(";
+	add_in_stmt_array("(");
 	test();
-	c_out<<")";
+	//c_out<<")";
+	add_in_stmt_array(")");
 	match(":");
 	suite();
 	while(token=="elif")
 	{
 		match("elif");
-		c_out<<"(";
+		//c_out<<"(";
+		add_in_stmt_array("(");
 		test();
-		c_out<<")";
+		//c_out<<")";
+		add_in_stmt_array(")");
 		match(":");
 		suite();
 	}
@@ -795,9 +972,11 @@ void if_stmt()
 void while_stmt()
 {
 	match("while");
-	c_out<<"(";
+	//c_out<<"(";
+	add_in_stmt_array("(");
 	test(); 
-	c_out<<")";
+	//c_out<<")";
+	add_in_stmt_array(")");
 	match(":");
 	suite();
 	
@@ -815,11 +994,13 @@ void while_stmt()
 void for_stmt()
 {
 	match("for");
-	c_out<<"(";
+	//c_out<<"(";
+	add_in_stmt_array("(");
 	exprlist();
 	match("in");
 	testlist();
-	c_out<<")";
+	//c_out<<")";
+	add_in_stmt_array(")");
 	match(":");
 	suite();
 	if(token=="else")
@@ -829,10 +1010,84 @@ void for_stmt()
 		suite();
 	}
 }
+////////////////////////////////////////////////////
+void try_stmt()
+{
+	match("try");
+	match(":");
+	suite();
+	if(token=="except")
+	{
+		except_clause();
+			match(":");
+			suite();
+
+		while(token=="except")
+		{
+			except_clause();
+			match(":");
+			suite();
+		}
+		if(token=="else")
+		{
+			match("else");
+			match(":");
+			suite();
+		}
+		if(token=="finally")
+		{
+			match("finally");
+			match(":");
+			suite();
+		}
+
+
+	}
+	else if (token=="finally"){match("finally");match(":");suite();}
+}
+////////////////////////////////////////////////////////////////////////////
+void with_stmt()
+{
+	match("with");
+	with_item();
+	while(token==",")
+	{
+		match(",");
+		with_item();
+	}
+	match(":");
+	suite();
+}
+/////////////////////////////////////////////////////////////////
+void with_item()
+{
+	test();
+	if(token=="as"){match("as");NAME();}
+}
+///////////////////////////////////////////////
+void except_clause()
+{
+	match("except");
+	if(token=="not"||token=="+"||token=="-" ||token=="~"||token=="AWAIT" 
+					||token=="("||token=="["||token=="{"||token=="NAME"||token=="NUMBER"
+					||token=="STRING"||token=="..."||token=="None"||token=="True"||token=="False")
+	
+	{
+		test();
+		if(token=="as")
+		{
+			match("as");
+			NAME();
+		}
+	}
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////
 void suite()
 {
-	c_out<< "  {  "<<endl;
+	int p_scope_of_int_variable=p_defined_int_array;
+	int p_scope_of_string_variable=p_defined_string_array;
+	add_in_stmt_array(" { \n");
+
 	 if (token=="NEWLINE")
 	{
 		match("NEWLINE");
@@ -865,7 +1120,11 @@ void suite()
 	 
 		 
 
-	 c_out<<" } "<<endl;
+	// c_out<<" } "<<endl;
+	 add_in_stmt_array(" } \n");
+
+	  p_defined_int_array=p_scope_of_int_variable;
+	 p_defined_string_array=p_scope_of_string_variable;
 }
 /////////////////////////////////////////////////////////////////////////////////////
 void test()
@@ -889,7 +1148,6 @@ else if(token=="lambda")
 {
 	lambdef();
 }
-
 
 }
 
@@ -993,6 +1251,11 @@ void comp_op()
 		if(token=="not") {match("not");}
 	}
 
+}
+///////////////////////////////////////////////////
+void star_expr()
+{
+	match("*"); expr();
 }
 /////////////////////////////////////////////////////////
 void expr()
@@ -1146,6 +1409,10 @@ void atom()
 
 }
 ///////////////////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////////////////
 void trailer()
 {
 	if(token=="(")
@@ -1170,6 +1437,58 @@ void trailer()
 		NAME();
 	}
 }
+/////////////////////////////////////////////////////////////
+void subscriptlist()
+{
+	subscript();
+	while(token==",")
+	{
+		match(",");
+		if(token=="not"||token=="+"||token=="-"||token=="~"||token=="AWAIT" ||token=="("||token=="["||token=="{"||token=="NAME"
+			||token=="NUMBER"||token=="STRING"||token=="..."||token=="None"||token=="True"||token=="False" )
+	
+		{
+			subscript();
+		}
+	}
+}
+///////////////////////////////////////////////////////////////////////
+void subscript()
+{
+	if(token=="not"||token=="+"||token=="-"||token=="~"||token=="AWAIT" ||token=="("||token=="["||token=="{"||token=="NAME"
+			||token=="NUMBER"||token=="STRING"||token=="..."||token=="None"||token=="True"||token=="False" )
+	
+	{
+		test();
+	}
+	if(token==":")
+	{
+		match(":");
+		if(token=="not"||token=="+"||token=="-"||token=="~"||token=="AWAIT" ||token=="("||token=="["||token=="{"||token=="NAME"
+			||token=="NUMBER"||token=="STRING"||token=="..."||token=="None"||token=="True"||token=="False" )
+	
+		{
+			test();
+		}
+		if(token==":")
+		{
+			sliceop();
+		}
+	}
+	
+}
+////////////////////////////////////////////
+void sliceop()
+{
+	match(":");
+	if(token=="not"||token=="+"||token=="-"||token=="~"||token=="AWAIT" ||token=="("||token=="["||token=="{"||token=="NAME"
+			||token=="NUMBER"||token=="STRING"||token=="..."||token=="None"||token=="True"||token=="False" )
+	
+		{
+			test();
+		}
+}
+
 ///////////////////////////////////////////////////////////////////////
 void testlist_comp()
 {
@@ -1392,6 +1711,7 @@ int main()
 {
 	int x=2;
 		if(x==1||4||5){cout<<"5ebaaaa"<<endl;}
+		
 
 	scanner p;
 	p.Scanner();
@@ -1400,7 +1720,7 @@ int main()
 	
 	init();
 	
-	c_out.open("C_output.c");
+	c_out.open("C_output.txt");
 	
 	token=value[i];
 	token_value=token_value_list[i];

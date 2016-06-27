@@ -1,101 +1,80 @@
-NAME     BOARD_SIZE
-=     =
-NUMBER     8
-NEWLINE     
 def     def
-NAME     under_attack
+NAME     add
 (     (
-NAME     col
+NAME     x1
 ,     ,
-NAME     queens
+NAME     x2
 )     )
 :     :
 NEWLINE     
 INDENT     INDENT
-NAME     left
+NAME     x3
 =     =
-NAME     right
-=     =
-NAME     col
-NEWLINE     
-for     for
-NAME     r
-,     ,
-NAME     c
-in     in
-NAME     reversed
-(     (
-NAME     queens
-)     )
-:     :
-NEWLINE     
-INDENT     INDENT
-NAME     left
-,     ,
-NAME     right
-=     =
-NAME     left
--     -
-NUMBER     1
-,     ,
-NAME     right
+NAME     x1
 +     +
-NUMBER     1
+NAME     x2
 NEWLINE     
-if     if
-NAME     c
-in     in
-(     (
-NAME     left
-,     ,
-NAME     col
-,     ,
-NAME     right
-)     )
-:     :
-NEWLINE     
-INDENT     INDENT
-return     return
-True     True
-NEWLINE     
-DEDENT     DEDENT
-DEDENT     DEDENT
-return     return
-False     False
-NEWLINE     
-DEDENT     DEDENT
-def     def
-NAME     solve
-(     (
-NAME     n
-)     )
-:     :
-NEWLINE     
-INDENT     INDENT
-if     if
-NAME     n
-==     =
-NUMBER     0
-:     :
-NEWLINE     
-INDENT     INDENT
-return     return
-[     [
-[     [
-]     ]
-]     ]
-NEWLINE     
-DEDENT     DEDENT
-NAME     smaller_solutions
+NAME     x3
 =     =
-NAME     solve
-(     (
-NAME     n
--     -
-NUMBER     1
-)     )
+NUMBER     3
++     +
+NUMBER     4
 NEWLINE     
 return     return
-NAME     solution
+NAME     x3
 NEWLINE     
 DEDENT     DEDENT
+NEWLINE     
+def     def
+NAME     check
+(     (
+NAME     x1
+,     ,
+NAME     x2
+)     )
+:     :
+NEWLINE     
+INDENT     INDENT
+NAME     x3
+=     =
+NAME     add
+(     (
+NAME     x1
+,     ,
+NAME     x2
+)     )
+NEWLINE     
+if     if
+NAME     x3
+>     >
+NUMBER     10
+:     :
+NEWLINE     
+INDENT     INDENT
+return     return
+NAME     'y'
+NEWLINE     
+DEDENT     DEDENT
+else     else
+:     :
+NEWLINE     
+INDENT     INDENT
+return     return
+NAME     'n'
+NEWLINE     
+DEDENT     DEDENT
+DEDENT     DEDENT
+NAME     w
+=     =
+NUMBER     3
++     +
+NUMBER     4
+NEWLINE     
+NAME     add
+(     (
+NAME     x
+,     ,
+NAME     y
+)     )
+NEWLINE     
+NEWLINE     

@@ -21,8 +21,8 @@ const int max_array_size=20;
 
 	  string ReservedWord[]={"def","else","for","yield","if","else","in","not","None","is",
 		  "True","False","del","pass","break","continue","raise","import","global","nonlocal",
-		  "assert","try","finally","except","as", "from","or","and","lambda","read", 
-		  "write","while","NEWLINE","DEDENT","INDENT","return","class"};
+		  "assert","try","finally","except","as", "from","or","and","lambda", 
+		 "while","NEWLINE","DEDENT","INDENT","return","class"};
 	
     int *darray;
 	darray=new int[max_array_size];
@@ -50,7 +50,8 @@ const int max_array_size=20;
 		
 		
 		if(ss!="")
-		{   no_of_whilte_space=0;
+		{  
+			no_of_whilte_space=0;
 			char ws=ss[0];
 			for(int x=1;x<ss.size();x++)
 			{
@@ -114,7 +115,7 @@ const int max_array_size=20;
 	string currentToken;
 	
 
-
+	string char_token;
 	char c_next;
 	for(int i=0 ; i<input_s.size();i++)
 	{
@@ -126,6 +127,8 @@ const int max_array_size=20;
 		case START:
 		
 				token="";
+				char_token="";
+				
 				
 				startoftoken = i;  //indecate the index of the start of the token
 				if (isdigit(c))
@@ -180,7 +183,7 @@ const int max_array_size=20;
 				token+=c;
 				switch (c)
 				{ 
-
+					
 
 
 				case ':':
@@ -196,7 +199,7 @@ const int max_array_size=20;
 					state = DONE;
 					break;
 				case '<': 
-			        c_next=input_s[++i];
+			        c_next=input_s[i++];
 					if(c_next=='='){currentToken="<=";state=DONE;}
 					else if(c_next=='>'){currentToken="<>";state=DONE;}
 					else {i--;currentToken="<";state=DONE;}
@@ -205,20 +208,29 @@ const int max_array_size=20;
 
 				case'>':
 					c_next=input_s[++i];
-					if(c_next=='='){currentToken=">=";state=DONE;}
+					if(c_next=='='){currentToken=">=";state=DONE; }
 					else {i--;currentToken=">";state=DONE;}
-
+					break;
 				case'!':
 					c_next=input_s[++i];
 					if(c_next=='='){currentToken="!=";state=DONE;}
 					else {i--;currentToken="!";state=DONE;}
-
+					break;
 				case '=':
 					 c_next=input_s[++i];
 					if(c_next=='='){currentToken="==";state=DONE;}
 					else {i--;currentToken="=";state=DONE;}
 					break;
 
+				case'\'' : 
+					c_next=input_s[++i];
+					++i;
+					token+=(c_next);
+					token.append("'");
+					currentToken="NAME";
+					state=DONE;
+
+					break;
 				
 
 
@@ -379,7 +391,7 @@ const int max_array_size=20;
 			
 			if(currentToken=="NAME")
 			{
-				for(int k=0;k <37 ;k++)
+				for(int k=0;k <35 ;k++)
 				{ 
 					if(token==ReservedWord[k])
 					{
