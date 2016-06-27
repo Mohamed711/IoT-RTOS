@@ -333,7 +333,7 @@ sysCall	processWaiting(pid32 pid) 		/* ID of process waiting for semaphore	*/
 *****************************************************************************/
 void processSuspendAll(void) 		
 {	
-	while(nonempty(readylist))
+	while( 0 )  //nonempty(readylist))
 	{
 		
 		pid32 pid=getfirst(readylist);
@@ -352,7 +352,7 @@ void processSuspendAll(void)
 *****************************************************************************/
 void processResumeAll(void)
 {
-	while(nonempty(suspendedlist))
+	while( 0 ) //nonempty(suspendedlist))
 	{
 		pid32 pid=getfirst(suspendedlist);
 		processResume(pid);

@@ -21,8 +21,10 @@
  *****************************************************************************/
 #include "RTOS_Headers.h"
 
+void ipc_test();
+
 int main(void)
 {
-
-	
+	ipc_test();
+	return 0;
 }

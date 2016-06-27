@@ -53,6 +53,7 @@
 * 13) when inserting a process in a queue you should change its state automatically
 * 14) you should hashDefine of all processes to change their states or be responsible
 * for changing the state
+* 15) isempty and nonempty are not working in a right way
 *****************************************************************************/
 
 #define EMPTY   (-1)            /* Null value for qnext or qprev index  */
