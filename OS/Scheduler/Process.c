@@ -42,7 +42,7 @@ extern qid16 suspendedlist;
 * 	\return the pid
 *
 *****************************************************************************/
-pid32 pocessGetPid()
+pid32 processGetPid()
 {
 	return currpid;
 }

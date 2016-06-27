@@ -111,7 +111,7 @@
 };
 
 
-pid32 pocessGetPid();
+pid32 processGetPid();
 pid32 processNewPid();
 pid32 processCreate(void (*funcAddr)(void), uint32_t ssize, pri16 priority, char *name);
 sysCall processTerminate(pid32 pid);

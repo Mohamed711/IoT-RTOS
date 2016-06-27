@@ -190,84 +190,72 @@ QueueHandle_t xQueueGenericCreate( const UBaseType_t uxQueueLength, const UBaseT
 
 BaseType_t xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQueue, int32_t delay, const BaseType_t xCopyPosition )
 {
-	 UBaseType_t xEntryTimeSet = pdFALSE;
 	Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 
 	configASSERT( pxQueue );
 	configASSERT( !( ( pvItemToQueue == NULL ) && ( pxQueue->uxItemSize != ( UBaseType_t ) 0U ) ) );
 
-
-	EnterCriticalSection();
+	for(;;)
 	{
-		/* Is there room on the queue now?  To be running we must be
-		the highest priority task wanting to access the queue. */
-		if( pxQueue->uxMessagesWaiting < pxQueue->uxLength )
+		EnterCriticalSection();
 		{
-			traceQUEUE_SEND( pxQueue );
-			prvCopyDataToQueue( pxQueue, pvItemToQueue, xCopyPosition );
+			/* Is there room on the queue now?  To be running we must be
+			the highest priority task wanting to access the queue. */
+			if( pxQueue->uxMessagesWaiting < pxQueue->uxLength )
+			{
+				traceQUEUE_SEND( pxQueue );
+				prvCopyDataToQueue( pxQueue, pvItemToQueue, xCopyPosition );
 
-			/* If there was a task waiting for data to arrive on the
-			queue then unblock it now. */
-			if( isempty ( pxQueue->xTasksWaitingToReceive ) == pdFALSE )
-			{
-				pid32 ProcessId = dequeue( pxQueue->xTasksWaitingToReceive );
-				insert( ProcessId , readylist , proctab[ProcessId].prprio );
-				proctab[ProcessId].prstate = PR_READY;
-				queueYIELD_IF_USING_PREEMPTION();
-			}
-			else
-			{
-				mtCOVERAGE_TEST_MARKER();
-			}
-			ExitCriticalSection();
-			return pdPASS;
-		}
-		else
-		{
-			if( delay == 0 )
-			{
+				/* If there was a task waiting for data to arrive on the
+				queue then unblock it now. */
+				if( isempty ( pxQueue->xTasksWaitingToReceive ) == pdFALSE )
+				{
+					pid32 ProcessId = dequeue( pxQueue->xTasksWaitingToReceive );
+					insert( ProcessId , readylist , proctab[ProcessId].prprio );
+					proctab[ProcessId].prstate = PR_READY;
+					queueYIELD_IF_USING_PREEMPTION();
+				}
+				else
+				{
+					mtCOVERAGE_TEST_MARKER();
+				}
 				ExitCriticalSection();
-				return errQUEUE_FULL;
-			}
-			else if( xEntryTimeSet == pdFALSE )
-			{
-			// initialize the time variable with the required value
-			// vTaskSetTimeOutState( &xTimeOut );
-			xEntryTimeSet = pdTRUE;
-			}
-		}
-	}
-	ExitCriticalSection();
-
-	EnterCriticalSection();
-	{
-		if( /* xTaskCheckForTimeOut( &xTimeOut, &xTicksToWait ) == pdFALSE  */ 0 == 1 )
-		{
-			if( prvIsQueueFull( pxQueue ) != pdFALSE )
-			{
-				traceBLOCKING_ON_QUEUE_SEND( pxQueue );
-				// add the task to the waiting to send with a specific time
-				// vTaskPlaceOnEventList( &( pxQueue->xTasksWaitingToSend ), xTicksToWait );
-				portYIELD_WITHIN_API();
+				return pdPASS;
 			}
 			else
 			{
-				mtCOVERAGE_TEST_MARKER();
+				if( delay == 0 )
+				{
+					ExitCriticalSection();
+					return errQUEUE_FULL;
+				}
+				else
+				{
+					traceBLOCKING_ON_QUEUE_SEND( pxQueue );
+					insert( processGetPid() , pxQueue->xTasksWaitingToSend , proctab[processGetPid()].prprio );
+					// insert it also in the sleeping queue
+					proctab[processGetPid()].prstate = PR_WAIT;
+					queueYIELD_IF_USING_PREEMPTION();
+
+					if ( prvIsQueueFull( pxQueue ) == pdTRUE )
+					{
+						ExitCriticalSection();
+						return errQUEUE_FULL;
+					}
+					else
+					{
+						mtCOVERAGE_TEST_MARKER();
+					}
+				}
 			}
 		}
-		else
-		{
-			ExitCriticalSection();
-			traceQUEUE_SEND_FAILED( pxQueue );
-			return errQUEUE_FULL;
-		}
+		ExitCriticalSection();
 	}
-	ExitCriticalSection();
 }
 
 /*-----------------------------------------------------------*/
 
-BaseType_t xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer, TickType_t xTicksToWait, const BaseType_t xJustPeeking )
+BaseType_t xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer, int32_t delay, const BaseType_t xJustPeeking )
 {
 	BaseType_t xEntryTimeSet = pdFALSE;
 	//	TimeOut_t xTimeOut;
