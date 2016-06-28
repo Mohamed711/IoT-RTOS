@@ -257,128 +257,96 @@ BaseType_t xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQ
 
 BaseType_t xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer, int32_t delay, const BaseType_t xJustPeeking )
 {
-	BaseType_t xEntryTimeSet = pdFALSE;
-	//	TimeOut_t xTimeOut;
-		int8_t *pcOriginalReadPosition;
-		Queue_t * const pxQueue = ( Queue_t * ) xQueue;
+	int8_t *pcOriginalReadPosition;
+	Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 
-			configASSERT( pxQueue );
-			configASSERT( !( ( pvBuffer == NULL ) && ( pxQueue->uxItemSize != ( UBaseType_t ) 0U ) ) );
+	configASSERT( pxQueue );
+	configASSERT( !( ( pvBuffer == NULL ) && ( pxQueue->uxItemSize != ( UBaseType_t ) 0U ) ) );
 
-			for( ;; )
+	for( ;; )
+	{
+		EnterCriticalSection();
+		{
+			if( pxQueue->uxMessagesWaiting > ( UBaseType_t ) 0 )
 			{
-				EnterCriticalSection();
+				/* Remember our read position in case we are just peeking. */
+				pcOriginalReadPosition = pxQueue->pcReadFrom;
+
+				prvCopyDataFromQueue( pxQueue, pvBuffer );
+
+				if( xJustPeeking == pdFALSE )
 				{
-					if( pxQueue->uxMessagesWaiting > ( UBaseType_t ) 0 )
+					traceQUEUE_RECEIVE( pxQueue );
+
+					/* Data is actually being removed (not just peeked). */
+					--( pxQueue->uxMessagesWaiting );
+
+					// check for tasks waiting to send
+					if( isempty( pxQueue -> xTasksWaitingToSend ) == pdFALSE )
 					{
-						/* Remember our read position in case we are just peeking. */
-						pcOriginalReadPosition = pxQueue->pcReadFrom;
-
-						prvCopyDataFromQueue( pxQueue, pvBuffer );
-
-						if( xJustPeeking == pdFALSE )
-						{
-							traceQUEUE_RECEIVE( pxQueue );
-
-							/* Data is actually being removed (not just peeked). */
-							--( pxQueue->uxMessagesWaiting );
-
-							// check for tasks waiting to send
-							if(/* listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToSend ) ) */ pdTRUE == pdFALSE )
-							{
-								// remove a task from the waiting to send list
-								if( /* xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToSend ) ) */ pdFALSE == pdTRUE )
-								{
-									portYIELD_WITHIN_API();
-								}
-								else
-								{
-									mtCOVERAGE_TEST_MARKER();
-								}
-							}
-						}
-						else
-						{
-							traceQUEUE_PEEK( pxQueue );
-
-							/* The data is not being removed, so reset our read
-							pointer. */
-							pxQueue->pcReadFrom = pcOriginalReadPosition;
-
-							/* The data is being left in the queue, so see if there are
-							any other tasks waiting for the data. */
-							// check for other tasks waiting to receive
-							if( /* listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToReceive ) ) */ pdTRUE == pdFALSE )
-							{
-								/* Tasks that are removed from the event list will get added to
-								the pending ready list as the scheduler is still suspended. */
-								// get the task that is waiting to receive
-								if( /* xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToReceive ) )*/  pdTRUE != pdFALSE )
-								{
-									/* The task waiting has a higher priority than this task. */
-									portYIELD_WITHIN_API();
-								}
-								else
-								{
-									mtCOVERAGE_TEST_MARKER();
-								}
-							}
-							else
-							{
-								mtCOVERAGE_TEST_MARKER();
-							}
-						}
-
-						ExitCriticalSection();
-						return pdPASS;
+						pid32 ProcessId = dequeue( pxQueue->xTasksWaitingToSend );
+						insert( ProcessId , readylist , proctab[ProcessId].prprio );
+						proctab[ProcessId].prstate = PR_READY;
+						queueYIELD_IF_USING_PREEMPTION();
 					}
 					else
 					{
-						if( xTicksToWait == ( TickType_t ) 0 )
-						{
-							ExitCriticalSection();
-							// trace Queue
-							// traceQUEUE_RECEIVE_FAILED( pxQueue );
-							return errQUEUE_EMPTY;
-						}
-						else if( xEntryTimeSet == pdFALSE )
-						{
-							// config the timeout
-							//vTaskSetTimeOutState( &xTimeOut );
-							xEntryTimeSet = pdTRUE;
-						}
+						mtCOVERAGE_TEST_MARKER();
+					}
+				}
+				else
+				{
+					traceQUEUE_PEEK( pxQueue );
+					/* The data is not being removed, so reset our read
+						pointer. */
+					pxQueue->pcReadFrom = pcOriginalReadPosition;
+
+					/* The data is being left in the queue, so see if there are
+					any other tasks waiting for the data. */
+					// check for other tasks waiting to receive
+					if( isempty ( pxQueue->xTasksWaitingToReceive ) == pdFALSE )
+					{
+						pid32 ProcessId = dequeue( pxQueue->xTasksWaitingToReceive );
+						insert( ProcessId , readylist , proctab[ProcessId].prprio );
+						proctab[ProcessId].prstate = PR_READY;
+						queueYIELD_IF_USING_PREEMPTION();
+					}
+					else
+					{
+						mtCOVERAGE_TEST_MARKER();
 					}
 				}
 				ExitCriticalSection();
-
-				EnterCriticalSection();
+				return pdPASS;
+			}
+			else
+			{
+				if( delay ==  0 )
 				{
-					// compare if the timeout has passed
-					if( /* xTaskCheckForTimeOut( &xTimeOut, &xTicksToWait )*/ pdTRUE == pdFALSE )
-					{
-						if( prvIsQueueEmpty( pxQueue ) != pdFALSE )
-						{
-							// trace sentence
-							//traceBLOCKING_ON_QUEUE_RECEIVE( pxQueue );
-							// add a task to the list of waiting to receive
-							// vTaskPlaceOnEventList( &( pxQueue->xTasksWaitingToReceive ), xTicksToWait );
-							portYIELD_WITHIN_API();
-						}
-						else
-						{
-							mtCOVERAGE_TEST_MARKER();
-						}
-					}
-					else
+					ExitCriticalSection();
+					traceQUEUE_RECEIVE_FAILED( pxQueue );
+					return errQUEUE_EMPTY;
+				}
+				else
+				{
+					insert( processGetPid() , pxQueue->xTasksWaitingToReceive , proctab[processGetPid()].prprio );
+					proctab[processGetPid()].prstate = PR_WAIT;
+					queueYIELD_IF_USING_PREEMPTION();
+
+					if ( prvIsQueueEmpty( pxQueue ) == pdTRUE )
 					{
 						ExitCriticalSection();
-						// trace Queue
-						// traceQUEUE_RECEIVE_FAILED( pxQueue );
 						return errQUEUE_EMPTY;
 					}
+					else
+					{
+						mtCOVERAGE_TEST_MARKER();
+					}
 				}
-				ExitCriticalSection();
 			}
+		}
+	ExitCriticalSection();
+	}
 }
 
 /*-----------------------------------------------------------*/

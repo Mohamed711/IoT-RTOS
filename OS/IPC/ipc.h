@@ -844,7 +844,7 @@ BaseType_t xQueuePeekFromISR( QueueHandle_t xQueue, void * const pvBuffer ) PRIV
  * \defgroup xQueueReceive xQueueReceive
  * \ingroup QueueManagement
  */
-BaseType_t xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer, TickType_t xTicksToWait, const BaseType_t xJustPeek ) PRIVILEGED_FUNCTION;
+BaseType_t xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer, int32_t delay, const BaseType_t xJustPeek ) PRIVILEGED_FUNCTION;
 
 /**
  * ipc. h

@@ -30,7 +30,7 @@ void ipc_test()
 	
 	uint8_t uxLength, uxItemSize, xVal, debugValue;
 	QueueHandle_t queue;
-	uxLength = 5;
+	uxLength = 2;
 	uxItemSize = 4;
 
 	queue = xQueueCreate(uxLength, uxItemSize);
@@ -58,6 +58,22 @@ void ipc_test()
 	debugValue = xVal;
 
 	debugValue += 1;
+
+
+	int z = 100, q = 200;
+	xQueueSendToFront(queue,&z,0);
+	xQueueSendToFront(queue,&q,0);
+
+	int val1,val2;
+	xQueueGenericReceive(queue,&val1,0,pdFALSE);
+	xQueueGenericReceive(queue,&val2,0,pdFALSE);
+
+	z = 100, q = 200;
+	xQueueSendToBack(queue,&z,0);
+	xQueueSendToBack(queue,&q,0);
+
+	xQueueGenericReceive(queue,&val1,0,pdTRUE);
+	xQueueGenericReceive(queue,&val2,0,pdFALSE);
 
 }
 
