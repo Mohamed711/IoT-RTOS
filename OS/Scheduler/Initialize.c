@@ -20,21 +20,57 @@
 *  distribution.
 *****************************************************************************/
 
+#include "../RTOS.h"
+#include "../MMU/mmu.h"
 #include "realTimeClock.h"
 #include "Process.h"
 #include "queue.h"
+#include "nullProcess.h"
+
+#include "../../board/ARM/drivers/uart/HAL_UART.h"
+#include "../../board/ARM/drivers/uart/uart.h"
+#include "../../board/ARM/drivers/sysctl/sysctl.h"
+#include "../../board/ARM/drivers/inc/hw_memmap.h"
+#include "../../board/ARM/drivers/inc/hw_types.h"
+#include "../../board/ARM/drivers/gpio/gpio.h"
+#include "../../board/ARM/drivers/inc/tm4c123gh6pge.h"
+
+#include <string.h>
 
 struct procent proctab[NPROC];		  /* table of processes */
 struct qentry queuetab[NQENT];        /* Table of process queues */
+extern pid32 currpid;
+uint32_t prcount;
 
 /******************************************************************************
 *
-*	The function's purpose is to initialie the operating system
+*	The function's purpose is to initialie the null Process
 *
 * 	\return none
 *
 *****************************************************************************/
-void initializeOS(void)
+void initializeNullProcess()
 {
-	clkinit();
+	proctab[0].processFunction = nullProc;
+	proctab[0].prstate = PR_CURR;
+	proctab[0].prprio = 0;
+	strncpy(proctab[0].prname, "prnull", 7);
+	
+	proctab[0].prstkbase = (char*)pvPortMalloc(100);  
+	proctab[0].prstkptr = stackinit(proctab[0].prstkbase , nullProc, 100);
+	currpid = NULLPROC;
 }
+/*
+void initializeUART( Uart_InitTypeDef *initConf,uint32_t BaseAddress )
+{
+	
+	initConf->BaudRate=115200;
+	initConf->Parity= UART_CONFIG_PAR_NONE;
+	initConf->Wlen=UART_CONFIG_WLEN_8;
+	initConf->stopBit=UART_CONFIG_STOP_ONE;
+	initConf->BaseAddress=BaseAddress;
+	initConf->clock=SysCtlClockGet();
+
+	uartinit(initConf);
+
+}*/

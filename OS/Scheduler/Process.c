@@ -31,7 +31,15 @@ pid32 currpid;
 extern struct procent proctab[NPROC];		  /* table of processes */
 extern qid16 readylist;
 extern qid16 suspendedlist;
+extern uint32_t prcount;
 
+/*Inline code to check process ID (assumes interrupts are disabled) */
+#define isbadpid(x) ( ((pid32)(x) < 0) || \
+((pid32)(x) >= NPROC) || \
+(proctab[(x)].prstate == PR_FREE))
+
+#define INITIAL_XPSR                (0x01000000)
+#define STACK_MARKER                (0x77777777)
 /******************************************************************************
 *
 *	The function's purpose is to get the pid of the current process
@@ -93,25 +101,26 @@ pid32 processCreate(void *funcAddr, uint32_t ssize, pri16 priority, char *name)
 	pid32 pid; /* Stores new process id */
 	struct procent *prptr; /* Pointer to process table entry */
 	int32_t i;
-	uint32_t *saddr;
+	char *saddr;
 
 	if (ssize < MINSTK)
 	ssize = MINSTK;
 	
 	pid = processNewPid();
-	saddr= (uint32_t *)pvPortMalloc(ssize);
+	saddr= (char*)pvPortMalloc(ssize);
 
-	if ((priority < 1) || pid == (pid32)SYSERR || saddr == (uint32_t *)SYSERR)
+	if ((priority < 1) || pid == (pid32)SYSERR || saddr == (char *)SYSERR)
 	{
 		return (pid32)SYSERR;
 	}
+	prcount++;
 	prptr = &proctab[pid];
 
 	/* Initialize process table entry for new process */
 	prptr->processFunction = funcAddr;
 	prptr->prstate = PR_SUSP; /* Initial state is suspended */
 	prptr->prprio = priority;
-	prptr->prstkbase = (char *)saddr;
+	prptr->prstkbase = (char*)saddr;
 	prptr->prstklen = ssize;
 	prptr->prname[PNMLEN - 1] = NULLCH;
 	for (i = 0; i < PNMLEN - 1 && (prptr->prname[i] = name[i]) != NULLCH; i++)
@@ -119,6 +128,9 @@ pid32 processCreate(void *funcAddr, uint32_t ssize, pri16 priority, char *name)
 		;
 	}
 
+	prptr->prstkptr = stackinit(saddr , funcAddr, ssize);
+	prptr->returnValue = (uint32_t)funcAddr;
+	
 	return pid;
 }
 
@@ -137,7 +149,7 @@ pid32 processCreate(void *funcAddr, uint32_t ssize, pri16 priority, char *name)
 sysCall processTerminate(pid32 pid)
 {
 	struct procent *prptr; /* Ptr to process’ table entry */
-	//uint32_t i; /* Index into descriptors */
+	//u32 i; /* Index into descriptors */
 
 	if (isbadpid(pid) || (pid == NULLPROC)
 		|| ((prptr = &proctab[pid])->prstate) == PR_FREE) {
@@ -150,7 +162,7 @@ sysCall processTerminate(pid32 pid)
 	switch (prptr->prstate) {
 	case PR_CURR:
 		prptr->prstate = PR_FREE; /* Suicide */
-		reSched();
+	break;
 	case PR_SLEEP:
 	case PR_RECTIM:
 		unsleep(pid);
@@ -167,6 +179,11 @@ sysCall processTerminate(pid32 pid)
 	default:
 		prptr->prstate = PR_FREE;
 	}
+	prcount--;
+
+	currpid =0;
+	getitem(0);
+	proctab[0].prstate = PR_CURR;
 	return OK;
 }
 
@@ -179,7 +196,7 @@ sysCall processTerminate(pid32 pid)
 * 	\return 0 if there's an error, -1 if there's no error
 *
 *****************************************************************************/
-sysCall	processSetReady(uint32_t pid)
+sysCall	processSetReady(pid32 pid)
 {
 	register struct procent *prptr; //optimazation for fast memory access
 
@@ -192,7 +209,6 @@ sysCall	processSetReady(uint32_t pid)
 	prptr = &proctab[pid];
 	prptr->prstate = PR_READY;
 	insert(pid, readylist, prptr->prprio);
-	reSched();
 
 return OK;
 }
@@ -355,4 +371,76 @@ void processResumeAll(void)
 		pid32 pid=getfirst(suspendedlist);
 		processResume(pid);
 	}
+}
+
+char * stackinit(char* stackpointer, void *func(), uint32_t ssize)
+{
+
+	/*to go to the stack's top*/
+	 uint32_t *stk ;
+	 stk = (uint32_t *)((uintptr_t)stackpointer + ssize);
+
+	    /* adjust to 32 bit boundary by clearing the last two bits in the address */
+	    stk = (uint32_t *)(((uint32_t)stk) & ~((uint32_t)0x3));
+
+	    /* stack start marker */
+	    stk--;
+	    *stk = STACK_MARKER;
+	    /* make sure the stack is double word aligned (8 bytes) */
+	     /* This is required in order to conform with Procedure Call Standard for the
+	      * ARMÂ® Architecture (AAPCS) */
+	     /* http://infocenter.arm.com/help/topic/com.arm.doc.ihi0042e/IHI0042E_aapcs.pdf */
+	     if (((uint32_t) stk & 0x7) != 0) {
+	         /* add a single word padding */
+	         --stk;
+	         *stk = ~((uint32_t)STACK_MARKER);
+	     }
+			 
+			 /*FPU*/
+			  stk--;
+    *stk = (unsigned int) 0;
+    
+
+    /* S0 - S15 */
+    
+    for (int i = 15; i >= 0; i--) 
+	  {
+        stk--;
+        *stk = i;
+		}
+
+	     /* xPSR - initial status register */
+	         stk--;
+	         *stk = (uint32_t)INITIAL_XPSR;
+	         /* pc - initial program counter value := thread entry function */
+	         stk--;
+	         *stk = (uint32_t)func;
+	         /* lr - contains the return address when the thread exits */
+	         stk--;
+	         *stk = (uint32_t)processKill;
+	         /* r12 */
+	         stk--;
+	         *stk = 0;
+	         /* r3 - r1 */
+	         uint32_t i;
+	         for ( i = 3; i >= 1; i--) {
+	             stk--;
+	             *stk = i;
+	         }
+	         /* r0 - contains the thread function parameter */
+	        stk--;
+	         *stk = 0;
+
+	         /* r11 - r4 */
+	         for (i = 11; i >= 4; i--) {
+	             stk--;
+	             *stk = i;
+	         }
+	             return (char*) stk;
+
+}
+sysCall processKill()
+{
+	processTerminate(currpid);
+	return OK;
 }

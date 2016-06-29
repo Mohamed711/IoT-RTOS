@@ -49,38 +49,29 @@
 #define INITSTK 100 	/* Initial process stack size */
 #define MINSTK	10  	/* Minimum stack size */
 
-
-/* Inline code to check process ID (assumes interrupts are disabled) */
-#define isbadpid(x) ( ((pid32)(x) < 0) || \
-((pid32)(x) >= NPROC) || \
-(proctab[(x)].prstate == PR_FREE))
-
-/* Number of device descriptors a process can have open */
-#define NDESC 5 /* must be odd to make procent 4N bytes */
-
- /* Entry in the process table */
- struct procent
- {
+ struct procent {                /* Entry in the process table           */
 	void (*processFunction)(void);
-	uint16_t 	prstate;        /* Process state: PR_CURR, etc.         */
-	uint32_t 	prprio;         /* Process priority                     */
-	uint16_t	*prstkptr;      /* Saved stack pointer                  */
-	uint16_t 	*prstkbase;     /* Base of run time stack               */
-	uint16_t 	prstklen;       /* Stack length in bytes                */
-	char     	prname[PNMLEN]; /* Process name                         */
-	uint16_t 	prparent;       /* ID of the creating process           */
-};
-
+	 uint32_t returnValue;
+	uint16_t prstate;         /* Process state: PR_CURR, etc.         */
+	uint32_t   prprio;         /* Process priority                     */
+	char    *prstkptr;      /* Saved stack pointer                  */
+	char    *prstkbase;     /* Base of run time stack               */
+	uint16_t  prstklen;       /* Stack length in bytes                */
+	char    prname[PNMLEN]; /* Process name                         */
+}; 
 
 pid32 pocessGetPid();
 pid32 processNewPid();
 pid32 processCreate(void *funcaddr, uint32_t ssize, pri16 priority, char *name);
 sysCall processTerminate(pid32 pid);
-sysCall	processSetReady(uint32_t pid);
+sysCall	processSetReady(pid32 pid);
 pri16 processResume(pid32 pid);
 sysCall	processSuspend(pid32 pid);
 void processSuspendAll(void);
 void processResumeAll(void);
 sysCall	processWaiting(pid32 pid);
+char * stackinit(char* stackpointer, void *func(), uint32_t ssize);
+sysCall processKill();
 
 #endif
+

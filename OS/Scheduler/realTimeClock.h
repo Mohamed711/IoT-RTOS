@@ -27,12 +27,10 @@
 #include "../RTOS.h"
 
 sysCall	insertd(pid32 pid, qid16 q,int32_t key);
-sysCall	yield(void);
 sysCall	sleep(int32_t delay);
 sysCall	sleepms(int32_t	delay);
 sysCall	unsleep(pid32 pid);
 void wakeup(void);
 void clkhandler(void);
-void clkinit(void);
 
 #endif /* TIMER_H_ */

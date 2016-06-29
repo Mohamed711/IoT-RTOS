@@ -22,6 +22,7 @@
 #ifndef INITIALIZE_H_
 #define INITIALIZE_H_
 
-void initializeOS(void);
+void initializeNullProcess();
+//void initializeUART();
 
 #endif /* INITIALIZE_H_ */
