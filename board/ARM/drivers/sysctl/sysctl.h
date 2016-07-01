@@ -140,9 +140,9 @@ extern "C"
 
 //*****************************************************************************
 //
-// The following are values that can be passed to the SysCtlLDOSleepSet() and
-// SysCtlLDODeepSleepSet() APIs as the ui32Voltage value, or returned by the
-// SysCtlLDOSleepGet() and SysCtlLDODeepSleepGet() APIs.
+// The following are values that can be passed to the SysCtlLDOsleepSet() and
+// SysCtlLDODeepsleepSet() APIs as the ui32Voltage value, or returned by the
+// SysCtlLDOsleepGet() and SysCtlLDODeepsleepGet() APIs.
 //
 //*****************************************************************************
 #define SYSCTL_LDO_0_90V        0x80000012  // LDO output of 0.90V
@@ -385,7 +385,7 @@ extern "C"
 
 //*****************************************************************************
 //
-// The following are values that can be passed to the SysCtlDeepSleepClockSet()
+// The following are values that can be passed to the SysCtlDeepsleepClockSet()
 // API as the ui32Config parameter.
 //
 //*****************************************************************************
@@ -486,14 +486,14 @@ extern "C"
 
 //*****************************************************************************
 //
-// The following are values that can be passed to the SysCtlSleepPowerSet() and
-// SysCtlDeepSleepPowerSet() APIs as the ui32Config parameter.
+// The following are values that can be passed to the SysCtlsleepPowerSet() and
+// SysCtlDeepsleepPowerSet() APIs as the ui32Config parameter.
 //
 //*****************************************************************************
-#define SYSCTL_LDO_SLEEP        0x00000200  // LDO in sleep mode
-                                            // (Deep Sleep Only)
+#define SYSCTL_LDO_sleep        0x00000200  // LDO in sleep mode
+                                            // (Deep sleep Only)
 #define SYSCTL_TEMP_LOW_POWER   0x00000100  // Temp sensor in low power mode
-                                            // (Deep Sleep Only)
+                                            // (Deep sleep Only)
 #define SYSCTL_FLASH_NORMAL     0x00000000  // Flash in normal mode
 #define SYSCTL_FLASH_LOW_POWER  0x00000020  // Flash in low power mode
 #define SYSCTL_SRAM_NORMAL      0x00000000  // SRAM in normal mode
@@ -589,10 +589,10 @@ extern void SysCtlPeripheralPowerOff(uint32_t ui32Peripheral);
 extern void SysCtlPeripheralReset(uint32_t ui32Peripheral);
 extern void SysCtlPeripheralEnable(uint32_t ui32Peripheral);
 extern void SysCtlPeripheralDisable(uint32_t ui32Peripheral);
-extern void SysCtlPeripheralSleepEnable(uint32_t ui32Peripheral);
-extern void SysCtlPeripheralSleepDisable(uint32_t ui32Peripheral);
-extern void SysCtlPeripheralDeepSleepEnable(uint32_t ui32Peripheral);
-extern void SysCtlPeripheralDeepSleepDisable(uint32_t ui32Peripheral);
+extern void SysCtlPeripheralsleepEnable(uint32_t ui32Peripheral);
+extern void SysCtlPeripheralsleepDisable(uint32_t ui32Peripheral);
+extern void SysCtlPeripheralDeepsleepEnable(uint32_t ui32Peripheral);
+extern void SysCtlPeripheralDeepsleepDisable(uint32_t ui32Peripheral);
 extern void SysCtlPeripheralClockGating(bool bEnable);
 extern void SysCtlIntRegister(void (*pfnHandler)(void));
 extern void SysCtlIntUnregister(void);
@@ -600,15 +600,15 @@ extern void SysCtlIntEnable(uint32_t ui32Ints);
 extern void SysCtlIntDisable(uint32_t ui32Ints);
 extern void SysCtlIntClear(uint32_t ui32Ints);
 extern uint32_t SysCtlIntStatus(bool bMasked);
-extern void SysCtlLDOSleepSet(uint32_t ui32Voltage);
-extern uint32_t SysCtlLDOSleepGet(void);
-extern void SysCtlLDODeepSleepSet(uint32_t ui32Voltage);
-extern uint32_t SysCtlLDODeepSleepGet(void);
-extern void SysCtlSleepPowerSet(uint32_t ui32Config);
-extern void SysCtlDeepSleepPowerSet(uint32_t ui32Config);
+extern void SysCtlLDOsleepSet(uint32_t ui32Voltage);
+extern uint32_t SysCtlLDOsleepGet(void);
+extern void SysCtlLDODeepsleepSet(uint32_t ui32Voltage);
+extern uint32_t SysCtlLDODeepsleepGet(void);
+extern void SysCtlsleepPowerSet(uint32_t ui32Config);
+extern void SysCtlDeepsleepPowerSet(uint32_t ui32Config);
 extern void SysCtlReset(void);
-extern void SysCtlSleep(void);
-extern void SysCtlDeepSleep(void);
+extern void SysCtlsleep(void);
+extern void SysCtlDeepsleep(void);
 extern uint32_t SysCtlResetCauseGet(void);
 extern void SysCtlResetCauseClear(uint32_t ui32Causes);
 extern void SysCtlBrownOutConfigSet(uint32_t ui32Config,
@@ -618,8 +618,8 @@ extern void SysCtlMOSCConfigSet(uint32_t ui32Config);
 extern uint32_t SysCtlPIOSCCalibrate(uint32_t ui32Type);
 extern void SysCtlClockSet(uint32_t ui32Config);
 extern uint32_t SysCtlClockGet(void);
-extern void SysCtlDeepSleepClockSet(uint32_t ui32Config);
-extern void SysCtlDeepSleepClockConfigSet(uint32_t ui32Div,
+extern void SysCtlDeepsleepClockSet(uint32_t ui32Config);
+extern void SysCtlDeepsleepClockConfigSet(uint32_t ui32Div,
                                           uint32_t ui32Config);
 extern void SysCtlPWMClockSet(uint32_t ui32Config);
 extern uint32_t SysCtlPWMClockGet(void);

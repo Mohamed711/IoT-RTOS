@@ -20,7 +20,7 @@
 *  distribution.
 *****************************************************************************/
 	
-#include "ReSched.h"
+#include "reSched.h"
 #include "Process.h"
 #include "queue.h"
 #include "contextSwitch.h"
@@ -31,10 +31,11 @@ volatile char* pxCurrentTCB_New;
 extern pid32 currpid;
 extern struct procent proctab[NPROC];		  /* table of processes */
 extern qid16 readylist;
+extern void contextSwitch(struct procent *ptold, struct procent *ptnew);
 	
 /*******************************************************************************
 *
-*	The function's purpose is to reschedule the processes
+*	The function's purpose is to reSchedule the processes
 *
 *	By getting the head of the ready queue, the new process' state is then 
 *	changed to 'running' state 
@@ -42,7 +43,7 @@ extern qid16 readylist;
 * 	\return none
 *
 *****************************************************************************/
-void reSched(void) /* Assumes interrupts are disabled */
+void Scheduler_reSchedule(void) /* Assumes interrupts are disabled */
 {
 	struct procent *ptold; /* Ptr to table entry for old process */
 	struct procent *ptnew; /* Ptr to table entry for new process */
@@ -69,5 +70,5 @@ void reSched(void) /* Assumes interrupts are disabled */
 	ptnew->prstate = PR_CURR;
 	
 	pid32 newP = currpid;
-	contextSwitch(ptold, ptnew);
+	Scheduler_contextSwitch(ptold, ptnew);
 }

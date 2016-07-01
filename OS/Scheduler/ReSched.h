@@ -19,9 +19,9 @@
 *  documentation and/or other materials provided with the
 *  distribution.
 *****************************************************************************/
-#ifndef RESCHED_H_
-#define RESCHED_H_
+#ifndef reSched_H_
+#define reSched_H_
 
-void reSched(void);
+void Scheduler_reSchedule(void);
 
 #endif

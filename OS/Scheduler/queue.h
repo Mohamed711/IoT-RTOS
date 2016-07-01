@@ -40,7 +40,7 @@
 * function what if they are interrupted ??! by a higher priority interrupt
 * or by interrupt in case of oridnary function.
 * 8) Inserting a process is O(n) think of another way to make it log(n)
-* 9) if we succeed to build a prescheduler to count number of processes
+* 9) if we succeed to build a preScheduler to count number of processes
 * and queues then checking the qid and queue is full and these have to be
 * deleted
 * 10) For the queue entries, the key has no use

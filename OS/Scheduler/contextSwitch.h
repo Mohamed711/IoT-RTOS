@@ -29,7 +29,7 @@
  * The function definition is in the board folder as its implementation
  * differ with the type of the microcontroller used
  */
-void contextSwitch(struct procent *ptold, struct procent *ptnew);
+void Scheduler_contextSwitch(struct procent *ptold, struct procent *ptnew);
 void jumptoPC(uint32_t LR);
 
 #endif /* CONTEXTSWITCH_H_ */

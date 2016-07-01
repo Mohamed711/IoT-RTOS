@@ -24,13 +24,10 @@
 #include "queue.h"
 #include "reSched.h"
 #include "scheduler_test.h"
-#include "../../board/ARM/tivaHAL.h"
-#include "../../board/ARM/drivers/inc/hw_gpio.h"	/*temp include*/
-#include "../../board/ARM/drivers/inc/hw_ints.h"
-#include "../../board/ARM/drivers/uart/uart.h"
-#include "../../board/ARM/drivers/inc/hw_memmap.h"
-#include "../../board/ARM/drivers/inc/hw_types.h"
-#include "../../board/ARM/drivers/inc/tm4c123gh6pge.h"
+#include "../RTOS.h"
+	
+ 
+
 
 extern unsigned int lrReg;
 extern pid32 currpid;
@@ -38,7 +35,7 @@ extern uint32_t prcount;
 extern struct procent proctab[NPROC];
 extern qid16 readylist;
 
-/*
+
 void LED1()
 {
 		SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
@@ -60,7 +57,7 @@ void LED2()
 	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 2);
 	SysCtlDelay(20000000);
 	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 0);
-	processTerminate(2);
+	Scheduler_processTerminate(2);
 }
 
 void LED3()
@@ -71,7 +68,7 @@ void LED3()
 		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 14);
 		SysCtlDelay(20000000);
 		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 0);
-		processTerminate(3);
+		Scheduler_processTerminate(3);
 }
 
 
@@ -87,10 +84,6 @@ void uartInterrupt(void)
 			uint32_t * const LrAddr = (void*)(get_MSP()+0x28); //el address 
 			lrReg = *LrAddr;
 	
-		//	if (currpid!=0)
-		//	{
-		//		proctab[currpid].returnValue = lrReg;
-		//	}
 	
 		uint32_t ui32Status;
 		ui32Status = uartIntStatus(UART0_BASE, true); //get interrupt status
@@ -109,7 +102,7 @@ void uartInterrupt(void)
 					{
 						prcount++;
 						proctab[1].prstate = PR_SUSP;
-						processSetReady(pidLED1);
+						Scheduler_processSetReady(pidLED1);
 					}
 				break;
 				case 0x32:
@@ -119,7 +112,7 @@ void uartInterrupt(void)
 					{
 						prcount++;
 						proctab[2].prstate = PR_SUSP;
-						processSetReady(pidLED2);
+						Scheduler_processSetReady(pidLED2);
 					}
 				break;
 				case 0x33:
@@ -128,26 +121,26 @@ void uartInterrupt(void)
 					{
 						prcount++;
 						proctab[3].prstate = PR_SUSP;
-						processSetReady(pidLED3);
+						Scheduler_processSetReady(pidLED3);
 					}
 				break;
 				case 0x34:
-					processTerminate(1);
+					Scheduler_processTerminate(1);
 				break;
 			}
 		}
-		*LrAddr = (uint32_t)nullProc;
+		*LrAddr = (uint32_t)Scheduler_nullProc;
 }
 
 bool flag = false;
 
-void nullProc(Uart_HandleTypeDef * transmit)
+void Scheduler_nullProc(Uart_HandleTypeDef * transmit)
 {
 	if (!flag)
 	{
-		pidLED1 = processCreate(LED1, 100, 5, "P1");//blue
-		pidLED2 = processCreate(LED2, 100, 10, "P2");//blue
-		pidLED3 = processCreate(LED3, 100, 7, "P3");//blue
+		pidLED1 = Scheduler_processCreate(LED1, 100, 5, "P1");//blue
+		pidLED2 = Scheduler_processCreate(LED2, 100, 10, "P2");//blue
+		pidLED3 = Scheduler_processCreate(LED3, 100, 7, "P3");//blue
 		
 		uart = transmit;
 		
@@ -169,24 +162,9 @@ void nullProc(Uart_HandleTypeDef * transmit)
 						insert(currpid, readylist, proctab[currpid].prprio);
 					}
 					currpid = 0;
-						reSched();
-				}
-	}
-}*/
-
-void nullProc()
-{
-	
-	while (1)
-		{
-				if (prcount !=0)
-				{
-					if (currpid != 0)
-					{
-						insert(currpid, readylist, proctab[currpid].prprio);
-					}
-					currpid = 0;
-						reSched();
+						Scheduler_reSchedule();
 				}
 	}
 }
+
+

@@ -23,7 +23,7 @@
 
 #include "Process.h"
 #include "queue.h"
-#include "ReSched.h"
+#include "reSched.h"
 #include "realTimeClock.h"
 #include "../MMU/mmu.h"
 
@@ -49,7 +49,7 @@ extern uint32_t prcount;
 * 	\return the pid
 *
 *****************************************************************************/
-pid32 pocessGetPid()
+pid32 Scheduler_processGetPid()
 {
 	return currpid;
 }
@@ -64,7 +64,7 @@ pid32 pocessGetPid()
 * 	\return the pid
 *
 *****************************************************************************/
-pid32 processNewPid(void)
+pid32 Scheduler_processNewPid(void)
 {
 	uint32_t i; /* Iterate through all processes*/
 	static pid32 nextpid = 1; /* Position in table to try or */
@@ -96,7 +96,7 @@ pid32 processNewPid(void)
 * 	\return the pid of the created process
 *
 *****************************************************************************/
-pid32 processCreate(void *funcAddr, uint32_t ssize, pri16 priority, char *name)
+pid32 Scheduler_processCreate(void *funcAddr, uint32_t ssize, pri16 priority, char *name)
 {
 	pid32 pid; /* Stores new process id */
 	struct procent *prptr; /* Pointer to process table entry */
@@ -106,7 +106,7 @@ pid32 processCreate(void *funcAddr, uint32_t ssize, pri16 priority, char *name)
 	if (ssize < MINSTK)
 	ssize = MINSTK;
 	
-	pid = processNewPid();
+	pid = Scheduler_processNewPid();
 	saddr= (char*)pvPortMalloc(ssize);
 
 	if ((priority < 1) || pid == (pid32)SYSERR || saddr == (char *)SYSERR)
@@ -128,7 +128,7 @@ pid32 processCreate(void *funcAddr, uint32_t ssize, pri16 priority, char *name)
 		;
 	}
 
-	prptr->prstkptr = stackinit(saddr , funcAddr, ssize);
+	prptr->prstkptr = Scheduler_stackInitialization(saddr , funcAddr, ssize);
 	prptr->returnValue = (uint32_t)funcAddr;
 	
 	return pid;
@@ -146,12 +146,12 @@ pid32 processCreate(void *funcAddr, uint32_t ssize, pri16 priority, char *name)
 * 	\return 0 if there's an error, -1 if there's no error
 *
 *****************************************************************************/
-sysCall processTerminate(pid32 pid)
+sysCall Scheduler_processTerminate(pid32 pid)
 {
 	struct procent *prptr; /* Ptr to process’ table entry */
 	//u32 i; /* Index into descriptors */
 
-	if (isbadpid(pid) || (pid == NULLPROC)
+	if (isbadpid(pid) || (pid == nullProc)
 		|| ((prptr = &proctab[pid])->prstate) == PR_FREE) {
 		return SYSERR;
 	}
@@ -163,9 +163,9 @@ sysCall processTerminate(pid32 pid)
 	case PR_CURR:
 		prptr->prstate = PR_FREE; /* Suicide */
 	break;
-	case PR_SLEEP:
+	case PR_sleep:
 	case PR_RECTIM:
-		unsleep(pid);
+		Scheduler_unsleep(pid);
 		prptr->prstate = PR_FREE;
 		break;
 	case PR_WAIT:
@@ -196,7 +196,7 @@ sysCall processTerminate(pid32 pid)
 * 	\return 0 if there's an error, -1 if there's no error
 *
 *****************************************************************************/
-sysCall	processSetReady(pid32 pid)
+sysCall	Scheduler_processSetReady(pid32 pid)
 {
 	register struct procent *prptr; //optimazation for fast memory access
 
@@ -222,7 +222,7 @@ return OK;
 * 	\return the priority of the resumed process
 *
 *****************************************************************************/
-pri16 processResume(pid32 pid)
+pri16 Scheduler_processResume(pid32 pid)
 {
 	//intmask	mask;			/* Saved interrupt mask		*/
 	struct	procent *prptr;		/* Ptr to process' table entry	*/
@@ -245,7 +245,7 @@ pri16 processResume(pid32 pid)
 	}
 	prio = prptr->prprio;		/* Record priority to return	*/
 	
-	processSetReady(pid);
+	Scheduler_processSetReady(pid);
 	//dequeue(suspendedlist); // lw 3wz a keep track l kol el suspended
 	//restore(mask);
 	/*
@@ -263,14 +263,14 @@ pri16 processResume(pid32 pid)
 * 	\return 0 if there's an error, -1 if there's no error
 *
 *****************************************************************************/
-sysCall	processSuspend(pid32 pid) 		/* ID of process to suspend	*/
+sysCall	Scheduler_processSuspend(pid32 pid) 		/* ID of process to suspend	*/
 {
 	//intmask	mask;			/* Saved interrupt mask		*/
 	struct	procent *prptr;		/* Ptr to process' table entry	*/
 	pri16	prio;			/* Priority to return		*/
 
 	//mask = disable();
-	if (isbadpid(pid) || (pid == NULLPROC))
+	if (isbadpid(pid) || (pid == nullProc))
 	{
 	//	restore(mask);
 		return SYSERR;
@@ -296,21 +296,20 @@ sysCall	processSuspend(pid32 pid) 		/* ID of process to suspend	*/
 	{
 		prptr->prstate = PR_SUSP;   /* Mark the current process	*/
 	//	enqueue(pid,suspendedlist); //lw 3wzen n keep track lel suspended processes
-		reSched();		    /*   suspended and resched.	*/
 	}
 	prio = prptr->prprio;
 	//restore(mask);
 	return prio;
 }
 
-sysCall	processWaiting(pid32 pid) 		/* ID of process waiting for semaphore	*/
+sysCall	Scheduler_processWaiting(pid32 pid) 		/* ID of process waiting for semaphore	*/
 {
 	//intmask	mask;			/* Saved interrupt mask		*/
 	struct	procent *prptr;		/* Ptr to process' table entry	*/
 	pri16	prio;			/* Priority to return		*/
 
 	//mask = disable();
-	if (isbadpid(pid) || (pid == NULLPROC))
+	if (isbadpid(pid) || (pid == nullProc))
 	{
 		//	restore(mask);
 		return SYSERR;
@@ -329,7 +328,6 @@ sysCall	processWaiting(pid32 pid) 		/* ID of process waiting for semaphore	*/
 	{
 		prptr->prstate = PR_WAIT;   /* Mark the current process	*/
 		//enqueue(pid,waitinglist); //lw 3wzen n keep track lel suspended processes
-		reSched();		    /*   suspended and resched.	*/
 	}
 	prio = prptr->prprio;
 	//restore(mask);
@@ -345,13 +343,13 @@ sysCall	processWaiting(pid32 pid) 		/* ID of process waiting for semaphore	*/
 * 	\return none
 *
 *****************************************************************************/
-void processSuspendAll(void) 		
+void Scheduler_processSuspendAll(void) 		
 {	
 	while(nonempty(readylist))
 	{
 		
 		pid32 pid=getfirst(readylist);
-		processSuspend(pid);
+		Scheduler_processSuspend(pid);
 		enqueue(pid,suspendedlist);
 			
 	}
@@ -364,16 +362,16 @@ void processSuspendAll(void)
 * 	\return none
 *
 *****************************************************************************/
-void processResumeAll(void)
+void Scheduler_processResumeAll(void)
 {
 	while(nonempty(suspendedlist))
 	{
 		pid32 pid=getfirst(suspendedlist);
-		processResume(pid);
+		Scheduler_processResume(pid);
 	}
 }
 
-char * stackinit(char* stackpointer, void *func(), uint32_t ssize)
+char * Scheduler_stackInitialization(char* stackpointer, void *func(), uint32_t ssize)
 {
 
 	/*to go to the stack's top*/
@@ -417,7 +415,7 @@ char * stackinit(char* stackpointer, void *func(), uint32_t ssize)
 	         *stk = (uint32_t)func;
 	         /* lr - contains the return address when the thread exits */
 	         stk--;
-	         *stk = (uint32_t)processKill;
+	         *stk = (uint32_t)Scheduler_processKill;
 	         /* r12 */
 	         stk--;
 	         *stk = 0;
@@ -439,8 +437,8 @@ char * stackinit(char* stackpointer, void *func(), uint32_t ssize)
 	             return (char*) stk;
 
 }
-sysCall processKill()
+sysCall Scheduler_processKill()
 {
-	processTerminate(currpid);
+	Scheduler_processTerminate(currpid);
 	return OK;
 }

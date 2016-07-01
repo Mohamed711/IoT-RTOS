@@ -21,7 +21,7 @@
 *****************************************************************************/
 
 #include "queue.h"
-#include "ReSched.h"
+#include "reSched.h"
 #include "realTimeClock.h"
 #include "Process.h"
 #include "../RTOS.h"
@@ -59,7 +59,7 @@ extern qid16 readylist;
 * 	\return 0 if there's an error, -1 if there's no error
 *
 *****************************************************************************/
-sysCall	insertd(pid32	pid,  qid16	q, int32_t	key)
+sysCall	Scheduler_insertd(pid32	pid,  qid16	q, int32_t	key)
 {
 	pid32	next;			/* Runs through the delta list	*/
 	pid32	prev;			/* Follows next through the list*/
@@ -93,7 +93,7 @@ sysCall	insertd(pid32	pid,  qid16	q, int32_t	key)
 	}
 	
 	time = queuetab[firstid(sleepq)].qkey;
-	Timer_New(clkhandler, time+2);
+	Timer_New(Scheduler_clkhandler, time+2);
 
 }
 
@@ -106,13 +106,13 @@ sysCall	insertd(pid32	pid,  qid16	q, int32_t	key)
 * 	\return system call
 *
 *****************************************************************************/
-sysCall	sleep(int32_t delay)
+sysCall	Scheduler_sleep(int32_t delay)
 {
 	if ( (delay < 0) || (delay > MAXSECONDS) )
 	{
 		return SYSERR;
 	}
-	sleepms(1000*delay);
+	Scheduler_sleepms(1000*delay);
 	return OK;
 }
 
@@ -125,7 +125,7 @@ sysCall	sleep(int32_t delay)
 * 	\return 0 if there's an error, -1 if there's no error
 *
 *****************************************************************************/
-sysCall	sleepms(int32_t	delay)
+sysCall	Scheduler_sleepms(int32_t	delay)
 {
 	if (delay < 0)
 	{
@@ -139,12 +139,12 @@ sysCall	sleepms(int32_t	delay)
 
 	/* Delay calling process */
 
-	if (insertd(currpid, sleepq, delay) == SYSERR)
+	if (Scheduler_insertd(currpid, sleepq, delay) == SYSERR)
 	{
 		return SYSERR;
 	}
 
-	proctab[currpid].prstate = PR_SLEEP;
+	proctab[currpid].prstate = PR_sleep;
 	return OK;
 }
 
@@ -157,7 +157,7 @@ sysCall	sleepms(int32_t	delay)
 * 	\return 0 if there's an error, -1 if there's no error
 *
 *****************************************************************************/
-sysCall	unsleep(pid32 pid)
+sysCall	Scheduler_unsleep(pid32 pid)
 {
 	struct	procent	*prptr;		/* Ptr to process' table entry	*/
 	pid32	pidnext;		/* ID of process on sleep queue	*/
@@ -171,7 +171,7 @@ sysCall	unsleep(pid32 pid)
 	/* Verify that candidate process is on the sleep queue */
 	prptr = &proctab[pid];
 
-	if ((prptr->prstate!=PR_SLEEP) && (prptr->prstate!=PR_RECTIM))
+	if ((prptr->prstate!=PR_sleep) && (prptr->prstate!=PR_RECTIM))
 	{
 		return SYSERR;
 	}
@@ -195,7 +195,7 @@ sysCall	unsleep(pid32 pid)
 * 	\return none
 *
 *****************************************************************************/
-void wakeup(void)
+void Scheduler_wakeup(void)
 {
 	/* Awaken all processes that have no more time to sleep */
 	pid32 pid;
@@ -205,11 +205,11 @@ void wakeup(void)
 	if (!isempty(sleepq))
 	{
 		time = queuetab[firstid(sleepq)].qkey;
-		Timer_New(clkhandler, time);
+		Timer_New(Scheduler_clkhandler, time);
 	}
 	else
 	{
-		Timer_New(clkhandler, 100000000);
+		Timer_New(Scheduler_clkhandler, 100000000);
 	}
 	return;
 }
@@ -221,7 +221,7 @@ void wakeup(void)
 * 	\return none
 *
 *****************************************************************************/
-void clkhandler(void)
+void Scheduler_clkhandler(void)
 {
 
 	/* Handle sleeping processes if any exist */
@@ -231,9 +231,8 @@ void clkhandler(void)
 		/* sleep queue, and awaken if the count reaches zero */
 		if (queuetab[firstid(sleepq)].qkey - time  <=0)
 		{
-			wakeup();
+			Scheduler_wakeup();
 		}
 	}
-		preempt = QUANTUM;
 	
 }

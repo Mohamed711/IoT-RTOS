@@ -22,14 +22,9 @@
 #include "HAL_UART.h"
 #include <stdint.h>
 #include <stdbool.h>
-#include "../inc/hw_memmap.h"
-#include "../inc/hw_types.h"
-#include "../gpio/gpio.h"
-#include "../pin_map/pin_map.h"
-#include "../sysctl/sysctl.h"
-#include "../inc/hw_ints.h"
-#include "../interrupt/interrupt.h"
-#include "uart.h"
+
+#include "../../../../OS/RTOS.h"
+
 
 /******************************************************************************
 *

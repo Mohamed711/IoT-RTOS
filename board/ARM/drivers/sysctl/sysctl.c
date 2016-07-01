@@ -923,7 +923,7 @@ SysCtlPeripheralDisable(uint32_t ui32Peripheral)
 //! processor is in sleep mode and can therefore wake the processor from sleep
 //! mode.
 //!
-//! Sleep mode clocking of peripherals must be enabled via
+//! sleep mode clocking of peripherals must be enabled via
 //! SysCtlPeripheralClockGating(); if disabled, the peripheral sleep mode
 //! configuration is maintained but has no effect when sleep mode is entered.
 //!
@@ -961,7 +961,7 @@ SysCtlPeripheralDisable(uint32_t ui32Peripheral)
 //
 //*****************************************************************************
 void
-SysCtlPeripheralSleepEnable(uint32_t ui32Peripheral)
+SysCtlPeripheralsleepEnable(uint32_t ui32Peripheral)
 {
     //
     // Check the arguments.
@@ -988,7 +988,7 @@ SysCtlPeripheralSleepEnable(uint32_t ui32Peripheral)
 //! leaves sleep mode, maintaining its entire state from before sleep mode was
 //! entered.
 //!
-//! Sleep mode clocking of peripherals must be enabled via
+//! sleep mode clocking of peripherals must be enabled via
 //! SysCtlPeripheralClockGating(); if disabled, the peripheral sleep mode
 //! configuration is maintained but has no effect when sleep mode is entered.
 //!
@@ -1026,7 +1026,7 @@ SysCtlPeripheralSleepEnable(uint32_t ui32Peripheral)
 //
 //*****************************************************************************
 void
-SysCtlPeripheralSleepDisable(uint32_t ui32Peripheral)
+SysCtlPeripheralsleepDisable(uint32_t ui32Peripheral)
 {
     //
     // Check the arguments.
@@ -1092,7 +1092,7 @@ SysCtlPeripheralSleepDisable(uint32_t ui32Peripheral)
 //
 //*****************************************************************************
 void
-SysCtlPeripheralDeepSleepEnable(uint32_t ui32Peripheral)
+SysCtlPeripheralDeepsleepEnable(uint32_t ui32Peripheral)
 {
     //
     // Check the arguments.
@@ -1160,7 +1160,7 @@ SysCtlPeripheralDeepSleepEnable(uint32_t ui32Peripheral)
 //
 //*****************************************************************************
 void
-SysCtlPeripheralDeepSleepDisable(uint32_t ui32Peripheral)
+SysCtlPeripheralDeepsleepDisable(uint32_t ui32Peripheral)
 {
     //
     // Check the arguments.
@@ -1185,8 +1185,8 @@ SysCtlPeripheralDeepSleepDisable(uint32_t ui32Peripheral)
 //! into sleep or deep-sleep mode.  By default, the peripherals are clocked the
 //! same as in run mode; if peripheral clock gating is enabled, they are
 //! clocked according to the configuration set by
-//! SysCtlPeripheralSleepEnable(), SysCtlPeripheralSleepDisable(),
-//! SysCtlPeripheralDeepSleepEnable(), and SysCtlPeripheralDeepSleepDisable().
+//! SysCtlPeripheralsleepEnable(), SysCtlPeripheralsleepDisable(),
+//! SysCtlPeripheralDeepsleepEnable(), and SysCtlPeripheralDeepsleepDisable().
 //!
 //! \return None.
 //
@@ -1454,7 +1454,7 @@ SysCtlIntStatus(bool bMasked)
 //
 //*****************************************************************************
 void
-SysCtlLDOSleepSet(uint32_t ui32Voltage)
+SysCtlLDOsleepSet(uint32_t ui32Voltage)
 {
     //
     // Check the arguments.
@@ -1492,7 +1492,7 @@ SysCtlLDOSleepSet(uint32_t ui32Voltage)
 //
 //*****************************************************************************
 uint32_t
-SysCtlLDOSleepGet(void)
+SysCtlLDOsleepGet(void)
 {
     //
     // Return the sleep-mode LDO voltage setting.
@@ -1523,7 +1523,7 @@ SysCtlLDOSleepGet(void)
 //
 //*****************************************************************************
 void
-SysCtlLDODeepSleepSet(uint32_t ui32Voltage)
+SysCtlLDODeepsleepSet(uint32_t ui32Voltage)
 {
     //
     // Check the arguments.
@@ -1562,7 +1562,7 @@ SysCtlLDODeepSleepSet(uint32_t ui32Voltage)
 //
 //*****************************************************************************
 uint32_t
-SysCtlLDODeepSleepGet(void)
+SysCtlLDODeepsleepGet(void)
 {
     //
     // Return the deep-sleep-mode LDO voltage setting.
@@ -1604,7 +1604,7 @@ SysCtlLDODeepSleepGet(void)
 //
 //*****************************************************************************
 void
-SysCtlSleepPowerSet(uint32_t ui32Config)
+SysCtlsleepPowerSet(uint32_t ui32Config)
 {
     //
     // Set the sleep-mode flash and SRAM power configuration.
@@ -1631,7 +1631,7 @@ SysCtlSleepPowerSet(uint32_t ui32Config)
 //!
 //! The SRAM power configuration is specified as one of:
 //!
-//! - \b SYSCTL_LDO_SLEEP - The LDO is in sleep mode.
+//! - \b SYSCTL_LDO_sleep - The LDO is in sleep mode.
 //! - \b SYSCTL_TEMP_LOW_POWER - The temperature sensor in low power mode.
 //! - \b SYSCTL_SRAM_NORMAL - The SRAM is left in fully powered mode, providing
 //!   fast wake-up time but higher power consumption.
@@ -1648,7 +1648,7 @@ SysCtlSleepPowerSet(uint32_t ui32Config)
 //
 //*****************************************************************************
 void
-SysCtlDeepSleepPowerSet(uint32_t ui32Config)
+SysCtlDeepsleepPowerSet(uint32_t ui32Config)
 {
     //
     // Set the deep-sleep-mode flash and SRAM power configuration.
@@ -1693,7 +1693,7 @@ SysCtlReset(void)
 //!
 //! This function places the processor into sleep mode; it does not return
 //! until the processor returns to run mode.  The peripherals that are enabled
-//! via SysCtlPeripheralSleepEnable() continue to operate and can wake up the
+//! via SysCtlPeripheralsleepEnable() continue to operate and can wake up the
 //! processor (if automatic clock gating is enabled with
 //! SysCtlPeripheralClockGating(), otherwise all peripherals continue to
 //! operate).
@@ -1702,7 +1702,7 @@ SysCtlReset(void)
 //
 //*****************************************************************************
 void
-SysCtlSleep(void)
+SysCtlsleep(void)
 {
     //
     // Wait for an interrupt.
@@ -1716,7 +1716,7 @@ SysCtlSleep(void)
 //!
 //! This function places the processor into deep-sleep mode; it does not return
 //! until the processor returns to run mode.  The peripherals that are enabled
-//! via SysCtlPeripheralDeepSleepEnable() continue to operate and can wake up
+//! via SysCtlPeripheralDeepsleepEnable() continue to operate and can wake up
 //! the processor (if automatic clock gating is enabled with
 //! SysCtlPeripheralClockGating(), otherwise all peripherals continue to
 //! operate).
@@ -1725,12 +1725,12 @@ SysCtlSleep(void)
 //
 //*****************************************************************************
 void
-SysCtlDeepSleep(void)
+SysCtlDeepsleep(void)
 {
     //
     // Enable deep-sleep.
     //
-    HWREG(NVIC_SYS_CTRL) |= NVIC_SYS_CTRL_SLEEPDEEP;
+    HWREG(NVIC_SYS_CTRL) |= NVIC_SYS_CTRL_sleepDEEP;
 
     //
     // Wait for an interrupt.
@@ -1740,7 +1740,7 @@ SysCtlDeepSleep(void)
     //
     // Disable deep-sleep so that a future sleep works correctly.
     //
-    HWREG(NVIC_SYS_CTRL) &= ~(NVIC_SYS_CTRL_SLEEPDEEP);
+    HWREG(NVIC_SYS_CTRL) &= ~(NVIC_SYS_CTRL_sleepDEEP);
 }
 
 //*****************************************************************************
@@ -2980,7 +2980,7 @@ SysCtlClockGet(void)
 //! (based on other configuration settings.)
 //!
 //! \note This function should only be called on TM4C123 devices.  For
-//! other devices use the SysCtlDeepSleepClockConfigSet() function.
+//! other devices use the SysCtlDeepsleepClockConfigSet() function.
 //!
 //! \note The availability of deep-sleep clocking configuration varies with the
 //! Tiva part in use.  Please consult the data sheet for the part you are
@@ -2990,7 +2990,7 @@ SysCtlClockGet(void)
 //
 //*****************************************************************************
 void
-SysCtlDeepSleepClockSet(uint32_t ui32Config)
+SysCtlDeepsleepClockSet(uint32_t ui32Config)
 {
     //
     // Set the deep-sleep clock configuration.
@@ -3011,7 +3011,7 @@ SysCtlDeepSleepClockSet(uint32_t ui32Config)
 //! \e ui32Div parameter sets the clock divider used in deep-sleep mode.  The
 //! valid values for the \e ui32Div parameter range from 1 to 1024, however not
 //! all Tiva microcontrollers support this full range.  This function
-//! replaces the SysCtlDeepSleepClockSet() function and can be used on
+//! replaces the SysCtlDeepsleepClockSet() function and can be used on
 //! Tiva devices that support deep-sleep mode.
 //!
 //! The oscillator source is chosen from one of the following values:
@@ -3040,7 +3040,7 @@ SysCtlDeepSleepClockSet(uint32_t ui32Config)
 //
 //*****************************************************************************
 void
-SysCtlDeepSleepClockConfigSet(uint32_t ui32Div, uint32_t ui32Config)
+SysCtlDeepsleepClockConfigSet(uint32_t ui32Div, uint32_t ui32Config)
 {
     uint32_t ui32Value;
 
@@ -3063,7 +3063,7 @@ SysCtlDeepSleepClockConfigSet(uint32_t ui32Div, uint32_t ui32Config)
 
         //
         // Set the clock source selection based on the defines used for
-        // SysCtlDeepSleepClockSet() function so that there is some backwards
+        // SysCtlDeepsleepClockSet() function so that there is some backwards
         // compatibility.
         //
         switch(ui32Config & SYSCTL_DSLPCLKCFG_O_M)

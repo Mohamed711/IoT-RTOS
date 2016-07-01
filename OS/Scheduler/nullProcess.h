@@ -25,7 +25,7 @@
 
 #include "../RTOS.h"
 
-//void nullProc(Uart_HandleTypeDef *transmit);
-void nullProc();
+void Scheduler_nullProc(Uart_HandleTypeDef *transmit);
+
 
 #endif

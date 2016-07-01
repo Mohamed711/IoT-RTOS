@@ -37,7 +37,7 @@ void ISR(void)
 	function();
 	
 	//uint32_t getback = (uint32_t) nullProc;
-		*LrAddr = (uint32_t)nullProc;
+		*LrAddr = (uint32_t)Scheduler_nullProc;
 }
 
 void Timer_Init()

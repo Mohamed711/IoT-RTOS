@@ -1,37 +1,43 @@
+
+#include "TM4C123GH6PM.h"
+
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
 
-#include "scheduler_test.h"
+#ifdef ARM
+#include "E:/Keil/ARM/CMSIS/Include/core_cmFunc.h"
+#endif 
+
+
 #include "Process.h"
+#include "queue.h"
 #include "realTimeClock.h"
 #include "Initialize.h"
 #include "nullProcess.h"
-#include "queue.h"
+#include "scheduler_test.h"
 #include "../RTOS.h"
 
-#include "../../board/ARM/drivers/inc/hw_memmap.h"
-#include "../../board/ARM/drivers/inc/hw_types.h"
-#include "../../board/ARM/drivers/sysctl/sysctl.h"
-#include "../../board/ARM/drivers/gpio/gpio.h"
-#include "../../board/ARM/drivers/uart/HAL_UART.h"
-
-#include "E:/Keil/ARM/CMSIS/Include/core_cmFunc.h"
+	extern uint32_t prcount;
+	extern qid16 readylist;
+	extern qid16 suspendedlist;
+	extern qid16 sleepq;
+	extern struct procent proctab[NPROC];	
+	
+	
+void set_MSP(uint32_t x)
+{
+	__set_MSP(x);
+}
 
 uint32_t get_MSP()
 {
 	return __get_MSP();
 }
 
-extern pid32 currpid;
-extern struct procent proctab[NPROC];		  /* table of processes */
-extern qid16 readylist;
-extern qid16 suspendedlist;
-extern qid16 sleepq;
-extern uint32_t prcount;
-
+	
 void SchedulerTest()
-{
+	{
 	Uart_InitTypeDef initConf;	
 	initializeUART(&initConf,UART0_BASE);
 	
@@ -44,6 +50,8 @@ void SchedulerTest()
 	sleepq = newqueue();
 	
 	
-	initializeNullProcess();
-	nullProc(&transmit);
+	Scheduler_initializenullProcess();
+	//insert(0, readylist, 0);
+	Scheduler_nullProc(&transmit);
 }
+

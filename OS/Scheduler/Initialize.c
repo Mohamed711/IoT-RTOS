@@ -27,13 +27,6 @@
 #include "queue.h"
 #include "nullProcess.h"
 
-#include "../../board/ARM/drivers/uart/HAL_UART.h"
-#include "../../board/ARM/drivers/uart/uart.h"
-#include "../../board/ARM/drivers/sysctl/sysctl.h"
-#include "../../board/ARM/drivers/inc/hw_memmap.h"
-#include "../../board/ARM/drivers/inc/hw_types.h"
-#include "../../board/ARM/drivers/gpio/gpio.h"
-#include "../../board/ARM/drivers/inc/tm4c123gh6pge.h"
 
 #include <string.h>
 
@@ -49,18 +42,18 @@ uint32_t prcount;
 * 	\return none
 *
 *****************************************************************************/
-void initializeNullProcess()
+void Scheduler_initializenullProcess()
 {
-	proctab[0].processFunction = nullProc;
+	proctab[0].processFunction = Scheduler_nullProc;
 	proctab[0].prstate = PR_CURR;
 	proctab[0].prprio = 0;
 	strncpy(proctab[0].prname, "prnull", 7);
 	
 	proctab[0].prstkbase = (char*)pvPortMalloc(100);  
-	proctab[0].prstkptr = stackinit(proctab[0].prstkbase , nullProc, 100);
-	currpid = NULLPROC;
+	proctab[0].prstkptr = Scheduler_stackInitialization(proctab[0].prstkbase , Scheduler_nullProc, 100);
+	currpid = 0;
 }
-/*
+
 void initializeUART( Uart_InitTypeDef *initConf,uint32_t BaseAddress )
 {
 	
@@ -73,4 +66,4 @@ void initializeUART( Uart_InitTypeDef *initConf,uint32_t BaseAddress )
 
 	uartinit(initConf);
 
-}*/
+}

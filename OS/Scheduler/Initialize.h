@@ -22,7 +22,7 @@
 #ifndef INITIALIZE_H_
 #define INITIALIZE_H_
 
-void initializeNullProcess();
-//void initializeUART();
+void Scheduler_initializenullProcess();
+void initializeUART(Uart_InitTypeDef *initConf,uint32_t BaseAddress);
 
 #endif /* INITIALIZE_H_ */

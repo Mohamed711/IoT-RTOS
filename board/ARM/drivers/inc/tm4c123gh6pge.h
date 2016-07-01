@@ -11716,9 +11716,9 @@
 // The following are defines for the bit fields in the SYSCTL_SCGCWD register.
 //
 //*****************************************************************************
-#define SYSCTL_SCGCWD_S1        0x00000002  // Watchdog Timer 1 Sleep Mode
+#define SYSCTL_SCGCWD_S1        0x00000002  // Watchdog Timer 1 sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_SCGCWD_S0        0x00000001  // Watchdog Timer 0 Sleep Mode
+#define SYSCTL_SCGCWD_S0        0x00000001  // Watchdog Timer 0 sleep Mode
                                             // Clock Gating Control
 
 //*****************************************************************************
@@ -11728,22 +11728,22 @@
 //
 //*****************************************************************************
 #define SYSCTL_SCGCTIMER_S5     0x00000020  // 16/32-Bit General-Purpose Timer
-                                            // 5 Sleep Mode Clock Gating
+                                            // 5 sleep Mode Clock Gating
                                             // Control
 #define SYSCTL_SCGCTIMER_S4     0x00000010  // 16/32-Bit General-Purpose Timer
-                                            // 4 Sleep Mode Clock Gating
+                                            // 4 sleep Mode Clock Gating
                                             // Control
 #define SYSCTL_SCGCTIMER_S3     0x00000008  // 16/32-Bit General-Purpose Timer
-                                            // 3 Sleep Mode Clock Gating
+                                            // 3 sleep Mode Clock Gating
                                             // Control
 #define SYSCTL_SCGCTIMER_S2     0x00000004  // 16/32-Bit General-Purpose Timer
-                                            // 2 Sleep Mode Clock Gating
+                                            // 2 sleep Mode Clock Gating
                                             // Control
 #define SYSCTL_SCGCTIMER_S1     0x00000002  // 16/32-Bit General-Purpose Timer
-                                            // 1 Sleep Mode Clock Gating
+                                            // 1 sleep Mode Clock Gating
                                             // Control
 #define SYSCTL_SCGCTIMER_S0     0x00000001  // 16/32-Bit General-Purpose Timer
-                                            // 0 Sleep Mode Clock Gating
+                                            // 0 sleep Mode Clock Gating
                                             // Control
 
 //*****************************************************************************
@@ -11752,33 +11752,33 @@
 // register.
 //
 //*****************************************************************************
-#define SYSCTL_SCGCGPIO_S13     0x00002000  // GPIO Port P Sleep Mode Clock
+#define SYSCTL_SCGCGPIO_S13     0x00002000  // GPIO Port P sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCGPIO_S12     0x00001000  // GPIO Port N Sleep Mode Clock
+#define SYSCTL_SCGCGPIO_S12     0x00001000  // GPIO Port N sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCGPIO_S11     0x00000800  // GPIO Port M Sleep Mode Clock
+#define SYSCTL_SCGCGPIO_S11     0x00000800  // GPIO Port M sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCGPIO_S10     0x00000400  // GPIO Port L Sleep Mode Clock
+#define SYSCTL_SCGCGPIO_S10     0x00000400  // GPIO Port L sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCGPIO_S9      0x00000200  // GPIO Port K Sleep Mode Clock
+#define SYSCTL_SCGCGPIO_S9      0x00000200  // GPIO Port K sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCGPIO_S8      0x00000100  // GPIO Port J Sleep Mode Clock
+#define SYSCTL_SCGCGPIO_S8      0x00000100  // GPIO Port J sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCGPIO_S7      0x00000080  // GPIO Port H Sleep Mode Clock
+#define SYSCTL_SCGCGPIO_S7      0x00000080  // GPIO Port H sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCGPIO_S6      0x00000040  // GPIO Port G Sleep Mode Clock
+#define SYSCTL_SCGCGPIO_S6      0x00000040  // GPIO Port G sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCGPIO_S5      0x00000020  // GPIO Port F Sleep Mode Clock
+#define SYSCTL_SCGCGPIO_S5      0x00000020  // GPIO Port F sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCGPIO_S4      0x00000010  // GPIO Port E Sleep Mode Clock
+#define SYSCTL_SCGCGPIO_S4      0x00000010  // GPIO Port E sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCGPIO_S3      0x00000008  // GPIO Port D Sleep Mode Clock
+#define SYSCTL_SCGCGPIO_S3      0x00000008  // GPIO Port D sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCGPIO_S2      0x00000004  // GPIO Port C Sleep Mode Clock
+#define SYSCTL_SCGCGPIO_S2      0x00000004  // GPIO Port C sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCGPIO_S1      0x00000002  // GPIO Port B Sleep Mode Clock
+#define SYSCTL_SCGCGPIO_S1      0x00000002  // GPIO Port B sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCGPIO_S0      0x00000001  // GPIO Port A Sleep Mode Clock
+#define SYSCTL_SCGCGPIO_S0      0x00000001  // GPIO Port A sleep Mode Clock
                                             // Gating Control
 
 //*****************************************************************************
@@ -11786,7 +11786,7 @@
 // The following are defines for the bit fields in the SYSCTL_SCGCDMA register.
 //
 //*****************************************************************************
-#define SYSCTL_SCGCDMA_S0       0x00000001  // uDMA Module Sleep Mode Clock
+#define SYSCTL_SCGCDMA_S0       0x00000001  // uDMA Module sleep Mode Clock
                                             // Gating Control
 
 //*****************************************************************************
@@ -11794,7 +11794,7 @@
 // The following are defines for the bit fields in the SYSCTL_SCGCHIB register.
 //
 //*****************************************************************************
-#define SYSCTL_SCGCHIB_S0       0x00000001  // Hibernation Module Sleep Mode
+#define SYSCTL_SCGCHIB_S0       0x00000001  // Hibernation Module sleep Mode
                                             // Clock Gating Control
 
 //*****************************************************************************
@@ -11803,21 +11803,21 @@
 // register.
 //
 //*****************************************************************************
-#define SYSCTL_SCGCUART_S7      0x00000080  // UART Module 7 Sleep Mode Clock
+#define SYSCTL_SCGCUART_S7      0x00000080  // UART Module 7 sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCUART_S6      0x00000040  // UART Module 6 Sleep Mode Clock
+#define SYSCTL_SCGCUART_S6      0x00000040  // UART Module 6 sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCUART_S5      0x00000020  // UART Module 5 Sleep Mode Clock
+#define SYSCTL_SCGCUART_S5      0x00000020  // UART Module 5 sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCUART_S4      0x00000010  // UART Module 4 Sleep Mode Clock
+#define SYSCTL_SCGCUART_S4      0x00000010  // UART Module 4 sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCUART_S3      0x00000008  // UART Module 3 Sleep Mode Clock
+#define SYSCTL_SCGCUART_S3      0x00000008  // UART Module 3 sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCUART_S2      0x00000004  // UART Module 2 Sleep Mode Clock
+#define SYSCTL_SCGCUART_S2      0x00000004  // UART Module 2 sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCUART_S1      0x00000002  // UART Module 1 Sleep Mode Clock
+#define SYSCTL_SCGCUART_S1      0x00000002  // UART Module 1 sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCUART_S0      0x00000001  // UART Module 0 Sleep Mode Clock
+#define SYSCTL_SCGCUART_S0      0x00000001  // UART Module 0 sleep Mode Clock
                                             // Gating Control
 
 //*****************************************************************************
@@ -11825,13 +11825,13 @@
 // The following are defines for the bit fields in the SYSCTL_SCGCSSI register.
 //
 //*****************************************************************************
-#define SYSCTL_SCGCSSI_S3       0x00000008  // SSI Module 3 Sleep Mode Clock
+#define SYSCTL_SCGCSSI_S3       0x00000008  // SSI Module 3 sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCSSI_S2       0x00000004  // SSI Module 2 Sleep Mode Clock
+#define SYSCTL_SCGCSSI_S2       0x00000004  // SSI Module 2 sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCSSI_S1       0x00000002  // SSI Module 1 Sleep Mode Clock
+#define SYSCTL_SCGCSSI_S1       0x00000002  // SSI Module 1 sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCSSI_S0       0x00000001  // SSI Module 0 Sleep Mode Clock
+#define SYSCTL_SCGCSSI_S0       0x00000001  // SSI Module 0 sleep Mode Clock
                                             // Gating Control
 
 //*****************************************************************************
@@ -11839,17 +11839,17 @@
 // The following are defines for the bit fields in the SYSCTL_SCGCI2C register.
 //
 //*****************************************************************************
-#define SYSCTL_SCGCI2C_S5       0x00000020  // I2C Module 5 Sleep Mode Clock
+#define SYSCTL_SCGCI2C_S5       0x00000020  // I2C Module 5 sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCI2C_S4       0x00000010  // I2C Module 4 Sleep Mode Clock
+#define SYSCTL_SCGCI2C_S4       0x00000010  // I2C Module 4 sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCI2C_S3       0x00000008  // I2C Module 3 Sleep Mode Clock
+#define SYSCTL_SCGCI2C_S3       0x00000008  // I2C Module 3 sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCI2C_S2       0x00000004  // I2C Module 2 Sleep Mode Clock
+#define SYSCTL_SCGCI2C_S2       0x00000004  // I2C Module 2 sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCI2C_S1       0x00000002  // I2C Module 1 Sleep Mode Clock
+#define SYSCTL_SCGCI2C_S1       0x00000002  // I2C Module 1 sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCI2C_S0       0x00000001  // I2C Module 0 Sleep Mode Clock
+#define SYSCTL_SCGCI2C_S0       0x00000001  // I2C Module 0 sleep Mode Clock
                                             // Gating Control
 
 //*****************************************************************************
@@ -11857,7 +11857,7 @@
 // The following are defines for the bit fields in the SYSCTL_SCGCUSB register.
 //
 //*****************************************************************************
-#define SYSCTL_SCGCUSB_S0       0x00000001  // USB Module Sleep Mode Clock
+#define SYSCTL_SCGCUSB_S0       0x00000001  // USB Module sleep Mode Clock
                                             // Gating Control
 
 //*****************************************************************************
@@ -11865,9 +11865,9 @@
 // The following are defines for the bit fields in the SYSCTL_SCGCCAN register.
 //
 //*****************************************************************************
-#define SYSCTL_SCGCCAN_S1       0x00000002  // CAN Module 1 Sleep Mode Clock
+#define SYSCTL_SCGCCAN_S1       0x00000002  // CAN Module 1 sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCCAN_S0       0x00000001  // CAN Module 0 Sleep Mode Clock
+#define SYSCTL_SCGCCAN_S0       0x00000001  // CAN Module 0 sleep Mode Clock
                                             // Gating Control
 
 //*****************************************************************************
@@ -11875,9 +11875,9 @@
 // The following are defines for the bit fields in the SYSCTL_SCGCADC register.
 //
 //*****************************************************************************
-#define SYSCTL_SCGCADC_S1       0x00000002  // ADC Module 1 Sleep Mode Clock
+#define SYSCTL_SCGCADC_S1       0x00000002  // ADC Module 1 sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCADC_S0       0x00000001  // ADC Module 0 Sleep Mode Clock
+#define SYSCTL_SCGCADC_S0       0x00000001  // ADC Module 0 sleep Mode Clock
                                             // Gating Control
 
 //*****************************************************************************
@@ -11886,7 +11886,7 @@
 // register.
 //
 //*****************************************************************************
-#define SYSCTL_SCGCACMP_S0      0x00000001  // Analog Comparator Module 0 Sleep
+#define SYSCTL_SCGCACMP_S0      0x00000001  // Analog Comparator Module 0 sleep
                                             // Mode Clock Gating Control
 
 //*****************************************************************************
@@ -11894,9 +11894,9 @@
 // The following are defines for the bit fields in the SYSCTL_SCGCPWM register.
 //
 //*****************************************************************************
-#define SYSCTL_SCGCPWM_S1       0x00000002  // PWM Module 1 Sleep Mode Clock
+#define SYSCTL_SCGCPWM_S1       0x00000002  // PWM Module 1 sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCPWM_S0       0x00000001  // PWM Module 0 Sleep Mode Clock
+#define SYSCTL_SCGCPWM_S0       0x00000001  // PWM Module 0 sleep Mode Clock
                                             // Gating Control
 
 //*****************************************************************************
@@ -11904,9 +11904,9 @@
 // The following are defines for the bit fields in the SYSCTL_SCGCQEI register.
 //
 //*****************************************************************************
-#define SYSCTL_SCGCQEI_S1       0x00000002  // QEI Module 1 Sleep Mode Clock
+#define SYSCTL_SCGCQEI_S1       0x00000002  // QEI Module 1 sleep Mode Clock
                                             // Gating Control
-#define SYSCTL_SCGCQEI_S0       0x00000001  // QEI Module 0 Sleep Mode Clock
+#define SYSCTL_SCGCQEI_S0       0x00000001  // QEI Module 0 sleep Mode Clock
                                             // Gating Control
 
 //*****************************************************************************
@@ -11915,7 +11915,7 @@
 // register.
 //
 //*****************************************************************************
-#define SYSCTL_SCGCEEPROM_S0    0x00000001  // EEPROM Module Sleep Mode Clock
+#define SYSCTL_SCGCEEPROM_S0    0x00000001  // EEPROM Module sleep Mode Clock
                                             // Gating Control
 
 //*****************************************************************************
@@ -11925,22 +11925,22 @@
 //
 //*****************************************************************************
 #define SYSCTL_SCGCWTIMER_S5    0x00000020  // 32/64-Bit Wide General-Purpose
-                                            // Timer 5 Sleep Mode Clock Gating
+                                            // Timer 5 sleep Mode Clock Gating
                                             // Control
 #define SYSCTL_SCGCWTIMER_S4    0x00000010  // 32/64-Bit Wide General-Purpose
-                                            // Timer 4 Sleep Mode Clock Gating
+                                            // Timer 4 sleep Mode Clock Gating
                                             // Control
 #define SYSCTL_SCGCWTIMER_S3    0x00000008  // 32/64-Bit Wide General-Purpose
-                                            // Timer 3 Sleep Mode Clock Gating
+                                            // Timer 3 sleep Mode Clock Gating
                                             // Control
 #define SYSCTL_SCGCWTIMER_S2    0x00000004  // 32/64-Bit Wide General-Purpose
-                                            // Timer 2 Sleep Mode Clock Gating
+                                            // Timer 2 sleep Mode Clock Gating
                                             // Control
 #define SYSCTL_SCGCWTIMER_S1    0x00000002  // 32/64-Bit Wide General-Purpose
-                                            // Timer 1 Sleep Mode Clock Gating
+                                            // Timer 1 sleep Mode Clock Gating
                                             // Control
 #define SYSCTL_SCGCWTIMER_S0    0x00000001  // 32/64-Bit Wide General-Purpose
-                                            // Timer 0 Sleep Mode Clock Gating
+                                            // Timer 0 sleep Mode Clock Gating
                                             // Control
 
 //*****************************************************************************
@@ -11948,9 +11948,9 @@
 // The following are defines for the bit fields in the SYSCTL_DCGCWD register.
 //
 //*****************************************************************************
-#define SYSCTL_DCGCWD_D1        0x00000002  // Watchdog Timer 1 Deep-Sleep Mode
+#define SYSCTL_DCGCWD_D1        0x00000002  // Watchdog Timer 1 Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCWD_D0        0x00000001  // Watchdog Timer 0 Deep-Sleep Mode
+#define SYSCTL_DCGCWD_D0        0x00000001  // Watchdog Timer 0 Deep-sleep Mode
                                             // Clock Gating Control
 
 //*****************************************************************************
@@ -11960,22 +11960,22 @@
 //
 //*****************************************************************************
 #define SYSCTL_DCGCTIMER_D5     0x00000020  // 16/32-Bit General-Purpose Timer
-                                            // 5 Deep-Sleep Mode Clock Gating
+                                            // 5 Deep-sleep Mode Clock Gating
                                             // Control
 #define SYSCTL_DCGCTIMER_D4     0x00000010  // 16/32-Bit General-Purpose Timer
-                                            // 4 Deep-Sleep Mode Clock Gating
+                                            // 4 Deep-sleep Mode Clock Gating
                                             // Control
 #define SYSCTL_DCGCTIMER_D3     0x00000008  // 16/32-Bit General-Purpose Timer
-                                            // 3 Deep-Sleep Mode Clock Gating
+                                            // 3 Deep-sleep Mode Clock Gating
                                             // Control
 #define SYSCTL_DCGCTIMER_D2     0x00000004  // 16/32-Bit General-Purpose Timer
-                                            // 2 Deep-Sleep Mode Clock Gating
+                                            // 2 Deep-sleep Mode Clock Gating
                                             // Control
 #define SYSCTL_DCGCTIMER_D1     0x00000002  // 16/32-Bit General-Purpose Timer
-                                            // 1 Deep-Sleep Mode Clock Gating
+                                            // 1 Deep-sleep Mode Clock Gating
                                             // Control
 #define SYSCTL_DCGCTIMER_D0     0x00000001  // 16/32-Bit General-Purpose Timer
-                                            // 0 Deep-Sleep Mode Clock Gating
+                                            // 0 Deep-sleep Mode Clock Gating
                                             // Control
 
 //*****************************************************************************
@@ -11984,33 +11984,33 @@
 // register.
 //
 //*****************************************************************************
-#define SYSCTL_DCGCGPIO_D13     0x00002000  // GPIO Port P Deep-Sleep Mode
+#define SYSCTL_DCGCGPIO_D13     0x00002000  // GPIO Port P Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCGPIO_D12     0x00001000  // GPIO Port N Deep-Sleep Mode
+#define SYSCTL_DCGCGPIO_D12     0x00001000  // GPIO Port N Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCGPIO_D11     0x00000800  // GPIO Port M Deep-Sleep Mode
+#define SYSCTL_DCGCGPIO_D11     0x00000800  // GPIO Port M Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCGPIO_D10     0x00000400  // GPIO Port L Deep-Sleep Mode
+#define SYSCTL_DCGCGPIO_D10     0x00000400  // GPIO Port L Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCGPIO_D9      0x00000200  // GPIO Port K Deep-Sleep Mode
+#define SYSCTL_DCGCGPIO_D9      0x00000200  // GPIO Port K Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCGPIO_D8      0x00000100  // GPIO Port J Deep-Sleep Mode
+#define SYSCTL_DCGCGPIO_D8      0x00000100  // GPIO Port J Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCGPIO_D7      0x00000080  // GPIO Port H Deep-Sleep Mode
+#define SYSCTL_DCGCGPIO_D7      0x00000080  // GPIO Port H Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCGPIO_D6      0x00000040  // GPIO Port G Deep-Sleep Mode
+#define SYSCTL_DCGCGPIO_D6      0x00000040  // GPIO Port G Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCGPIO_D5      0x00000020  // GPIO Port F Deep-Sleep Mode
+#define SYSCTL_DCGCGPIO_D5      0x00000020  // GPIO Port F Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCGPIO_D4      0x00000010  // GPIO Port E Deep-Sleep Mode
+#define SYSCTL_DCGCGPIO_D4      0x00000010  // GPIO Port E Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCGPIO_D3      0x00000008  // GPIO Port D Deep-Sleep Mode
+#define SYSCTL_DCGCGPIO_D3      0x00000008  // GPIO Port D Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCGPIO_D2      0x00000004  // GPIO Port C Deep-Sleep Mode
+#define SYSCTL_DCGCGPIO_D2      0x00000004  // GPIO Port C Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCGPIO_D1      0x00000002  // GPIO Port B Deep-Sleep Mode
+#define SYSCTL_DCGCGPIO_D1      0x00000002  // GPIO Port B Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCGPIO_D0      0x00000001  // GPIO Port A Deep-Sleep Mode
+#define SYSCTL_DCGCGPIO_D0      0x00000001  // GPIO Port A Deep-sleep Mode
                                             // Clock Gating Control
 
 //*****************************************************************************
@@ -12018,7 +12018,7 @@
 // The following are defines for the bit fields in the SYSCTL_DCGCDMA register.
 //
 //*****************************************************************************
-#define SYSCTL_DCGCDMA_D0       0x00000001  // uDMA Module Deep-Sleep Mode
+#define SYSCTL_DCGCDMA_D0       0x00000001  // uDMA Module Deep-sleep Mode
                                             // Clock Gating Control
 
 //*****************************************************************************
@@ -12026,7 +12026,7 @@
 // The following are defines for the bit fields in the SYSCTL_DCGCHIB register.
 //
 //*****************************************************************************
-#define SYSCTL_DCGCHIB_D0       0x00000001  // Hibernation Module Deep-Sleep
+#define SYSCTL_DCGCHIB_D0       0x00000001  // Hibernation Module Deep-sleep
                                             // Mode Clock Gating Control
 
 //*****************************************************************************
@@ -12035,21 +12035,21 @@
 // register.
 //
 //*****************************************************************************
-#define SYSCTL_DCGCUART_D7      0x00000080  // UART Module 7 Deep-Sleep Mode
+#define SYSCTL_DCGCUART_D7      0x00000080  // UART Module 7 Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCUART_D6      0x00000040  // UART Module 6 Deep-Sleep Mode
+#define SYSCTL_DCGCUART_D6      0x00000040  // UART Module 6 Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCUART_D5      0x00000020  // UART Module 5 Deep-Sleep Mode
+#define SYSCTL_DCGCUART_D5      0x00000020  // UART Module 5 Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCUART_D4      0x00000010  // UART Module 4 Deep-Sleep Mode
+#define SYSCTL_DCGCUART_D4      0x00000010  // UART Module 4 Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCUART_D3      0x00000008  // UART Module 3 Deep-Sleep Mode
+#define SYSCTL_DCGCUART_D3      0x00000008  // UART Module 3 Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCUART_D2      0x00000004  // UART Module 2 Deep-Sleep Mode
+#define SYSCTL_DCGCUART_D2      0x00000004  // UART Module 2 Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCUART_D1      0x00000002  // UART Module 1 Deep-Sleep Mode
+#define SYSCTL_DCGCUART_D1      0x00000002  // UART Module 1 Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCUART_D0      0x00000001  // UART Module 0 Deep-Sleep Mode
+#define SYSCTL_DCGCUART_D0      0x00000001  // UART Module 0 Deep-sleep Mode
                                             // Clock Gating Control
 
 //*****************************************************************************
@@ -12057,13 +12057,13 @@
 // The following are defines for the bit fields in the SYSCTL_DCGCSSI register.
 //
 //*****************************************************************************
-#define SYSCTL_DCGCSSI_D3       0x00000008  // SSI Module 3 Deep-Sleep Mode
+#define SYSCTL_DCGCSSI_D3       0x00000008  // SSI Module 3 Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCSSI_D2       0x00000004  // SSI Module 2 Deep-Sleep Mode
+#define SYSCTL_DCGCSSI_D2       0x00000004  // SSI Module 2 Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCSSI_D1       0x00000002  // SSI Module 1 Deep-Sleep Mode
+#define SYSCTL_DCGCSSI_D1       0x00000002  // SSI Module 1 Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCSSI_D0       0x00000001  // SSI Module 0 Deep-Sleep Mode
+#define SYSCTL_DCGCSSI_D0       0x00000001  // SSI Module 0 Deep-sleep Mode
                                             // Clock Gating Control
 
 //*****************************************************************************
@@ -12071,17 +12071,17 @@
 // The following are defines for the bit fields in the SYSCTL_DCGCI2C register.
 //
 //*****************************************************************************
-#define SYSCTL_DCGCI2C_D5       0x00000020  // I2C Module 5 Deep-Sleep Mode
+#define SYSCTL_DCGCI2C_D5       0x00000020  // I2C Module 5 Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCI2C_D4       0x00000010  // I2C Module 4 Deep-Sleep Mode
+#define SYSCTL_DCGCI2C_D4       0x00000010  // I2C Module 4 Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCI2C_D3       0x00000008  // I2C Module 3 Deep-Sleep Mode
+#define SYSCTL_DCGCI2C_D3       0x00000008  // I2C Module 3 Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCI2C_D2       0x00000004  // I2C Module 2 Deep-Sleep Mode
+#define SYSCTL_DCGCI2C_D2       0x00000004  // I2C Module 2 Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCI2C_D1       0x00000002  // I2C Module 1 Deep-Sleep Mode
+#define SYSCTL_DCGCI2C_D1       0x00000002  // I2C Module 1 Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCI2C_D0       0x00000001  // I2C Module 0 Deep-Sleep Mode
+#define SYSCTL_DCGCI2C_D0       0x00000001  // I2C Module 0 Deep-sleep Mode
                                             // Clock Gating Control
 
 //*****************************************************************************
@@ -12089,7 +12089,7 @@
 // The following are defines for the bit fields in the SYSCTL_DCGCUSB register.
 //
 //*****************************************************************************
-#define SYSCTL_DCGCUSB_D0       0x00000001  // USB Module Deep-Sleep Mode Clock
+#define SYSCTL_DCGCUSB_D0       0x00000001  // USB Module Deep-sleep Mode Clock
                                             // Gating Control
 
 //*****************************************************************************
@@ -12097,9 +12097,9 @@
 // The following are defines for the bit fields in the SYSCTL_DCGCCAN register.
 //
 //*****************************************************************************
-#define SYSCTL_DCGCCAN_D1       0x00000002  // CAN Module 1 Deep-Sleep Mode
+#define SYSCTL_DCGCCAN_D1       0x00000002  // CAN Module 1 Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCCAN_D0       0x00000001  // CAN Module 0 Deep-Sleep Mode
+#define SYSCTL_DCGCCAN_D0       0x00000001  // CAN Module 0 Deep-sleep Mode
                                             // Clock Gating Control
 
 //*****************************************************************************
@@ -12107,9 +12107,9 @@
 // The following are defines for the bit fields in the SYSCTL_DCGCADC register.
 //
 //*****************************************************************************
-#define SYSCTL_DCGCADC_D1       0x00000002  // ADC Module 1 Deep-Sleep Mode
+#define SYSCTL_DCGCADC_D1       0x00000002  // ADC Module 1 Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCADC_D0       0x00000001  // ADC Module 0 Deep-Sleep Mode
+#define SYSCTL_DCGCADC_D0       0x00000001  // ADC Module 0 Deep-sleep Mode
                                             // Clock Gating Control
 
 //*****************************************************************************
@@ -12119,7 +12119,7 @@
 //
 //*****************************************************************************
 #define SYSCTL_DCGCACMP_D0      0x00000001  // Analog Comparator Module 0
-                                            // Deep-Sleep Mode Clock Gating
+                                            // Deep-sleep Mode Clock Gating
                                             // Control
 
 //*****************************************************************************
@@ -12127,9 +12127,9 @@
 // The following are defines for the bit fields in the SYSCTL_DCGCPWM register.
 //
 //*****************************************************************************
-#define SYSCTL_DCGCPWM_D1       0x00000002  // PWM Module 1 Deep-Sleep Mode
+#define SYSCTL_DCGCPWM_D1       0x00000002  // PWM Module 1 Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCPWM_D0       0x00000001  // PWM Module 0 Deep-Sleep Mode
+#define SYSCTL_DCGCPWM_D0       0x00000001  // PWM Module 0 Deep-sleep Mode
                                             // Clock Gating Control
 
 //*****************************************************************************
@@ -12137,9 +12137,9 @@
 // The following are defines for the bit fields in the SYSCTL_DCGCQEI register.
 //
 //*****************************************************************************
-#define SYSCTL_DCGCQEI_D1       0x00000002  // QEI Module 1 Deep-Sleep Mode
+#define SYSCTL_DCGCQEI_D1       0x00000002  // QEI Module 1 Deep-sleep Mode
                                             // Clock Gating Control
-#define SYSCTL_DCGCQEI_D0       0x00000001  // QEI Module 0 Deep-Sleep Mode
+#define SYSCTL_DCGCQEI_D0       0x00000001  // QEI Module 0 Deep-sleep Mode
                                             // Clock Gating Control
 
 //*****************************************************************************
@@ -12148,7 +12148,7 @@
 // register.
 //
 //*****************************************************************************
-#define SYSCTL_DCGCEEPROM_D0    0x00000001  // EEPROM Module Deep-Sleep Mode
+#define SYSCTL_DCGCEEPROM_D0    0x00000001  // EEPROM Module Deep-sleep Mode
                                             // Clock Gating Control
 
 //*****************************************************************************
@@ -12158,22 +12158,22 @@
 //
 //*****************************************************************************
 #define SYSCTL_DCGCWTIMER_D5    0x00000020  // 32/64-Bit Wide General-Purpose
-                                            // Timer 5 Deep-Sleep Mode Clock
+                                            // Timer 5 Deep-sleep Mode Clock
                                             // Gating Control
 #define SYSCTL_DCGCWTIMER_D4    0x00000010  // 32/64-Bit Wide General-Purpose
-                                            // Timer 4 Deep-Sleep Mode Clock
+                                            // Timer 4 Deep-sleep Mode Clock
                                             // Gating Control
 #define SYSCTL_DCGCWTIMER_D3    0x00000008  // 32/64-Bit Wide General-Purpose
-                                            // Timer 3 Deep-Sleep Mode Clock
+                                            // Timer 3 Deep-sleep Mode Clock
                                             // Gating Control
 #define SYSCTL_DCGCWTIMER_D2    0x00000004  // 32/64-Bit Wide General-Purpose
-                                            // Timer 2 Deep-Sleep Mode Clock
+                                            // Timer 2 Deep-sleep Mode Clock
                                             // Gating Control
 #define SYSCTL_DCGCWTIMER_D1    0x00000002  // 32/64-Bit Wide General-Purpose
-                                            // Timer 1 Deep-Sleep Mode Clock
+                                            // Timer 1 Deep-sleep Mode Clock
                                             // Gating Control
 #define SYSCTL_DCGCWTIMER_D0    0x00000001  // 32/64-Bit Wide General-Purpose
-                                            // Timer 0 Deep-Sleep Mode Clock
+                                            // Timer 0 Deep-sleep Mode Clock
                                             // Gating Control
 
 //*****************************************************************************
@@ -13467,8 +13467,8 @@
 //
 //*****************************************************************************
 #define NVIC_SYS_CTRL_SEVONPEND 0x00000010  // Wake Up on Pending
-#define NVIC_SYS_CTRL_SLEEPDEEP 0x00000004  // Deep Sleep Enable
-#define NVIC_SYS_CTRL_SLEEPEXIT 0x00000002  // Sleep on ISR Exit
+#define NVIC_SYS_CTRL_sleepDEEP 0x00000004  // Deep sleep Enable
+#define NVIC_SYS_CTRL_sleepEXIT 0x00000002  // sleep on ISR Exit
 
 //*****************************************************************************
 //
@@ -13779,7 +13779,7 @@
                                 0x01000000  // Core has executed insruction
                                             // since last read
 #define NVIC_DBG_CTRL_S_LOCKUP  0x00080000  // Core is locked up
-#define NVIC_DBG_CTRL_S_SLEEP   0x00040000  // Core is sleeping
+#define NVIC_DBG_CTRL_S_sleep   0x00040000  // Core is sleeping
 #define NVIC_DBG_CTRL_S_HALT    0x00020000  // Core status on halt
 #define NVIC_DBG_CTRL_S_REGRDY  0x00010000  // Register read/write available
 #define NVIC_DBG_CTRL_C_SNAPSTALL                                             \
