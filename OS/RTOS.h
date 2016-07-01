@@ -65,21 +65,14 @@ typedef bool sysCall;
 #define PRIVILEGED_FUNCTION		// to the memory protection unit
 #define configUSE_PREEMPTION 0	// config the scheduler to be preemptive or cooperative
 #define preemptive 0
-#define MAX_SLEEPING_TIME 65535
 
 #define portYIELD_WITHIN_API()	// check for the tasks to take the higher priority one
-
-
-/* this values to be computed by a separate program isa */
-#define NSEM 10
-#define NPROC 5
-#define NQENT   (NPROC + 4 + NSEM + NSEM)
 
 #define	QUANTUM	2
 #define	MAXSECONDS	2147483		/* Max seconds per 32-bit msec	*/
 
 #define OK 1
-#define SYSERR -1
+#define SYSERR  0x00
 #define TIMEOUT 0
 
 #ifndef configUSE_MALLOC_FAILED_HOOK
@@ -98,6 +91,15 @@ void heap_init(Heap_Init *size);
 */
 /*-----------------------------------------*/
 
+#define MAX_SLEEPING_TIME 65535
+/* Number of processes equal to the number of
+ * tasks plus the null process
+ */
+#define NPROC	( NO_OF_TASKS + 1 )
+/* Number of queues equal to the number specified by the user plus
+ * the ready, suspended, sleeping queue
+ */
+#define NQENT	( NO_OF_QUEUES + 3 )
 
 #if ( MAX_SLEEPING_TIME < 256 )
 	typedef uint8_t _delay_ms ;
@@ -106,7 +108,6 @@ void heap_init(Heap_Init *size);
 #else
 	typedef uint32_t _delay_ms;
 #endif
-
 
 #if ( NPROC < 256 )
 	typedef uint8_t pid;

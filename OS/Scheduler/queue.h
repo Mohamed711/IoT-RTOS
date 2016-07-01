@@ -57,7 +57,7 @@
 *****************************************************************************/
 
 /* The attributes of each process in a queue */
-struct ProcessEntry {               /* One per process plus two per list    */
+struct processEntry {               /* One per process plus two per list    */
 		_delay_ms sleeping;			/* sleeping time */
         pid sleepingNext;			/* next process in the sleeping queue */
         pid sleepingPrevious;		/* previous process in the sleeping queue */
@@ -66,32 +66,41 @@ struct ProcessEntry {               /* One per process plus two per list    */
         pid qprev; 					/* Index of previous process or head    */
 };
 
-/* The union isn't a ANSCI C standard but here we use it as only one parameter is required */
 /* The attributes of each queue */
-union QueueEntry {
-	pid firstNode;
-	pid lastNode;
+struct queueEntry {
+	pid firstProcess;
+	pid lastProcess;
 };
 
 extern qid readyList;
 extern qid suspendedList;
+extern qid sleepingList;
 
-extern struct ProcessEntry queuetab[];
-
+extern struct processEntry procTab[];
+extern struct queueEntry queueTab[];
 
 /* Inline queue manipulation functions */
-#define queueHead(q)    (q)
-#define queueTail(q)    ((q) + 1)
-#define firstId(q)      (queuetab[queuehead(q)].qnext)
-#define lastId(q)       (queuetab[queuetail(q)].qprev)
-#define isEmpty(q)      (firstid(q) >= NPROC)
-#define nonEmpty(q)     (firstid(q) < NPROC)
-#define firstKey(q)     (queuetab[firstid(q)].qkey)
-#define lastKey(q)      (queuetab[ lastid(q)].qkey)
+#define firstId(queueId)      		( queueTab[queueId].firstProcess )
+#define lastId(queueId)       		( queueTab[queueId].lastProcess )
+#define isEmpty(queueId)      		( firstId(queueId) == NULL_ENTRY )
+#define nonEmpty(queueId)     		( firstId(queueId) != NULL_ENTRY )
+#define firstPriority(queueId)     	( queueTab[firstId(q)].procPriority )
+#define lastPriority(queueId)      	( queueTab[ lastId(q)].procPriority )
+
+#define firstSleepingId()			( firstId(sleepingList) )
+#define lastSleepingId()			( lastId(sleepingList) )
+#define firstSleepingTime()			( processEntry[firstId(sleepingList)].sleeping )
+#define lastSleepingTime()			( processEntry[lastId(sleepingList)].sleeping )
+
+#define firstReadyId()				( firstId(readyList) )
+#define lastReadyId()				( lastId(readyList) )
 
 /* Inline to check queue id assumes interrupts are disabled */
-#define isbadqid(x)     ( (int32_t)(x) >= NQENT )
+/* One number is reserved to be returned in case of errors */
+#define isBadQid(queueId)    				( (qid)(queueId) >= (NQENT-1) )
 
+#define NULL_ENTRY 					( (pid)0xFFFFFFFF )
+#define INVALID_QUEUE				( (qid)0xFFFFFFFF )
 
 pid dequeue(qid queueId);
 sysCall enqueue(pid processId,qid queueId );

@@ -24,8 +24,6 @@
 #include "Process.h"
 #include "queue.h"
 
-struct procent proctab[NPROC];		  /* table of processes */
-struct qentry queuetab[NQENT];        /* Table of process queues */
 
 /******************************************************************************
 *

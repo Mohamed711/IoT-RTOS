@@ -26,8 +26,14 @@
 
 qid readyList;
 qid suspendedList;
+qid sleepingList;
 
-extern struct procent proctab[NPROC];		  /* table of processes */
+struct processEntry procTab[NPROC];		  /* table of processes */
+struct queueEntry queueTab[NQENT];
+
+inline static pid getfirst( qid queueId );
+inline static pid getitem(pid processId);
+inline static pid getlast(qid queueId);
 
 /******************************************************************************
 *
@@ -41,19 +47,19 @@ extern struct procent proctab[NPROC];		  /* table of processes */
 * 	\return the pid of the inserted process
 *
 *****************************************************************************/
-int32_t enqueue(int32_t pid, int16_t q)
+sysCall enqueue( pid processId,qid queueId )
 {
-	int16_t   tail, prev;             /* Tail & previous node indexes */
-    if (isbadqid(q) || isbadpid(pid))
+	pid tail, prev;             /* Tail & previous node indexes */
+    if (isBadQid(queueId) || isbadpid(processId))
     {
     	return SYSERR;
     }
-	tail = queuetail(q);
+	tail = queuetail(queueId);
 	prev = queuetab[tail].qprev;
-	queuetab[pid].qnext  = tail;    /* Insert just before tail node */
-	queuetab[pid].qprev  = prev;
-	queuetab[prev].qnext = pid;
-	queuetab[tail].qprev = pid;
+	queueTab[processId].qnext  = tail;    /* Insert just before tail node */
+	queueTab[processId].qprev  = prev;
+	queueTab[prev].qnext = processId;
+	queueTab[tail].qprev = processId;
  	return pid;
 }
 
@@ -68,7 +74,7 @@ int32_t enqueue(int32_t pid, int16_t q)
 * 	\return the pid of the inserted process
 *
 *****************************************************************************/
-int32_t dequeue(int16_t q)
+pid dequeue(qid queueId)
 {
 	int32_t   pid;                    /* ID of process removed */
 	if (isbadqid(q))
@@ -97,7 +103,7 @@ int32_t dequeue(int16_t q)
 * 	\return SYSERR if there's an error, OK if there's no error
 *
 *****************************************************************************/
-sysCall	insert(pid32 pid, qid16 q, int32_t key)
+sysCall	insert(pid processId, qid queueId, pid key)
 {
 	int16_t	curr;			/* Runs through items in a queue */
 	int16_t	prev;			/* Holds previous node index	*/
@@ -131,27 +137,24 @@ sysCall	insert(pid32 pid, qid16 q, int32_t key)
 * 	\return the ID of the newly created queue
 *
 *****************************************************************************/
-qid16 newqueue(void)
+qid newqueue(void)
 {
-	static qid16 nextqid = NPROC; 	/* Next list in queuetab to use */
-	qid16 q; 						/* ID of allocated queue */
+	static qid queueId = 0; 	/* Next list in queuetab to use */
+	qid xReturn;
 
-	q = nextqid;
-	if (q > NQENT)
-	{ /* Check for table overflow */
-		return (qid16)SYSERR;
+	/* Check for table overflow */
+	if (isBadQid(queueId))
+	{
+		return INVALID_QUEUE;
 	}
 
-	nextqid += 2; /* Increment index for next call */
-
 	/* Initialize head and tail nodes to form an empty queue */
-	queuetab[queuehead(q)].qnext = queuetail(q);
-	queuetab[queuehead(q)].qprev = EMPTY;
-	queuetab[queuehead(q)].qkey = MAXKEY;
-	queuetab[queuetail(q)].qnext = EMPTY;
-	queuetab[queuetail(q)].qprev = queuehead(q);
-	queuetab[queuetail(q)].qkey = MINKEY;
-	return q;
+	queueTab[queueId].firstProcess = NULL_ENTRY;
+	queueTab[queueId].lastProcess = NULL_ENTRY;
+
+	xReturn = queueId;
+	queueId++; 				/* Increment index for next call */
+	return xReturn;
 }
 
 
@@ -159,19 +162,19 @@ qid16 newqueue(void)
 *
 *	The function's purpose is to remove a specific process
 *
-*	\param pid			ID of process to be removed
+*	\param processId	    	ID of process to be removed
 *
 * 	\return the removed process's ID
 *
 *****************************************************************************/
-inline int32_t getitem(int32_t pid)
+inline static pid getitem(pid processId)
 {
-	int32_t   prev, next;
-	next = queuetab[pid].qnext;  /* Following node in list  */
-	prev = queuetab[pid].qprev;  /* Previous node in list   */
-	queuetab[prev].qnext = next;
-	queuetab[next].qprev = prev;
-	return pid;
+	pid prev, next;
+	next = procTab[processId].qnext;  /* Following node in list  */
+	prev = procTab[processId].qprev;  /* Previous node in list   */
+	procTab[prev].qnext = next;
+	procTab[next].qprev = prev;
+	return processId;
 }
 
 /******************************************************************************
@@ -179,20 +182,18 @@ inline int32_t getitem(int32_t pid)
 *	The function's purpose is to remove the first process
 *	in a specefic queue
 *
-*	\param q			ID of queue to use
+*	\param queueId			ID of queue to use
 *
 * 	\return the removed process's ID
 *
 *****************************************************************************/
-inline int32_t getfirst( int16_t q )
+inline static pid getFirst( qid queueId )
 {
-	int32_t  head;
-	if (isempty(q))
+	if (isEmpty(queueId))
 	{
-		return EMPTY;
+		return errQUEUE_EMPTY;
 	}
-	head = queuehead(q);
-	return getitem(queuetab[head].qnext);
+	return getitem(firstId(queueId));
 }
 
 /******************************************************************************
@@ -200,18 +201,16 @@ inline int32_t getfirst( int16_t q )
 *	The function's purpose is to remove the last process
 *	in a specefic queue
 *
-*	\param q			ID of queue to use
+*	\param queueId			ID of queue to use
 *
 * 	\return the removed process's ID
 *
 *****************************************************************************/
-inline int32_t getlast(int16_t q)
+inline static pid getLast(qid queueId)
 {
-	int16_t tail;
-	if (isempty(q))
+	if (isEmpty(queueId))
 	{
-		return EMPTY;
+		return errQUEUE_EMPTY;
 	}
-	tail = queuetail(q);
-	return getitem(queuetab[tail].qprev);
+	return getitem(lastId(queueId));
 }
