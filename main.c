@@ -20,9 +20,13 @@
  *  distribution.
  *****************************************************************************/
 #include "RTOS_Headers.h"
+#include "OS/Scheduler/scheduler_test.h"
+
+#define ARMScheduler 1
 
 int main(void)
 {
-
-	
+	#ifdef ARMScheduler
+	SchedulerTest();
+	#endif
 }

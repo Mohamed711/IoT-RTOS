@@ -945,8 +945,8 @@
 //
 //*****************************************************************************
 #define NVIC_SYS_CTRL_SEVONPEND 0x00000010  // Wake Up on Pending
-#define NVIC_SYS_CTRL_SLEEPDEEP 0x00000004  // Deep Sleep Enable
-#define NVIC_SYS_CTRL_SLEEPEXIT 0x00000002  // Sleep on ISR Exit
+#define NVIC_SYS_CTRL_sleepDEEP 0x00000004  // Deep sleep Enable
+#define NVIC_SYS_CTRL_sleepEXIT 0x00000002  // sleep on ISR Exit
 
 //*****************************************************************************
 //
@@ -1299,7 +1299,7 @@
                                 0x01000000  // Core has executed insruction
                                             // since last read
 #define NVIC_DBG_CTRL_S_LOCKUP  0x00080000  // Core is locked up
-#define NVIC_DBG_CTRL_S_SLEEP   0x00040000  // Core is sleeping
+#define NVIC_DBG_CTRL_S_sleep   0x00040000  // Core is sleeping
 #define NVIC_DBG_CTRL_S_HALT    0x00020000  // Core status on halt
 #define NVIC_DBG_CTRL_S_REGRDY  0x00010000  // Register read/write available
 #define NVIC_DBG_CTRL_C_SNAPSTALL                                             \

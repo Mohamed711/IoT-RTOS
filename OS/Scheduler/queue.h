@@ -40,7 +40,7 @@
 * function what if they are interrupted ??! by a higher priority interrupt
 * or by interrupt in case of oridnary function.
 * 8) Inserting a process is O(n) think of another way to make it log(n)
-* 9) if we succeed to build a prescheduler to count number of processes
+* 9) if we succeed to build a preScheduler to count number of processes
 * and queues then checking the qid and queue is full and these have to be
 * deleted
 * 10) For the queue entries, the key has no use
@@ -77,70 +77,15 @@ extern struct qentry queuetab[];
 #define isbadqid(x)     (((int32_t)(x) < 0) || (int32_t)(x) >= NQENT-1)
 
 
-/******************************************************************************
-*
-*	The function's purpose is to remove a specific process
-*
-*	\param pid			ID of process to be removed
-*
-* 	\return the removed process's ID
-*
-*****************************************************************************/
-inline int32_t getitem(int32_t pid)
-{
-	int32_t   prev, next;
-	next = queuetab[pid].qnext;  /* Following node in list  */
-	prev = queuetab[pid].qprev;  /* Previous node in list   */
-	queuetab[prev].qnext = next;
-	queuetab[next].qprev = prev;
-	return pid;
-}
-
-/******************************************************************************
-*
-*	The function's purpose is to remove the first process
-*	in a specefic queue
-*
-*	\param q			ID of queue to use
-*
-* 	\return the removed process's ID
-*
-*****************************************************************************/
-inline int32_t getfirst( int16_t q )
-{
-	int32_t  head;
-	if (isempty(q))
-	{
-		return EMPTY;
-	}
-	head = queuehead(q);
-	return getitem(queuetab[head].qnext);
-}
-
-/******************************************************************************
-*
-*	The function's purpose is to remove the last process
-*	in a specefic queue
-*
-*	\param q			ID of queue to use
-*
-* 	\return the removed process's ID
-*
-*****************************************************************************/
-inline int32_t getlast(int16_t q)
-{
-	int16_t tail;
-	if (isempty(q))
-	{
-		return EMPTY;
-	}
-	tail = queuetail(q);
-	return getitem(queuetab[tail].qprev);
-}
-
-int32_t dequeue(int16_t q);
-int32_t enqueue(int32_t pid,int16_t q );
+pid32 dequeue(qid16 q);
+pid32 enqueue(pid32 pid, qid16 q );
 sysCall	insert(pid32 pid, qid16 q, int32_t key);
 qid16 newqueue(void);
+
+pid32 getitem(pid32 pid);
+pid32 getfirst(qid16 q);
+pid32 getlast(qid16 q);
+
+
 
 #endif
