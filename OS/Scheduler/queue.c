@@ -24,8 +24,8 @@
 #include "queue.h"
 #include "Process.h"
 
-qid16 readylist;
-qid16 suspendedlist;
+qid readyList;
+qid suspendedList;
 
 extern struct procent proctab[NPROC];		  /* table of processes */
 
@@ -154,3 +154,64 @@ qid16 newqueue(void)
 	return q;
 }
 
+
+/******************************************************************************
+*
+*	The function's purpose is to remove a specific process
+*
+*	\param pid			ID of process to be removed
+*
+* 	\return the removed process's ID
+*
+*****************************************************************************/
+inline int32_t getitem(int32_t pid)
+{
+	int32_t   prev, next;
+	next = queuetab[pid].qnext;  /* Following node in list  */
+	prev = queuetab[pid].qprev;  /* Previous node in list   */
+	queuetab[prev].qnext = next;
+	queuetab[next].qprev = prev;
+	return pid;
+}
+
+/******************************************************************************
+*
+*	The function's purpose is to remove the first process
+*	in a specefic queue
+*
+*	\param q			ID of queue to use
+*
+* 	\return the removed process's ID
+*
+*****************************************************************************/
+inline int32_t getfirst( int16_t q )
+{
+	int32_t  head;
+	if (isempty(q))
+	{
+		return EMPTY;
+	}
+	head = queuehead(q);
+	return getitem(queuetab[head].qnext);
+}
+
+/******************************************************************************
+*
+*	The function's purpose is to remove the last process
+*	in a specefic queue
+*
+*	\param q			ID of queue to use
+*
+* 	\return the removed process's ID
+*
+*****************************************************************************/
+inline int32_t getlast(int16_t q)
+{
+	int16_t tail;
+	if (isempty(q))
+	{
+		return EMPTY;
+	}
+	tail = queuetail(q);
+	return getitem(queuetab[tail].qprev);
+}

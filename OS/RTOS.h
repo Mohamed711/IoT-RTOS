@@ -65,6 +65,7 @@ typedef bool sysCall;
 #define PRIVILEGED_FUNCTION		// to the memory protection unit
 #define configUSE_PREEMPTION 0	// config the scheduler to be preemptive or cooperative
 #define preemptive 0
+#define MAX_SLEEPING_TIME 65535
 
 #define portYIELD_WITHIN_API()	// check for the tasks to take the higher priority one
 
@@ -96,6 +97,34 @@ typedef struct
 void heap_init(Heap_Init *size);
 */
 /*-----------------------------------------*/
+
+
+#if ( MAX_SLEEPING_TIME < 256 )
+	typedef uint8_t _delay_ms ;
+#elif ( MAX_SLEEPING_TIME < 65536 )
+	typedef uint16_t _delay_ms;
+#else
+	typedef uint32_t _delay_ms;
+#endif
+
+
+#if ( NPROC < 256 )
+	typedef uint8_t pid;
+#elif ( NPROC < 65536 )
+	typedef uint16_t pid;
+#else
+	typedef uint32_t pid;
+#endif
+
+#if ( NQENT < 256 )
+	typedef uint8_t qid;
+#elif ( NPROC < 65536 )
+	typedef uint16_t qid;
+#else
+	typedef uint32_t qid;
+#endif
+
+
 
 /*portBYTE_ALIGNMENT defined by user but for default value portBYTE_ALIGNMENT=8  need to implement this as structure*/
 #if portBYTE_ALIGNMENT == 8
