@@ -18,7 +18,7 @@
  *  notice, this list of conditions and the following disclaimer in the
  *  documentation and/or other materials provided with the
  *  distribution.
- *****************************************************************************/
+ ****************************************************************************/
 
 #ifndef RTOS_H_
 #define RTOS_H_
