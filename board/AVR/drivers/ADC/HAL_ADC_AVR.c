@@ -4,7 +4,7 @@
 #include "HAL_ADC_AVR.h"
 
 
-void HAL_ADC_read(ADC_handle_typedef * adc)
+void HAL_ADC_read(ADC_HandleTypeDef * adc)
 {
 	adc->return_result = adcResult_u16();
 }

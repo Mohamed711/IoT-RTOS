@@ -47,6 +47,8 @@
 * in case of head: the prev has no use
 * in case of tail: the next has no use
 * so making a structure for them decrease the memory for 4*Word per queue
+* 11) A function to initialize the default queues suspended, ready, ...
+* is missing and the processes entries.
 *****************************************************************************/
 
 #define EMPTY   (-1)            /* Null value for qnext or qprev index  */

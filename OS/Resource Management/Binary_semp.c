@@ -27,20 +27,28 @@ extern pid32 currpid;
 
 void vid_Binary_semp_Bsem_wait (Bsem_t *S)
 {
-	S->count--;
-	if (S->count < 0)
+	if (S->count == 0)
 	{ 
 		enqueue(currpid /*current process*/,S->Bsem_queue);
 		
-		/*pri16*/ /*sysCall suspend_return =*/ Scheduler_processSuspend(currpid);
+		/*pri16*/ /*sysCall suspend_return =*/ Scheduler_processWaiting(currpid);
+	}
+	else if(S->count==1)
+	{
+		S->count=0;
 	}
 }
 void vid_Binary_semp_Bsem_signal(Bsem_t *S)
 {
-	S->count++;
-	if (S->count <= 0)
+	
+	if (!isempty(S->Bsem_queue))
 	{
 		int32_t processid= dequeue(S->Bsem_queue);
-		/*sysCall resume_return =*/ Scheduler_processResume(processid /*curent process id  */);
+
+		Scheduler_processSetReady(processid /*curent process id  */);
+	}
+	else if(isempty(S->Bsem_queue))
+	{
+		S->count=1;
 	}
 }

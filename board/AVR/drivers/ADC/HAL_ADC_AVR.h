@@ -12,15 +12,15 @@
 #include "ADC.h"
 
 
-#define ADC_DEFAULT_VALUES {ch_ADC0,Internal_Voltage_Reference,Free_Running_mode,false,75000000UL}
+#define ADC_DEFAULT_VALUES {Internal_Voltage_Reference,false,Free_Running_mode,ch_ADC0,75000000UL}
 
 
 typedef struct
 {
-	uint8_t channel;
 	uint8_t voltage_ref_sel ;
+	uint8_t channel;
 	uint8_t trigger;
-    bool enable_interrupt;
+	bool enable_interrupt;
 	uint32_t u32MaxFreq;
 	
 }ADC_InitTypeDef;
@@ -29,10 +29,15 @@ typedef struct
 {
 	uint16_t return_result;
 	
-}ADC_handle_typedef;
+}ADC_HandleTypeDef;
 
-void HAL_ADC_Init(ADC_InitTypeDef * adc);
-void HAL_ADC_read(ADC_handle_typedef *adc);
-void HAL_ADC_OFF(void);
+//void HAL_ADC_Init(ADC_InitTypeDef * adc);
+//void HAL_ADC_read(ADC_HandleTypeDef *adc);
+//void HAL_ADC_OFF(void);
+
+#define ADC_Init(x) adcInit( (*x).voltage_ref_sel, (*x).enable_interrupt, (*x).trigger, (*x).channel, (*x).u32MaxFreq )
+#define ADC_Read(x) adcResult_u16(   (*x).return_result );
+#define ADC_Off() 	adcOff()
+
 
 #endif /* HAL_ADC_AVR_H_ */

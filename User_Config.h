@@ -27,4 +27,7 @@
 #define ARM 	1
 #define PART_TM4C1230C3PM 1
 
+#define AVR 	1
+
+
 #endif /* IOT_RTOS_USER_CONFIG_H_ */
