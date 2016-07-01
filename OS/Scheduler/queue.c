@@ -49,18 +49,18 @@ inline static pid getlast(qid queueId);
 *****************************************************************************/
 sysCall enqueue( pid processId,qid queueId )
 {
-	pid tail, prev;             /* Tail & previous node indexes */
+	pid prev;
+
     if (isBadQid(queueId) || isbadpid(processId))
     {
     	return SYSERR;
     }
-	tail = queuetail(queueId);
-	prev = queuetab[tail].qprev;
-	queueTab[processId].qnext  = tail;    /* Insert just before tail node */
-	queueTab[processId].qprev  = prev;
-	queueTab[prev].qnext = processId;
-	queueTab[tail].qprev = processId;
- 	return pid;
+
+	prev = queueTab[queueId].lastProcess;
+	procTab[processId].qnext  = NULL_ENTRY;    /* Insert just before tail node */
+	procTab[processId].qprev  = prev;
+	queueTab[queueId].lastProcess = processId;
+ 	return pdPASS;
 }
 
 /******************************************************************************

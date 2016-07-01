@@ -88,6 +88,7 @@
 #define INITSTK 100 	/* Initial process stack size */
 #define MINSTK	10  	/* Minimum stack size */
 
+extern struct procent proctab[NPROC];		  /* table of processes */
 
 /* Inline code to check process ID (assumes interrupts are disabled) */
 #define isbadpid(x) ( ((pid32)(x) < 0) || \

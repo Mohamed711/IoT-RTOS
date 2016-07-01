@@ -28,7 +28,7 @@
 #include "../MMU/mmu.h"
 
 pid32 currpid; 	/* process running id */
-extern struct procent proctab[NPROC];		  /* table of processes */
+struct procent proctab[NPROC];		  /* table of processes */
 
 extern qid16 readylist;
 extern qid16 suspendedlist;
