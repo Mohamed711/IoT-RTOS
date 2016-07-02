@@ -47,7 +47,7 @@ pid queueTab[NQENT];
 *****************************************************************************/
 pid dequeue(qid queueId)
 {
-	pid processId;                    /* ID of process removed */
+	pid processId, nextId;                    /* ID of process removed */
 
 	if (isBadQid(queueId))
 	{
@@ -58,7 +58,9 @@ pid dequeue(qid queueId)
 		return errQUEUE_EMPTY;
 	}
 	processId = firstId(queueId);
-	queueTab[queueId] = procEntry[processId].qnext;
+	nextId = procEntry[processId].qnext;
+	queueTab[queueId] = nextId;
+	procEntry[nextId].qprev = NULL_ENTRY;
 	return processId;
 }
 
