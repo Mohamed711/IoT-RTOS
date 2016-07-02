@@ -57,7 +57,7 @@ void Scheduler_initializenullProcess()
 void initializeUART( Uart_InitTypeDef *initConf,uint32_t BaseAddress )
 {
 	
-	initConf->BaudRate=115200;
+	initConf->BaudRate=9600;
 	initConf->Parity= UART_CONFIG_PAR_NONE;
 	initConf->Wlen=UART_CONFIG_WLEN_8;
 	initConf->stopBit=UART_CONFIG_STOP_ONE;
