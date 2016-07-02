@@ -2775,7 +2775,7 @@
 #define USB_LPMATTR_RMTWAK      0x00000100  // Remote Wake
 #define USB_LPMATTR_HIRD_M      0x000000F0  // Host Initiated Resume Duration
 #define USB_LPMATTR_LS_M        0x0000000F  // Link State
-#define USB_LPMATTR_LS_L1       0x00000001  // sleep State (L1)
+#define USB_LPMATTR_LS_L1       0x00000001  // Sleep State (L1)
 #define USB_LPMATTR_ENDPT_S     12
 #define USB_LPMATTR_HIRD_S      4
 

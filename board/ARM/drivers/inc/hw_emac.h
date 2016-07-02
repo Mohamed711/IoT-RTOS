@@ -1510,8 +1510,8 @@
 #define EPHY_SCR_PSMODE_NORMAL  0x00000000  // Normal: Normal operation mode.
                                             // PHY is fully functional
 #define EPHY_SCR_PSMODE_LOWPWR  0x00001000  // IEEE Power Down
-#define EPHY_SCR_PSMODE_ACTWOL  0x00002000  // Active sleep
-#define EPHY_SCR_PSMODE_PASWOL  0x00003000  // Passive sleep
+#define EPHY_SCR_PSMODE_ACTWOL  0x00002000  // Active Sleep
+#define EPHY_SCR_PSMODE_PASWOL  0x00003000  // Passive Sleep
 #define EPHY_SCR_SBPYASS        0x00000800  // Scrambler Bypass
 #define EPHY_SCR_LBFIFO_M       0x00000300  // Loopback FIFO Depth
 #define EPHY_SCR_LBFIFO_4       0x00000000  // Four nibble FIFO
@@ -1558,7 +1558,7 @@
                                             // Event Interrupt
 #define EPHY_MISR2_MDICO        0x00000800  // MDI/MDIX Crossover Status
                                             // Changed Interrupt
-#define EPHY_MISR2_sleep        0x00000400  // sleep Mode Event Interrupt
+#define EPHY_MISR2_SLEEP        0x00000400  // Sleep Mode Event Interrupt
 #define EPHY_MISR2_POLINT       0x00000200  // Polarity Changed Interrupt
 #define EPHY_MISR2_JABBER       0x00000100  // Jabber Detect Event Interrupt
 #define EPHY_MISR2_ANERREN      0x00000040  // Auto-Negotiation Error Interrupt
@@ -1568,7 +1568,7 @@
                                             // Interrupt Enable
 #define EPHY_MISR2_MDICOEN      0x00000008  // MDI/MDIX Crossover Status
                                             // Changed Interrupt Enable
-#define EPHY_MISR2_sleepEN      0x00000004  // sleep Mode Event Interrupt
+#define EPHY_MISR2_SLEEPEN      0x00000004  // Sleep Mode Event Interrupt
                                             // Enable
 #define EPHY_MISR2_POLINTEN     0x00000002  // Polarity Changed Interrupt
                                             // Enable

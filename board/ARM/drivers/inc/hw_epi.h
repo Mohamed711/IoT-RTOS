@@ -202,7 +202,7 @@
 #define EPI_SDRAMCFG_FREQ_15MHZ 0x40000000  // 15 - 30 MHz
 #define EPI_SDRAMCFG_FREQ_30MHZ 0x80000000  // 30 - 50 MHz
 #define EPI_SDRAMCFG_RFSH_M     0x07FF0000  // Refresh Counter
-#define EPI_SDRAMCFG_sleep      0x00000200  // sleep Mode
+#define EPI_SDRAMCFG_SLEEP      0x00000200  // Sleep Mode
 #define EPI_SDRAMCFG_SIZE_M     0x00000003  // Size of SDRAM
 #define EPI_SDRAMCFG_SIZE_8MB   0x00000000  // 64 megabits (8MB)
 #define EPI_SDRAMCFG_SIZE_16MB  0x00000001  // 128 megabits (16MB)
