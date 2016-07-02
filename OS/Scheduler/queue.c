@@ -29,11 +29,9 @@ qid suspendedList;
 qid sleepingList;
 
 struct processEntry procTab[NPROC];		  /* table of processes */
-struct queueEntry queueTab[NQENT];
+pid queueEntry[NQENT];
 
-inline static pid getFirst( qid queueId );
 inline static pid getItem(pid processId);
-inline static pid getLast(qid queueId);
 
 /******************************************************************************
 *
@@ -95,8 +93,6 @@ pid dequeue(qid queueId)
 	{
 		queueTab[queueId].lastProcess = NULL_ENTRY;
 	}
-	procTab[processId].qprev = NULL_ENTRY;
-	procTab[processId].qnext = NULL_ENTRY;
 	return processId;
 }
 
@@ -105,24 +101,24 @@ pid dequeue(qid queueId)
 *	The function's purpose is to insert a process in a queue
 *	making sure it's in the right place
 *
-*	\param pid			ID of the process to be inserted
-*	\param q			ID of queue to use
-*	\param key			the key used to sort the processes in the queue
+*	\param processId			ID of the process to be inserted
+*	\param queueId				ID of queue to use
 *
-* 	\return SYSERR if there's an error, OK if there's no error
+* 	\return pdFAIL if there's an error, pdPASS if there's no error
 *
 *****************************************************************************/
-sysCall	insert(pid processId, qid queueId, pid key)
+sysCall	insert( pid processId, qid queueId )
 {
-	int16_t	curr;			/* Runs through items in a queue */
-	int16_t	prev;			/* Holds previous node index	*/
+	pid processPriority;
+	pid	curr;			/* Runs through items in a queue */
+	pid	prev;			/* Holds previous node index	*/
 
-	if (isbadqid(q) || isbadpid(pid))
+	if ( isBadQid(queueId) || isbadpid(processId) )
 	{
-		return SYSERR;
+		return pdFAIL;
 	}
 
-	curr = firstid(q);
+	curr = firstId(queueId);
 	while (queuetab[curr].qkey >= key)
 	{
 		curr = queuetab[curr].qnext;
@@ -131,12 +127,12 @@ sysCall	insert(pid processId, qid queueId, pid key)
 	/* Insert process between curr node and previous node */
 
 	prev = queuetab[curr].qprev;	/* Get index of previous node */
-	queuetab[pid].qnext = curr;
-	queuetab[pid].qprev = prev;
-	queuetab[pid].qkey = key;
-	queuetab[prev].qnext = pid;
-	queuetab[curr].qprev = pid;
-	return OK;
+	queuetab[processId].qnext = curr;
+	queuetab[processId].qprev = prev;
+	queuetab[processId].qkey = key;
+	queuetab[prev].qnext = processId;
+	queuetab[curr].qprev = processId;
+	return pdPASS;
 }
 
 /******************************************************************************
@@ -184,42 +180,4 @@ inline static pid getitem(pid processId)
 	procTab[prev].qnext = next;
 	procTab[next].qprev = prev;
 	return processId;
-}
-
-/******************************************************************************
-*
-*	The function's purpose is to remove the first process
-*	in a specefic queue
-*
-*	\param queueId			ID of queue to use
-*
-* 	\return the removed process's ID
-*
-*****************************************************************************/
-inline static pid getFirst( qid queueId )
-{
-	if (isEmpty(queueId))
-	{
-		return errQUEUE_EMPTY;
-	}
-	return getitem(firstId(queueId));
-}
-
-/******************************************************************************
-*
-*	The function's purpose is to remove the last process
-*	in a specefic queue
-*
-*	\param queueId			ID of queue to use
-*
-* 	\return the removed process's ID
-*
-*****************************************************************************/
-inline static pid getLast(qid queueId)
-{
-	if (isEmpty(queueId))
-	{
-		return errQUEUE_EMPTY;
-	}
-	return getitem(lastId(queueId));
 }

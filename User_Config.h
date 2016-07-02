@@ -23,10 +23,11 @@
 #ifndef IOT_RTOS_USER_CONFIG_H_
 #define IOT_RTOS_USER_CONFIG_H_
 
-#define FAST_HAL 		0x01		/* This to use macros in HAL instead of the functions */
-#define NO_OF_TASKS		0x05
-#define NO_OF_QUEUES	0x05
-#define ARM 			0x01
+#define FAST_HAL 					0x01		/* This to use macros in HAL instead of the functions */
+#define NO_OF_TASKS					0x05
+#define NO_OF_QUEUES				0x05
+#define ARM 						0x01
+#define PARTIALLY_BLOCKING_ENABLE 	0x01
 
 
 #endif /* IOT_RTOS_USER_CONFIG_H_ */

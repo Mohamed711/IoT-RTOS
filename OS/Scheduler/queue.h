@@ -58,53 +58,42 @@
 
 /* The attributes of each process in a queue */
 struct processEntry {               /* One per process plus two per list    */
-		_delay_ms sleeping;			/* sleeping time */
-        pid sleepingNext;			/* next process in the sleeping queue */
-        pid sleepingPrevious;		/* previous process in the sleeping queue */
 	    pid procPriority;         	/* Key on which the queue is ordered    */
         pid qnext;        			/* Index of next process or tail        */
         pid qprev; 					/* Index of previous process or head    */
 };
 
-/* The attributes of each queue */
-struct queueEntry {
-	pid firstProcess;
-	pid lastProcess;
-};
+#if ( PARTIALLY_BLOCKING_ENABLE == 0x01 )
+	struct sleepingEntry {
+		_delay_ms sleeping;			/* sleeping time */
+		pid sleepingNext;			/* next process in the sleeping queue */
+		pid sleepingPrevious;		/* previous process in the sleeping queue */
+	};
+	extern struct sleepingEntry sleepTab[];
+#endif
+
+extern struct processEntry procTab[];
 
 extern qid readyList;
 extern qid suspendedList;
 extern qid sleepingList;
-
-extern struct processEntry procTab[];
-extern struct queueEntry queueTab[];
+extern pid queueEntry[];
 
 /* Inline queue manipulation functions */
 #define firstId(queueId)      		( queueTab[queueId].firstProcess )
-#define lastId(queueId)       		( queueTab[queueId].lastProcess )
 #define isEmpty(queueId)      		( firstId(queueId) == NULL_ENTRY )
 #define nonEmpty(queueId)     		( firstId(queueId) != NULL_ENTRY )
 #define firstPriority(queueId)     	( queueTab[firstId(q)].procPriority )
-#define lastPriority(queueId)      	( queueTab[ lastId(q)].procPriority )
-
-#define firstSleepingId()			( firstId(sleepingList) )
-#define lastSleepingId()			( lastId(sleepingList) )
-#define firstSleepingTime()			( processEntry[firstId(sleepingList)].sleeping )
-#define lastSleepingTime()			( processEntry[lastId(sleepingList)].sleeping )
-
-#define firstReadyId()				( firstId(readyList) )
-#define lastReadyId()				( lastId(readyList) )
 
 /* Inline to check queue id assumes interrupts are disabled */
 /* One number is reserved to be returned in case of errors */
-#define isBadQid(queueId)    				( (qid)(queueId) >= (NQENT-1) )
+#define isBadQid(queueId)    		( (qid)(queueId) >= (NQENT-1) )
 
 #define NULL_ENTRY 					( (pid)0xFFFFFFFF )
 #define INVALID_QUEUE				( (qid)0xFFFFFFFF )
 
 pid dequeue(qid queueId);
-sysCall enqueue(pid processId,qid queueId );
-sysCall	insert(pid processId, qid queueId, pid key);
+sysCall	insert( pid processId, qid queueId );
 qid newqueue(void);
 
 #endif
