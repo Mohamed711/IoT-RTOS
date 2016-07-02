@@ -63,7 +63,7 @@ extern qid sleepingList;
 pid dequeue(qid queueId);
 sysCall enqueue(pid processId,qid queueId );
 sysCall	insert( pid processId, qid queueId, queuePriority entryPriority );
-sysCall getItem(pid processId, qid queueId);
+sysCall getItem(pid processId);
 qid newqueue(void);
 
 #if ( PARTIALLY_BLOCKING_ENABLE == 0x00 )

@@ -28,8 +28,7 @@ qid readyList;
 qid suspendedList;
 qid sleepingList;
 
-struct processEntry procEntry[NPROC];		  /* table of processes */
-pid queueTab[NQENT];
+struct queueEntry queueTab[NQENT];
 
 #if ( PARTIALLY_BLOCKING_ENABLE == 0x01 )
 	struct sleepingEntry sleepTab[NPROC];
@@ -47,20 +46,17 @@ pid queueTab[NQENT];
 *****************************************************************************/
 pid dequeue(qid queueId)
 {
-	pid processId, nextId;                    /* ID of process removed */
-
+	pid processId;                    /* ID of process removed */
 	if (isBadQid(queueId))
 	{
-		return INVALID_QUEUE;
+		return pdFAIL;
 	}
 	else if (isEmpty(queueId))
 	{
 		return errQUEUE_EMPTY;
 	}
 	processId = firstId(queueId);
-	nextId = procEntry[processId].qnext;
-	queueTab[queueId] = nextId;
-	procEntry[nextId].qprev = NULL_ENTRY;
+	getitem(processId);
 	return processId;
 }
 
@@ -133,21 +129,26 @@ sysCall	insert( pid processId, qid queueId, queuePriority entryPriority )
 *****************************************************************************/
 qid newqueue(void)
 {
-	static qid queueId = 0; 	/* Next list in queuetab to use */
-	qid xReturn;
+	static qid16 nextqid = NPROC; 	/* Next list in queuetab to use */
+	qid16 q; 						/* ID of allocated queue */
 
-	/* Check for table overflow */
-	if (isBadQid(queueId))
-	{
-		return INVALID_QUEUE;
+	q = nextqid;
+	if (q > NQENT)
+	{ /* Check for table overflow */
+		return (qid16)SYSERR;
 	}
 
-	/* Initialize head and tail nodes to form an empty queue */
-	queueTab[queueId] = NULL_ENTRY;
+	nextqid += 2; /* Increment index for next call */
 
-	xReturn = queueId;
-	queueId++; 				/* Increment index for next call */
-	return xReturn;
+	/* Initialize head and tail nodes to form an empty queue */
+	queuetab[queuehead(q)].qnext = queuetail(q);
+	queuetab[queuehead(q)].qprev = EMPTY;
+	queuetab[queuehead(q)].qkey = MAXKEY;
+	queuetab[queuetail(q)].qnext = EMPTY;
+	queuetab[queuetail(q)].qprev = queuehead(q);
+	queuetab[queuetail(q)].qkey = MINKEY;
+
+	return q;
 }
 
 
@@ -157,29 +158,17 @@ qid newqueue(void)
 *
 *	\param processId	    	ID of process to be removed
 *
-* 	\return the removed process's ID
+* 	\return pdPASS if the process is removed
 *
 *****************************************************************************/
-sysCall getItem(pid processId, qid queueId)
+sysCall getItem(pid processId)
 {
-	pid prev, next;
-	next = procEntry[processId].qnext;  /* Following node in list  */
-	prev = procEntry[processId].qprev;  /* Previous node in list   */
-
-	if ( prev == NULL_ENTRY )
-	{
-		queueTab[queueId] = next;
-	}
-	else
-	{
-		procEntry[prev].qnext = next;
-	}
-
-	if ( next != NULL_ENTRY )
-	{
-		procEntry[next].qprev = prev;
-	}
-	return pdPASS;
+		qid prev, next;
+		next = queueTab[processId].qnext;  /* Following node in list  */
+		prev = queueTab[processId].qprev;  /* Previous node in list   */
+		queueTab[prev].qnext = next;
+		queueTab[next].qprev = prev;
+		return pdPASS;
 }
 
 
