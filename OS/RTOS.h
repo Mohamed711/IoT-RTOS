@@ -125,7 +125,11 @@ void heap_init(Heap_Init *size);
 	typedef uint32_t qid;
 #endif
 
-
+#if ( PARTIALLY_BLOCKING_ENABLE == 0x01 )
+	typedef _delay_ms queuePriority;
+#else
+	typedef pid queuePriority;
+#endif
 
 /*portBYTE_ALIGNMENT defined by user but for default value portBYTE_ALIGNMENT=8  need to implement this as structure*/
 #if portBYTE_ALIGNMENT == 8

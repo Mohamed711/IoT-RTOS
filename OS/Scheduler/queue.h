@@ -56,13 +56,6 @@
 * 15) isempty and nonempty are not working in a right way
 *****************************************************************************/
 
-/* The attributes of each process in a queue */
-struct processEntry {               /* One per process plus two per list    */
-	    pid procPriority;         	/* Key on which the queue is ordered    */
-        pid qnext;        			/* Index of next process or tail        */
-        pid qprev; 					/* Index of previous process or head    */
-};
-
 #if ( PARTIALLY_BLOCKING_ENABLE == 0x01 )
 	struct sleepingEntry {
 		_delay_ms sleeping;			/* sleeping time */
@@ -72,18 +65,24 @@ struct processEntry {               /* One per process plus two per list    */
 	extern struct sleepingEntry sleepTab[];
 #endif
 
-extern struct processEntry procTab[];
+/* The attributes of each process in a queue */
+struct processEntry {               /* One per process plus two per list    */
+	queuePriority procPriority;     /* Key on which the queue is ordered    */
+    pid qnext;        				/* Index of next process or tail        */
+    pid qprev; 						/* Index of previous process or head    */
+};
+
+extern struct processEntry procEntry[];
 
 extern qid readyList;
 extern qid suspendedList;
 extern qid sleepingList;
-extern pid queueEntry[];
+extern pid queueTab[];
 
 /* Inline queue manipulation functions */
-#define firstId(queueId)      		( queueTab[queueId].firstProcess )
+#define firstId(queueId)      		( queueTab[queueId] )
 #define isEmpty(queueId)      		( firstId(queueId) == NULL_ENTRY )
 #define nonEmpty(queueId)     		( firstId(queueId) != NULL_ENTRY )
-#define firstPriority(queueId)     	( queueTab[firstId(q)].procPriority )
 
 /* Inline to check queue id assumes interrupts are disabled */
 /* One number is reserved to be returned in case of errors */
@@ -92,8 +91,21 @@ extern pid queueEntry[];
 #define NULL_ENTRY 					( (pid)0xFFFFFFFF )
 #define INVALID_QUEUE				( (qid)0xFFFFFFFF )
 
+
 pid dequeue(qid queueId);
-sysCall	insert( pid processId, qid queueId );
+sysCall	insert( pid processId, qid queueId, queuePriority entryPriority );
+sysCall getItem(pid processId, qid queueId);
 qid newqueue(void);
+
+#if ( PARTIALLY_BLOCKING_ENABLE == 0x00 )
+	#define dequeueSleep()							dequeue(sleepingList)
+	#define insertSleep(processId, SleepingTime)  	insert( processId, sleepingList, SleepingTime )
+	#define getItemFromSleep(processId)				getItem(processId,sleepingList)
+#else	
+	pid dequeueSleep();
+	sysCall	insert (pid processId, queuePriority entryPriority );
+	sysCall getItem(pid processId);
+#endif
+
 
 #endif

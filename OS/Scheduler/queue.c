@@ -28,43 +28,13 @@ qid readyList;
 qid suspendedList;
 qid sleepingList;
 
-struct processEntry procTab[NPROC];		  /* table of processes */
-pid queueEntry[NQENT];
+struct processEntry procEntry[NPROC];		  /* table of processes */
+pid queueTab[NQENT];
 
-inline static pid getItem(pid processId);
+#if ( PARTIALLY_BLOCKING_ENABLE == 0x01 )
+	struct sleepingEntry sleepTab[NPROC];
+#endif
 
-/******************************************************************************
-*
-*	The function's purpose is to insert a process at the tail of a queue
-*
-*	\param processId			ID of process to insert
-*	\param queueId				ID of queue to use
-*
-* 	\return pdPASS if its successfully done
-* 	else it returns pdFAIL
-*
-*****************************************************************************/
-sysCall enqueue( pid processId, qid queueId )
-{
-	pid prev;
-
-    if (isBadQid(queueId) || isbadpid(processId))
-    {
-    	return pdFAIL;
-    }
-
-	prev = queueTab[queueId].lastProcess;
-	procTab[processId].qnext  = NULL_ENTRY;    /* Insert just before tail node */
-	procTab[processId].qprev  = prev;
-	queueTab[queueId].lastProcess = processId;
-
-	if (isEmpty(queueId))
-	{
-		queueTab[queueId].firstProcess = processId;
-	}
-
- 	return pdPASS;
-}
 
 /******************************************************************************
 *
@@ -88,11 +58,7 @@ pid dequeue(qid queueId)
 		return errQUEUE_EMPTY;
 	}
 	processId = firstId(queueId);
-	queueTab[queueId].firstProcess = procTab[processId].qnext;
-	if (firstId(queueId) == NULL_ENTRY)
-	{
-		queueTab[queueId].lastProcess = NULL_ENTRY;
-	}
+	queueTab[queueId] = procEntry[processId].qnext;
 	return processId;
 }
 
@@ -103,13 +69,13 @@ pid dequeue(qid queueId)
 *
 *	\param processId			ID of the process to be inserted
 *	\param queueId				ID of queue to use
+*	\param entryPriority		The priority of the process in the queue
 *
 * 	\return pdFAIL if there's an error, pdPASS if there's no error
 *
 *****************************************************************************/
-sysCall	insert( pid processId, qid queueId )
+sysCall	insert( pid processId, qid queueId, queuePriority entryPriority )
 {
-	pid processPriority;
 	pid	curr;			/* Runs through items in a queue */
 	pid	prev;			/* Holds previous node index	*/
 
@@ -117,21 +83,42 @@ sysCall	insert( pid processId, qid queueId )
 	{
 		return pdFAIL;
 	}
-
-	curr = firstId(queueId);
-	while (queuetab[curr].qkey >= key)
+	else if ( isEmpty(queueId) )
 	{
-		curr = queuetab[curr].qnext;
+		queueTab[queueId] = processId;
+		procEntry[processId].qprev = NULL_ENTRY;
+		procEntry[processId].qnext = NULL_ENTRY;
+	}
+	else
+	{
+		curr = firstId(queueId);
+		while (procEntry[curr].procPriority >= entryPriority)
+		{
+			if (procEntry[curr].qnext == NULL_ENTRY)
+			{
+				procEntry[processId].qnext = NULL_ENTRY;
+				procEntry[processId].qprev = curr;
+				procEntry[curr].qnext= processId;
+				return pdPASS;
+			}
+			curr = procEntry[curr].qnext;
+		}
+		prev = procEntry[curr].qprev;	/* Get index of previous node */
+		procEntry[processId].qnext = curr;
+		procEntry[processId].qprev = prev;
+		procEntry[curr].qprev = processId;
+
+		if ( prev == NULL_ENTRY )
+		{
+			queueTab[queueId] = processId;
+		}
+		else
+		{
+			procEntry[prev].qnext = processId;
+		}
 	}
 
-	/* Insert process between curr node and previous node */
-
-	prev = queuetab[curr].qprev;	/* Get index of previous node */
-	queuetab[processId].qnext = curr;
-	queuetab[processId].qprev = prev;
-	queuetab[processId].qkey = key;
-	queuetab[prev].qnext = processId;
-	queuetab[curr].qprev = processId;
+	procEntry[processId].procPriority = entryPriority;
 	return pdPASS;
 }
 
@@ -154,8 +141,7 @@ qid newqueue(void)
 	}
 
 	/* Initialize head and tail nodes to form an empty queue */
-	queueTab[queueId].firstProcess = NULL_ENTRY;
-	queueTab[queueId].lastProcess = NULL_ENTRY;
+	queueTab[queueId] = NULL_ENTRY;
 
 	xReturn = queueId;
 	queueId++; 				/* Increment index for next call */
@@ -172,12 +158,35 @@ qid newqueue(void)
 * 	\return the removed process's ID
 *
 *****************************************************************************/
-inline static pid getitem(pid processId)
+sysCall getItem(pid processId, qid queueId)
 {
 	pid prev, next;
-	next = procTab[processId].qnext;  /* Following node in list  */
-	prev = procTab[processId].qprev;  /* Previous node in list   */
-	procTab[prev].qnext = next;
-	procTab[next].qprev = prev;
-	return processId;
+	next = procEntry[processId].qnext;  /* Following node in list  */
+	prev = procEntry[processId].qprev;  /* Previous node in list   */
+
+	if ( prev == NULL_ENTRY )
+	{
+		queueTab[queueId] = next;
+	}
+	else
+	{
+		procEntry[prev].qnext = next;
+	}
+
+	if ( next != NULL_ENTRY )
+	{
+		procEntry[next].qprev = prev;
+	}
+	return pdPASS;
 }
+
+
+	pid dequeueSleep()
+	{
+
+	}
+	sysCall	insert (pid processId, queuePriority entryPriority )
+	{
+		
+	}
+	sysCall getItem(pid processId);
