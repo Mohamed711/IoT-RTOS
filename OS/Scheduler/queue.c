@@ -31,35 +31,40 @@ qid sleepingList;
 struct processEntry procTab[NPROC];		  /* table of processes */
 struct queueEntry queueTab[NQENT];
 
-inline static pid getfirst( qid queueId );
-inline static pid getitem(pid processId);
-inline static pid getlast(qid queueId);
+inline static pid getFirst( qid queueId );
+inline static pid getItem(pid processId);
+inline static pid getLast(qid queueId);
 
 /******************************************************************************
 *
-*	The function's purpose is insert a process at the tail of a queue
+*	The function's purpose is to insert a process at the tail of a queue
 *
-*	\param pid			ID of process to insert
-*	\param q			ID of queue to use
+*	\param processId			ID of process to insert
+*	\param queueId				ID of queue to use
 *
-*	Creating a new process so it can be used later ?
-*
-* 	\return the pid of the inserted process
+* 	\return pdPASS if its successfully done
+* 	else it returns pdFAIL
 *
 *****************************************************************************/
-sysCall enqueue( pid processId,qid queueId )
+sysCall enqueue( pid processId, qid queueId )
 {
 	pid prev;
 
     if (isBadQid(queueId) || isbadpid(processId))
     {
-    	return SYSERR;
+    	return pdFAIL;
     }
 
 	prev = queueTab[queueId].lastProcess;
 	procTab[processId].qnext  = NULL_ENTRY;    /* Insert just before tail node */
 	procTab[processId].qprev  = prev;
 	queueTab[queueId].lastProcess = processId;
+
+	if (isEmpty(queueId))
+	{
+		queueTab[queueId].firstProcess = processId;
+	}
+
  	return pdPASS;
 }
 
@@ -67,28 +72,32 @@ sysCall enqueue( pid processId,qid queueId )
 *
 *	The function's purpose is to remove and return the first process on a list
 *
-*	\param q			ID of queue to use
-*
-*	Creating a new process so it can be used later ?
+*	\param queueId			ID of queue to use
 *
 * 	\return the pid of the inserted process
 *
 *****************************************************************************/
 pid dequeue(qid queueId)
 {
-	int32_t   pid;                    /* ID of process removed */
-	if (isbadqid(q))
+	pid processId;                    /* ID of process removed */
+
+	if (isBadQid(queueId))
 	{
-		return SYSERR;
+		return INVALID_QUEUE;
 	}
-	else if (isempty(q))
+	else if (isEmpty(queueId))
 	{
-		return EMPTY;
+		return errQUEUE_EMPTY;
 	}
-	pid = getfirst(q);
-	queuetab[pid].qprev = EMPTY;
-	queuetab[pid].qnext = EMPTY;
-	return pid;
+	processId = firstId(queueId);
+	queueTab[queueId].firstProcess = procTab[processId].qnext;
+	if (firstId(queueId) == NULL_ENTRY)
+	{
+		queueTab[queueId].lastProcess = NULL_ENTRY;
+	}
+	procTab[processId].qprev = NULL_ENTRY;
+	procTab[processId].qnext = NULL_ENTRY;
+	return processId;
 }
 
 /******************************************************************************
