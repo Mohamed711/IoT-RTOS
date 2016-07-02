@@ -24,7 +24,6 @@
 
 #include "../RTOS.h"
 
-
 #if ( PARTIALLY_BLOCKING_ENABLE == 0x01 )
 	struct sleepingEntry {
 		_delay_ms sleeping;			/* sleeping time */
@@ -34,44 +33,47 @@
 	extern struct sleepingEntry sleepTab[];
 #endif
 
+#define MAXKEY  ( (pid)0xFFFFFFFF ) /* Max key that can be stored in queue  */
+#define MINKEY  (0)      			/* Min key that can be stored in queue  */
+
 /* The attributes of each process in a queue */
-struct processEntry {               /* One per process plus two per list    */
-	queuePriority procPriority;     /* Key on which the queue is ordered    */
+struct queueEntry {               	/* One per process plus two per list    */
+	queuePriority qPriority;     	/* Key on which the queue is ordered    */
     pid qnext;        				/* Index of next process or tail        */
     pid qprev; 						/* Index of previous process or head    */
 };
 
-extern struct processEntry procEntry[];
+extern struct queueEntry queueTab[];
 
 extern qid readyList;
 extern qid suspendedList;
 extern qid sleepingList;
-extern pid queueTab[];
 
 /* Inline queue manipulation functions */
-#define firstId(queueId)      		( queueTab[queueId] )
-#define isEmpty(queueId)      		( firstId(queueId) == NULL_ENTRY )
-#define nonEmpty(queueId)     		( firstId(queueId) != NULL_ENTRY )
+#define queueHead(queueId)    		( queueId )
+#define queueTail(queueId)    		( (queueId) + 1 )
+#define firstId(queueId)      		( queueTab[queueHead(queueId)].qnext )
+#define lastId(queueId)       		( queueTab[queueTail(queueId)].qprev )
+#define isEmpty(queueId)      		( firstId(queueId) >= NPROC )
+#define nonEmpty(queueId)     		( firstId(queueId) < NPROC )
 
 /* Inline to check queue id assumes interrupts are disabled */
-/* One number is reserved to be returned in case of errors */
-#define isBadQid(queueId)    		( (qid)(queueId) >= (NQENT-1) )
-
-#define NULL_ENTRY 					( (pid)0xFFFFFFFF )
-#define INVALID_QUEUE				( (qid)0xFFFFFFFF )
-
+#define isBadQid(queueId)    		( (qid)(queueId) >= (NQENT) ) // NQENT NOT NQENT-1 sa7 keda ?
 
 pid dequeue(qid queueId);
+sysCall enqueue(pid processId,qid queueId );
 sysCall	insert( pid processId, qid queueId, queuePriority entryPriority );
 sysCall getItem(pid processId, qid queueId);
 qid newqueue(void);
 
 #if ( PARTIALLY_BLOCKING_ENABLE == 0x00 )
 	#define dequeueSleep()							dequeue(sleepingList)
+	#define enqueueSleep(processId)					enqueue(processId, sleepingList)
 	#define insertSleep(processId, SleepingTime)  	insert( processId, sleepingList, SleepingTime )
 	#define getItemFromSleep(processId)				getItem(processId,sleepingList)
 #else	
 	pid dequeueSleep();
+	sysCall enqueueSleep(pid processId);
 	sysCall	insertSleep (pid processId, queuePriority entryPriority );
 	sysCall getItemFromSleep(pid processId);
 #endif
