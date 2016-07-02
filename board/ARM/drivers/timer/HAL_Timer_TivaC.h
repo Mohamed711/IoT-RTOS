@@ -26,7 +26,7 @@
 typedef void (*FnPtr)(void);
 
 typedef struct Timer_InitTypeDef{
-
+	uint32_t baseAddress;
 }Timer_InitTypeDef;
 
 typedef struct Timer_HandleTypeDef{

@@ -18,7 +18,7 @@
  *  notice, this list of conditions and the following disclaimer in the
  *  documentation and/or other materials provided with the
  *  distribution.
- *****************************************************************************/
+ ****************************************************************************/
 
 #ifndef RTOS_H_
 #define RTOS_H_
@@ -32,6 +32,17 @@
 #ifdef ARM
 	#include "../board/ARM/drivers/timer/HAL_Timer_TivaC.h"
 	#include "../board/ARM/board_config.h"
+	#include "../board/ARM/tivaHAL.h"
+  #include "../board/ARM/drivers/inc/hw_gpio.h"	/*temp include*/
+  #include "../board/ARM/drivers/inc/hw_ints.h"
+  #include "../board/ARM/drivers/uart/uart.h"
+  #include "../board/ARM/drivers/inc/hw_memmap.h"
+  #include "../board/ARM/drivers/inc/hw_types.h"
+  #include "../board/ARM/drivers/inc/tm4c123gh6pge.h"
+	#include "../board/ARM/drivers/interrupt/interrupt.h"
+	#include "../board/ARM/drivers/pin_map/pin_map.h"
+	#include "../board/ARM/drivers/inc/hw_uart.h"
+	#include "TM4C123GH6PM.h"
 #endif
 
 #ifdef AVR
