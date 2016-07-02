@@ -103,8 +103,8 @@ qid newqueue(void);
 	#define getItemFromSleep(processId)				getItem(processId,sleepingList)
 #else	
 	pid dequeueSleep();
-	sysCall	insert (pid processId, queuePriority entryPriority );
-	sysCall getItem(pid processId);
+	sysCall	insertSleep (pid processId, queuePriority entryPriority );
+	sysCall getItemFromSleep(pid processId);
 #endif
 
 

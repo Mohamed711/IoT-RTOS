@@ -181,12 +181,98 @@ sysCall getItem(pid processId, qid queueId)
 }
 
 
+#if ( PARTIALLY_BLOCKING_ENABLE == 0x01 )
 	pid dequeueSleep()
 	{
+		pid processId;                    /* ID of process removed */
 
+		if (isBadQid(sleepingList))
+		{
+			return INVALID_QUEUE;
+		}
+		else if (isEmpty(sleepingList))
+		{
+			return errQUEUE_EMPTY;
+		}
+		processId = firstId(sleepingList);
+		queueTab[sleepingList] = sleepTab[processId].sleepingNext;
+		return processId;
 	}
-	sysCall	insert (pid processId, queuePriority entryPriority )
+#endif
+
+
+
+#if ( PARTIALLY_BLOCKING_ENABLE == 0x01 )
+	sysCall	insertSleep (pid processId, queuePriority entryPriority )
 	{
-		
+		pid	curr;			/* Runs through items in a queue */
+		pid	prev;			/* Holds previous node index	*/
+
+		if ( isBadQid(sleepingList) || isbadpid(processId) )
+		{
+			return pdFAIL;
+		}
+		else if ( isEmpty(sleepingList) )
+		{
+			queueTab[sleepingList] = processId;
+			sleepTab[processId].sleepingPrevious = NULL_ENTRY;
+			sleepTab[processId].sleepingNext = NULL_ENTRY;
+		}
+		else
+		{
+			curr = firstId(sleepingList);
+			while (procEntry[curr].procPriority >= entryPriority)
+			{
+				if (procEntry[curr].qnext == NULL_ENTRY)
+				{
+					sleepTab[processId].sleepingNext = NULL_ENTRY;
+					sleepTab[processId].sleepingPrevious = curr;
+					sleepTab[curr].sleepingNext= processId;
+					return pdPASS;
+				}
+				curr = sleepTab[curr].sleepingNext;
+			}
+			prev = sleepTab[curr].sleepingPrevious;	/* Get index of previous node */
+			sleepTab[processId].sleepingNext = curr;
+			sleepTab[processId].sleepingPrevious = prev;
+			sleepTab[curr].sleepingPrevious = processId;
+
+			if ( prev == NULL_ENTRY )
+			{
+				queueTab[sleepingList] = processId;
+			}
+			else
+			{
+				sleepTab[prev].sleepingNext = processId;
+			}
+		}
+		sleepTab[processId].sleeping = entryPriority;
+	return pdPASS;
 	}
-	sysCall getItem(pid processId);
+#endif
+
+
+
+#if ( PARTIALLY_BLOCKING_ENABLE == 0x01 )
+	sysCall getItemFromSleep(pid processId)
+	{
+		pid prev, next;
+		next = sleepTab[processId].sleepingNext;  /* Following node in list  */
+		prev = sleepTab[processId].sleepingPrevious;  /* Previous node in list   */
+
+		if ( prev == NULL_ENTRY )
+		{
+			queueTab[sleepingList] = next;
+		}
+		else
+		{
+			sleepTab[prev].sleepingNext = next;
+		}
+
+		if ( next != NULL_ENTRY )
+		{
+			sleepTab[next].sleepingPrevious = prev;
+		}
+		return pdPASS;
+	}
+#endif
