@@ -20,12 +20,13 @@
  *  distribution.
  *****************************************************************************/
 
-#ifndef IOT_RTOS_USER_CONFIG_H_
-#define IOT_RTOS_USER_CONFIG_H_
+#ifndef NULLPROCESS_H_
+#define NULLPROCESS_H_
 
-#define FAST_HAL 1		/* This to use macros in HAL instead of the functions */
-#define ARM 	1
-#define PART_TM4C1230C3PM 1
+#include "../RTOS.h"
+
+//void Scheduler_nullProc(Uart_HandleTypeDef *transmit);
+void Scheduler_nullProc();
 
 
-#endif /* IOT_RTOS_USER_CONFIG_H_ */
+#endif

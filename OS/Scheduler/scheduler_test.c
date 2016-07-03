@@ -1,103 +1,120 @@
+
+#include "TM4C123GH6PM.h"
+
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
 
-#include "Process.h"
-#include "realTimeClock.h"
+#ifdef ARM
+#include "E:/Keil/ARM/CMSIS/Include/core_cmFunc.h"
+#endif 
 
+
+#include "Process.h"
+#include "queue.h"
+#include "realTimeClock.h"
+#include "Initialize.h"
+#include "nullProcess.h"
+#include "scheduler_test.h"
 #include "../RTOS.h"
 
-
-#include "../../board/ARM/drivers/inc/hw_memmap.h"
-#include "../../board/ARM/drivers/inc/hw_types.h"
-#include "../../board/ARM/drivers/sysctl/sysctl.h"
-#include "../../board/ARM/drivers/gpio/gpio.h"
-
-
-extern pid32 currpid;
-extern struct procent proctab[NPROC];		  /* table of processes */
-extern qid16 readylist;
-extern qid16 suspendedlist;
-
-
+	extern uint32_t prcount;
+	extern qid16 readylist;
+	extern qid16 suspendedlist;
+	extern qid16 sleepq;
+	extern struct procent proctab[NPROC];	
+	
 void LED1()
 {
-
-	
-	SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
-	GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
-	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 4);
-	SysCtlDelay(40000000);
-	processTerminate(1);
-
+		while(1)
+	{
+		SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
+		SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+		GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
+		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 4);
+	}
 }
 
 void LED2()
 {
-	SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
-	GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
 	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 2);
-	SysCtlDelay(40000000);
-	processTerminate(2);
-	
+	SysCtlDelay(20000000);
+	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 0);
+	Scheduler_unsleep(2);
 }
 
 void LED3()
 {
-	SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
-	GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
 	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 7);
-	SysCtlDelay(40000000);
-	processTerminate(3);
-	
+	SysCtlDelay(20000000);
+	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 0);
+	Scheduler_sleep(10);
+	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 10);
+	SysCtlDelay(20000000);
+	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 0);
 }
-void nullProc()
+	
+uint32_t getControl()
 {
-	//just testing that it will be the first process to start and the last process to end in the scheduler.
+	return __get_CONTROL();
+}
+void setControl(uint32_t x)
+{
+	__set_CONTROL(x);
+}
+void set_MSP(uint32_t x)
+{
+	__set_MSP(x);
+}
+
+uint32_t get_MSP()
+{
+	return __get_MSP();
+}
+void set_PSP(uint32_t x)
+{
+	__set_PSP(x);
+}
+uint32_t get_PSP()
+{
+	return __get_PSP();
+}
+
+
+void SchedulerTest()
+{
 	SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
 	GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
-	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 0);
-	SysCtlDelay(40000000);
 	
-}
+	Uart_InitTypeDef initConf;	
+	initializeUART(&initConf,UART0_BASE);
+	
+	Uart_HandleTypeDef transmit;
+	transmit.init = initConf;
 
-
-void scheduler_test() {
-
+	prcount=0;
 	readylist = newqueue();
 	suspendedlist = newqueue();
-	proctab[0].processFunction = nullProc;
-	proctab[0].prstate = PR_CURR;
-	proctab[0].prprio = 0;
-	strncpy(proctab[0].prname, "prnull", 7);
-	proctab[0].prstkbase = pvPortMalloc(100);  
-	proctab[0].prstklen = NULLSTK;
-	proctab[0].prstkptr = 0;
-	currpid = NULLPROC;
+	sleepq = newqueue();
 	
-	pid32 pidLED1= processCreate(LED1, 100, 10, "P1");//blue
-	pid32 pidLED2= processCreate(LED2, 100, 5, "P2");	//red
-	pid32 pidLED3= processCreate(LED3, 100, 2, "P3");	//purple
+	Scheduler_initializenullProcess();
+	
+	Timer_New(Scheduler_clkhandler, 50000000);
+	
+	//pid32 pidLED1= Scheduler_processCreate(LED1, 400, 5, "P1");//blue
+	pid32 pidLED2= Scheduler_processCreate(LED2, 400, 10, "P2");	//red
+	pid32 pidLED3= Scheduler_processCreate(LED3, 400, 15, "P3");	//purple
 
-	insert(pidLED1, readylist, proctab[pidLED1].prprio);
-	insert(pidLED2, readylist, proctab[pidLED2].prprio);
-	insert(pidLED3, readylist, proctab[pidLED3].prprio);
-	clkinit();
-	while(1)
-	{
-		//keep calling current process function.
-		void(*pf)(void);
-		pf = proctab[currpid].processFunction;
-		pf();
-	}
+	//Scheduler_insertd(pidLED1, sleepq, 300);
+	Scheduler_insertd(pidLED2, sleepq, 1000);
+	//processSetReady(pidLED2);
+	Scheduler_processSetReady(pidLED3);
+	//insert(0, readylist, 0);
+
+	__set_PSP(__get_MSP()); // copy current stack pointer value into PSP
+    __set_CONTROL(0x00000002); // switch to "process" stack pointer PSP
+	
+	Scheduler_nullProc();
 }
 
-
-void Mohamed_Test_Function()
-{
-
-}

@@ -26,7 +26,7 @@
 #define HAL_H_
 
 typedef struct {
-	
+	uint32_t i ; 	//DUMMY variable
 }Timer_InitTypeDef;
 	
 typedef struct {	
