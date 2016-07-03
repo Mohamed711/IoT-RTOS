@@ -63,14 +63,14 @@ void uart_arm_test()
 	initConf.BaseAddress=UART0_BASE;
 	initConf.clock=SysCtlClockGet();
 
-	UART_Init(&initConf);
+	uartinit(&initConf);
 
 	initConf.BaseAddress=UART0_BASE;
 
 	Uart_HandleTypeDef transmit;
 	transmit.init = initConf;
 	transmit.Tx='A';
-	UART_Send(&transmit);
+	uartsend(&transmit);
 }
 
 //WATCHDOG TIMER TEST
@@ -163,7 +163,7 @@ void timer_2_main_test(void)
 		 	 timerHandle.timeInMillis=3000;
 		 	 timerHandle.timeoutFn = IntFn;
 
-		 	 HAL_TIMER_Init(&timerInit);
+		 	 timerinit(&timerInit);
 		 	 //turns a led purple after 5 ms
 		 	// HAL_TIMER_Start(&timerHandle);
 

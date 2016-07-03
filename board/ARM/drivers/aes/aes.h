@@ -51,6 +51,8 @@ extern "C"
 {
 #endif
 
+	#include <stdint.h>
+	#include <stdbool.h>
 //*****************************************************************************
 //
 // The following defines are used to specify the operation direction in the

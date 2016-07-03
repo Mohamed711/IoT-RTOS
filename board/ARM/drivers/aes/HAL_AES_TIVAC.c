@@ -6,10 +6,10 @@ void HAL_AES_Encrypt(AES_HandleTypeDef* handle)
 {
         AESReset(handle->Base_Address);
         handle->ui32Config = handle->ui32Config | AES_CFG_DIR_ENCRYPT;
-	AESConfigSet(handle->Base_Address,handle->Config);
+	AESConfigSet(handle->Base_Address,handle->ui32Config);
 	AESKey1Set(handle->Base_Address, handle->Key, handle->ui32Keysize);
 
-        if (handle->Config & AES_CFG_MODE_CBC)
+        if (handle->ui32Config & AES_CFG_MODE_CBC)
            {
              
 	     AESIVSet(handle->Base_Address, handle->pui32IVdata);
@@ -25,10 +25,10 @@ void HAL_AES_Decrypt(AES_HandleTypeDef* handle)
 {
         AESReset(handle->Base_Address);
         handle->ui32Config = handle->ui32Config | AES_CFG_DIR_DECRYPT;
-	AESConfigSet(handle->Base_Address,handle->Config);
+	AESConfigSet(handle->Base_Address,handle->ui32Config);
 	AESKey1Set(handle->Base_Address, handle->Key, handle->ui32Keysize);
 
-        if (handle->Config & AES_CFG_MODE_CBC)
+        if (handle->ui32Config & AES_CFG_MODE_CBC)
            {
              
 	     AESIVSet(handle->Base_Address, handle->pui32IVdata);
