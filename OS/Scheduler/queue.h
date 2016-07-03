@@ -56,6 +56,8 @@ extern qid sleepingList;
 #define lastId(queueId)       		( queueTab[queueTail(queueId)].qprev )
 #define isEmpty(queueId)      		( firstId(queueId) >= NPROC )
 #define nonEmpty(queueId)     		( firstId(queueId) < NPROC )
+#define firstKey(queueId)     		( queueTab[firstId(queueId)].qPriority )
+#define lastKey(queueId)      		( queueTab[ lastId(queueId)].qPriority )
 
 /* Inline to check queue id assumes interrupts are disabled */
 #define isBadQid(queueId)    		( (qid)(queueId) >= (NQENT) ) // NQENT NOT NQENT-1 sa7 keda ?

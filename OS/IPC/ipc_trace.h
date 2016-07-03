@@ -1,23 +1,18 @@
 /******************************************************************************
- *	OurOS V 0.0.0 - Copyright (C) 2016
+ *	RTOS V 0.0.0 - Copyright (C) 2016
  *  Computer and systems department
  *  Ain Shams University
  *
  *  All rights reserved
  *
- *  VISIT http://www.OurRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
- *
  *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
+ *  modification, are permitted provided that the redistributions of the
+ *  source code must retain the above copyright notice, and this condition.
  *
- *  Redistributions of source code must retain the above copyright
- *  notice, this list of conditions and the following disclaimer.
+ * 	FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
  *
- *  Redistributions in binary form must reproduce the above copyright
- *  notice, this list of conditions and the following disclaimer in the
- *  documentation and/or other materials provided with the
- *  distribution.
+ * 	This version is a modified and enhanced version of the queue module
+ * 	in the freeRTOS distribution.
  *****************************************************************************/
 
 #ifndef IPC_TRACE_H_

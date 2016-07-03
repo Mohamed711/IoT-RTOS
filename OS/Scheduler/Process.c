@@ -341,7 +341,7 @@ void Scheduler_processSuspendAll(void)
 	while(nonEmpty(readyList))
 	{
 		
-		pid32 pid=getfirst(readyList);
+		pid32 pid=dequeue(readyList);
 		Scheduler_processSuspend(pid);
 		enqueue(pid,suspendedList);
 			
@@ -359,7 +359,7 @@ void Scheduler_processResumeAll(void)
 {
 	while(nonEmpty(suspendedList))
 	{
-		pid32 pid=getFirst(suspendedList);
+		pid32 pid=dequeue(suspendedList);
 		Scheduler_processResume(pid);
 	}
 }
