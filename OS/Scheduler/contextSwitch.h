@@ -31,5 +31,7 @@
  */
 void Scheduler_contextSwitch(struct procent *ptold, struct procent *ptnew);
 void jumptoPC(uint32_t LR);
+void saveContext(char* oldSP);
+void loadContext(char* newSP);
 
 #endif /* CONTEXTSWITCH_H_ */

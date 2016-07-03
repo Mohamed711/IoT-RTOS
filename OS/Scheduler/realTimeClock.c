@@ -27,6 +27,7 @@
 #include "../RTOS.h"
 #include "temp/Timer_TivaC.h"
 
+extern bool wakefromSleep;
 unsigned int lrReg;		/*the value of the link register in case there was an interrupt*/
 uint32_t time;				/*time used for the timer*/
 
@@ -145,6 +146,8 @@ sysCall	Scheduler_sleepms(int32_t	delay)
 	}
 
 	proctab[currpid].prstate = PR_sleep;
+	wakefromSleep = false;
+	IntTrigger(INT_TIMER0A);
 	return OK;
 }
 
@@ -175,15 +178,28 @@ sysCall	Scheduler_unsleep(pid32 pid)
 	{
 		return SYSERR;
 	}
-
-	/* Increment delay of next process if such a process exists */
-	pidnext = queuetab[pid].qnext;
-	if (pidnext < NPROC)
+if (pid == queuehead(sleepq))
 	{
-		queuetab[pidnext].qkey += queuetab[pid].qkey;
+		time = queuetab[firstid(sleepq)].qkey;
+		Timer_New(Scheduler_clkhandler, time+2);
 	}
 	getitem(pid);			/* Unlink process from queue */
 	
+	Scheduler_processSetReady(pid);
+	
+	if (!isempty(sleepq))
+	{
+		time = queuetab[firstid(sleepq)].qkey;
+		Timer_New(Scheduler_clkhandler, time);
+	}
+	else
+	{
+		Timer_New(Scheduler_clkhandler, 10000000000);
+		//TimerDisable(TIMER0_BASE, TIMER_A);
+	}
+	
+	wakefromSleep = false;
+	IntTrigger(INT_TIMER0A);
 	return OK;
 }
 

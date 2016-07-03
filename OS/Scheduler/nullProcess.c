@@ -35,7 +35,7 @@ extern uint32_t prcount;
 extern struct procent proctab[NPROC];
 extern qid16 readylist;
 
-
+/*
 void LED1()
 {
 		SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
@@ -165,6 +165,31 @@ void Scheduler_nullProc(Uart_HandleTypeDef * transmit)
 						Scheduler_reSchedule();
 				}
 	}
+}*/
+
+bool flag = true;
+bool wakefromSleep = true;	
+
+void Scheduler_nullProc()
+{
+	if (flag)
+	{
+		set_PSP((uint32_t)proctab[0].prstkptr);
+		loadContext(proctab[0].prstkptr);
+		flag = false;
+	}
+	while (1)
+		{
+				if (prcount !=0)
+				{
+					if (!isempty(readylist))
+						{
+							wakefromSleep = false ;
+							IntTrigger(INT_TIMER0A);
+						}
+				}
+	}
 }
+
 
 

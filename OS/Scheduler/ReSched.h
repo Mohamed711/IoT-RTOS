@@ -22,6 +22,8 @@
 #ifndef reSched_H_
 #define reSched_H_
 
-void Scheduler_reSchedule(void);
+#include "../RTOS.h"
+
+pid32 Scheduler_reSchedule(void);
 
 #endif

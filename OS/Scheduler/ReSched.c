@@ -24,14 +24,12 @@
 #include "Process.h"
 #include "queue.h"
 #include "contextSwitch.h"
-#include "../RTOS.h"
 
 volatile char* pxCurrentTCB_Old;
 volatile char* pxCurrentTCB_New;
 extern pid32 currpid;
 extern struct procent proctab[NPROC];		  /* table of processes */
 extern qid16 readylist;
-extern void contextSwitch(struct procent *ptold, struct procent *ptnew);
 	
 /*******************************************************************************
 *
@@ -43,7 +41,7 @@ extern void contextSwitch(struct procent *ptold, struct procent *ptnew);
 * 	\return none
 *
 *****************************************************************************/
-void Scheduler_reSchedule(void) /* Assumes interrupts are disabled */
+pid32 Scheduler_reSchedule(void) /* Assumes interrupts are disabled */
 {
 	struct procent *ptold; /* Ptr to table entry for old process */
 	struct procent *ptnew; /* Ptr to table entry for new process */
@@ -55,11 +53,11 @@ void Scheduler_reSchedule(void) /* Assumes interrupts are disabled */
 	{ 	/* Process remains eligible */
 		if (firstkey(readylist)==0)
 		{
-			return;
+			return oldP;
 		}
 		if (ptold->prprio > firstkey(readylist))
 		{
-			return;
+			return oldP;
 		}
 		/* Old process will no longer remain current */
 		ptold->prstate = PR_READY;
@@ -70,5 +68,6 @@ void Scheduler_reSchedule(void) /* Assumes interrupts are disabled */
 	ptnew->prstate = PR_CURR;
 	
 	pid32 newP = currpid;
-	Scheduler_contextSwitch(ptold, ptnew);
+		
+	return newP;
 }
