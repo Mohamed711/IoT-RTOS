@@ -25,7 +25,6 @@
 #include "realTimeClock.h"
 #include "Process.h"
 #include "../RTOS.h"
-#include "temp/Timer_TivaC.h"
 
 extern bool wakefromSleep;
 unsigned int lrReg;		/*the value of the link register in case there was an interrupt*/
