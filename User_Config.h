@@ -26,7 +26,8 @@
 #define FAST_HAL 1		/* This to use macros in HAL instead of the functions */
 #define ARM 	1
 #define PART_TM4C1230C3PM 1
-
+#define NO_OF_TASKS 3
+#define NO_OF_QUEUES 8
 
 
 #endif /* IOT_RTOS_USER_CONFIG_H_ */

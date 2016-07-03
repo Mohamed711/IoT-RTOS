@@ -18,7 +18,7 @@
  *  notice, this list of conditions and the following disclaimer in the
  *  documentation and/or other materials provided with the
  *  distribution.
- ****************************************************************************/
+ *****************************************************************************/
 
 #ifndef RTOS_H_
 #define RTOS_H_
@@ -79,17 +79,10 @@ typedef bool sysCall;
 
 #define portYIELD_WITHIN_API()	// check for the tasks to take the higher priority one
 
-
-/* this values to be computed by a separate program isa */
-#define NSEM 10
-#define NPROC 5
-#define NQENT   (NPROC + 4 + NSEM + NSEM)
-
-#define	QUANTUM	2
 #define	MAXSECONDS	2147483		/* Max seconds per 32-bit msec	*/
 
 #define OK 1
-#define SYSERR -1
+#define SYSERR  0x00
 #define TIMEOUT 0
 
 #ifndef configUSE_MALLOC_FAILED_HOOK
@@ -107,6 +100,46 @@ typedef struct
 void heap_init(Heap_Init *size);
 */
 /*-----------------------------------------*/
+
+#define MAX_SLEEPING_TIME 65535
+/* Number of processes equal to the number of
+ * tasks plus the null process
+ */
+#define NPROC	( NO_OF_TASKS + 1 )
+/* Number of queues equal to the number specified by the user plus
+ * the ready, suspended, sleeping queue
+ */
+#define NQENT	( NPROC + NO_OF_QUEUES + 3 )
+
+#if ( MAX_SLEEPING_TIME < 256 )
+	typedef uint8_t _delay_ms ;
+#elif ( MAX_SLEEPING_TIME < 65536 )
+	typedef uint16_t _delay_ms;
+#else
+	typedef uint32_t _delay_ms;
+#endif
+
+#if ( NPROC < 256 )
+	typedef uint8_t pid;
+#elif ( NPROC < 65536 )
+	typedef uint16_t pid;
+#else
+	typedef uint32_t pid;
+#endif
+
+#if ( NQENT < 256 )
+	typedef uint8_t qid;
+#elif ( NPROC < 65536 )
+	typedef uint16_t qid;
+#else
+	typedef uint32_t qid;
+#endif
+
+#if ( PARTIALLY_BLOCKING_ENABLE == 0x01 )
+	typedef _delay_ms queuePriority;
+#else
+	typedef pid queuePriority;
+#endif
 
 /*portBYTE_ALIGNMENT defined by user but for default value portBYTE_ALIGNMENT=8  need to implement this as structure*/
 #if portBYTE_ALIGNMENT == 8

@@ -25,6 +25,7 @@
 #include "../../OS/RTOS.h"
 #include "../../OS/Scheduler/Process.h"
 #include "drivers/timer/timer.h"
+#include "../../User_Config.h"
 
 extern unsigned int lrReg;
 extern pid32 currpid;
