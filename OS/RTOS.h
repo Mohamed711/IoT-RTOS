@@ -99,7 +99,7 @@ void heap_init(Heap_Init *size);
 /* Number of queues equal to the number specified by the user plus
  * the ready, suspended, sleeping queue
  */
-#define NQENT	( NO_OF_QUEUES + 3 )
+#define NQENT	( NPROC + NO_OF_QUEUES + 3 )
 
 #if ( MAX_SLEEPING_TIME < 256 )
 	typedef uint8_t _delay_ms ;

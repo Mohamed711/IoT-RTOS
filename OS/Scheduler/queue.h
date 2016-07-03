@@ -27,14 +27,11 @@
 #if ( PARTIALLY_BLOCKING_ENABLE == 0x01 )
 	struct sleepingEntry {
 		_delay_ms sleeping;			/* sleeping time */
-		pid sleepingNext;			/* next process in the sleeping queue */
-		pid sleepingPrevious;		/* previous process in the sleeping queue */
+		pid qnext;			/* next process in the sleeping queue */
+		pid qprev;		/* previous process in the sleeping queue */
 	};
 	extern struct sleepingEntry sleepTab[];
 #endif
-
-#define MAXKEY  ( (pid)0xFFFFFFFF ) /* Max key that can be stored in queue  */
-#define MINKEY  (0)      			/* Min key that can be stored in queue  */
 
 /* The attributes of each process in a queue */
 struct queueEntry {               	/* One per process plus two per list    */
@@ -48,6 +45,9 @@ extern struct queueEntry queueTab[];
 extern qid readyList;
 extern qid suspendedList;
 extern qid sleepingList;
+
+#define MAXKEY  ( (pid)0xFFFFFFFF ) /* Max key that can be stored in queue  */
+#define MINKEY  (0)      			/* Min key that can be stored in queue  */
 
 /* Inline queue manipulation functions */
 #define queueHead(queueId)    		( queueId )
@@ -71,11 +71,13 @@ qid newqueue(void);
 	#define enqueueSleep(processId)					enqueue(processId, sleepingList)
 	#define insertSleep(processId, SleepingTime)  	insert( processId, sleepingList, SleepingTime )
 	#define getItemFromSleep(processId)				getItem(processId,sleepingList)
+	#define newSleepingQueue()						newqueue()
 #else	
 	pid dequeueSleep();
 	sysCall enqueueSleep(pid processId);
 	sysCall	insertSleep (pid processId, queuePriority entryPriority );
 	sysCall getItemFromSleep(pid processId);
+	qid newqueue();
 #endif
 
 

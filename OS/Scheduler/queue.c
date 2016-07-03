@@ -31,9 +31,35 @@ qid sleepingList;
 struct queueEntry queueTab[NQENT];
 
 #if ( PARTIALLY_BLOCKING_ENABLE == 0x01 )
-	struct sleepingEntry sleepTab[NPROC];
+	struct sleepingEntry sleepTab[NPROC+2]; /* the two entries for the sleeping queue */
 #endif
 
+/******************************************************************************
+*
+*	The function's purpose is insert a process at the tail of a queue
+*
+*	\param processId			ID of process to insert
+*	\param queueId			ID of queue to use
+*
+* 	\return pdPASS if the process is enqueued successfully
+* 	or pdFAIL in case of failure
+*
+*****************************************************************************/
+sysCall enqueue(pid processId, qid queueId)
+{
+	qid tail, prev;          /* Tail & previous node indexes */
+	if (isBadQid(queueId) || isbadpid(processId))
+	{
+	  	return pdFAIL;
+	}
+	tail = queueTail(queueId);
+	prev = queueTab[tail].qprev;
+	queueTab[processId].qnext  = tail;    /* Insert just before tail node */
+	queueTab[processId].qprev  = prev;
+	queueTab[prev].qnext = processId;
+	queueTab[tail].qprev = processId;
+	return pdPASS;
+}
 
 /******************************************************************************
 *
@@ -56,7 +82,7 @@ pid dequeue(qid queueId)
 		return errQUEUE_EMPTY;
 	}
 	processId = firstId(queueId);
-	getitem(processId);
+	getItem(processId);
 	return processId;
 }
 
@@ -74,49 +100,30 @@ pid dequeue(qid queueId)
 *****************************************************************************/
 sysCall	insert( pid processId, qid queueId, queuePriority entryPriority )
 {
-	pid	curr;			/* Runs through items in a queue */
-	pid	prev;			/* Holds previous node index	*/
+	qid	curr;			/* Runs through items in a queue */
+	qid	prev;			/* Holds previous node index	*/
 
-	if ( isBadQid(queueId) || isbadpid(processId) )
+	if (isBadQid(queueId) || isbadpid(processId))
 	{
 		return pdFAIL;
 	}
-	else if ( isEmpty(queueId) )
-	{
-		queueTab[queueId] = processId;
-		procEntry[processId].qprev = NULL_ENTRY;
-		procEntry[processId].qnext = NULL_ENTRY;
-	}
-	else
-	{
-		curr = firstId(queueId);
-		while (procEntry[curr].procPriority >= entryPriority)
-		{
-			if (procEntry[curr].qnext == NULL_ENTRY)
-			{
-				procEntry[processId].qnext = NULL_ENTRY;
-				procEntry[processId].qprev = curr;
-				procEntry[curr].qnext= processId;
-				return pdPASS;
-			}
-			curr = procEntry[curr].qnext;
-		}
-		prev = procEntry[curr].qprev;	/* Get index of previous node */
-		procEntry[processId].qnext = curr;
-		procEntry[processId].qprev = prev;
-		procEntry[curr].qprev = processId;
 
-		if ( prev == NULL_ENTRY )
-		{
-			queueTab[queueId] = processId;
-		}
-		else
-		{
-			procEntry[prev].qnext = processId;
-		}
+	curr = firstId(queueId);
+	while (queueTab[curr].qPriority > entryPriority)
+	{
+		curr = queueTab[curr].qnext;
 	}
 
-	procEntry[processId].procPriority = entryPriority;
+	/* Insert process between curr node and previous node */
+
+	prev = queueTab[curr].qprev;	/* Get index of previous node */
+	queueTab[processId].qnext = curr;
+	queueTab[processId].qprev = prev;
+	queueTab[processId].qPriority = entryPriority;
+
+	queueTab[prev].qnext = processId;
+	queueTab[curr].qprev = processId;
+
 	return pdPASS;
 }
 
@@ -129,26 +136,22 @@ sysCall	insert( pid processId, qid queueId, queuePriority entryPriority )
 *****************************************************************************/
 qid newqueue(void)
 {
-	static qid16 nextqid = NPROC; 	/* Next list in queuetab to use */
-	qid16 q; 						/* ID of allocated queue */
+	static qid queueId = NPROC-2; 	/* Next list in queuetab to use */
+	queueId += 2;
 
-	q = nextqid;
-	if (q > NQENT)
+	if (isBadQid(queueId))
 	{ /* Check for table overflow */
-		return (qid16)SYSERR;
+		return (qid)pdFAIL;
 	}
 
-	nextqid += 2; /* Increment index for next call */
-
 	/* Initialize head and tail nodes to form an empty queue */
-	queuetab[queuehead(q)].qnext = queuetail(q);
-	queuetab[queuehead(q)].qprev = EMPTY;
-	queuetab[queuehead(q)].qkey = MAXKEY;
-	queuetab[queuetail(q)].qnext = EMPTY;
-	queuetab[queuetail(q)].qprev = queuehead(q);
-	queuetab[queuetail(q)].qkey = MINKEY;
+	queueTab[queueHead(queueId)].qnext = queueTail(queueId);
+	queueTab[queueTail(queueId)].qprev = queueHead(queueId);
 
-	return q;
+	queueTab[queueHead(queueId)].qPriority = MAXKEY;
+	queueTab[queueTail(queueId)].qPriority = MINKEY;
+
+	return queueId;
 }
 
 
@@ -172,98 +175,142 @@ sysCall getItem(pid processId)
 }
 
 
+/******************************************************************************
+*
+*	The function's purpose is to insert a process at the tail of the sleeping
+*	queue
+*
+*	\param processId			ID of process to insert
+*
+* 	\return pdPASS if the process is enqueued successfully
+* 	or pdFAIL in case of failure
+*
+*****************************************************************************/
+#if ( PARTIALLY_BLOCKING_ENABLE == 0x01 )
+	sysCall enqueueSleep(pid processId)
+	{
+		qid tail, prev;          /* Tail & previous node indexes */
+		if (isbadpid(processId))
+		{
+			return pdFAIL;
+		}
+		tail = queueTail(sleepingList);
+		prev = sleepTab[tail].qprev;
+		sleepTab[processId].qnext  = tail;    /* Insert just before tail node */
+		sleepTab[processId].qprev  = prev;
+		sleepTab[prev].qnext = processId;
+		sleepTab[tail].qprev = processId;
+		return pdPASS;
+	}
+#endif
+
+/******************************************************************************
+*
+*	The function's purpose is to remove and return the first process on a list
+*
+* 	\return the pid of the inserted process
+*
+*****************************************************************************/
 #if ( PARTIALLY_BLOCKING_ENABLE == 0x01 )
 	pid dequeueSleep()
 	{
 		pid processId;                    /* ID of process removed */
 
-		if (isBadQid(sleepingList))
-		{
-			return INVALID_QUEUE;
-		}
-		else if (isEmpty(sleepingList))
+		if (isEmpty(sleepingList))
 		{
 			return errQUEUE_EMPTY;
 		}
 		processId = firstId(sleepingList);
-		queueTab[sleepingList] = sleepTab[processId].sleepingNext;
+		getItem(processId);
 		return processId;
 	}
 #endif
 
-
-
+/******************************************************************************
+*
+*	The function's purpose is to insert a process in a queue
+*	making sure it's in the right place
+*
+*	\param processId			ID of the process to be inserted
+*	\param entryPriority		The priority of the process in the queue
+*
+* 	\return pdFAIL if there's an error, pdPASS if there's no error
+*
+*****************************************************************************/
 #if ( PARTIALLY_BLOCKING_ENABLE == 0x01 )
 	sysCall	insertSleep (pid processId, queuePriority entryPriority )
 	{
-		pid	curr;			/* Runs through items in a queue */
-		pid	prev;			/* Holds previous node index	*/
+		qid	curr;			/* Runs through items in a queue */
+		qid	prev;			/* Holds previous node index	*/
 
-		if ( isBadQid(sleepingList) || isbadpid(processId) )
+		if (isbadpid(processId))
 		{
 			return pdFAIL;
 		}
-		else if ( isEmpty(sleepingList) )
-		{
-			queueTab[sleepingList] = processId;
-			sleepTab[processId].sleepingPrevious = NULL_ENTRY;
-			sleepTab[processId].sleepingNext = NULL_ENTRY;
-		}
-		else
-		{
-			curr = firstId(sleepingList);
-			while (procEntry[curr].procPriority >= entryPriority)
-			{
-				if (procEntry[curr].qnext == NULL_ENTRY)
-				{
-					sleepTab[processId].sleepingNext = NULL_ENTRY;
-					sleepTab[processId].sleepingPrevious = curr;
-					sleepTab[curr].sleepingNext= processId;
-					return pdPASS;
-				}
-				curr = sleepTab[curr].sleepingNext;
-			}
-			prev = sleepTab[curr].sleepingPrevious;	/* Get index of previous node */
-			sleepTab[processId].sleepingNext = curr;
-			sleepTab[processId].sleepingPrevious = prev;
-			sleepTab[curr].sleepingPrevious = processId;
 
-			if ( prev == NULL_ENTRY )
-			{
-				queueTab[sleepingList] = processId;
-			}
-			else
-			{
-				sleepTab[prev].sleepingNext = processId;
-			}
+		curr = firstId(sleepingList);
+		while (sleepTab[curr].sleeping > entryPriority)
+		{
+			curr = sleepTab[curr].qnext;
 		}
+
+		/* Insert process between curr node and previous node */
+
+		prev = sleepTab[curr].qprev;	/* Get index of previous node */
+		sleepTab[processId].qnext = curr;
+		sleepTab[processId].qprev = prev;
 		sleepTab[processId].sleeping = entryPriority;
-	return pdPASS;
+
+		sleepTab[prev].qnext = processId;
+		sleepTab[curr].qprev = processId;
+
+		return pdPASS;
 	}
 #endif
 
-
-
+/******************************************************************************
+*
+*	The function's purpose is to remove a specific process
+*
+*	\param processId	    	ID of process to be removed
+*
+* 	\return pdPASS if the process is removed
+*
+*****************************************************************************/
 #if ( PARTIALLY_BLOCKING_ENABLE == 0x01 )
 	sysCall getItemFromSleep(pid processId)
 	{
-		pid prev, next;
-		next = sleepTab[processId].sleepingNext;  /* Following node in list  */
-		prev = sleepTab[processId].sleepingPrevious;  /* Previous node in list   */
-
-		if ( prev == NULL_ENTRY )
-		{
-			queueTab[sleepingList] = next;
-		}
-		else
-		{
-			sleepTab[prev].sleepingNext = next;
-		}
-
-		if ( next != NULL_ENTRY )
-		{
-			sleepTab[next].sleepingPrevious = prev;
-		}
+		qid prev, next;
+		next = sleepTab[processId].qnext;  /* Following node in list  */
+		prev = sleepTab[processId].qprev;  /* Previous node in list   */
+		sleepTab[prev].qnext = next;
+		sleepTab[next].qprev = prev;
 		return pdPASS;
 	}
+#endif
+
+/******************************************************************************
+*
+*	The function's purpose is to create a sleeping queue
+*
+* 	\return the ID of the newly created queue
+*
+*****************************************************************************/
+#if ( PARTIALLY_BLOCKING_ENABLE == 0x01 )
+
+	qid newqueue(void)
+	{
+		static qid queueId = NPROC-2; 	/* Next list in queuetab to use */
+		queueId += 2;
+
+		/* Initialize head and tail nodes to form an empty queue */
+		sleepTab[queueHead(queueId)].qnext = queueTail(queueId);
+		sleepTab[queueTail(queueId)].qprev = queueHead(queueId);
+
+		sleepTab[queueHead(queueId)].qPriority = MAXKEY;
+		sleepTab[queueTail(queueId)].qPriority = MINKEY;
+
+		return queueId;
+	}
+
 #endif
