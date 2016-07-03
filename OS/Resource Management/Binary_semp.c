@@ -41,13 +41,13 @@ void vid_Binary_semp_Bsem_wait (Bsem_t *S)
 void vid_Binary_semp_Bsem_signal(Bsem_t *S)
 {
 	
-	if (!isempty(S->Bsem_queue))
+	if (!isEmpty(S->Bsem_queue))
 	{
 		int32_t processid= dequeue(S->Bsem_queue);
 
 		Scheduler_processSetReady(processid /*curent process id  */);
 	}
-	else if(isempty(S->Bsem_queue))
+	else if(isEmpty(S->Bsem_queue))
 	{
 		S->count=1;
 	}

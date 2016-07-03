@@ -28,15 +28,10 @@
 #include "../MMU/mmu.h"
 
 pid32 currpid;
-extern struct procent proctab[NPROC];		  /* table of processes */
-extern qid16 readylist;
-extern qid16 suspendedlist;
+struct procent proctab[NPROC];		  /* table of processes */
+extern qid readyList;
+extern qid suspendedList;
 extern uint32_t prcount;
-
-/*Inline code to check process ID (assumes interrupts are disabled) */
-#define isbadpid(x) ( ((pid32)(x) < 0) || \
-((pid32)(x) >= NPROC) || \
-(proctab[(x)].prstate == PR_FREE))
 
 /******************************************************************************
 *
@@ -170,7 +165,7 @@ sysCall Scheduler_processTerminate(pid32 pid)
 		//semtab[prptr->prsem].scount++;
 		/* Fall through */
 	case PR_READY:
-		getitem(pid); /* Remove from queue */
+		getItem(pid); /* Remove from queue */
 		prptr->prstate = PR_FREE;
 		break;
 		/* Fall through */
@@ -180,7 +175,7 @@ sysCall Scheduler_processTerminate(pid32 pid)
 	prcount--;
 
 	currpid =0;
-	getitem(0);
+	getItem(0);
 	proctab[0].prstate = PR_CURR;
 	return OK;
 }
@@ -206,7 +201,7 @@ sysCall	Scheduler_processSetReady(pid32 pid)
 	/* Set process state to indicate ready and add to ready list */
 	prptr = &proctab[pid];
 	prptr->prstate = PR_READY;
-	insert(pid, readylist, prptr->prprio);
+	insert(pid, readyList, prptr->prprio);
 
 return OK;
 }
@@ -244,7 +239,7 @@ pri16 Scheduler_processResume(pid32 pid)
 	prio = prptr->prprio;		/* Record priority to return	*/
 	
 	Scheduler_processSetReady(pid);
-	//dequeue(suspendedlist); // lw 3wz a keep track l kol el suspended
+	//dequeue(suspendedList); // lw 3wz a keep track l kol el suspended
 	//restore(mask);
 	/*
 	Function restore reloads an interrupt status from a previously saved value.
@@ -285,15 +280,15 @@ sysCall	Scheduler_processSuspend(pid32 pid) 		/* ID of process to suspend	*/
 	if (prptr->prstate == PR_READY)
 	{
 		
-		getitem(pid);		    /* Remove a ready process	*/
+		getItem(pid);		    /* Remove a ready process	*/
 					    /*   from the ready list	*/
 		prptr->prstate = PR_SUSP;
-		//enqueue(pid,suspendedlist); //lw 3wzen n keep track lel suspended processes
+		//enqueue(pid,suspendedList); //lw 3wzen n keep track lel suspended processes
 	}
 	else
 	{
 		prptr->prstate = PR_SUSP;   /* Mark the current process	*/
-	//	enqueue(pid,suspendedlist); //lw 3wzen n keep track lel suspended processes
+	//	enqueue(pid,suspendedList); //lw 3wzen n keep track lel suspended processes
 	}
 	prio = prptr->prprio;
 	//restore(mask);
@@ -343,12 +338,12 @@ sysCall	Scheduler_processWaiting(pid32 pid) 		/* ID of process waiting for semap
 *****************************************************************************/
 void Scheduler_processSuspendAll(void) 		
 {	
-	while(nonempty(readylist))
+	while(nonEmpty(readyList))
 	{
 		
-		pid32 pid=getfirst(readylist);
+		pid32 pid=getfirst(readyList);
 		Scheduler_processSuspend(pid);
-		enqueue(pid,suspendedlist);
+		enqueue(pid,suspendedList);
 			
 	}
 }
@@ -362,9 +357,9 @@ void Scheduler_processSuspendAll(void)
 *****************************************************************************/
 void Scheduler_processResumeAll(void)
 {
-	while(nonempty(suspendedlist))
+	while(nonEmpty(suspendedList))
 	{
-		pid32 pid=getfirst(suspendedlist);
+		pid32 pid=getFirst(suspendedList);
 		Scheduler_processResume(pid);
 	}
 }

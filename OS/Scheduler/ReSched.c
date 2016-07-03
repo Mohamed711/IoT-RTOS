@@ -29,7 +29,7 @@ volatile char* pxCurrentTCB_Old;
 volatile char* pxCurrentTCB_New;
 extern pid32 currpid;
 extern struct procent proctab[NPROC];		  /* table of processes */
-extern qid16 readylist;
+extern qid readyList;
 	
 /*******************************************************************************
 *
@@ -51,19 +51,19 @@ pid32 Scheduler_reSchedule(void) /* Assumes interrupts are disabled */
 	
 	if (ptold->prstate == PR_CURR)
 	{ 	/* Process remains eligible */
-		if (firstkey(readylist)==0)
+		if (firstKey(readyList)==0)
 		{
 			return oldP;
 		}
-		if (ptold->prprio > firstkey(readylist))
+		if (ptold->prprio > firstKey(readyList))
 		{
 			return oldP;
 		}
 		/* Old process will no longer remain current */
 		ptold->prstate = PR_READY;
-		insert(currpid, readylist, ptold->prprio);
+		insert(currpid, readyList, ptold->prprio);
 	}
-	currpid = dequeue(readylist);
+	currpid = dequeue(readyList);
 	ptnew = &proctab[currpid];
 	ptnew->prstate = PR_CURR;
 	

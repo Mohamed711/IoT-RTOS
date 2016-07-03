@@ -19,9 +19,9 @@
 #include "../RTOS.h"
 
 	extern uint32_t prcount;
-	extern qid16 readylist;
-	extern qid16 suspendedlist;
-	extern qid16 sleepq;
+	extern qid readyList;
+	extern qid suspendedList;
+	extern qid sleepq;
 	extern struct procent proctab[NPROC];	
 	
 void LED1()
@@ -94,8 +94,8 @@ void SchedulerTest()
 	transmit.init = initConf;
 
 	prcount=0;
-	readylist = newqueue();
-	suspendedlist = newqueue();
+	readyList = newqueue();
+	suspendedList = newqueue();
 	sleepq = newqueue();
 	
 	Scheduler_initializenullProcess();
@@ -110,7 +110,7 @@ void SchedulerTest()
 	Scheduler_insertd(pidLED2, sleepq, 1000);
 	//processSetReady(pidLED2);
 	Scheduler_processSetReady(pidLED3);
-	//insert(0, readylist, 0);
+	//insert(0, readyList, 0);
 
 	__set_PSP(__get_MSP()); // copy current stack pointer value into PSP
     __set_CONTROL(0x00000002); // switch to "process" stack pointer PSP

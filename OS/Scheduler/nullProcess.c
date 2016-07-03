@@ -33,7 +33,7 @@ extern unsigned int lrReg;
 extern pid32 currpid;
 extern uint32_t prcount;
 extern struct procent proctab[NPROC];
-extern qid16 readylist;
+extern qid readyList;
 
 /*
 void LED1()
@@ -155,11 +155,11 @@ void Scheduler_nullProc(Uart_HandleTypeDef * transmit)
 	
 	while (1)
 		{
-				if (prcount !=0 && !isempty(readylist))
+				if (prcount !=0 && !isEmpty(readyList))
 				{
 					if (currpid != 0)
 					{
-						insert(currpid, readylist, proctab[currpid].prprio);
+						insert(currpid, readyList, proctab[currpid].prprio);
 					}
 					currpid = 0;
 						Scheduler_reSchedule();
@@ -182,7 +182,7 @@ void Scheduler_nullProc()
 		{
 				if (prcount !=0)
 				{
-					if (!isempty(readylist))
+					if (!isEmpty(readyList))
 						{
 							wakefromSleep = false ;
 							IntTrigger(INT_TIMER0A);

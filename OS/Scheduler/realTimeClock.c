@@ -33,13 +33,13 @@ uint32_t time;				/*time used for the timer*/
 uint32_t	clktime;		/* current time in secs since boot	*/
 qid16		sleepq;			/* queue for sleeping processes		*/
 uint32_t 	ctr1000;
-int32_t		slnonempty;		/* nonzero if sleepq is nonempty	*/
+int32_t		slnonEmpty;		/* nonzero if sleepq is nonEmpty	*/
 int32_t		*sltop;			/* ptr to key in first item on sleepq	*/
 uint32_t	preempt;		/* preemption counter			*/
 
 extern pid32 currpid;
 extern struct procent proctab[NPROC];		  /* table of processes */
-extern qid16 readylist;
+extern qid readyList;
 
 /*Inline code to check process ID (assumes interrupts are disabled) */
 #define isbadpid(x) ( ((pid32)(x) < 0) || \
@@ -64,35 +64,35 @@ sysCall	Scheduler_insertd(pid32	pid,  qid16	q, int32_t	key)
 	pid32	next;			/* Runs through the delta list	*/
 	pid32	prev;			/* Follows next through the list*/
 
-	if (isbadqid(q) || isbadpid(pid))
+	if (isBadQid(q) || isbadpid(pid))
 	{
 		return SYSERR;
 	}
 
-	prev = queuehead(q);
-	next = queuetab[queuehead(q)].qnext;
+	prev = queueHead(q);
+	next = queueTab[queueHead(q)].qnext;
 
-	while ((next != queuetail(q)) && (queuetab[next].qkey <= key))
+	while ((next != queueTail(q)) && (queueTab[next].qPriority <= key))
 	{
-		key -= queuetab[next].qkey;
+		key -= queueTab[next].qPriority;
 		prev = next;
-		next = queuetab[next].qnext;
+		next = queueTab[next].qnext;
 	}
 
 	/* Insert new node between prev and next nodes */
 
-	queuetab[pid].qnext = next;
-	queuetab[pid].qprev = prev;
-	queuetab[pid].qkey = key;
-	queuetab[prev].qnext = pid;
-	queuetab[next].qprev = pid;
+	queueTab[pid].qnext = next;
+	queueTab[pid].qprev = prev;
+	queueTab[pid].qPriority = key;
+	queueTab[prev].qnext = pid;
+	queueTab[next].qprev = pid;
 
-	if (next != queuetail(q))
+	if (next != queueTail(q))
 	{
-		queuetab[next].qkey -= key;
+		queueTab[next].qPriority -= key;
 	}
 	
-	time = queuetab[firstid(sleepq)].qkey;
+	time = queueTab[firstId(sleepq)].qPriority;
 	Timer_New(Scheduler_clkhandler, time+2);
 
 }
@@ -177,18 +177,18 @@ sysCall	Scheduler_unsleep(pid32 pid)
 	{
 		return SYSERR;
 	}
-if (pid == queuehead(sleepq))
+if (pid == queueHead(sleepq))
 	{
-		time = queuetab[firstid(sleepq)].qkey;
+		time = queueTab[firstId(sleepq)].qPriority;
 		Timer_New(Scheduler_clkhandler, time+2);
 	}
-	getitem(pid);			/* Unlink process from queue */
+	getItem(pid);			/* Unlink process from queue */
 	
 	Scheduler_processSetReady(pid);
 	
-	if (!isempty(sleepq))
+	if (!isEmpty(sleepq))
 	{
-		time = queuetab[firstid(sleepq)].qkey;
+		time = queueTab[firstId(sleepq)].qPriority;
 		Timer_New(Scheduler_clkhandler, time);
 	}
 	else
@@ -216,10 +216,10 @@ void Scheduler_wakeup(void)
 	pid32 pid;
 	uint32_t i =0;
 		pid = dequeue(sleepq);
-		insert(pid, readylist, proctab[pid].prprio);
-	if (!isempty(sleepq))
+		insert(pid, readyList, proctab[pid].prprio);
+	if (!isEmpty(sleepq))
 	{
-		time = queuetab[firstid(sleepq)].qkey;
+		time = queueTab[firstId(sleepq)].qPriority;
 		Timer_New(Scheduler_clkhandler, time);
 	}
 	else
@@ -240,11 +240,11 @@ void Scheduler_clkhandler(void)
 {
 
 	/* Handle sleeping processes if any exist */
-	if(!isempty(sleepq))
+	if(!isEmpty(sleepq))
 	{
 		/* Decrement the delay for the first process on the */
 		/* sleep queue, and awaken if the count reaches zero */
-		if (queuetab[firstid(sleepq)].qkey - time  <=0)
+		if (queueTab[firstId(sleepq)].qPriority - time  <=0)
 		{
 			Scheduler_wakeup();
 		}

@@ -29,9 +29,6 @@
 
 
 #include <string.h>
-
-struct procent proctab[NPROC];		  /* table of processes */
-struct qentry queuetab[NQENT];        /* Table of process queues */
 extern pid32 currpid;
 uint32_t prcount;
 

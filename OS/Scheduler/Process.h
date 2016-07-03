@@ -90,6 +90,12 @@
 #define INITSTK 100 	/* Initial process stack size */
 #define MINSTK	10  	/* Minimum stack size */
 
+/*Inline code to check process ID (assumes interrupts are disabled) */
+#define isbadpid(x) ( ((pid32)(x) < 0) || \
+((pid32)(x) >= NPROC) || \
+(proctab[(x)].prstate == PR_FREE))
+
+
  struct procent {                /* Entry in the process table           */
 	void (*processFunction)(void);
 	char    *prstkptr;      /* Saved stack pointer                  */
@@ -100,6 +106,8 @@
 	uint16_t  prstklen;       /* Stack length in bytes                */
 	char    prname[PNMLEN]; /* Process name                         */
 }; 
+ 
+extern struct procent proctab[NPROC];		  /* table of processes */
 
 pid32 Scheduler_processGetPid();
 pid32 Scheduler_processNewPid();

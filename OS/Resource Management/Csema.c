@@ -98,7 +98,7 @@ int8_t Csema_signal(Csema *sema)
 			return SYSERR;
 		}
 	//DisableInterrupt();
-	if(isempty(sema->queue))
+	if(isEmpty(sema->queue))
 	{
 		sema->count++;
 		//EnableInterrupt();
