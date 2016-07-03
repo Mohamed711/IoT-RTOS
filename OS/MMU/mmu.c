@@ -27,7 +27,7 @@ void *pvReturn = NULL;
 		}
 	#endif
 
-	processSuspendAll();	
+	Scheduler_processSuspendAll();	
 	
 		/* Check if the wanted size is available or not */
 		if( ( ( xNextFreeByte + xWantedSize ) < configTOTAL_HEAP_SIZE ) &&
@@ -38,7 +38,7 @@ void *pvReturn = NULL;
 			/* increment the index of the allocated memory with the size newly allocated */
 			xNextFreeByte += xWantedSize;			
 		}	
-	processResumeAll();
+	Scheduler_processResumeAll();
 
 	
 	if( pvReturn == NULL )

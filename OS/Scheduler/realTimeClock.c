@@ -21,10 +21,14 @@
 *****************************************************************************/
 
 #include "queue.h"
-#include "ReSched.h"
+#include "reSched.h"
 #include "realTimeClock.h"
 #include "Process.h"
 #include "../RTOS.h"
+
+extern bool wakefromSleep;
+unsigned int lrReg;		/*the value of the link register in case there was an interrupt*/
+uint32_t time;				/*time used for the timer*/
 
 uint32_t	clktime;		/* current time in secs since boot	*/
 qid16		sleepq;			/* queue for sleeping processes		*/
@@ -35,6 +39,12 @@ uint32_t	preempt;		/* preemption counter			*/
 
 extern pid32 currpid;
 extern struct procent proctab[NPROC];		  /* table of processes */
+extern qid16 readylist;
+
+/*Inline code to check process ID (assumes interrupts are disabled) */
+#define isbadpid(x) ( ((pid32)(x) < 0) || \
+((pid32)(x) >= NPROC) || \
+(proctab[(x)].prstate == PR_FREE))
 
 
 /******************************************************************************
@@ -45,15 +55,14 @@ extern struct procent proctab[NPROC];		  /* table of processes */
 *	\param pid				process's ID
 *	\param q				ID of the queue
 *	\param key				delay from now (in ms.)
-*	\param *name			The Process' name (for debugging)
 *
 * 	\return 0 if there's an error, -1 if there's no error
 *
 *****************************************************************************/
-sysCall	insertd(  pid32	pid,  qid16	q, int32_t	key)
+sysCall	Scheduler_insertd(pid32	pid,  qid16	q, int32_t	key)
 {
-	int32_t	next;			/* Runs through the delta list	*/
-	int32_t	prev;			/* Follows next through the list*/
+	pid32	next;			/* Runs through the delta list	*/
+	pid32	prev;			/* Follows next through the list*/
 
 	if (isbadqid(q) || isbadpid(pid))
 	{
@@ -82,24 +91,10 @@ sysCall	insertd(  pid32	pid,  qid16	q, int32_t	key)
 	{
 		queuetab[next].qkey -= key;
 	}
+	
+	time = queuetab[firstid(sleepq)].qkey;
+	Timer_New(Scheduler_clkhandler, time+2);
 
-	return OK;
-}
-
-/******************************************************************************
-*
-*	The function's purpose is to call the reSched function
-*
-* 	\return 0 if there's an error, -1 if there's no error
-*
-*****************************************************************************/
-sysCall	yield(void)
-{
-	//intmask	mask;			/* Saved interrupt mask		*/
-	//mask = disable();
-	reSched();
-	//restore(mask);
-	return OK;
 }
 
 /******************************************************************************
@@ -111,13 +106,13 @@ sysCall	yield(void)
 * 	\return system call
 *
 *****************************************************************************/
-sysCall	sleep(int32_t delay)
+sysCall	Scheduler_sleep(int32_t delay)
 {
 	if ( (delay < 0) || (delay > MAXSECONDS) )
 	{
 		return SYSERR;
 	}
-	sleepms(1000*delay);
+	Scheduler_sleepms(1000*delay);
 	return OK;
 }
 
@@ -130,10 +125,8 @@ sysCall	sleep(int32_t delay)
 * 	\return 0 if there's an error, -1 if there's no error
 *
 *****************************************************************************/
-sysCall	sleepms(int32_t	delay)
+sysCall	Scheduler_sleepms(int32_t	delay)
 {
-	//intmask	mask;			/* Saved interrupt mask		*/
-
 	if (delay < 0)
 	{
 		return SYSERR;
@@ -141,22 +134,19 @@ sysCall	sleepms(int32_t	delay)
 
 	if (delay == 0)
 	{
-		yield();
 		return OK;
 	}
 
 	/* Delay calling process */
 
-	//mask = disable();
-	if (insertd(currpid, sleepq, delay) == SYSERR)
+	if (Scheduler_insertd(currpid, sleepq, delay) == SYSERR)
 	{
-		//restore(mask);
 		return SYSERR;
 	}
 
-	proctab[currpid].prstate = PR_SLEEP;
-	reSched();
-	//restore(mask);
+	proctab[currpid].prstate = PR_sleep;
+	wakefromSleep = false;
+	IntTrigger(INT_TIMER0A);
 	return OK;
 }
 
@@ -169,43 +159,46 @@ sysCall	sleepms(int32_t	delay)
 * 	\return 0 if there's an error, -1 if there's no error
 *
 *****************************************************************************/
-sysCall	unsleep(pid32 pid)
+sysCall	Scheduler_unsleep(pid32 pid)
 {
-	//intmask	mask;			/* Saved interrupt mask		*/
-     struct	procent	*prptr;		/* Ptr to process' table entry	*/
-
-     pid32	pidnext;		/* ID of process on sleep queue	*/
-							/*   that follows the process	*/
-							/*   which is being removed	*/
-
-	//mask = disable();
-
+	struct	procent	*prptr;		/* Ptr to process' table entry	*/
+	pid32	pidnext;		/* ID of process on sleep queue	*/
+										/*   that follows the process	
+										/*   which is being removed	*/
 	if (isbadpid(pid))
 	{
-		//restore(mask);
 		return SYSERR;
 	}
 
 	/* Verify that candidate process is on the sleep queue */
-
 	prptr = &proctab[pid];
 
-	if ((prptr->prstate!=PR_SLEEP) && (prptr->prstate!=PR_RECTIM))
+	if ((prptr->prstate!=PR_sleep) && (prptr->prstate!=PR_RECTIM))
 	{
-		//restore(mask);
 		return SYSERR;
 	}
-
-	/* Increment delay of next process if such a process exists */
-
-	pidnext = queuetab[pid].qnext;
-	if (pidnext < NPROC)
+if (pid == queuehead(sleepq))
 	{
-		queuetab[pidnext].qkey += queuetab[pid].qkey;
+		time = queuetab[firstid(sleepq)].qkey;
+		Timer_New(Scheduler_clkhandler, time+2);
 	}
-
 	getitem(pid);			/* Unlink process from queue */
-	//restore(mask);
+	
+	Scheduler_processSetReady(pid);
+	
+	if (!isempty(sleepq))
+	{
+		time = queuetab[firstid(sleepq)].qkey;
+		Timer_New(Scheduler_clkhandler, time);
+	}
+	else
+	{
+		Timer_New(Scheduler_clkhandler, 10000000000);
+		//TimerDisable(TIMER0_BASE, TIMER_A);
+	}
+	
+	wakefromSleep = false;
+	IntTrigger(INT_TIMER0A);
 	return OK;
 }
 
@@ -217,17 +210,22 @@ sysCall	unsleep(pid32 pid)
 * 	\return none
 *
 *****************************************************************************/
-void wakeup(void)
+void Scheduler_wakeup(void)
 {
 	/* Awaken all processes that have no more time to sleep */
-	reSched();
-
-	while (nonempty(sleepq) && (firstkey(sleepq) <= 0))
+	pid32 pid;
+	uint32_t i =0;
+		pid = dequeue(sleepq);
+		insert(pid, readylist, proctab[pid].prprio);
+	if (!isempty(sleepq))
 	{
-		processSetReady(dequeue(sleepq));
+		time = queuetab[firstid(sleepq)].qkey;
+		Timer_New(Scheduler_clkhandler, time);
 	}
-
-	reSched();
+	else
+	{
+		Timer_New(Scheduler_clkhandler, 100000000);
+	}
 	return;
 }
 
@@ -238,65 +236,18 @@ void wakeup(void)
 * 	\return none
 *
 *****************************************************************************/
-void clkhandler(void)
+void Scheduler_clkhandler(void)
 {
-	static uint32_t count1000 = 1000; /* Count to 1000 ms */
-	/* Decrement the ms counter, and see if a second has passed */
-	if((--count1000) <= 0)
-	{
-		/* One second has passed, so increment seconds count */
-		clktime++;
-		/* Reset the local ms counter for the next second */
-		count1000 = 1000;
-		
-	}
+
 	/* Handle sleeping processes if any exist */
 	if(!isempty(sleepq))
 	{
 		/* Decrement the delay for the first process on the */
 		/* sleep queue, and awaken if the count reaches zero */
-		if((--queuetab[firstid(sleepq)].qkey) <= 0)
+		if (queuetab[firstid(sleepq)].qkey - time  <=0)
 		{
-			wakeup();
+			Scheduler_wakeup();
 		}
 	}
-	/* Decrement the preemption counter, and reschedule when the */
-	/* remaining time reaches zero */
-
-	if((--preempt) <= 0)
-	{
-		preempt = QUANTUM;
-		reSched();
-	}
 	
-}
-
-/******************************************************************************
-*
-*	The function's purpose is to initialize the clock
-*
-* 	\return none
-*
-*****************************************************************************/
-void clkinit(void)
-{
-
-	/* Allocate a queue to hold the delta list of sleeping processes*/
-	sleepq = newqueue();
-	/* Initialize the preemption count */
-	preempt = QUANTUM;
-	/* Initialize the time since boot to zero */
-	clktime = 0;
-
-	Timer_InitTypeDef timerInit;
-
-	Timer_HandleTypeDef  timerHandle;
-	timerHandle.timeInMillis=1;
-	timerHandle.timeoutFn = clkhandler;
-
-	timerinit(&timerInit);
-	timerstart(&timerHandle);
-
-
-	return;
 }

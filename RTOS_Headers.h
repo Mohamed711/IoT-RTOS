@@ -42,7 +42,7 @@
 #include "OS/Scheduler/Process.h"
 #include "OS/Scheduler/queue.h"
 #include "OS/Scheduler/realTimeClock.h"
-#include "OS/Scheduler/ReSched.h"
+#include "OS/Scheduler/reSched.h"
 
 
 
