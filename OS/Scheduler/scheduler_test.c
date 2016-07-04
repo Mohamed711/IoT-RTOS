@@ -1,12 +1,13 @@
 
-#include "TM4C123GH6PM.h"
 
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
 
+#include "TM4C123GH6PM.h"
+
 #ifdef ARM
-#include "E:/Keil/ARM/CMSIS/Include/core_cmFunc.h"
+#include "C:/Keil_v5/ARM/CMSIS/Include/core_cmFunc.h"
 #endif 
 
 
@@ -102,9 +103,9 @@ void SchedulerTest()
 	
 	Timer_New(Scheduler_clkhandler, 50000000);
 	
-	//pid32 pidLED1= Scheduler_processCreate(LED1, 400, 5, "P1");//blue
-	pid32 pidLED2= Scheduler_processCreate(LED2, 400, 10, "P2");	//red
-	pid32 pidLED3= Scheduler_processCreate(LED3, 400, 15, "P3");	//purple
+	//pid32 pidLED1= Scheduler_processCreate(LED1, 400, 5, "P1");	//blue
+	pid pidLED2= Scheduler_processCreate(LED2, 400, 10, "P2");	//red
+	pid pidLED3= Scheduler_processCreate(LED3, 400, 15, "P3");	//purple
 
 	//Scheduler_insertd(pidLED1, sleepq, 300);
 	Scheduler_insertd(pidLED2, sleepq, 1000);

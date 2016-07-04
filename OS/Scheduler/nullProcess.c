@@ -30,7 +30,7 @@
 
 
 extern unsigned int lrReg;
-extern pid32 currpid;
+extern pid currpid;
 extern uint32_t prcount;
 extern struct procent proctab[NPROC];
 extern qid readyList;

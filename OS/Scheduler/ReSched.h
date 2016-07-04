@@ -24,6 +24,6 @@
 
 #include "../RTOS.h"
 
-pid32 Scheduler_reSchedule(void);
+pid Scheduler_reSchedule(void);
 
 #endif

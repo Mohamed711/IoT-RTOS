@@ -26,10 +26,10 @@
 #include <stdint.h>
 #include "../RTOS.h"
 
-sysCall	Scheduler_insertd(pid32 pid, qid16 q,int32_t key);
+sysCall	Scheduler_insertd(pid	processId,  qid	queueId, queuePriority	key);
 sysCall	Scheduler_sleep(int32_t delay);
 sysCall	Scheduler_sleepms(int32_t	delay);
-sysCall	Scheduler_unsleep(pid32 pid);
+sysCall	Scheduler_unsleep(pid processId);
 void Scheduler_wakeup(void);
 void Scheduler_clkhandler(void);
 

@@ -29,7 +29,7 @@
 
 
 #include <string.h>
-extern pid32 currpid;
+extern pid currpid;
 uint32_t prcount;
 
 /******************************************************************************

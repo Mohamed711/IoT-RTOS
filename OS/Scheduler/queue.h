@@ -69,11 +69,11 @@ sysCall getItem(pid processId);
 qid newqueue(void);
 
 #if ( PARTIALLY_BLOCKING_ENABLE == 0x00 )
-	#define dequeueSleep()							dequeue(sleepingList)
-	#define enqueueSleep(processId)					enqueue(processId, sleepingList)
+	#define dequeueSleep()													dequeue(sleepingList)
+	#define enqueueSleep(processId)									enqueue(processId, sleepingList)
 	#define insertSleep(processId, SleepingTime)  	insert( processId, sleepingList, SleepingTime )
-	#define getItemFromSleep(processId)				getItem(processId,sleepingList)
-	#define newSleepingQueue()						newqueue()
+	#define getItemFromSleep(processId)							getItem(processId,sleepingList)
+	#define newSleepingQueue()											newqueue()
 #else	
 	pid dequeueSleep();
 	sysCall enqueueSleep(pid processId);

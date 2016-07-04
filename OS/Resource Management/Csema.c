@@ -25,7 +25,7 @@
 #include "Resource Management.h"
 #include "../Scheduler/Process.h"
 
-extern pid32 currpid;
+extern pid currpid;
 
 
 int8_t Csema_init( Csema *sema, int8_t count )

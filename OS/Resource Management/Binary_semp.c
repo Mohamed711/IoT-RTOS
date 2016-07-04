@@ -23,7 +23,7 @@
 #include "Resource Management.h"
 #include "../Scheduler/Process.h"
 
-extern pid32 currpid;
+extern pid currpid;
 
 void vid_Binary_semp_Bsem_wait (Bsem_t *S)
 {

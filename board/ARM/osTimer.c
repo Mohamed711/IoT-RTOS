@@ -28,7 +28,7 @@
 #include "../../User_Config.h"
 
 extern unsigned int lrReg;
-extern pid32 currpid;
+extern pid currpid;
 extern struct procent proctab[NPROC];
 #define MAIN_RETURN 0xFFFFFFF9  //Tells the handler to return using the MSP
 #define THREAD_RETURN 0xFFFFFFFD //Tells the handler to return using the PSP
@@ -50,7 +50,7 @@ void ISRos(void)
 		Scheduler_clkhandler();
 	wakefromSleep = true;
 
-	pid32 nwPiD = Scheduler_reSchedule();
+	pid nwPiD = Scheduler_reSchedule();
 	
 		*((uint32_t*)mainStk) = THREAD_RETURN;
 		set_PSP((uint32_t)proctab[nwPiD].prstkptr);

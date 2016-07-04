@@ -33,12 +33,12 @@
 	#include "../board/ARM/drivers/timer/HAL_Timer_TivaC.h"
 	#include "../board/ARM/board_config.h"
 	#include "../board/ARM/tivaHAL.h"
-  #include "../board/ARM/drivers/inc/hw_gpio.h"	/*temp include*/
-  #include "../board/ARM/drivers/inc/hw_ints.h"
-  #include "../board/ARM/drivers/uart/uart.h"
-  #include "../board/ARM/drivers/inc/hw_memmap.h"
-  #include "../board/ARM/drivers/inc/hw_types.h"
-  #include "../board/ARM/drivers/inc/tm4c123gh6pge.h"
+	#include "../board/ARM/drivers/inc/hw_gpio.h"	/*temp include*/
+	#include "../board/ARM/drivers/inc/hw_ints.h"
+	#include "../board/ARM/drivers/uart/uart.h"
+	#include "../board/ARM/drivers/inc/hw_memmap.h"
+  	#include "../board/ARM/drivers/inc/hw_types.h"
+	#include "../board/ARM/drivers/inc/tm4c123gh6pge.h"
 	#include "../board/ARM/drivers/interrupt/interrupt.h"
 	#include "../board/ARM/drivers/pin_map/pin_map.h"
 	#include "../board/ARM/drivers/inc/hw_uart.h"
@@ -56,13 +56,13 @@ typedef uint8_t TickType_t ;	// ticktype is a structure for the tick
 /* the basetype must be defined some where */
 typedef int8_t BaseType_t ;		// signed basetype is the base datatype
 typedef uint8_t UBaseType_t ; 	// unsigned basetype is important datatype used
+typedef uint32_t umsg32;
 typedef int32_t pid32;
 typedef uint16_t pri16;
 typedef uint32_t sid32;
-typedef uint32_t umsg32;
+typedef uint16_t qid16;
 typedef bool bool8;
 typedef	uint32_t intmask;
-typedef uint16_t qid16;
 typedef bool sysCall;
 
 #define configASSERT(x)			// configAssert check the condition x is true or return the file and line number
@@ -135,7 +135,7 @@ void heap_init(Heap_Init *size);
 	typedef uint32_t qid;
 #endif
 
-#if ( PARTIALLY_BLOCKING_ENABLE == 0x01 )
+#if ( PARTIALLY_BLOCKING_ENABLE == 0x00 )
 	typedef _delay_ms queuePriority;
 #else
 	typedef pid queuePriority;

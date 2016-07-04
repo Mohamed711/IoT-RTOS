@@ -91,8 +91,7 @@
 #define MINSTK	10  	/* Minimum stack size */
 
 /*Inline code to check process ID (assumes interrupts are disabled) */
-#define isbadpid(x) ( ((pid32)(x) < 0) || \
-((pid32)(x) >= NPROC) || \
+#define isbadpid(x) ( ((qid)(x) >= NPROC) || \
 (proctab[(x)].prstate == PR_FREE))
 
 
@@ -109,16 +108,16 @@
  
 extern struct procent proctab[NPROC];		  /* table of processes */
 
-pid32 Scheduler_processGetPid();
-pid32 Scheduler_processNewPid();
-pid32 Scheduler_processCreate(void *funcaddr, uint32_t ssize, pri16 priority, char *name);
-sysCall Scheduler_processTerminate(pid32 pid);
-sysCall	Scheduler_processSetReady(pid32 pid);
-pri16 Scheduler_processResume(pid32 pid);
-sysCall	Scheduler_processSuspend(pid32 pid);
+pid Scheduler_processGetPid();
+pid Scheduler_processNewPid();
+pid Scheduler_processCreate(void *funcaddr, uint32_t ssize, pid priority, char *name);
+sysCall Scheduler_processTerminate(pid processId);
+sysCall	Scheduler_processSetReady(pid processId);
+pid Scheduler_processResume(pid processId);
+sysCall	Scheduler_processSuspend(pid processId);
 void Scheduler_processSuspendAll(void);
 void Scheduler_processResumeAll(void);
-sysCall	Scheduler_processWaiting(pid32 pid);
+sysCall	Scheduler_processWaiting(pid processId);
 char * Scheduler_stackInitialization(char* stackpointer, void *func(), uint32_t ssize);
 sysCall Scheduler_processKill();
 

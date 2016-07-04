@@ -113,7 +113,7 @@ BaseType_t IPC_xQueueGenericReset( QueueHandle_t xQueue, BaseType_t xNewQueue )
 
 			if( isEmpty( pxQueue->xTasksWaitingToSend ) == pdFALSE )
 			{
-				pid32 ProcessId = dequeue( pxQueue->xTasksWaitingToSend );
+				pid ProcessId = dequeue( pxQueue->xTasksWaitingToSend );
 				insert( ProcessId , readyList , proctab[ProcessId].prprio );
 				proctab[ProcessId].prstate = PR_READY;
 		    	queueYIELD_IF_USING_PREEMPTION();
@@ -203,7 +203,7 @@ BaseType_t IPC_xQueueGenericSend( QueueHandle_t xQueue, const void * const pvIte
 				queue then unblock it now. */
 				if( isEmpty ( pxQueue->xTasksWaitingToReceive ) == pdFALSE )
 				{
-					pid32 ProcessId = dequeue( pxQueue->xTasksWaitingToReceive );
+					pid ProcessId = dequeue( pxQueue->xTasksWaitingToReceive );
 					insert( ProcessId , readyList , proctab[ProcessId].prprio );
 					proctab[ProcessId].prstate = PR_READY;
 					queueYIELD_IF_USING_PREEMPTION();
@@ -277,7 +277,7 @@ BaseType_t IPC_xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer
 					// check for tasks waiting to send
 					if( isEmpty( pxQueue -> xTasksWaitingToSend ) == pdFALSE )
 					{
-						pid32 ProcessId = dequeue( pxQueue->xTasksWaitingToSend );
+						pid ProcessId = dequeue( pxQueue->xTasksWaitingToSend );
 						insert( ProcessId , readyList , proctab[ProcessId].prprio );
 						proctab[ProcessId].prstate = PR_READY;
 						queueYIELD_IF_USING_PREEMPTION();
@@ -299,7 +299,7 @@ BaseType_t IPC_xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer
 					// check for other tasks waiting to receive
 					if( isEmpty ( pxQueue->xTasksWaitingToReceive ) == pdFALSE )
 					{
-						pid32 ProcessId = dequeue( pxQueue->xTasksWaitingToReceive );
+						pid ProcessId = dequeue( pxQueue->xTasksWaitingToReceive );
 						insert( ProcessId , readyList , proctab[ProcessId].prprio );
 						proctab[ProcessId].prstate = PR_READY;
 						queueYIELD_IF_USING_PREEMPTION();

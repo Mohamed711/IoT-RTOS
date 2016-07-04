@@ -27,7 +27,7 @@
 
 volatile char* pxCurrentTCB_Old;
 volatile char* pxCurrentTCB_New;
-extern pid32 currpid;
+extern pid currpid;
 extern struct procent proctab[NPROC];		  /* table of processes */
 extern qid readyList;
 	
@@ -41,13 +41,13 @@ extern qid readyList;
 * 	\return none
 *
 *****************************************************************************/
-pid32 Scheduler_reSchedule(void) /* Assumes interrupts are disabled */
+pid Scheduler_reSchedule(void) /* Assumes interrupts are disabled */
 {
 	struct procent *ptold; /* Ptr to table entry for old process */
 	struct procent *ptnew; /* Ptr to table entry for new process */
 	ptold = &proctab[currpid];
 	
-	pid32 oldP = currpid;
+	pid oldP = currpid;
 	
 	if (ptold->prstate == PR_CURR)
 	{ 	/* Process remains eligible */
@@ -67,7 +67,7 @@ pid32 Scheduler_reSchedule(void) /* Assumes interrupts are disabled */
 	ptnew = &proctab[currpid];
 	ptnew->prstate = PR_CURR;
 	
-	pid32 newP = currpid;
+	pid newP = currpid;
 		
 	return newP;
 }
