@@ -9,8 +9,6 @@
  *  modification, are permitted provided that the redistributions of the
  *  source code must retain the above copyright notice, and this condition.
  * 
- * 	FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
- *
  * 	This version is a modified and enhanced version of the queue module
  * 	in the freeRTOS distribution.
  *****************************************************************************/
