@@ -23,10 +23,11 @@
 #include "OS/Scheduler/scheduler_test.h"
 
 #define ARMScheduler 1
+#define TEST_USED ARMScheduler
 
 int main(void) 
 {
-	#ifdef ARMScheduler
+	#if  (TEST_USED == ARMScheduler )
 		SchedulerTest();
 	#endif
 	return 0;
