@@ -73,9 +73,11 @@ typedef bool sysCall;
 #define errQUEUE_FULL	0x00	// error value indicates that the queue is full
 #define errQUEUE_EMPTY 	0x00	// error the queue is empty
 #define mtCOVERAGE_TEST_MARKER()// just an empty for the else part of the if statement
-#define PRIVILEGED_FUNCTION		// to the memory protection unit
 #define configUSE_PREEMPTION 0	// config the scheduler to be preemptive or cooperative
 #define preemptive 0
+
+#define IPC_NO_SLEEP			( ( _delay_ms ) ( 0x00000000 ) )
+#define IPC_WAIT_FOREVER	( ( _delay_ms ) ( 0xFFFFFFFF ) )
 
 #define portYIELD_WITHIN_API()	// check for the tasks to take the higher priority one
 
