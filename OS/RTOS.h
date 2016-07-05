@@ -28,6 +28,7 @@
 #include <stdbool.h>
 
 #include "../User_Config.h"
+#include "../error_codes.h"
 
 #ifdef ARM
 	#include "../board/ARM/drivers/timer/HAL_Timer_TivaC.h"
@@ -75,9 +76,6 @@ typedef bool sysCall;
 #define mtCOVERAGE_TEST_MARKER()// just an empty for the else part of the if statement
 #define configUSE_PREEMPTION 0	// config the scheduler to be preemptive or cooperative
 #define preemptive 0
-
-#define IPC_NO_SLEEP			( ( _delay_ms ) ( 0x00000000 ) )
-#define IPC_WAIT_FOREVER	( ( _delay_ms ) ( 0xFFFFFFFF ) )
 
 #define portYIELD_WITHIN_API()	// check for the tasks to take the higher priority one
 

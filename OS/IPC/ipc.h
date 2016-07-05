@@ -46,6 +46,8 @@ typedef void * QueueHandle_t;
 #define IPC_RESET_EXISTING_QUEUE			( ( BaseType_t ) 0 )
 #define IPC_RESET_NEW_QUEUE						( ( BaseType_t ) 1 )
 
+#define IPC_NO_SLEEP			( ( _delay_ms ) ( 0x00000000 ) )
+#define IPC_WAIT_FOREVER	( ( _delay_ms ) ( 0xFFFFFFFF ) )
 	
 /* create a queue */
 #define IPC_xQueueCreate( uxQueueLength, uxItemSize ) \
@@ -59,7 +61,7 @@ typedef void * QueueHandle_t;
 #define IPC_xQueueSendToBack( xQueue, pvItemToQueue, xSleepTime ) 	\
 				IPC_xQueueGenericSend( ( xQueue ), ( pvItemToQueue ), ( xSleepTime ), IPC_queueSEND_TO_BACK )
 				
-#define IPC_xQueueOverwrite( xQueue, pvItemToQueue ) 	\							
+#define IPC_xQueueOverwrite( xQueue, pvItemToQueue ) 	\
 				IPC_xQueueGenericSend( ( xQueue ), ( pvItemToQueue ), IPC_NO_SLEEP, IPC_queueOVERWRITE )
 				
 #define IPC_xQueueSendToFrontFromISR( xQueue, pvItemToQueue, pxHigherPriorityTaskWoken ) \
@@ -88,18 +90,18 @@ QueueHandle_t IPC_xQueueGenericCreate( const UBaseType_t uxQueueLength, const UB
 
 
 /* reset a queue */
-BaseType_t IPC_xQueueGenericReset( QueueHandle_t xQueue, BaseType_t xNewQueue );
+BaseType_t IPC_xQueueGenericReset(  QueueHandle_t xQueue, BaseType_t xNewQueue );
 
 
 /* send to a queue */
 BaseType_t IPC_xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQueue, _delay_ms xSleepTime, const BaseType_t xCopyPosition );
-BaseType_t IPC_xQueueGenericSendFromISR( QueueHandle_t xQueue, const void * const pvItemToQueue, BaseType_t * const pxHigherPriorityTaskWoken, const BaseType_t xCopyPosition );
+//BaseType_t IPC_xQueueGenericSendFromISR( QueueHandle_t xQueue, const void * const pvItemToQueue, BaseType_t * const pxHigherPriorityTaskWoken, const BaseType_t xCopyPosition );
 
 
 /* receive from a queue */
 BaseType_t IPC_xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer, _delay_ms xSleepTime, const BaseType_t xJustPeek );
-BaseType_t IPC_xQueueReceiveFromISR( QueueHandle_t xQueue, void * const pvBuffer, BaseType_t * const pxHigherPriorityTaskWoken );
-BaseType_t IPC_xQueuePeekFromISR( QueueHandle_t xQueue, void * const pvBuffer );
+//BaseType_t IPC_xQueueReceiveFromISR( QueueHandle_t xQueue, void * const pvBuffer, BaseType_t * const pxHigherPriorityTaskWoken );
+//BaseType_t IPC_xQueuePeekFromISR( QueueHandle_t xQueue, void * const pvBuffer );
 
 
 /* queue utilities */
@@ -108,7 +110,7 @@ UBaseType_t IPC_uxQueueSpacesAvailable( const QueueHandle_t xQueue );
 void IPC_vQueueDelete( QueueHandle_t xQueue );
 BaseType_t IPC_xQueueIsQueueEmptyFromISR( const QueueHandle_t xQueue );
 BaseType_t IPC_xQueueIsQueueFullFromISR( const QueueHandle_t xQueue );
-UBaseType_t IPC_uxQueueMessagesWaitingFromISR( const QueueHandle_t xQueue );
+//UBaseType_t IPC_uxQueueMessagesWaitingFromISR( const QueueHandle_t xQueue );
 
 
 #ifdef __cplusplus

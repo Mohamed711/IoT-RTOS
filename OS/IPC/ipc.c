@@ -26,6 +26,8 @@
 #include "../MMU/mmu.h"
 #include "../Scheduler/Process.h"
 
+extern bool wakefromSleep;	
+
 
 /****************************************************************************
 *
@@ -40,12 +42,12 @@ typedef struct QueueDefinition
 	int8_t *pcWriteTo;						/* Points to the free next place in the storage area. */
 	int8_t *pcReadFrom;						/* Points to the last place that a queued item was read from when the structure is used as a queue. */
 
-	UBaseType_t xTasksWaitingToSend;		/* Queue Number of tasks waiting to send */
-	UBaseType_t xTasksWaitingToReceive;	/* Queue Number of tasks waiting to receive */
-
 	volatile UBaseType_t uxMessagesWaiting;	/* The number of items currently in the queue. */
 	UBaseType_t uxLength;					/* The length of the queue defined as the number of items it will hold, not the number of bytes. */
 	UBaseType_t uxItemSize;				/* The size of each items that the queue will hold. */
+	
+	qid xTasksWaitingToSend;		/* Queue Number of tasks waiting to send */
+	qid xTasksWaitingToReceive;	/* Queue Number of tasks waiting to receive */
 
 }Queue_t;
 
@@ -65,16 +67,11 @@ static void prvCopyDataFromQueue( Queue_t * const pxQueue, void * const pvBuffer
 *	Function Number 1
 *
 *	The function's purpose is to create a new queue.
-*	The function is called either for a new queue to reset all the parameters
-* to the default values or for an existing queue.
 *
-* In case of the function is called to reset an existing queue, the function 
-* checks if any tasks are waiting to send to the queue to activate them.
-
-*	\param xQueue			ID of the process to be inserted
-*	\param xNewQueue				ID of queue to use
+*	\param uxQueueLength			The number of items of the queue.
+*	\param uxItemSize				  The size of the item.
 *
-* \return pdFAIL if there's an error, pdPASS if there's no error
+* \return QueueHandle_t to the created queue
 *
 *****************************************************************************/
 QueueHandle_t IPC_xQueueGenericCreate( const UBaseType_t uxQueueLength, const UBaseType_t uxItemSize )
@@ -87,7 +84,7 @@ QueueHandle_t IPC_xQueueGenericCreate( const UBaseType_t uxQueueLength, const UB
 
 	/* The queue is one byte longer than asked for to make wrap checking
 	easier/faster. */
-	xQueueSizeInBytes = ( size_t ) ( uxQueueLength * uxItemSize ) + ( size_t ) 1; /*lint !e961 MISRA exception as the casts are only redundant for some ports. */
+	xQueueSizeInBytes = ( size_t ) ( uxQueueLength * uxItemSize ) + ( size_t ) 1;
 
 
 	/* Allocate the new queue structure and storage area. */
@@ -105,7 +102,7 @@ QueueHandle_t IPC_xQueueGenericCreate( const UBaseType_t uxQueueLength, const UB
 		is defined. */
 		pxNewQueue->uxLength = uxQueueLength;
 		pxNewQueue->uxItemSize = uxItemSize;
-		( void ) IPC_xQueueGenericReset( pxNewQueue, pdTRUE );
+		( void ) IPC_xQueueGenericReset( pxNewQueue, IPC_RESET_NEW_QUEUE );
 
 		traceQUEUE_CREATE( pxNewQueue );
 		xReturn = pxNewQueue;
@@ -133,16 +130,16 @@ QueueHandle_t IPC_xQueueGenericCreate( const UBaseType_t uxQueueLength, const UB
 * In case of the function is called to reset an existing queue, the function 
 * checks if any tasks are waiting to send to the queue to activate them.
 
-*	\param xQueue			ID of the process to be inserted
-*	\param xNewQueue				ID of queue to use
+*	\param xQueue						Pointer to the queue.
+*	\param xNewQueue				Indicate if it's a new queue or not.
 *
-* \return pdFAIL if there's an error, pdPASS if there's no error
+* \return SUCCESS if there's no error.
 *
 *****************************************************************************/
 BaseType_t IPC_xQueueGenericReset( QueueHandle_t xQueue, BaseType_t xNewQueue )
 {
 	Queue_t * const pxQueue = ( Queue_t * ) xQueue;
-
+	
 	configASSERT( pxQueue );
 
 	EnterCriticalSection();
@@ -152,7 +149,7 @@ BaseType_t IPC_xQueueGenericReset( QueueHandle_t xQueue, BaseType_t xNewQueue )
 		pxQueue->uxMessagesWaiting = ( UBaseType_t ) 0U;
 		pxQueue->pcWriteTo = pxQueue->pcHead;
 
-		if( xNewQueue == pdFALSE )
+		if( xNewQueue == IPC_RESET_EXISTING_QUEUE )
 		{
 			/* Resetting an already existing queue */
 			/* If there are tasks blocked waiting to read from the queue, then
@@ -161,12 +158,12 @@ BaseType_t IPC_xQueueGenericReset( QueueHandle_t xQueue, BaseType_t xNewQueue )
 			the queue, then one should be unblocked as after this function exits
 			it will be possible to write to it. */
 
-			if( isEmpty( pxQueue->xTasksWaitingToSend ) == pdFALSE )
+			if( nonEmpty( pxQueue->xTasksWaitingToSend ) )
 			{
 				pid ProcessId = dequeue( pxQueue->xTasksWaitingToSend );
-				insert( ProcessId , readyList , proctab[ProcessId].prprio );
-				proctab[ProcessId].prstate = PR_READY;
-		    	queueYIELD_IF_USING_PREEMPTION();
+				Scheduler_processSetReady( ProcessId );
+				wakefromSleep = false;
+				IntTrigger(INT_TIMER0A);
 			}
 			else
 			{
@@ -175,35 +172,27 @@ BaseType_t IPC_xQueueGenericReset( QueueHandle_t xQueue, BaseType_t xNewQueue )
 		}
 		else
 		{
-			pxQueue->xTasksWaitingToSend = ( UBaseType_t ) newqueue();
-			pxQueue->xTasksWaitingToReceive = ( UBaseType_t ) newqueue();
+			pxQueue->xTasksWaitingToSend = ( qid ) newqueue();
+			pxQueue->xTasksWaitingToReceive = ( qid ) newqueue();
 		}
 	}
 	ExitCriticalSection();
 
-	/* A value is returned for calling semantic consistency with previous
-	versions. */
-	return pdPASS;
+	return SUCCESS;
 }
 
 
-
 /****************************************************************************
-*	Function Number 2
+*	Function Number 3
 *
-*	The function's purpose is to reset a queue by resetting its parameters
-* to the default values.
+*	The function's purpose is to send data to a specific queue.
+* 
+*	\param xQueue								Pointer to the queue.
+*	\param pvItemToQueue				Pointer to the item to be transferred to the queue.
+* \param xSleepTime						Sleeping time to wait on the queue if it is full.
+* \param xCopyPosition				Position where the item will be deposited.
 *
-*	The function is called either for a new queue to reset all the parameters
-* to the default values or for an existing queue.
-*
-* In case of the function is called to reset an existing queue, the function 
-* checks if any tasks are waiting to send to the queue to activate them.
-
-*	\param xQueue			ID of the process to be inserted
-*	\param xNewQueue				ID of queue to use
-*
-* \return pdFAIL if there's an error, pdPASS if there's no error
+* \return SUCCESS if there's no error.
 *
 *****************************************************************************/
 
@@ -212,14 +201,11 @@ BaseType_t IPC_xQueueGenericSend( QueueHandle_t xQueue, const void * const pvIte
 	Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 
 	configASSERT( pxQueue );
-	configASSERT( !( ( pvItemToQueue == NULL ) && ( pxQueue->uxItemSize != ( UBaseType_t ) 0U ) ) );
 
 	for(;;)
 	{
 		EnterCriticalSection();
 		{
-			/* Is there room on the queue now?  To be running we must be
-			the highest priority task wanting to access the queue. */
 			if( pxQueue->uxMessagesWaiting < pxQueue->uxLength )
 			{
 				traceQUEUE_SEND( pxQueue );
@@ -227,23 +213,21 @@ BaseType_t IPC_xQueueGenericSend( QueueHandle_t xQueue, const void * const pvIte
 
 				/* If there was a task waiting for data to arrive on the
 				queue then unblock it now. */
-				if( isEmpty ( pxQueue->xTasksWaitingToReceive ) == pdFALSE )
+				if( nonEmpty ( pxQueue->xTasksWaitingToReceive ) )
 				{
 					pid ProcessId = dequeue( pxQueue->xTasksWaitingToReceive );
-					insert( ProcessId , readyList , proctab[ProcessId].prprio );
-					proctab[ProcessId].prstate = PR_READY;
-					queueYIELD_IF_USING_PREEMPTION();
+					Scheduler_processSetReady( ProcessId );
 				}
 				else
 				{
 					mtCOVERAGE_TEST_MARKER();
 				}
 				ExitCriticalSection();
-				return pdPASS;
+				return SUCCESS;
 			}
 			else
 			{
-				if( delay == 0 )
+				if( xSleepTime == IPC_NO_SLEEP )
 				{
 					ExitCriticalSection();
 					return errQUEUE_FULL;
@@ -252,9 +236,17 @@ BaseType_t IPC_xQueueGenericSend( QueueHandle_t xQueue, const void * const pvIte
 				{
 					traceBLOCKING_ON_QUEUE_SEND( pxQueue );
 					insert( Scheduler_processGetPid() , pxQueue->xTasksWaitingToSend , proctab[Scheduler_processGetPid()].prprio );
-					// insert it also in the sleeping queue
-					proctab[Scheduler_processGetPid()].prstate = PR_WAIT;
-					queueYIELD_IF_USING_PREEMPTION();
+					if ( xSleepTime != IPC_WAIT_FOREVER )
+					{
+						Scheduler_insertd( Scheduler_processGetPid(), sleepingList, xSleepTime );
+					}
+					else
+					{
+						mtCOVERAGE_TEST_MARKER();
+					}
+					
+					wakefromSleep = false;
+					IntTrigger(INT_TIMER0A);
 
 					if ( prvIsQueueFull( pxQueue ) == pdTRUE )
 					{
@@ -264,6 +256,7 @@ BaseType_t IPC_xQueueGenericSend( QueueHandle_t xQueue, const void * const pvIte
 					else
 					{
 						mtCOVERAGE_TEST_MARKER();
+						// remove my self from the sleep queue
 					}
 				}
 			}
@@ -274,21 +267,16 @@ BaseType_t IPC_xQueueGenericSend( QueueHandle_t xQueue, const void * const pvIte
 
 
 /****************************************************************************
-*	Function Number 2
+*	Function Number 4
 *
-*	The function's purpose is to reset a queue by resetting its parameters
-* to the default values.
+*	The function's purpose is to receive data from a given queue.
 *
-*	The function is called either for a new queue to reset all the parameters
-* to the default values or for an existing queue.
+*	\param xQueue							Pointer to the queue.
+*	\param pvBuffer						Pointer to where the item will be copied.
+* \param xSleepTime					Sleeping time to wait on the queue if it is empty.
+* \param xJustPeeking				If reading without consuming is required.
 *
-* In case of the function is called to reset an existing queue, the function 
-* checks if any tasks are waiting to send to the queue to activate them.
-
-*	\param xQueue			ID of the process to be inserted
-*	\param xNewQueue				ID of queue to use
-*
-* \return pdFAIL if there's an error, pdPASS if there's no error
+* \return SUCCESS if there's no error
 *
 *****************************************************************************/
 BaseType_t IPC_xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer, _delay_ms xSleepTime, const BaseType_t xJustPeeking )
@@ -297,7 +285,6 @@ BaseType_t IPC_xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer
 	Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 
 	configASSERT( pxQueue );
-	configASSERT( !( ( pvBuffer == NULL ) && ( pxQueue->uxItemSize != ( UBaseType_t ) 0U ) ) );
 
 	for( ;; )
 	{
@@ -310,20 +297,19 @@ BaseType_t IPC_xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer
 
 				prvCopyDataFromQueue( pxQueue, pvBuffer );
 
-				if( xJustPeeking == pdFALSE )
+				if( xJustPeeking == IPC_RECEIVE_WITH_CONSUMING )
 				{
 					traceQUEUE_RECEIVE( pxQueue );
 
 					/* Data is actually being removed (not just peeked). */
 					--( pxQueue->uxMessagesWaiting );
 
-					// check for tasks waiting to send
-					if( isEmpty( pxQueue -> xTasksWaitingToSend ) == pdFALSE )
+					if( nonEmpty( pxQueue -> xTasksWaitingToSend ) )
 					{
 						pid ProcessId = dequeue( pxQueue->xTasksWaitingToSend );
-						insert( ProcessId , readyList , proctab[ProcessId].prprio );
-						proctab[ProcessId].prstate = PR_READY;
-						queueYIELD_IF_USING_PREEMPTION();
+						Scheduler_processSetReady( ProcessId );
+						wakefromSleep = false;
+						IntTrigger(INT_TIMER0A);
 					}
 					else
 					{
@@ -333,19 +319,15 @@ BaseType_t IPC_xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer
 				else
 				{
 					traceQUEUE_PEEK( pxQueue );
-					/* The data is not being removed, so reset our read
-						pointer. */
+
 					pxQueue->pcReadFrom = pcOriginalReadPosition;
 
-					/* The data is being left in the queue, so see if there are
-					any other tasks waiting for the data. */
-					// check for other tasks waiting to receive
-					if( isEmpty ( pxQueue->xTasksWaitingToReceive ) == pdFALSE )
+					if( nonEmpty ( pxQueue->xTasksWaitingToReceive ) )
 					{
 						pid ProcessId = dequeue( pxQueue->xTasksWaitingToReceive );
-						insert( ProcessId , readyList , proctab[ProcessId].prprio );
-						proctab[ProcessId].prstate = PR_READY;
-						queueYIELD_IF_USING_PREEMPTION();
+						Scheduler_processSetReady( ProcessId );
+						wakefromSleep = false;
+						IntTrigger(INT_TIMER0A);
 					}
 					else
 					{
@@ -353,11 +335,11 @@ BaseType_t IPC_xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer
 					}
 				}
 				ExitCriticalSection();
-				return pdPASS;
+				return SUCCESS;
 			}
 			else
 			{
-				if( delay ==  0 )
+				if( xSleepTime ==  IPC_NO_SLEEP )
 				{
 					ExitCriticalSection();
 					traceQUEUE_RECEIVE_FAILED( pxQueue );
@@ -366,8 +348,18 @@ BaseType_t IPC_xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer
 				else
 				{
 					insert( Scheduler_processGetPid() , pxQueue->xTasksWaitingToReceive , proctab[Scheduler_processGetPid()].prprio );
-					proctab[Scheduler_processGetPid()].prstate = PR_WAIT;
-					queueYIELD_IF_USING_PREEMPTION();
+					
+					if ( xSleepTime != IPC_WAIT_FOREVER )
+					{
+						Scheduler_insertd( Scheduler_processGetPid(), sleepingList, xSleepTime );
+					}
+					else
+					{
+						mtCOVERAGE_TEST_MARKER();
+					}
+					
+					wakefromSleep = false;
+					IntTrigger(INT_TIMER0A);
 
 					if ( prvIsQueueEmpty( pxQueue ) == pdTRUE )
 					{
@@ -377,6 +369,7 @@ BaseType_t IPC_xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer
 					else
 					{
 						mtCOVERAGE_TEST_MARKER();
+						// remove it from the sleeping queue
 					}
 				}
 			}
@@ -387,21 +380,14 @@ BaseType_t IPC_xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer
 
 
 /****************************************************************************
-*	Function Number 2
+*	Function Number 5
 *
-*	The function's purpose is to reset a queue by resetting its parameters
-* to the default values.
+*	The function's purpose is to return the number of messages 
+* in the queue
 *
-*	The function is called either for a new queue to reset all the parameters
-* to the default values or for an existing queue.
+*	\param xQueue						Pointer to the queue of messages
 *
-* In case of the function is called to reset an existing queue, the function 
-* checks if any tasks are waiting to send to the queue to activate them.
-
-*	\param xQueue			ID of the process to be inserted
-*	\param xNewQueue				ID of queue to use
-*
-* \return pdFAIL if there's an error, pdPASS if there's no error
+* \return uxReturn				The number of messages in the queue
 *
 *****************************************************************************/
 
@@ -421,21 +407,14 @@ UBaseType_t uxReturn;
 }
 
 /****************************************************************************
-*	Function Number 2
+*	Function Number 6
 *
-*	The function's purpose is to reset a queue by resetting its parameters
-* to the default values.
+*	The function's purpose is to return the number of free spaces 
+* in the queue
 *
-*	The function is called either for a new queue to reset all the parameters
-* to the default values or for an existing queue.
+*	\param xQueue						Pointer to the queue of messages
 *
-* In case of the function is called to reset an existing queue, the function 
-* checks if any tasks are waiting to send to the queue to activate them.
-
-*	\param xQueue			ID of the process to be inserted
-*	\param xNewQueue				ID of queue to use
-*
-* \return pdFAIL if there's an error, pdPASS if there's no error
+* \return uxReturn				The number of free spaces in the queue
 *
 *****************************************************************************/
 
@@ -454,24 +433,18 @@ UBaseType_t IPC_uxQueueSpacesAvailable( const QueueHandle_t xQueue )
 	ExitCriticalSection();
 
 	return uxReturn;
-} /*lint !e818 Pointer cannot be declared const as xQueue is a typedef not pointer. */
+}
 
 /****************************************************************************
-*	Function Number 2
+*	Function Number 7
 *
-*	The function's purpose is to reset a queue by resetting its parameters
-* to the default values.
+*	The function's purpose is to return the number of messages 
+* in the queue to be called from a critical section or from 
+* an ISR.
 *
-*	The function is called either for a new queue to reset all the parameters
-* to the default values or for an existing queue.
+*	\param xQueue						Pointer to the queue of messages
 *
-* In case of the function is called to reset an existing queue, the function 
-* checks if any tasks are waiting to send to the queue to activate them.
-
-*	\param xQueue			ID of the process to be inserted
-*	\param xNewQueue				ID of queue to use
-*
-* \return pdFAIL if there's an error, pdPASS if there's no error
+* \return uxReturn				The number of messages in the queue
 *
 *****************************************************************************/
 
@@ -484,24 +457,16 @@ UBaseType_t uxReturn;
 	uxReturn = ( ( Queue_t * ) xQueue )->uxMessagesWaiting;
 
 	return uxReturn;
-} /*lint !e818 Pointer cannot be declared const as xQueue is a typedef not pointer. */
+} 
 
 /****************************************************************************
-*	Function Number 2
+*	Function Number 8
 *
-*	The function's purpose is to reset a queue by resetting its parameters
-* to the default values.
+*	The function's purpose is to check if the queue is empty.
 *
-*	The function is called either for a new queue to reset all the parameters
-* to the default values or for an existing queue.
+*	\param pxQueue						Pointer to the queue of messages
 *
-* In case of the function is called to reset an existing queue, the function 
-* checks if any tasks are waiting to send to the queue to activate them.
-
-*	\param xQueue			ID of the process to be inserted
-*	\param xNewQueue				ID of queue to use
-*
-* \return pdFAIL if there's an error, pdPASS if there's no error
+* \return xReturn						pdTRUE if the queue is empty, pdFALSE otherwise
 *
 *****************************************************************************/
 
@@ -527,21 +492,13 @@ BaseType_t xReturn;
 }
 
 /****************************************************************************
-*	Function Number 2
+*	Function Number 9
 *
-*	The function's purpose is to reset a queue by resetting its parameters
-* to the default values.
+*	The function's purpose is to check if the queue is empty.
 *
-*	The function is called either for a new queue to reset all the parameters
-* to the default values or for an existing queue.
+*	\param xQueue						Pointer to the queue of messages
 *
-* In case of the function is called to reset an existing queue, the function 
-* checks if any tasks are waiting to send to the queue to activate them.
-
-*	\param xQueue			ID of the process to be inserted
-*	\param xNewQueue				ID of queue to use
-*
-* \return pdFAIL if there's an error, pdPASS if there's no error
+* \return xReturn					pdTRUE if the queue is empty, pdFALSE otherwise
 *
 *****************************************************************************/
 
@@ -560,24 +517,16 @@ BaseType_t xReturn;
 	}
 
 	return xReturn;
-} /*lint !e818 xQueue could not be pointer to const because it is a typedef. */
+} 
 
 /****************************************************************************
-*	Function Number 2
+*	Function Number 10
 *
-*	The function's purpose is to reset a queue by resetting its parameters
-* to the default values.
+*	The function's purpose is to check if the queue is full.
 *
-*	The function is called either for a new queue to reset all the parameters
-* to the default values or for an existing queue.
+*	\param pxQueue						Pointer to the queue of messages
 *
-* In case of the function is called to reset an existing queue, the function 
-* checks if any tasks are waiting to send to the queue to activate them.
-
-*	\param xQueue			ID of the process to be inserted
-*	\param xNewQueue				ID of queue to use
-*
-* \return pdFAIL if there's an error, pdPASS if there's no error
+* \return xReturn						pdTRUE if the queue is full, pdFALSE otherwise
 *
 *****************************************************************************/
 
@@ -602,21 +551,16 @@ BaseType_t xReturn;
 }
 
 /****************************************************************************
-*	Function Number 2
+*	Function Number 11
 *
-*	The function's purpose is to reset a queue by resetting its parameters
-* to the default values.
+*	The function's purpose is to check if the queue is full.
 *
-*	The function is called either for a new queue to reset all the parameters
-* to the default values or for an existing queue.
+* The function is to be called from a critical section or from
+* an ISR.
 *
-* In case of the function is called to reset an existing queue, the function 
-* checks if any tasks are waiting to send to the queue to activate them.
-
-*	\param xQueue			ID of the process to be inserted
-*	\param xNewQueue				ID of queue to use
+*	\param pxQueue						Pointer to the queue of messages
 *
-* \return pdFAIL if there's an error, pdPASS if there's no error
+* \return xReturn						pdTRUE if the queue is full, pdFALSE otherwise
 *
 *****************************************************************************/
 
@@ -638,67 +582,50 @@ BaseType_t xReturn;
 }
 
 /****************************************************************************
-*	Function Number 2
+*	Function Number 12
 *
-*	The function's purpose is to reset a queue by resetting its parameters
-* to the default values.
+*	The function's purpose is to delete a queue.
 *
-*	The function is called either for a new queue to reset all the parameters
-* to the default values or for an existing queue.
+*	\param xQueue							Pointer to the queue of messages
 *
-* In case of the function is called to reset an existing queue, the function 
-* checks if any tasks are waiting to send to the queue to activate them.
-
-*	\param xQueue			ID of the process to be inserted
-*	\param xNewQueue				ID of queue to use
-*
-* \return pdFAIL if there's an error, pdPASS if there's no error
+* \return Nothing
 *
 *****************************************************************************/
 
 void IPC_vQueueDelete( QueueHandle_t xQueue )
 {
-	//Queue_t * const pxQueue = ( Queue_t * ) xQueue;
+	Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 
-	//configASSERT( pxQueue );
+	configASSERT( pxQueue );
 
-	//traceQUEUE_DELETE( pxQueue );
+	traceQUEUE_DELETE( pxQueue );
 
-	/// LOOK HERE ///
-	// free the part of the pxQueue
-
-	// vPortFree( pxQueue );
+	/* Not supported in our OS as its static memory implementation */
+	/* vPortFree( pxQueue ); */
 }
 
 
 /****************************************************************************
-*	Function Number 2
+*	Function Number 13
 *
-*	The function's purpose is to reset a queue by resetting its parameters
-* to the default values.
+*	The function's purpose is to copy data to the queue.
 *
-*	The function is called either for a new queue to reset all the parameters
-* to the default values or for an existing queue.
+*	\param pxQueue						Pointer to the queue of messages.
+* \param pvItemToQueue			Pointer to the data to be copied to the queue.
+* \param xPosition					Position of the data on the queue.
 *
-* In case of the function is called to reset an existing queue, the function 
-* checks if any tasks are waiting to send to the queue to activate them.
-
-*	\param xQueue			ID of the process to be inserted
-*	\param xNewQueue				ID of queue to use
-*
-* \return pdFAIL if there's an error, pdPASS if there's no error
+* \return SUCCESS if there is no error.						
 *
 *****************************************************************************/
 
 static BaseType_t prvCopyDataToQueue( Queue_t * const pxQueue, const void *pvItemToQueue, const BaseType_t xPosition )
 {
-BaseType_t xReturn = pdFALSE;
 
-	if( xPosition == queueSEND_TO_BACK )
+	if( xPosition == IPC_queueSEND_TO_BACK )
 	{
-		( void ) memcpy( ( void * ) pxQueue->pcWriteTo, pvItemToQueue, ( size_t ) pxQueue->uxItemSize ); /*lint !e961 !e418 MISRA exception as the casts are only redundant for some ports, plus previous logic ensures a null pointer can only be passed to memcpy() if the copy size is 0. */
+		( void ) memcpy( ( void * ) pxQueue->pcWriteTo, pvItemToQueue, ( size_t ) pxQueue->uxItemSize ); 
 		pxQueue->pcWriteTo += pxQueue->uxItemSize;
-		if( pxQueue->pcWriteTo >= pxQueue->pcTail ) /*lint !e946 MISRA exception justified as comparison of pointers is the cleanest solution. */
+		if( pxQueue->pcWriteTo >= pxQueue->pcTail ) 
 		{
 			pxQueue->pcWriteTo = pxQueue->pcHead;
 		}
@@ -709,9 +636,9 @@ BaseType_t xReturn = pdFALSE;
 	}
 	else
 	{
-		( void ) memcpy( ( void * ) pxQueue->pcReadFrom, pvItemToQueue, ( size_t ) pxQueue->uxItemSize ); /*lint !e961 MISRA exception as the casts are only redundant for some ports. */
+		( void ) memcpy( ( void * ) pxQueue->pcReadFrom, pvItemToQueue, ( size_t ) pxQueue->uxItemSize );
 		pxQueue->pcReadFrom -= pxQueue->uxItemSize;
-		if( pxQueue->pcReadFrom < pxQueue->pcHead ) /*lint !e946 MISRA exception justified as comparison of pointers is the cleanest solution. */
+		if( pxQueue->pcReadFrom < pxQueue->pcHead )
 		{
 			pxQueue->pcReadFrom = ( pxQueue->pcTail - pxQueue->uxItemSize );
 		}
@@ -720,7 +647,7 @@ BaseType_t xReturn = pdFALSE;
 			mtCOVERAGE_TEST_MARKER();
 		}
 
-		if( xPosition == queueOVERWRITE )
+		if( xPosition == IPC_queueOVERWRITE )
 		{
 			if( pxQueue->uxMessagesWaiting > ( UBaseType_t ) 0 )
 			{
@@ -743,25 +670,18 @@ BaseType_t xReturn = pdFALSE;
 
 	++( pxQueue->uxMessagesWaiting );
 
-	return xReturn;
+	return SUCCESS;
 }
 
 /****************************************************************************
-*	Function Number 2
+*	Function Number 14
 *
-*	The function's purpose is to reset a queue by resetting its parameters
-* to the default values.
+*	The function's purpose is to copy data from a queue to a given buffer.
 *
-*	The function is called either for a new queue to reset all the parameters
-* to the default values or for an existing queue.
+*	\param pxQueue						Pointer to the queue of messages
+* \param pvBuffer						Pointer to the buffer 
 *
-* In case of the function is called to reset an existing queue, the function 
-* checks if any tasks are waiting to send to the queue to activate them.
-
-*	\param xQueue			ID of the process to be inserted
-*	\param xNewQueue				ID of queue to use
-*
-* \return pdFAIL if there's an error, pdPASS if there's no error
+* \return Nothing
 *
 *****************************************************************************/
 
@@ -769,7 +689,7 @@ static void prvCopyDataFromQueue( Queue_t * const pxQueue, void * const pvBuffer
 {
 
 	pxQueue->pcReadFrom += pxQueue->uxItemSize;
-	if( pxQueue->pcReadFrom >= pxQueue->pcTail ) /*lint !e946 MISRA exception justified as use of the relational operator is the cleanest solutions. */
+	if( pxQueue->pcReadFrom >= pxQueue->pcTail ) 
 	{
 		pxQueue->pcReadFrom = pxQueue->pcHead;
 	}
