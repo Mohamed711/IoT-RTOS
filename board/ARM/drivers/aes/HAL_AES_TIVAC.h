@@ -41,7 +41,7 @@
 //*****************************************************************************
 typedef struct {
 	uint32_t Base_Address;
-	uint32_t ui32Config;
+	uint32_t Mode;
 	uint32_t *Key;
 	uint32_t ui32Keysize;
 	uint32_t *pui32IVdata;
