@@ -8,8 +8,8 @@
 #include <avr/io.h>
 #include "HAL_UART.h"
 
-UART_Config uart_init_config;
-UART_HandleTypeDef uart_handle;
+HAL_Comm_UART_ConfigStruct_t uart_init_config;
+HAL_Comm_UART_HandleTypeDefStruct_t uart_handle;
 
 int main(void)
 {
@@ -17,23 +17,23 @@ int main(void)
 	uart_init_config.DataBits = DATA_BIT_8;
 	uart_init_config.StopBits = STOP_BIT_1;
 	uart_init_config.Parity = PARITY_DISABLE;
-	uart_init_config.EnableInterrupt = 1;
+	uart_init_config.EnableInterrupt = 0;
 	uart_init_config.U2X_State = U2X_DISABLE;
 	
-	HAL_UART_Init(&uart_init_config);
+	HAL_comm_UART_Initialize(&uart_init_config);
     while(1)
     {
 		unsigned char x;
-		x = HAL_UART_Receive();
+		HAL_comm_UART_Receive(&x);
 		if (x == 'v')
 		{
 			uart_handle.transmit_char = 'T';
-			HAL_UART_Send(&uart_handle);	
+			HAL_comm_UART_Send(&uart_handle);	
 		}
 		else
 		{
 			uart_handle.transmit_char = 'F';
-			HAL_UART_Send(&uart_handle);
+			HAL_comm_UART_Send(&uart_handle);
 		}
 	}
 }

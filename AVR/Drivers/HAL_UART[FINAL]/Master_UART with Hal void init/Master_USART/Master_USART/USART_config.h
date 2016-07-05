@@ -11,14 +11,14 @@
 
 #include <stdint.h>
 
-void uart_disable();
-void uart_disable_rx();
-void uart_disable_tx();
-void uart_enable();
-void uart_enable_rx();
-void uart_enable_tx();
-void uart_disable_interrupt();
-void uart_enable_interrupt();
-void uart_enable_interrupt_rx();
+uint16_t comm_UART_Disable();
+uint16_t comm_UART_DisableRx();
+uint16_t comm_UART_DisableTx();
+uint16_t comm_UART_Enable();
+uint16_t comm_UART_EnableRx();
+uint16_t comm_UART_EnableTx();
+uint16_t comm_UART_DisableInterrupt();
+uint16_t comm_UART_EnableInterrupt();
+uint16_t comm_UART_EnableInterruptRx();
 
 #endif /* USART_CONFIG_H_ */

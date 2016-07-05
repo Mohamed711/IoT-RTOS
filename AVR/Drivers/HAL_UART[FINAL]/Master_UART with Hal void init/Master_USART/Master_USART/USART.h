@@ -14,8 +14,8 @@
 
 volatile uint8_t value;
 
-void uartInit(UART_Config* usart_init_config);
-void uartSend(unsigned char x);
-unsigned char uartReceive(void);
+uint16_t comm_UART_Initialize(HAL_Comm_UART_ConfigStruct_t* usart_init_config);
+uint16_t comm_UART_Send(unsigned char x);
+uint16_t comm_UART_Receive(void *receiveChar);
 
 #endif /* USART_H_ */

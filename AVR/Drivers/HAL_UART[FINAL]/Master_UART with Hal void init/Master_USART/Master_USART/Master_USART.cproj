@@ -93,6 +93,9 @@
     <Compile Include="Master_USART.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="return_Errors.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="USART.c">
       <SubType>compile</SubType>
     </Compile>

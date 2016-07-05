@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <util/delay.h>
+#include "return_Errors.h"
 
 /************************************************************************
 * Set the Baud Rate value.
@@ -26,7 +27,7 @@
 *
 * Enable interrupts                                                                    
 ************************************************************************/
-void uartInit(UART_Config* usart_init_config)
+uint16_t comm_UART_Initialize(HAL_Comm_UART_ConfigStruct_t* usart_init_config)
 {
 	uint16_t UBRR_VALUE;
 	if(usart_init_config->U2X_State != 0)	/*if Double speed state is enabled*/
@@ -42,37 +43,43 @@ void uartInit(UART_Config* usart_init_config)
 	UBRRL_REG = UBRR_VALUE;	
 	UBRRH_REG = UBRR_VALUE >> 8;
 	
-	uartEnable();
+	comm_UART_Enable();
 	
-	UCSRC_REG = UCSRC_SELECT;	/*URSEL is set to one to update the UCSRC settings*/
-	UCSRC_REG |= usart_init_config->DataBits | usart_init_config->StopBits | usart_init_config->Parity;
+	/*URSEL is set to one to update the UCSRC settings*/
+	UCSRC_REG |= UCSRC_SELECT | usart_init_config->DataBits | usart_init_config->StopBits | usart_init_config->Parity;
 	
 	UCSRA_REG |= usart_init_config->U2X_State;
 	
 	if(usart_init_config->EnableInterrupt)	/*if interrupt is enabled*/
 	{
 		cli();
-		uartEnableInterruptRx();	/*enable receive interrupt*/
+		comm_UART_EnableInterruptRx();	/*enable receive interrupt*/
 		sei();
-	}		
+	}
+	return SUCCESS;	
 }
 
 /************************************************************************
 * Put data into the UDR buffer to be sent                                                                  
 ************************************************************************/
-void uartSend(unsigned char x)
+uint16_t comm_UART_Send(unsigned char x)
 {
 	while (!(UCSRA_REG & UDR_ENABLE));	/*wait until the transmit buffer is empty and ready to be written*/
 	UDR_REG = x;	/*put data into the buffer*/
+	return SUCCESS;
 }
 
 /************************************************************************
 * Return data found in the UDR buffer                                                                     
 ************************************************************************/
-unsigned char uartReceive(void)
+uint16_t comm_UART_Receive(void *receiveChar)
 {
+	uint16_t dataReg;
+	
 	while (!(UCSRA_REG & RXC_RECEIVE_COMPLETE));	/*wait until the receive is finished and the buffer is written*/
-	return UDR;
+	dataReg = UDR_REG;
+	*(uint16_t *) receiveChar = dataReg;
+	return SUCCESS;
 }
 
 /************************************************************************
@@ -84,5 +91,5 @@ unsigned char uartReceive(void)
 	volatile unsigned char value;
 	value = UDR_REG;
 	_delay_ms(100);
-	uartSend(value);	/*just echo the data received*/
+	comm_UART_Send(value);	/*just echo the data received*/
 }

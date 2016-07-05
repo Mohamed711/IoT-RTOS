@@ -26,17 +26,17 @@ typedef struct
 	uint8_t Parity;
 	uint8_t EnableInterrupt;
 	uint8_t U2X_State;
-} UART_Config;
+} HAL_Comm_UART_ConfigStruct_t;
 
 typedef struct
 {
 	uint8_t transmit_char;
-} UART_HandleTypeDef;
+} HAL_Comm_UART_HandleTypeDefStruct_t;
 
 typedef unsigned char HAL_DataType;
 
-void HAL_UART_Init(UART_Config* HAL_uartInitConfig);
-void HAL_UART_Send(UART_HandleTypeDef* HAL_transmitChar);
-HAL_DataType HAL_UART_Receive();
+uint16_t HAL_comm_UART_Initialize(HAL_Comm_UART_ConfigStruct_t* HAL_uartInitConfig);
+uint16_t HAL_comm_UART_Send(HAL_Comm_UART_HandleTypeDefStruct_t* HAL_transmitChar);
+uint16_t HAL_comm_UART_Receive(void *receiveChar);
 
 #endif /* HAL_UART_H_ */

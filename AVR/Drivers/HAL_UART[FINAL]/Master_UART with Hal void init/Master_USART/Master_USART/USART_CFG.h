@@ -11,12 +11,12 @@
 
 #include <stdint.h>
 
-#define UCSRA_REG *((uint8_t volatile *const)0x2B)
-#define UCSRB_REG *((uint8_t volatile *const)0x2A)
-#define UCSRC_REG *((uint8_t volatile *const)0x40)
-#define UBRRH_REG *((uint8_t volatile *const)0x40)
-#define UBRRL_REG *((uint8_t volatile *const)0x29)
-#define UDR_REG   *((uint8_t volatile *const)0x2C)
+#define UCSRA_REG	UCSRA
+#define UCSRB_REG	UCSRB
+#define UCSRC_REG	UCSRC
+#define UBRRH_REG	UBRRH
+#define UBRRL_REG	UBRRL
+#define UDR_REG		UDR
 
 #define UCSRC_SELECT	0x80
 #define UBRR_SELECT	0x00

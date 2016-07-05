@@ -7,18 +7,31 @@
 
 #include "HAL_UART.h"
 #include "USART.h"
+#include "return_Errors.h"
 
-void HAL_UART_Init(UART_Config* HAL_uartInitConfig)
+uint16_t HAL_comm_UART_Initialize(HAL_Comm_UART_ConfigStruct_t* HAL_uartInitConfig)
 {
-	uartInit(HAL_uartInitConfig);
+	comm_UART_Initialize(HAL_uartInitConfig);
+	return SUCCESS;
 }
 
-void HAL_UART_Send(UART_HandleTypeDef* HAL_transmitChar)
+uint16_t HAL_comm_UART_Send(HAL_Comm_UART_HandleTypeDefStruct_t* HAL_transmitChar)
 {
-	uartSend(HAL_transmitChar->transmit_char);
+	comm_UART_Send(HAL_transmitChar->transmit_char);
+	return SUCCESS;
 }
 
-HAL_DataType HAL_UART_Receive()
+uint16_t HAL_comm_UART_Receive(void *receiveChar)
 {
-	return uartReceive();
+	
+	uint16_t temp;
+	if (comm_UART_Receive(&temp))
+	{
+		return FAIL;
+	}
+	else
+	{
+		*(uint16_t*)receiveChar = temp;
+		return SUCCESS;
+	}	
 }
