@@ -29,6 +29,8 @@
 #include "../sysctl/sysctl.h"
 #include "../inc/hw_ints.h"
 #include "../interrupt/interrupt.h"
+#include "../inc/tm4c123gh6pge.h"
+#include "../inc/hw_gpio.h"
 #include "uart.h"
 
 /******************************************************************************

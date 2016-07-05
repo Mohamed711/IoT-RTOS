@@ -41,7 +41,7 @@
 * static functions prototype.
 *
 ******************************************************************************/
-void static delay(uint32_t delay);
+static void delay(uint32_t delay);
 
 
 /*****************************************************************************
@@ -54,7 +54,7 @@ void static delay(uint32_t delay);
 *
 * \return None.
 ******************************************************************************/
-void watchDogInterrupt()
+void watchDogInterrupt_Test()
 {
 	WatchdogIntClear(WATCHDOG0_BASE);
 	GPIO_PORTF_DATA_R = 0x0E;
@@ -74,7 +74,7 @@ void watchDogInterrupt()
 *
 * \return None.
 ******************************************************************************/
-void WDT_ResetTest()
+void WDT_Reset_Test()
 {
 	SYSCTL_RCGCWD_R |= 0x01;
 	delay(1000);
@@ -102,13 +102,13 @@ void WDT_ResetTest()
 *
 * \return None.
 ******************************************************************************/
-void WDT_INTTest()
+void WDT_INT_Test()
 {
 	SYSCTL_RCGCWD_R |= 0x01;
 	GPIO_PORTF_DATA_R = 0x04;
 	delay(1000);
 	WatchdogReloadSet(WATCHDOG0_BASE,0x10000000);
-	WatchdogIntRegister(WATCHDOG0_BASE,watchDogInterrupt);
+	WatchdogIntRegister(WATCHDOG0_BASE,watchDogInterrupt_Test);
 	WatchdogEnable(WATCHDOG0_BASE);
 }
 
@@ -124,7 +124,7 @@ void WDT_INTTest()
 *
 * \return None.
 ******************************************************************************/
-void WDT_ON()
+void WDT_ON_Test()
 {
 	SYSCTL_RCGCWD_R |= 0x01;
 	GPIO_PORTF_DATA_R = 0x04;
@@ -152,7 +152,7 @@ void WDT_ON()
 * \return None.
 ******************************************************************************/
 
-void static delay(uint32_t delay)
+void delay(uint32_t delay)
 {
 	uint32_t i,j;
 	for (i = 0 ; i < delay ; i++)

@@ -28,10 +28,9 @@
 * Prototypes for the APIs.
 *
 ******************************************************************************/
-void delay();
-void watchDogInterrupt();	/* function called when the interrupt takes place */
-void WDT_ResetTest();
-void WDT_INTTest();
-void WDT_ON();
+void watchDogInterrupt_Test();	/* function called when the interrupt takes place */
+void WDT_Reset_Test();
+void WDT_INT_Test();
+void WDT_ON_Test();
 
 #endif /* DRIVERS_WATCHDOG_WATCHDOG_TEST_H_ */

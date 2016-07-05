@@ -19,9 +19,11 @@
  *  documentation and/or other materials provided with the  
  *  distribution.
  *****************************************************************************/
-#include "headers.h"
-#include "Resource Management.h"
 
+#include "Resource Management.h"
+#include "../Scheduler/Process.h"
+
+extern pid32 currpid;
 
 void vid_Binary_semp_Bsem_wait (Bsem_t *S)
 {
@@ -30,7 +32,7 @@ void vid_Binary_semp_Bsem_wait (Bsem_t *S)
 	{ 
 		enqueue(currpid /*current process*/,S->Bsem_queue);
 		
-		/*pri16*/ /*sysCall suspend_return =*/ processSuspend(currpid);
+		/*pri16*/ /*sysCall suspend_return =*/ Scheduler_processSuspend(currpid);
 	}
 }
 void vid_Binary_semp_Bsem_signal(Bsem_t *S)
@@ -38,7 +40,7 @@ void vid_Binary_semp_Bsem_signal(Bsem_t *S)
 	S->count++;
 	if (S->count <= 0)
 	{
-		s32 processid= dequeue(S->Bsem_queue); 
-		/*sysCall resume_return =*/ processResume(processid /*curent process id  */);
+		int32_t processid= dequeue(S->Bsem_queue);
+		/*sysCall resume_return =*/ Scheduler_processResume(processid /*curent process id  */);
 	}
 }

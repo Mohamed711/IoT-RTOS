@@ -20,19 +20,20 @@
 *  distribution.
 *****************************************************************************/
 	
-#include "ReSched.h"
+#include "reSched.h"
 #include "Process.h"
 #include "queue.h"
-#include "std.h"
+#include "contextSwitch.h"
+#include "../RTOS.h"
 
-volatile char* pxCurrentTCB_Old;
-volatile char* pxCurrentTCB_New;
 extern pid32 currpid;
 extern struct procent proctab[NPROC];		  /* table of processes */
+extern qid16 readylist;
+
 	
-/******************************************************************************
+/*******************************************************************************
 *
-*	The function's purpose is to reschedule the processes
+*	The function's purpose is to reSchedule the processes
 *
 *	By getting the head of the ready queue, the new process' state is then 
 *	changed to 'running' state 
@@ -40,33 +41,34 @@ extern struct procent proctab[NPROC];		  /* table of processes */
 * 	\return none
 *
 *****************************************************************************/
-void reSched(void) /* Assumes interrupts are disabled */
+
+void Scheduler_reSchedule(void) /* Assumes interrupts are disabled */
 {
-struct procent *ptold; /* Ptr to table entry for old process */
-struct procent *ptnew; /* Ptr to table entry for new process */
-ptold = &proctab[currpid];
+	
+	volatile struct procent *ptold; /* Ptr to table entry for old process */
+	volatile struct procent *ptnew; /* Ptr to table entry for new process */
+	ptold = &proctab[currpid];
+	
+	pid32 oldP = currpid;
+	
 	if (ptold->prstate == PR_CURR)
 	{ 	/* Process remains eligible */
+		if (firstkey(readylist)==0)
+		{
+			return;
+		}
 		if (ptold->prprio > firstkey(readylist))
 		{
 			return;
 		}
 		/* Old process will no longer remain current */
-
 		ptold->prstate = PR_READY;
 		insert(currpid, readylist, ptold->prprio);
 	}
 	currpid = dequeue(readylist);
 	ptnew = &proctab[currpid];
 	ptnew->prstate = PR_CURR;
-	
+Scheduler_contextSwitch();
 
-	/*preempt = QUANTUM;	*/
-	/* Reset time slice for process	*/
 
-	//contextSwitch(&ptold->prstkptr, &ptnew->prstkptr);
-	void(*pf)(void);
-pf = proctab[currpid].processFunction;
-pf();
-	return;
 }

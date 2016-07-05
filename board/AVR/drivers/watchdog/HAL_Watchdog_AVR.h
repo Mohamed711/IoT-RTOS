@@ -21,18 +21,28 @@
  *****************************************************************************/
 #include "../GPIO/GPIO.h"
 #include "Watchdog.h"
+#include "../../../../User_Config.h"
 
 typedef struct 
 {
 	uint8_t timeout2;
-} WDT_InitTypeDef;
+}WDT_InitTypeDef;
 	
-void HAL_WDT_Enable(WDT_InitTypeDef * watchdogen);
 
-void HAL_Watchdog_Init();
-
-void HAL_Watchdog_Disable();
-
-void HAL_Watchdog_Reset();
-
+/*****************************************************************************
+*
+* Prototypes for the APIs.
+*
+******************************************************************************/
+#if (FAST_HAL == 1)
+	#define WDT_Enable(watchdogen)	watchdogEnable(*(watchdogen).timeout2);
+	#define WDT_Init()			watchdogInit()
+	#define WDT_Disable()		watchdogDisable()
+	#define WDT_Reset()			watchdogReset()
+#else
+	void WDT_Enable(WDT_InitTypeDef * watchdogen);
+	void WDT_Init();
+	void WDT_Disable();
+	void WDT_Reset();
+#endif
 	

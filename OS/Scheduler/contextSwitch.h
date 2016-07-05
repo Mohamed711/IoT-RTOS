@@ -20,14 +20,20 @@
 *  distribution.
 *****************************************************************************/
 
-#ifndef CONTEXTSWITCH_H_
-#define CONTEXTSWITCH_H_
+#ifndef Scheduler_contextSwitch_H_
+#define Scheduler_contextSwitch_H_
+
+#include "Process.h"
 
 /*
  * The function definition is in the board folder as its implementation
  * differ with the type of the microcontroller used
  */
-void contextSwitch(char *oldStackPointer, char *newStackPointer);
+volatile uint8_t TempPointer_L;
+volatile uint8_t TempPointer_H;
+
+void Scheduler_contextSwitch();
+//void jumptoPC(uint32_t LR);
 
 #define saveContext()\
 asm volatile (	             \
@@ -67,21 +73,17 @@ asm volatile (	             \
 "push  r29                   \n\t"\
 "push  r30                   \n\t"\
 "push  r31                   \n\t"\
-"lds   r26, pxCurrentTCB_L \n\t" \
-"lds   r27, pxCurrentTCB_H \n\t" \
-"in    r0, __SP_L__          \n\t"\
-"st    x+, r0                \n\t" \
-"in    r0, __SP_H__          \n\t" \
-"st    x+, r0                \n\t" \
+"in    r26, __SP_L__          \n\t"\
+"in    r27, __SP_H__          \n\t" \
+"sts TempPointer_L ,r26        \n\t" \
+"sts TempPointer_H ,r27        \n\t" \
 );
 #define restoreContext()\
 asm volatile (	             \
-"lds  r26, pxCurrentTCB_L      \n\t" \
-"lds  r27, pxCurrentTCB_H  \n\t" \
-"ld   r28, x+                \n\t" \
-"out  __SP_L__, r28          \n\t" \
-"ld   r29, x+                \n\t" \
-"out  __SP_H__, r29          \n\t" \
+"lds  r26, TempPointer_L      \n\t" \
+"lds  r27, TempPointer_H  \n\t" \
+"out  __SP_L__, r26          \n\t" \
+"out  __SP_H__, r27          \n\t" \
 "pop  r31                    \n\t" \
 "pop  r30                    \n\t" \
 "pop  r29                    \n\t" \
@@ -116,6 +118,51 @@ asm volatile (	             \
 "pop  r0                     \n\t" \
 "out  __SREG__, r0           \n\t" \
 "pop  r0                     \n\t" \
+"in    r26, __SP_L__          \n\t"\
+"in    r27, __SP_H__          \n\t" \
+"sts TempPointer_L ,r26        \n\t" \
+"sts TempPointer_H ,r27        \n\t" \
 );
+#define SaveMainStakpointer()\
+asm volatile (\
+"in    r26, __SP_L__          \n\t"\
+"in    r27, __SP_H__          \n\t" \
+"sts TempPointer_L ,r26       \n\t" \
+"sts TempPointer_H,r27        \n\t" \
+);
+#define SetMainStakpointer()\
+asm volatile (	             \
+"lds  r26, TempPointer_L      \n\t" \
+"lds  r27, TempPointer_H  \n\t" \
+"out  __SP_L__, r26          \n\t" \
+"out  __SP_H__, r27          \n\t" \
+);
+#define GetReturnAddress()\
+asm volatile (	\
+"pop r0 \n\t"\
+"pop r1 \n\t"\
+"sts TempPointer_L ,r1       \n\t" \
+"sts TempPointer_H ,r0        \n\t" \
+"push r0 \n\t"\
+"push r1 \n\t"\
+"clr r1\n\t"\
+"clr r0\n\t"\
+);
+#define SetReturnAddress()\
+asm volatile (	\
+"pop r0 \n\t"\
+"pop r1 \n\t"\
+"lds  r0, TempPointer_L      \n\t" \
+"lds  r1, TempPointer_H  \n\t" \
+"push r0 \n\t"\
+"push r1 \n\t"\
+"clr r1\n\t"\
+"clr r0\n\t"\
+);
+#define jumptoPC()\
+asm volatile ( \
+"lds  r30, TempPointer_L      \n\t" \
+"lds  r31, TempPointer_H  \n\t" \
+"icall \n\t" );
 
-#endif /* CONTEXTSWITCH_H_ */
+#endif /* Scheduler_contextSwitch_H_ */
