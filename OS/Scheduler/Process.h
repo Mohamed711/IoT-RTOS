@@ -107,6 +107,7 @@
 }; 
  
 extern struct procent proctab[NPROC];		  /* table of processes */
+extern pid currpid;
 
 pid Scheduler_processGetPid();
 pid Scheduler_processNewPid();

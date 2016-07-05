@@ -29,8 +29,6 @@
 
 pid currpid;
 struct procent proctab[NPROC];		  /* table of processes */
-extern qid readyList;
-extern qid suspendedList;
 extern uint32_t prcount;
 
 /******************************************************************************

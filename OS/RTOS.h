@@ -58,10 +58,6 @@ typedef uint8_t TickType_t ;	// ticktype is a structure for the tick
 typedef int8_t BaseType_t ;		// signed basetype is the base datatype
 typedef uint8_t UBaseType_t ; 	// unsigned basetype is important datatype used
 typedef uint32_t umsg32;
-typedef int32_t pid32;
-typedef uint16_t pri16;
-typedef uint32_t sid32;
-typedef uint16_t qid16;
 typedef bool bool8;
 typedef	uint32_t intmask;
 typedef bool sysCall;

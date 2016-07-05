@@ -20,10 +20,6 @@
 #include "../RTOS.h"
 
 	extern uint32_t prcount;
-	extern qid readyList;
-	extern qid suspendedList;
-	extern qid sleepq;
-	extern struct procent proctab[NPROC];	
 	
 void LED1()
 {
@@ -97,7 +93,7 @@ void SchedulerTest()
 	prcount=0;
 	readyList = newqueue();
 	suspendedList = newqueue();
-	sleepq = newqueue();
+	sleepingList = newqueue();
 	
 	Scheduler_initializenullProcess();
 	
@@ -108,7 +104,7 @@ void SchedulerTest()
 	pid pidLED3= Scheduler_processCreate(LED3, 400, 15, "P3");	//purple
 
 	//Scheduler_insertd(pidLED1, sleepq, 300);
-	Scheduler_insertd(pidLED2, sleepq, 1000);
+	Scheduler_insertd(pidLED2, sleepingList, 1000);
 	//processSetReady(pidLED2);
 	Scheduler_processSetReady(pidLED3);
 	//insert(0, readyList, 0);

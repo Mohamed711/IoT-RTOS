@@ -31,17 +31,10 @@ unsigned int lrReg;		/*the value of the link register in case there was an inter
 uint32_t time;				/*time used for the timer*/
 
 uint32_t	clktime;		/* current time in secs since boot	*/
-qid		sleepq;			/* queue for sleeping processes		*/
 uint32_t 	ctr1000;
 int32_t		slnonEmpty;		/* nonzero if sleepq is nonEmpty	*/
 int32_t		*sltop;			/* ptr to key in first item on sleepq	*/
 uint32_t	preempt;		/* preemption counter			*/
-
-extern pid currpid;
-extern struct procent proctab[NPROC];		  /* table of processes */
-extern qid readyList;
-
-
 
 /******************************************************************************
 *
@@ -88,7 +81,7 @@ sysCall	Scheduler_insertd(pid	processId,  qid	queueId, queuePriority	key)
 		queueTab[next].qPriority -= key;
 	}
 	
-	time = queueTab[firstId(sleepq)].qPriority;
+	time = queueTab[firstId(sleepingList)].qPriority;
 	Timer_New(Scheduler_clkhandler, time+2);
 
 }
@@ -135,7 +128,7 @@ sysCall	Scheduler_sleepms(int32_t	delay)
 
 	/* Delay calling process */
 
-	if (Scheduler_insertd(currpid, sleepq, delay) == SYSERR)
+	if (Scheduler_insertd(currpid, sleepingList, delay) == SYSERR)
 	{
 		return SYSERR;
 	}
@@ -173,18 +166,18 @@ sysCall	Scheduler_unsleep(pid processId)
 	{
 		return SYSERR;
 	}
-if (processId == queueHead(sleepq))
+if (processId == queueHead(sleepingList))
 	{
-		time = queueTab[firstId(sleepq)].qPriority;
+		time = queueTab[firstId(sleepingList)].qPriority;
 		Timer_New(Scheduler_clkhandler, time+2);
 	}
 	getItem(processId);			/* Unlink process from queue */
 	
 	Scheduler_processSetReady(processId);
 	
-	if (!isEmpty(sleepq))
+	if (!isEmpty(sleepingList))
 	{
-		time = queueTab[firstId(sleepq)].qPriority;
+		time = queueTab[firstId(sleepingList)].qPriority;
 		Timer_New(Scheduler_clkhandler, time);
 	}
 	else
@@ -211,11 +204,11 @@ void Scheduler_wakeup(void)
 	/* Awaken all processes that have no more time to sleep */
 	pid processId;
 	uint32_t i =0;
-		processId = dequeue(sleepq);
+		processId = dequeue(sleepingList);
 		insert(processId, readyList, proctab[processId].prprio);
-	if (!isEmpty(sleepq))
+	if (!isEmpty(sleepingList))
 	{
-		time = queueTab[firstId(sleepq)].qPriority;
+		time = queueTab[firstId(sleepingList)].qPriority;
 		Timer_New(Scheduler_clkhandler, time);
 	}
 	else
@@ -236,11 +229,11 @@ void Scheduler_clkhandler(void)
 {
 
 	/* Handle sleeping processes if any exist */
-	if(!isEmpty(sleepq))
+	if(!isEmpty(sleepingList))
 	{
 		/* Decrement the delay for the first process on the */
 		/* sleep queue, and awaken if the count reaches zero */
-		if (queueTab[firstId(sleepq)].qPriority - time  <=0)
+		if (queueTab[firstId(sleepingList)].qPriority - time  <=0)
 		{
 			Scheduler_wakeup();
 		}
