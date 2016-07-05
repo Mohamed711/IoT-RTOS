@@ -1,0 +1,2455 @@
+   1               		.file	"main.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+  99               	.global	__vector_default
+ 101               	__vector_default:
+   1:main.c        **** 
+   2:main.c        **** /*
+   3:main.c        ****  * Define if Watchdog-Timer should be disable at startup
+   4:main.c        ****  */
+   5:main.c        **** #define DISABLE_WDT_AT_STARTUP
+   6:main.c        **** 
+   7:main.c        **** /*
+   8:main.c        ****  * Watchdog-reset is issued at exit 'E'
+   9:main.c        ****  * define the timeout-value here (see avr-libc manual)
+  10:main.c        ****  */
+  11:main.c        **** #define EXIT_WDT_TIME   WDTO_250MS
+  12:main.c        **** 
+  13:main.c        **** /* character to start the bootloader*/
+  14:main.c        **** #define START_WAIT_UARTCHAR 'S'
+  15:main.c        **** 
+  16:main.c        **** /* wait-time for START_WAIT mode ( t = WAIT_TIME * 10ms ) */
+  17:main.c        **** #define WAIT_VALUE 10000 /* here: 1000*10ms = 10000ms = 10sec */
+  18:main.c        **** 
+  19:main.c        **** #include <stdint.h>
+  20:main.c        **** #include <avr/io.h>
+  21:main.c        **** #include <avr/wdt.h>
+  22:main.c        **** #include <avr/boot.h>
+  23:main.c        **** #include <avr/pgmspace.h>
+  24:main.c        **** #include <avr/eeprom.h>
+  25:main.c        **** #include <avr/interrupt.h>
+  26:main.c        **** #include <util/delay.h>
+  27:main.c        **** #include "chipdef.h"
+  28:main.c        **** #include "HAL_UART.h"
+  29:main.c        **** 
+  30:main.c        **** /*a buffer to receive data in*/
+  31:main.c        **** uint8_t gBuffer[SPM_PAGESIZE];
+  32:main.c        **** 
+  33:main.c        **** HAL_Comm_UART_ConfigStruct_t uart_init_config;
+  34:main.c        **** HAL_Comm_UART_HandleTypeDefStruct_t uart_handle;
+  35:main.c        **** 
+  36:main.c        **** #if defined(BOOTLOADERHASNOVECTORS)
+  37:main.c        **** #warning "This Bootloader does not link interrupt vectors - see makefile"
+  38:main.c        **** /* make the linker happy - it wants to see __vector_default */
+  39:main.c        **** // void __vector_default(void) { ; }
+  40:main.c        **** void __vector_default(void) { ; }
+ 102               	68,0,40,.LM0-.LFBB1
+ 103               	.LM0:
+ 104               	.LFBB1:
+ 105               	/* prologue: function */
+ 106               	/* frame size = 0 */
+ 107               	/* epilogue start */
+ 109               	.LM1:
+ 110 0000 0895      		ret
+ 112               	.Lscope1:
+ 116               	bootLoader_ReceiveBuffer:
+  41:main.c        **** r(uint8_t data)
+  42:main.c        **** {
+  43:main.c        **** 	uart_handle.transmit_char = data;
+  44:main.c        **** 	HAL_comm_UART_Send(&uart_handle);
+  45:main.c        **** }
+  46:main.c        **** 
+  47:main.c        **** static uint8_t bootLoader_ReceiveChar(void)
+  48:main.c        **** {
+  49:main.c        **** 	uint16_t x;
+  50:main.c        **** 	HAL_comm_UART_Receive(&x);
+  51:main.c        **** 	return x;
+  52:main.c        **** }
+  53:main.c        **** 
+  54:main.c        **** static inline void bootLoader_EraseFlash(void)
+  55:main.c        **** {
+  56:main.c        **** 	// erase only main section (bootloader protection)
+  57:main.c        **** 	uint32_t addr = 0;
+  58:main.c        **** 	while (APP_END > addr) {
+  59:main.c        **** 		boot_page_erase(addr);		// Perform page erase
+  60:main.c        **** 		boot_spm_busy_wait();		// Wait until the memory is erased.
+  61:main.c        **** 		addr += SPM_PAGESIZE;
+  62:main.c        **** 	}
+  63:main.c        **** 	boot_rww_enable();
+  64:main.c        **** }
+  65:main.c        **** 
+  66:main.c        **** static inline void bootLoader_ReceiveBuffer(pagebuf_t size)
+  67:main.c        **** {
+  68:main.c        **** 	pagebuf_t cnt;
+  69:main.c        **** 	uint8_t *tmp = gBuffer;
+ 117               	,.LM2-.LFBB2
+ 118               	.LM2:
+ 119               	.LFBB2:
+ 120 0002 CF92      		push r12
+ 121 0004 DF92      		push r13
+ 122 0006 EF92      		push r14
+ 123 0008 FF92      		push r15
+ 124 000a 0F93      		push r16
+ 125 000c 1F93      		push r17
+ 126 000e DF93      		push r29
+ 127 0010 CF93      		push r28
+ 128 0012 00D0      		rcall .
+ 129 0014 CDB7      		in r28,__SP_L__
+ 130 0016 DEB7      		in r29,__SP_H__
+ 131               	/* prologue: function */
+ 132               	/* frame size = 2 */
+ 133 0018 082F      		mov r16,r24
+ 135               	.LM3:
+ 136 001a 10E0      		ldi r17,lo8(0)
+ 137 001c 80E0      		ldi r24,lo8(gBuffer)
+ 138 001e E82E      		mov r14,r24
+ 139 0020 80E0      		ldi r24,hi8(gBuffer)
+ 140 0022 F82E      		mov r15,r24
+ 141               	.LBB231:
+ 142               	.LBB232:
+ 144               	.LM4:
+ 145 0024 6E01      		movw r12,r28
+ 146 0026 0894      		sec
+ 147 0028 C11C      		adc r12,__zero_reg__
+ 148 002a D11C      		adc r13,__zero_reg__
+ 149               	.L6:
+ 150               	.LBE232:
+ 151               	.LBE231:
+  70:main.c        **** (gBuffer); cnt++) {
+  71:main.c        **** 		*tmp++ = (cnt < size) ? bootLoader_ReceiveChar() : 0xFF;
+  72:main.c        **** 	}
+  73:main.c        **** }
+  74:main.c        **** 
+ 152               	cp r17,r16
+ 153               		brlo .L4
+ 154 002c 1017      		ldi r24,lo8(-1)
+ 155 002e 00F0      		rjmp .L5
+ 156 0030 8FEF      	.L4:
+ 157 0032 00C0      	.LBB234:
+ 158               	.LBB233:
+ 160               	.LM6:
+ 161               		movw r24,r12
+ 162               		call HAL_comm_UART_Receive
+ 164 0036 0E94 0000 	.LM7:
+ 165               		ldd r24,Y+1
+ 166               	.L5:
+ 167 003a 8981      	.LBE233:
+ 168               	.LBE234:
+ 170               	.LM8:
+ 171               		movw r30,r14
+ 172               		st Z+,r24
+ 173 003c F701      		movw r14,r30
+ 175 0040 7F01      	.LM9:
+ 176               		subi r17,lo8(-(1))
+ 177               		cpi r17,lo8(-128)
+ 178 0042 1F5F      		brne .L6
+ 179 0044 1038      	/* epilogue start */
+ 181               	.LM10:
+  75:main.c        **** c inline uint16_t bootLoader_WriteFlashPage(uint16_t waddr, pagebuf_t size)
+  76:main.c        **** {
+ 182               	g__
+ 183               		pop r28
+ 184 0048 0F90      		pop r29
+ 185 004a 0F90      		pop r17
+ 186 004c CF91      		pop r16
+ 187 004e DF91      		pop r15
+ 188 0050 1F91      		pop r14
+ 189 0052 0F91      		pop r13
+ 190 0054 FF90      		pop r12
+ 191 0056 EF90      		ret
+ 203               	.Lscope2:
+ 206               	bootLoader_SendEcho:
+ 208               	.LM11:
+ 209               	.LFBB3:
+  77:main.c        **** int32_t pagestart = (uint32_t)waddr<<1;
+  78:main.c        **** 	uint32_t baddr = pagestart;
+  79:main.c        **** 	uint16_t data;
+  80:main.c        **** 	uint8_t *tmp = gBuffer;
+  81:main.c        **** 	
+  82:main.c        **** 	do {
+  83:main.c        **** 		data = *tmp++;
+  84:main.c        **** 		data |= *tmp++ << 8;
+  85:main.c        **** 		boot_page_fill(baddr, data);	// call asm routine.
+  86:main.c        **** 		
+  87:main.c        **** 		baddr += 2;			// Select next word in memory
+  88:main.c        **** 		size -= 2;			// Reduce number of bytes to write by two
+  89:main.c        **** 	
+  90:main.c        **** 	} while (size);				// Loop until all bytes written
+  91:main.c        **** 
+  92:main.c        **** 	boot_page_write(pagestart);
+  93:main.c        **** 	boot_spm_busy_wait();
+  94:main.c        **** 	boot_rww_enable();		// Re-enable the RWW section
+  95:main.c        **** 	
+  96:main.c        **** 	bootLoader_SendChar('F');
+  97:main.c        **** 	bootLoader_SendChar('w');
+  98:main.c        **** 	bootLoader_SendChar('r');
+  99:main.c        **** 	bootLoader_SendChar('i');
+ 100:main.c        **** 	bootLoader_SendChar('t');
+ 101:main.c        **** 	bootLoader_SendChar('e');
+ 102:main.c        **** 	
+ 103:main.c        **** 	return baddr>>1;
+ 104:main.c        **** }
+ 105:main.c        **** 
+ 106:main.c        **** static inline uint16_t bootLoader_WriteEEPROM(uint16_t address, pagebuf_t size)
+ 107:main.c        **** {
+ 108:main.c        **** 	uint8_t *tmp = gBuffer;
+ 109:main.c        **** 
+ 110:main.c        **** 	do {
+ 111:main.c        **** 		eeprom_write_byte( (uint8_t*)address, *tmp++ );
+ 112:main.c        **** 		address++;			// Select next byte
+ 113:main.c        **** 		size--;				// Decreas number of bytes to write
+ 114:main.c        **** 	} while (size);				// Loop until all bytes written
+ 115:main.c        **** 
+ 116:main.c        **** 		bootLoader_SendChar('E');
+ 117:main.c        **** 		bootLoader_SendChar('w');
+ 118:main.c        **** 		bootLoader_SendChar('r');
+ 119:main.c        **** 		bootLoader_SendChar('i');
+ 120:main.c        **** 		bootLoader_SendChar('t');
+ 121:main.c        **** 		bootLoader_SendChar('e');
+ 122:main.c        **** 		
+ 123:main.c        **** 
+ 124:main.c        **** 	return address;
+ 125:main.c        **** }
+ 126:main.c        **** 
+ 127:main.c        **** static inline uint16_t bootLoader_ReadFlashPage(uint16_t waddr, pagebuf_t size)
+ 128:main.c        **** {
+ 129:main.c        **** 	uint32_t baddr = (uint32_t)waddr<<1;
+ 130:main.c        **** 	uint16_t data;
+ 131:main.c        **** 
+ 132:main.c        **** 	do {
+ 133:main.c        **** 		// don't read bootloader
+ 134:main.c        **** 		if ( baddr < APP_END ) {
+ 135:main.c        **** 			data = pgm_read_word_near(baddr);
+ 136:main.c        **** 		}
+ 137:main.c        **** 		else {
+ 138:main.c        **** 			data = 0xFFFF; // fake empty
+ 139:main.c        **** 		}
+ 140:main.c        **** 		bootLoader_SendChar(data);			// send LSB
+ 141:main.c        **** 		bootLoader_SendChar((data >> 8));		// send MSB
+ 142:main.c        **** 		baddr += 2;			// Select next word in memory
+ 143:main.c        **** 		size -= 2;			// Subtract two bytes from number of bytes to read
+ 144:main.c        **** 	} while (size);				// Repeat until block has been read
+ 145:main.c        **** 
+ 146:main.c        **** 	return baddr>>1;
+ 147:main.c        **** }
+ 148:main.c        **** 
+ 149:main.c        **** static inline uint16_t bootLoader_ReadEEPROM(uint16_t address, pagebuf_t size)
+ 150:main.c        **** {
+ 151:main.c        **** 	do {
+ 152:main.c        **** 		bootLoader_SendChar( eeprom_read_byte( (uint8_t*)address ) );
+ 153:main.c        **** 		address++;
+ 154:main.c        **** 		size--;				// Decrease number of bytes to read
+ 155:main.c        **** 	} while (size);				// Repeat until block has been read
+ 156:main.c        **** 
+ 157:main.c        **** 	return address;
+ 158:main.c        **** }
+ 159:main.c        **** 
+ 160:main.c        **** 
+ 161:main.c        **** static inline uint16_t bootLoader_CopyEEPROMToFlash(uint16_t eAddress, uint16_t fAddress, pagebuf_t
+ 162:main.c        **** {
+ 163:main.c        **** 	pagebuf_t cnt;
+ 164:main.c        **** 	uint8_t *tmp = gBuffer;
+ 165:main.c        **** 
+ 166:main.c        **** 	if (size > 128)
+ 167:main.c        **** 	{
+ 168:main.c        **** 		do {
+ 169:main.c        **** 			for (cnt = 0; cnt < sizeof(gBuffer); cnt++) {
+ 170:main.c        **** 				*tmp++ = eeprom_read_byte((uint8_t*)eAddress);
+ 171:main.c        **** 				bootLoader_SendChar( gBuffer[cnt] );
+ 172:main.c        **** 				eAddress++;
+ 173:main.c        **** 			}
+ 174:main.c        **** 			fAddress = bootLoader_WriteFlashPage(fAddress, 128);
+ 175:main.c        **** 			size = size - 128;
+ 176:main.c        **** 		} while (size > 128);
+ 177:main.c        **** 	}
+ 178:main.c        **** 	
+ 179:main.c        **** 	tmp = gBuffer;
+ 180:main.c        **** 	for (cnt = 0; cnt < sizeof(gBuffer); cnt++) {
+ 181:main.c        **** 		*tmp++ = (cnt < size) ? eeprom_read_byte((uint8_t*)eAddress) : 0xFF;
+ 182:main.c        **** 		bootLoader_SendChar( gBuffer[cnt] );
+ 183:main.c        **** 		eAddress++;
+ 184:main.c        **** 	}
+ 185:main.c        **** 	return bootLoader_WriteFlashPage(fAddress, size);
+ 186:main.c        **** 	
+ 187:main.c        **** }	
+ 188:main.c        **** 
+ 189:main.c        **** static void bootLoader_SendEcho(void)
+ 190:main.c        **** {
+ 191:main.c        **** 	bootLoader_SendChar('A');
+ 192:main.c        **** 	bootLoader_SendChar('V');
+ 193:main.c        **** 	bootLoader_SendChar('R');
+ 210               	7
+ 211               	/* prologue: function */
+ 212               	/* frame size = 0 */
+ 213 005e FF92      	.LBB235:
+ 214 0060 0F93      	.LBB236:
+ 216               	.LM12:
+ 217               		ldi r24,lo8(65)
+ 218               		sts uart_handle,r24
+ 220               	.LM13:
+ 221               		ldi r16,lo8(uart_handle)
+ 222 0064 81E4      		ldi r17,hi8(uart_handle)
+ 223 0066 8093 0000 		movw r24,r16
+ 224               		call HAL_comm_UART_Send
+ 225               	.LBE236:
+ 226 006a 00E0      	.LBE235:
+ 227 006c 10E0      	.LBB237:
+ 228 006e C801      	.LBB238:
+ 230               	.LM14:
+ 231               		ldi r24,lo8(86)
+ 232               		sts uart_handle,r24
+ 234               	.LM15:
+ 235               		movw r24,r16
+ 236 0074 86E5      		call HAL_comm_UART_Send
+ 237 0076 8093 0000 	.LBE238:
+ 238               	.LBE237:
+ 239               	.LBB239:
+ 240 007a C801      	.LBB240:
+ 242               	.LM16:
+ 243               		ldi r24,lo8(82)
+ 244               		sts uart_handle,r24
+ 246               	.LM17:
+ 247               		movw r24,r16
+ 248 0080 82E5      		call HAL_comm_UART_Send
+ 249 0082 8093 0000 	.LBE240:
+ 250               	.LBE239:
+ 251               	.LBB241:
+ 252 0086 C801      	.LBB242:
+ 254               	.LM18:
+ 255               		ldi r24,lo8(66)
+ 256               		sts uart_handle,r24
+ 258               	.LM19:
+ 259               		movw r24,r16
+ 260 008c 82E4      		call HAL_comm_UART_Send
+ 261 008e 8093 0000 	.LBE242:
+ 262               	.LBE241:
+ 263               	.LBB243:
+ 264 0092 C801      	.LBB244:
+ 266               	.LM20:
+ 267               		ldi r25,lo8(79)
+ 268               		mov r15,r25
+ 269               		sts uart_handle,r15
+ 271               	.LM21:
+ 272 0098 9FE4      		movw r24,r16
+ 273 009a F92E      		call HAL_comm_UART_Send
+ 274 009c F092 0000 	.LBE244:
+ 275               	.LBE243:
+ 276               	.LBB245:
+ 277 00a0 C801      	.LBB246:
+ 279               	.LM22:
+ 280               		sts uart_handle,r15
+ 282               	.LM23:
+ 283               		movw r24,r16
+ 284               		call HAL_comm_UART_Send
+ 285 00a6 F092 0000 	.LBE246:
+ 286               	.LBE245:
+ 287               	.LBB247:
+ 288 00aa C801      	.LBB248:
+ 290               	.LM24:
+ 291               		ldi r24,lo8(84)
+ 292               		sts uart_handle,r24
+ 294               	.LM25:
+ 295               		movw r24,r16
+ 296 00b0 84E5      		call HAL_comm_UART_Send
+ 297 00b2 8093 0000 	/* epilogue start */
+ 298               	.LBE248:
+ 299               	.LBE247:
+ 301 00b8 0E94 0000 	.LM26:
+ 302               		pop r17
+ 303               		pop r16
+ 304               		pop r15
+ 194:main.c        ****  void (*jump_to_app1)(void) = 0x0000;
+ 195:main.c        **** 
+ 196:main.c        **** int main(void)
+ 197:main.c        **** {
+ 198:main.c        **** 	uint16_t addressFR = 0;
+ 199:main.c        **** 	uint16_t addressFW = 0;
+ 200:main.c        **** 	uint16_t addressER = 0;
+ 201:main.c        **** 	uint16_t addressEW = 0;
+ 305               	Page:f(1,4)",36,0,0,bootLoader_WriteFlashPage
+ 309 00c0 FF90      	bootLoader_WriteFlashPage:
+ 311               	.LM27:
+ 312               	.LFBB4:
+ 313               		push r10
+ 314               		push r11
+ 315               		push r12
+ 316               		push r13
+ 317               		push r14
+ 318               		push r15
+ 319               		push r16
+ 320               		push r17
+ 321 00c4 AF92      		push r28
+ 322 00c6 BF92      		push r29
+ 323 00c8 CF92      	/* prologue: function */
+ 324 00ca DF92      	/* frame size = 0 */
+ 325 00cc EF92      		mov r26,r22
+ 327 00d0 0F93      	.LM28:
+ 328 00d2 1F93      		movw r20,r24
+ 329 00d4 CF93      		ldi r22,lo8(0)
+ 330 00d6 DF93      		ldi r23,hi8(0)
+ 331               		lsl r20
+ 332               		rol r21
+ 333 00d8 A62F      		rol r22
+ 334               		rol r23
+ 335               		movw r14,r20
+ 336 00da AC01      		movw r16,r22
+ 337 00dc 60E0      		ldi r28,lo8(gBuffer)
+ 338 00de 70E0      		ldi r29,hi8(gBuffer)
+ 340 00e2 551F      	.LM29:
+ 341 00e4 661F      		ldi r27,lo8(1)
+ 342 00e6 771F      	.L12:
+ 344 00ea 8B01      	.LM30:
+ 345 00ec C0E0      		ld r24,Y
+ 346 00ee D0E0      		ldi r25,lo8(0)
+ 348               	.LM31:
+ 349 00f0 B1E0      		ldd r19,Y+1
+ 350               		ldi r18,lo8(0)
+ 351               		or r24,r18
+ 352               		or r25,r19
+ 354 00f4 90E0      	.LM32:
+ 355               		adiw r28,2
+ 357 00f6 3981      	.LM33:
+ 358 00f8 20E0      		movw r30,r14
+ 359 00fa 822B      	/* #APP */
+ 360 00fc 932B      	 ;  88 "main.c" 1
+ 361               		movw  r0, r24
+ 362               		sts 87, r27
+ 363 00fe 2296      		spm
+ 364               		clr  r1
+ 365               		
+ 366 0100 F701      	 ;  0 "" 2
+ 368               	.LM34:
+ 369 0102 0C01      	/* #NOAPP */
+ 370 0104 B093 5700 		ldi r23,lo8(2)
+ 371 0108 E895      		mov r10,r23
+ 372 010a 1124      		mov r11,__zero_reg__
+ 373               		mov r12,__zero_reg__
+ 374               		mov r13,__zero_reg__
+ 375               		add r14,r10
+ 376               		adc r15,r11
+ 377               		adc r16,r12
+ 378 010c 72E0      		adc r17,r13
+ 380 0110 B12C      	.LM35:
+ 381 0112 C12C      		subi r26,lo8(-(-2))
+ 383 0116 EA0C      	.LM36:
+ 384 0118 FB1C      		brne .L12
+ 386 011c 1D1D      	.LM37:
+ 387               		ldi r24,lo8(5)
+ 388               		movw r30,r20
+ 389 011e A250      	/* #APP */
+ 390               	 ;  95 "main.c" 1
+ 391               		sts 87, r24
+ 392 0120 01F4      		spm
+ 393               		
+ 394               	 ;  0 "" 2
+ 395 0122 85E0      	/* #NOAPP */
+ 396 0124 FA01      	.L13:
+ 398               	.LM38:
+ 399 0126 8093 5700 		in __tmp_reg__,87-32
+ 400 012a E895      		sbrc __tmp_reg__,0
+ 401               		rjmp .L13
+ 403               	.LM39:
+ 404               		ldi r24,lo8(17)
+ 405               	/* #APP */
+ 406               	 ;  97 "main.c" 1
+ 407 012c 07B6      		sts 87, r24
+ 408 012e 00FC      		spm
+ 409 0130 00C0      		
+ 410               	 ;  0 "" 2
+ 411               	/* #NOAPP */
+ 412 0132 81E1      	.LBB249:
+ 413               	.LBB250:
+ 415 0134 8093 5700 	.LM40:
+ 416 0138 E895      		ldi r24,lo8(70)
+ 417               		sts uart_handle,r24
+ 419               	.LM41:
+ 420               		ldi r24,lo8(uart_handle)
+ 421               		ldi r25,hi8(uart_handle)
+ 422               		call HAL_comm_UART_Send
+ 423               	.LBE250:
+ 424 013a 86E4      	.LBE249:
+ 425 013c 8093 0000 	.LBB251:
+ 426               	.LBB252:
+ 428 0140 80E0      	.LM42:
+ 429 0142 90E0      		ldi r24,lo8(119)
+ 430 0144 0E94 0000 		sts uart_handle,r24
+ 432               	.LM43:
+ 433               		ldi r24,lo8(uart_handle)
+ 434               		ldi r25,hi8(uart_handle)
+ 435               		call HAL_comm_UART_Send
+ 436               	.LBE252:
+ 437 0148 87E7      	.LBE251:
+ 438 014a 8093 0000 	.LBB253:
+ 439               	.LBB254:
+ 441 014e 80E0      	.LM44:
+ 442 0150 90E0      		ldi r24,lo8(114)
+ 443 0152 0E94 0000 		sts uart_handle,r24
+ 445               	.LM45:
+ 446               		ldi r24,lo8(uart_handle)
+ 447               		ldi r25,hi8(uart_handle)
+ 448               		call HAL_comm_UART_Send
+ 449               	.LBE254:
+ 450 0156 82E7      	.LBE253:
+ 451 0158 8093 0000 	.LBB255:
+ 452               	.LBB256:
+ 454 015c 80E0      	.LM46:
+ 455 015e 90E0      		ldi r24,lo8(105)
+ 456 0160 0E94 0000 		sts uart_handle,r24
+ 458               	.LM47:
+ 459               		ldi r24,lo8(uart_handle)
+ 460               		ldi r25,hi8(uart_handle)
+ 461               		call HAL_comm_UART_Send
+ 462               	.LBE256:
+ 463 0164 89E6      	.LBE255:
+ 464 0166 8093 0000 	.LBB257:
+ 465               	.LBB258:
+ 467 016a 80E0      	.LM48:
+ 468 016c 90E0      		ldi r24,lo8(116)
+ 469 016e 0E94 0000 		sts uart_handle,r24
+ 471               	.LM49:
+ 472               		ldi r24,lo8(uart_handle)
+ 473               		ldi r25,hi8(uart_handle)
+ 474               		call HAL_comm_UART_Send
+ 475               	.LBE258:
+ 476 0172 84E7      	.LBE257:
+ 477 0174 8093 0000 	.LBB259:
+ 478               	.LBB260:
+ 480 0178 80E0      	.LM50:
+ 481 017a 90E0      		ldi r24,lo8(101)
+ 482 017c 0E94 0000 		sts uart_handle,r24
+ 484               	.LM51:
+ 485               		ldi r24,lo8(uart_handle)
+ 486               		ldi r25,hi8(uart_handle)
+ 487               		call HAL_comm_UART_Send
+ 488               		movw r20,r16
+ 489 0180 85E6      		movw r18,r14
+ 490 0182 8093 0000 		lsr r21
+ 491               		ror r20
+ 492               		ror r19
+ 493 0186 80E0      		ror r18
+ 494 0188 90E0      	.LBE260:
+ 495 018a 0E94 0000 	.LBE259:
+ 497 0190 9701      	.LM52:
+ 498 0192 5695      		movw r24,r18
+ 499 0194 4795      	/* epilogue start */
+ 500 0196 3795      		pop r29
+ 501 0198 2795      		pop r28
+ 502               		pop r17
+ 503               		pop r16
+ 504               		pop r15
+ 505               		pop r14
+ 506 019a C901      		pop r13
+ 507               		pop r12
+ 508 019c DF91      		pop r11
+ 509 019e CF91      		pop r10
+ 510 01a0 1F91      		ret
+ 518 01b0 0895      	.Lscope4:
+ 523               	bootLoader_WriteEEPROM:
+ 525               	.LM53:
+ 526               	.LFBB5:
+ 527               		push r12
+ 528               		push r13
+ 529               		push r14
+ 530               		push r15
+ 531               		push r16
+ 532               		push r17
+ 533               		push r28
+ 534               		push r29
+ 535 01b2 CF92      	/* prologue: function */
+ 536 01b4 DF92      	/* frame size = 0 */
+ 537 01b6 EF92      		movw r12,r24
+ 538 01b8 FF92      		mov r16,r22
+ 540 01bc 1F93      	.LM54:
+ 541 01be CF93      		movw r28,r24
+ 542 01c0 DF93      		mov r17,r22
+ 543               		ldi r31,lo8(gBuffer)
+ 544               		mov r14,r31
+ 545 01c2 6C01      		ldi r31,hi8(gBuffer)
+ 546 01c4 062F      		mov r15,r31
+ 547               	.L18:
+ 549 01c6 EC01      	.LM55:
+ 550 01c8 162F      		movw r30,r14
+ 551 01ca F0E0      		ld r22,Z+
+ 552 01cc EF2E      		movw r14,r30
+ 553 01ce F0E0      		movw r24,r28
+ 554 01d0 FF2E      		call __eewr_byte_m32
+ 556               	.LM56:
+ 557               		adiw r28,1
+ 559 01d4 6191      	.LM57:
+ 560 01d6 7F01      		subi r17,lo8(-(-1))
+ 562 01da 0E94 0000 	.LM58:
+ 563               		brne .L18
+ 565 01de 2196      	.LM59:
+ 566               		sec
+ 567               		adc r12,__zero_reg__
+ 568 01e0 1150      		adc r13,__zero_reg__
+ 569               	.LBB261:
+ 570               	.LBB262:
+ 572               	.LM60:
+ 573               		ldi r24,lo8(69)
+ 574 01e4 0894      		sts uart_handle,r24
+ 576 01e8 D11C      	.LM61:
+ 577               		ldi r24,lo8(uart_handle)
+ 578               		ldi r25,hi8(uart_handle)
+ 579               		call HAL_comm_UART_Send
+ 580               	.LBE262:
+ 581 01ea 85E4      	.LBE261:
+ 582 01ec 8093 0000 	.LBB263:
+ 583               	.LBB264:
+ 585 01f0 80E0      	.LM62:
+ 586 01f2 90E0      		ldi r24,lo8(119)
+ 587 01f4 0E94 0000 		sts uart_handle,r24
+ 589               	.LM63:
+ 590               		ldi r24,lo8(uart_handle)
+ 591               		ldi r25,hi8(uart_handle)
+ 592               		call HAL_comm_UART_Send
+ 593               	.LBE264:
+ 594 01f8 87E7      	.LBE263:
+ 595 01fa 8093 0000 	.LBB265:
+ 596               	.LBB266:
+ 598 01fe 80E0      	.LM64:
+ 599 0200 90E0      		ldi r24,lo8(114)
+ 600 0202 0E94 0000 		sts uart_handle,r24
+ 602               	.LM65:
+ 603               		ldi r24,lo8(uart_handle)
+ 604               		ldi r25,hi8(uart_handle)
+ 605               		call HAL_comm_UART_Send
+ 606               	.LBE266:
+ 607 0206 82E7      	.LBE265:
+ 608 0208 8093 0000 	.LBB267:
+ 609               	.LBB268:
+ 611 020c 80E0      	.LM66:
+ 612 020e 90E0      		ldi r24,lo8(105)
+ 613 0210 0E94 0000 		sts uart_handle,r24
+ 615               	.LM67:
+ 616               		ldi r24,lo8(uart_handle)
+ 617               		ldi r25,hi8(uart_handle)
+ 618               		call HAL_comm_UART_Send
+ 619               	.LBE268:
+ 620 0214 89E6      	.LBE267:
+ 621 0216 8093 0000 	.LBB269:
+ 622               	.LBB270:
+ 624 021a 80E0      	.LM68:
+ 625 021c 90E0      		ldi r24,lo8(116)
+ 626 021e 0E94 0000 		sts uart_handle,r24
+ 628               	.LM69:
+ 629               		ldi r24,lo8(uart_handle)
+ 630               		ldi r25,hi8(uart_handle)
+ 631               		call HAL_comm_UART_Send
+ 632               	.LBE270:
+ 633 0222 84E7      	.LBE269:
+ 634 0224 8093 0000 	.LBB271:
+ 635               	.LBB272:
+ 637 0228 80E0      	.LM70:
+ 638 022a 90E0      		ldi r24,lo8(101)
+ 639 022c 0E94 0000 		sts uart_handle,r24
+ 641               	.LM71:
+ 642               		ldi r24,lo8(uart_handle)
+ 643               		ldi r25,hi8(uart_handle)
+ 644               		call HAL_comm_UART_Send
+ 645               		subi r16,lo8(-(-1))
+ 646 0230 85E6      		movw r18,r12
+ 647 0232 8093 0000 		add r18,r16
+ 648               		adc r19,__zero_reg__
+ 649               	.LBE272:
+ 650 0236 80E0      	.LBE271:
+ 652 023a 0E94 0000 	.LM72:
+ 653 023e 0150      		movw r24,r18
+ 654 0240 9601      	/* epilogue start */
+ 655 0242 200F      		pop r29
+ 656 0244 311D      		pop r28
+ 657               		pop r17
+ 658               		pop r16
+ 659               		pop r15
+ 660               		pop r14
+ 661 0246 C901      		pop r13
+ 662               		pop r12
+ 663 0248 DF91      		ret
+ 668 0252 EF90      	.Lscope5:
+ 670 0256 CF90      	.global	main
+ 672               	main:
+ 674               	.LM73:
+ 675               	.LFBB6:
+ 676               		push r2
+ 677               		push r3
+ 678               		push r4
+ 679               		push r5
+ 680               		push r6
+ 202:main.c        ****  val;
+ 203:main.c        **** 
+ 204:main.c        **** #ifdef DISABLE_WDT_AT_STARTUP
+ 205:main.c        **** 
+ 206:main.c        **** 	cli();
+ 681               	in r28,__SP_L__
+ 682               		in r29,__SP_H__
+ 683               		sbiw r28,18
+ 684 025a 2F92      		in __tmp_reg__,__SREG__
+ 685 025c 3F92      		cli
+ 686 025e 4F92      		out __SP_H__,r29
+ 687 0260 5F92      		out __SREG__,__tmp_reg__
+ 688 0262 6F92      		out __SP_L__,r28
+ 689 0264 7F92      	/* prologue: function */
+ 690 0266 8F92      	/* frame size = 18 */
+ 692 026a AF92      	.LM74:
+ 693 026c BF92      	/* #APP */
+ 694 026e CF92      	 ;  215 "main.c" 1
+ 695 0270 DF92      		cli
+ 696 0272 EF92      	 ;  0 "" 2
+ 698 0276 0F93      	.LM75:
+ 699 0278 1F93      	 ;  216 "main.c" 1
+ 700 027a DF93      		wdr
+ 701 027c CF93      	 ;  0 "" 2
+ 703 0280 DEB7      	.LM76:
+ 704 0282 6297      	/* #NOAPP */
+ 705 0284 0FB6      		ldi r24,lo8(24)
+ 706 0286 F894      	/* #APP */
+ 707 0288 DEBF      	 ;  217 "main.c" 1
+ 708 028a 0FBE      		in __tmp_reg__, __SREG__
+ 709 028c CDBF      		cli
+ 710               		out 33, r24
+ 711               		out 33, __zero_reg__
+ 207:main.c        **** reset();
+ 208:main.c        **** 	wdt_disable();
+ 209:main.c        **** 
+ 210:main.c        **** #endif
+ 211:main.c        **** 
+ 212:main.c        **** 	uart_init_config.Baud = 19200;
+ 213:main.c        **** 	uart_init_config.DataBits = DATA_BIT_8;
+ 214:main.c        **** 	uart_init_config.StopBits = STOP_BIT_1;
+ 215:main.c        **** 	uart_init_config.Parity = PARITY_DISABLE;
+ 712               	 0 "" 2
+ 714               	.LM77:
+ 715               	/* #NOAPP */
+ 716 028e F894      		ldi r24,lo8(19200)
+ 717               		ldi r25,hi8(19200)
+ 216:main.c        **** _init_config.EnableInterrupt = 0;
+ 718               	26,hlo8(19200)
+ 719               		ldi r27,hhi8(19200)
+ 720               		sts uart_init_config,r24
+ 721 0290 A895      		sts (uart_init_config)+1,r25
+ 722               		sts (uart_init_config)+2,r26
+ 217:main.c        **** 	uart_init_config.U2X_State = U2X_DISABLE;
+ 723               	(uart_init_config)+3,r27
+ 725               	.LM78:
+ 726 0292 88E1      		ldi r24,lo8(6)
+ 727               		sts uart_init_config+4,r24
+ 729 0294 0FB6      	.LM79:
+ 730 0296 F894      		sts uart_init_config+5,__zero_reg__
+ 732 029a 11BC      	.LM80:
+ 733 029c 0FBE      		sts uart_init_config+6,__zero_reg__
+ 735               	.LM81:
+ 218:main.c        **** 	
+ 219:main.c        **** 	HAL_comm_UART_Initialize(&uart_init_config);
+ 220:main.c        **** 
+ 221:main.c        **** 		
+ 736               	t_config+7,__zero_reg__
+ 738               	.LM82:
+ 739 029e 80E0      		sts uart_init_config+8,__zero_reg__
+ 741 02a2 A0E0      	.LM83:
+ 742 02a4 B0E0      		ldi r24,lo8(uart_init_config)
+ 743 02a6 8093 0000 		ldi r25,hi8(uart_init_config)
+ 744 02aa 9093 0000 		call HAL_comm_UART_Initialize
+ 746 02b2 B093 0000 	.LM84:
+ 222:main.c        **** int16_t cnt = 0;
+ 747               	oader_SendEcho
+ 748               		ldi r16,lo8(0)
+ 749 02b6 86E0      		ldi r17,hi8(0)
+ 750 02b8 8093 0000 	.LBB273:
+ 223:main.c        **** 	bootLoader_SendEcho();
+ 751               	274:
+ 753 02bc 1092 0000 	.LM85:
+ 224:main.c        **** 
+ 754               	i r22,lo8(95)
+ 755               		mov r15,r22
+ 756 02c0 1092 0000 	.LBE274:
+ 225:main.c        **** 	while (1) {
+ 757               	E273:
+ 758               	.LBB276:
+ 759 02c4 1092 0000 	.LBB277:
+ 226:main.c        **** 	
+ 760               	i r21,lo8(49)
+ 761               		mov r8,r21
+ 762 02c8 1092 0000 	.LBE277:
+ 227:main.c        **** 	if (UART_STATUS & (1<<UART_RXREADY))
+ 228:main.c        **** 		{
+ 763               	E276:
+ 764               	.LBB279:
+ 765 02cc 80E0      	.LBB280:
+ 766 02ce 90E0      		ldi r20,lo8(51)
+ 767 02d0 0E94 0000 		mov r9,r20
+ 229:main.c        **** 	bootLoader_SendChar('_');
+ 230:main.c        **** 			bootLoader_SendChar('1');
+ 231:main.c        **** 			bootLoader_SendChar('_');
+ 232:main.c        **** 			if (UART_DATA == START_WAIT_UARTCHAR)
+ 233:main.c        **** 			{
+ 768               	80:
+ 769               	.LBE279:
+ 771 02d8 00E0      	.LM86:
+ 772 02da 10E0      		clr r10
+ 773               		clr r11
+ 774               	.LBB282:
+ 775               	.LBB283:
+ 777 02dc 6FE5      	.LM87:
+ 778 02de F62E      		ldi r19,lo8(35)
+ 779               		mov r14,r19
+ 780               	.LBE283:
+ 781               	.LBE282:
+ 782               	.LBB285:
+ 783 02e0 51E3      	.LBB286:
+ 784 02e2 852E      	.LBB287:
+ 785               	.LBB288:
+ 787               	.Ltext1:
+ 789 02e4 43E3      	.LM88:
+ 790 02e6 942E      		ldi r18,lo8(2500)
+ 791               		mov r12,r18
+ 792               		ldi r18,hi8(2500)
+ 234:main.c        **** 				bootLoader_SendChar('_');
+ 235:main.c        **** 				bootLoader_SendChar('2');
+ 236:main.c        **** 				bootLoader_SendChar('_');
+ 237:main.c        **** 				break;
+ 238:main.c        **** 			}				
+ 239:main.c        **** 		}
+ 240:main.c        **** 		if (cnt++ >= WAIT_VALUE) {
+ 241:main.c        **** 			
+ 242:main.c        **** 			bootLoader_SendChar('_');
+ 243:main.c        **** 			bootLoader_SendChar('3');
+ 244:main.c        **** 			bootLoader_SendChar('_');
+ 245:main.c        **** 			jump_to_app1();			// Jump to application sector
+ 246:main.c        **** 			bootLoader_SendChar('#');
+ 247:main.c        **** 		}
+ 248:main.c        **** 
+ 249:main.c        **** 		_delay_ms(10);
+ 250:main.c        **** 	}
+ 251:main.c        **** 	
+ 252:main.c        **** 	bootLoader_SendEcho();
+ 253:main.c        **** 
+ 254:main.c        **** 	for(;;) {
+ 255:main.c        **** 		val = bootLoader_ReceiveChar();
+ 256:main.c        **** 		// Autoincrement?
+ 793               	8:
+ 794               	.LBE287:
+ 795 02e8 AA24      	.LBE286:
+ 796 02ea BB24      	.LBE285:
+ 798               	.Ltext2:
+ 800               	.LM89:
+ 801 02ec 33E2      		sbis 43-32,7
+ 802 02ee E32E      		rjmp .L22
+ 803               	.LBB292:
+ 804               	.LBB275:
+ 806               	.LM90:
+ 807               		sts uart_handle,r15
+ 809               	.LM91:
+ 810               		ldi r24,lo8(uart_handle)
+   1:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /* Copyright (c) 2002, Marek Michalkiewicz
+   2:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    Copyright (c) 2007 Joerg Wunsch
+   3:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    All rights reserved.
+   4:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+   5:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    Redistribution and use in source and binary forms, with or without
+   6:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    modification, are permitted provided that the following conditions are met:
+   7:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+   8:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    * Redistributions of source code must retain the above copyright
+   9:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      notice, this list of conditions and the following disclaimer.
+  10:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  11:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    * Redistributions in binary form must reproduce the above copyright
+  12:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      notice, this list of conditions and the following disclaimer in
+  13:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      the documentation and/or other materials provided with the
+  14:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      distribution.
+  15:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  16:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    * Neither the name of the copyright holders nor the names of
+  17:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      contributors may be used to endorse or promote products derived
+  18:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      from this software without specific prior written permission.
+  19:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  20:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  21:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  22:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  23:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  24:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  25:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  26:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  27:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  28:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  29:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  30:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  31:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  32:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /* $Id: delay_basic.h,v 1.1 2007/05/13 21:23:20 joerg_wunsch Exp $ */
+  33:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  34:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #ifndef _UTIL_DELAY_BASIC_H_
+  35:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #define _UTIL_DELAY_BASIC_H_ 1
+  36:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  37:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #include <inttypes.h>
+  38:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  39:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \file */
+  40:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \defgroup util_delay_basic <util/delay_basic.h>: Basic busy-wait delay loops
+  41:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     \code
+  42:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     #include <util/delay_basic.h>
+  43:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     \endcode
+  44:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  45:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     The functions in this header file implement simple delay loops
+  46:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     that perform a busy-waiting.  They are typically used to
+  47:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     facilitate short delays in the program execution.  They are
+  48:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     implemented as count-down loops with a well-known CPU cycle
+  49:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     count per loop iteration.  As such, no other processing can
+  50:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     occur simultaneously.  It should be kept in mind that the
+  51:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     functions described here do not disable interrupts.
+  52:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  53:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     In general, for long delays, the use of hardware timers is
+  54:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     much preferrable, as they free the CPU, and allow for
+  55:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     concurrent processing of other events while the timer is
+  56:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     running.  However, in particular for very short delays, the
+  57:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     overhead of setting up a hardware timer is too much compared
+  58:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     to the overall delay time.
+  59:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  60:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Two inline functions are provided for the actual delay algorithms.
+  61:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  62:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** */
+  63:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  64:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #if !defined(__DOXYGEN__)
+  65:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** static inline void _delay_loop_1(uint8_t __count) __attribute__((always_inline));
+  66:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** static inline void _delay_loop_2(uint16_t __count) __attribute__((always_inline));
+  67:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #endif
+  68:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  69:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \ingroup util_delay_basic
+  70:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  71:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Delay loop using an 8-bit counter \c __count, so up to 256
+  72:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     iterations are possible.  (The value 256 would have to be passed
+  73:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     as 0.)  The loop executes three CPU cycles per iteration, not
+  74:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     including the overhead the compiler needs to setup the counter
+  75:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     register.
+  76:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  77:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Thus, at a CPU speed of 1 MHz, delays of up to 768 microseconds
+  78:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     can be achieved.
+  79:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** */
+  80:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** void
+  81:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** _delay_loop_1(uint8_t __count)
+  82:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** {
+  83:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 	__asm__ volatile (
+  84:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 		"1: dec %0" "\n\t"
+  85:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 		"brne 1b"
+  86:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 		: "=r" (__count)
+  87:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 		: "0" (__count)
+  88:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 	);
+  89:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** }
+  90:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  91:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \ingroup util_delay_basic
+  92:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  93:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Delay loop using a 16-bit counter \c __count, so up to 65536
+  94:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     iterations are possible.  (The value 65536 would have to be
+  95:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     passed as 0.)  The loop executes four CPU cycles per iteration,
+  96:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     not including the overhead the compiler requires to setup the
+  97:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     counter register pair.
+  98:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  99:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Thus, at a CPU speed of 1 MHz, delays of up to about 262.1
+ 100:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     milliseconds can be achieved.
+ 101:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****  */
+ 102:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** void
+ 103:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** _delay_loop_2(uint16_t __count)
+ 104:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** {
+ 105:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 	__asm__ volatile (
+ 811               	handle)
+ 812               		call HAL_comm_UART_Send
+ 813 02f0 24EC      	.LBE275:
+ 814 02f2 C22E      	.LBE292:
+ 815 02f4 29E0      	.LBB293:
+ 816 02f6 D22E      	.LBB278:
+ 818               	.LM92:
+ 819               		sts uart_handle,r8
+ 821               	.LM93:
+ 822               		ldi r24,lo8(uart_handle)
+ 823               		ldi r25,hi8(uart_handle)
+ 824               		call HAL_comm_UART_Send
+ 825               	.LBE278:
+ 826 02f8 5F9B      	.LBE293:
+ 827 02fa 00C0      	.LBB294:
+ 828               	.LBB295:
+ 830               	.LM94:
+ 831               		sts uart_handle,r15
+ 833               	.LM95:
+ 834               		ldi r24,lo8(uart_handle)
+ 835 0300 80E0      		ldi r25,hi8(uart_handle)
+ 836 0302 90E0      		call HAL_comm_UART_Send
+ 837 0304 0E94 0000 	.LBE295:
+ 838               	.LBE294:
+ 840               	.LM96:
+ 841               		in r24,44-32
+ 842               		cpi r24,lo8(83)
+ 843               		brne .L22
+ 844 0308 8092 0000 	.LBB296:
+ 845               	.LBB297:
+ 847 030c 80E0      	.LM97:
+ 848 030e 90E0      		sts uart_handle,r15
+ 850               	.LM98:
+ 851               		ldi r24,lo8(uart_handle)
+ 852               		ldi r25,hi8(uart_handle)
+ 853               		call HAL_comm_UART_Send
+ 854               	.LBE297:
+ 855               	.LBE296:
+ 856 0314 F092 0000 	.LBB298:
+ 857               	.LBB299:
+ 859 0318 80E0      	.LM99:
+ 860 031a 90E0      		ldi r24,lo8(50)
+ 861 031c 0E94 0000 		sts uart_handle,r24
+ 863               	.LM100:
+ 864               		ldi r24,lo8(uart_handle)
+ 865               		ldi r25,hi8(uart_handle)
+ 866 0320 8CB1      		call HAL_comm_UART_Send
+ 867 0322 8335      	.LBE299:
+ 868 0324 01F4      	.LBE298:
+ 869               	.LBB300:
+ 870               	.LBB301:
+ 872               	.LM101:
+ 873 0326 F092 0000 		sts uart_handle,r15
+ 875               	.LM102:
+ 876 032a 80E0      		ldi r24,lo8(uart_handle)
+ 877 032c 90E0      		ldi r25,hi8(uart_handle)
+ 878 032e 0E94 0000 		call HAL_comm_UART_Send
+ 879               	.LBE301:
+ 880               	.LBE300:
+ 882               	.LM103:
+ 883               		call bootLoader_SendEcho
+ 884               		std Y+10,__zero_reg__
+ 885 0332 82E3      		std Y+9,__zero_reg__
+ 886 0334 8093 0000 		clr r2
+ 887               		clr r3
+ 888               		std Y+8,__zero_reg__
+ 889 0338 80E0      		std Y+7,__zero_reg__
+ 890 033a 90E0      		rjmp .L79
+ 891 033c 0E94 0000 	.L22:
+ 893               	.LM104:
+ 894               		ldi r18,hi8(10000)
+ 895               		cpi r16,lo8(10000)
+ 896               		cpc r17,r18
+ 897               		brlo .L24
+ 898 0340 F092 0000 	.LBB302:
+ 899               	.LBB303:
+ 901 0344 80E0      	.LM105:
+ 902 0346 90E0      		sts uart_handle,r15
+ 904               	.LM106:
+ 905               		ldi r24,lo8(uart_handle)
+ 257:main.c        **** bootLoader_SendChar('Y');			// Autoincrement is quicker
+ 258:main.c        **** 
+ 259:main.c        **** 		//write addressW
+ 260:main.c        **** 		} else if (val == 'W') {
+ 261:main.c        **** 			val = bootLoader_ReceiveChar();
+ 262:main.c        **** 			if(val == 'F')
+ 263:main.c        **** 			{
+ 906               	68,0,45,.LM107-.LFBB6
+ 907               	.LM107:
+ 908 034c 0E94 0000 		sts uart_handle,r9
+ 910 0352 1986      	.LM108:
+ 911 0354 2224      		ldi r24,lo8(uart_handle)
+ 912 0356 3324      		ldi r25,hi8(uart_handle)
+ 913 0358 1886      		call HAL_comm_UART_Send
+ 914 035a 1F82      	.LBE281:
+ 915 035c 00C0      	.LBE304:
+ 916               	.LBB305:
+ 917               	.LBB306:
+ 919 035e 27E2      	.LM109:
+ 920 0360 0031      		sts uart_handle,r15
+ 922 0364 00F0      	.LM110:
+ 923               		ldi r24,lo8(uart_handle)
+ 924               		ldi r25,hi8(uart_handle)
+ 925               		call HAL_comm_UART_Send
+ 926               	.LBE306:
+ 927 0366 F092 0000 	.LBE305:
+ 929               	.LM111:
+ 930 036a 80E0      		movw r30,r10
+ 931 036c 90E0      		icall
+ 932 036e 0E94 0000 	.LBB307:
+ 933               	.LBB284:
+ 935               	.LM112:
+ 936               		sts uart_handle,r14
+ 938               	.LM113:
+ 939 0372 9092 0000 		ldi r24,lo8(uart_handle)
+ 940               		ldi r25,hi8(uart_handle)
+ 941               		call HAL_comm_UART_Send
+ 942 0376 80E0      	.L24:
+ 943 0378 90E0      	.LBE284:
+ 944 037a 0E94 0000 	.LBE307:
+ 946               	.LM114:
+ 947               		subi r16,lo8(-(1))
+ 948               		sbci r17,hi8(-(1))
+ 949               	.LBB308:
+ 950               	.LBB291:
+ 951 037e F092 0000 	.LBB290:
+ 952               	.LBB289:
+ 954 0382 80E0      	.Ltext3:
+ 956 0386 0E94 0000 	.LM115:
+ 957               		movw r24,r12
+ 958               	/* #APP */
+ 959               	 ;  105 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 960               		1: sbiw r24,1
+ 961 038a F501      		brne 1b
+ 962 038c 0995      	 ;  0 "" 2
+ 963               	/* #NOAPP */
+ 964               		rjmp .L25
+ 965               	.L77:
+ 966               	.LBE289:
+ 967 038e E092 0000 	.LBE290:
+ 968               	.LBE291:
+ 969               	.LBE308:
+ 970 0392 80E0      	.LBB309:
+ 971 0394 90E0      	.LBB310:
+ 973               	.Ltext4:
+ 975               	.LM116:
+ 976               		movw r24,r28
+ 977               		adiw r24,1
+ 978 039a 0F5F      		call HAL_comm_UART_Receive
+ 980               	.LM117:
+ 981               		ldd r15,Y+1
+ 982               	.LBE310:
+ 983               	.LBE309:
+ 985               	.LM118:
+ 986               		ldi r19,lo8(97)
+ 987               		cp r15,r19
+ 988 039e C601      		brne .L26
+ 989               	.LBB311:
+ 990               	.LBB312:
+ 992 03a2 01F4      	.LM119:
+ 993               		ldi r24,lo8(89)
+ 994               		sts uart_handle,r24
+ 995 03a4 00C0      		rjmp .L78
+ 996               	.L26:
+ 997               	.LBE312:
+ 998               	.LBE311:
+ 1000               	.LM120:
+ 1001               		ldi r25,lo8(87)
+ 1002               		cp r15,r25
+ 1003               		brne .L27
+ 1004               	.LBB313:
+ 1005               	.LBB314:
+ 1007 03a6 CE01      	.LM121:
+ 1008 03a8 0196      		movw r24,r28
+ 1009 03aa 0E94 0000 		adiw r24,1
+ 1010               		call HAL_comm_UART_Receive
+ 1012 03ae F980      	.LM122:
+ 1013               		ldd r24,Y+1
+ 1014               	.LBE314:
+ 264:main.c        **** ressFW = bootLoader_ReceiveChar();		//read address 8 MSB
+ 265:main.c        **** 				addressFW = (addressFW<<8) | bootLoader_ReceiveChar();
+ 266:main.c        **** 				bootLoader_SendChar('\r');		
+ 267:main.c        **** 			}
+ 268:main.c        **** 			else if(val == 'E')
+ 1015               	,.LM124-.LFBB6
+ 1016               	.LM124:
+ 1017 03b0 31E6      		movw r24,r28
+ 1018 03b2 F316      		adiw r24,1
+ 1019 03b4 01F4      		call HAL_comm_UART_Receive
+ 1020               	.LBE316:
+ 1021               	.LBE315:
+ 1023               	.LM125:
+ 1024 03b6 89E5      		ldd r26,Y+1
+ 1025 03b8 8093 0000 		std Y+18,r26
+ 1026 03bc 00C0      		std Y+17,__zero_reg__
+ 1027               	.LBB317:
+ 1028               	.LBB318:
+ 269:main.c        **** 				addressEW = bootLoader_ReceiveChar();		//read address 8 MSB
+ 270:main.c        **** 				addressEW = (addressEW<<8) | bootLoader_ReceiveChar();
+ 271:main.c        **** 				bootLoader_SendChar('\r');	
+ 272:main.c        **** 			}
+ 1030               	24,r28
+ 1031               		adiw r24,1
+ 1032 03be 97E5      		call HAL_comm_UART_Receive
+ 1033 03c0 F916      	.LBE318:
+ 1034 03c2 01F4      	.LBE317:
+ 1036               	.LM127:
+ 1037               		ldd r24,Y+1
+ 1038               		mov r2,r24
+ 1039 03c4 CE01      		clr r3
+ 1040 03c6 0196      		ldd r30,Y+17
+ 1041 03c8 0E94 0000 		ldd r31,Y+18
+ 1042               		or r2,r30
+ 1043               		or r3,r31
+ 1044 03cc 8981      		rjmp .L80
+ 1045               	.L28:
+ 273:main.c        **** lse
+ 274:main.c        **** 			{
+ 1047               	lo8(69)
+ 1048               		breq .+2
+ 1049 03ce 8634      		rjmp .L59
+ 1050 03d0 01F4      	.LBB319:
+ 1051               	.LBB320:
+ 1053               	.LM129:
+ 1054               		movw r24,r28
+ 1055 03d2 CE01      		adiw r24,1
+ 1056 03d4 0196      		call HAL_comm_UART_Receive
+ 1057 03d6 0E94 0000 	.LBE320:
+ 1058               	.LBE319:
+ 275:main.c        **** 		bootLoader_SendChar(0);
+ 276:main.c        **** 			}
+ 277:main.c        **** 			
+ 1060               	r18,Y+1
+ 1061               		std Y+16,r18
+ 1062 03da A981      		std Y+15,__zero_reg__
+ 1063 03dc AA8B      	.LBB321:
+ 1064 03de 198A      	.LBB322:
+ 1066               	.LM131:
+ 1067               		movw r24,r28
+ 1068               		adiw r24,1
+ 1069 03e0 CE01      		call HAL_comm_UART_Receive
+ 1070 03e2 0196      	.LBE322:
+ 1071 03e4 0E94 0000 	.LBE321:
+ 1073               	.LM132:
+ 1074               		ldd r24,Y+1
+ 1075               		mov r26,r24
+ 1076 03e8 8981      		ldi r27,lo8(0)
+ 1077 03ea 282E      		ldd r30,Y+15
+ 1078 03ec 3324      		ldd r31,Y+16
+ 1079 03ee E989      		or r30,r26
+ 1080 03f0 FA89      		or r31,r27
+ 1081 03f2 2E2A      		std Y+6,r31
+ 1082 03f4 3F2A      		std Y+5,r30
+ 1083 03f6 00C0      	.L80:
+ 1084               	.LBB323:
+ 278:main.c        **** /write addressR
+ 279:main.c        **** 		} else if (val == 'R'){
+ 280:main.c        **** 			val = bootLoader_ReceiveChar();
+ 1085               	.LM133-.LFBB6
+ 1086               	.LM133:
+ 1087 03f8 8534      		ldi r31,lo8(13)
+ 1088 03fa 01F0      		sts uart_handle,r31
+ 1089 03fc 00C0      		rjmp .L78
+ 1090               	.L27:
+ 1091               	.LBE324:
+ 1092               	.LBE323:
+ 1094 03fe CE01      	.LM134:
+ 1095 0400 0196      		ldi r18,lo8(82)
+ 1096 0402 0E94 0000 		cp r15,r18
+ 1097               		brne .L30
+ 1098               	.LBB325:
+ 281:main.c        **** if(val == 'F')
+ 282:main.c        **** 			{
+ 283:main.c        **** 				addressFR = bootLoader_ReceiveChar();		//read address 8 MSB
+ 1099               	bn	68,0,52,.LM135-.LFBB6
+ 1100               	.LM135:
+ 1101 0406 2981      		movw r24,r28
+ 1102 0408 288B      		adiw r24,1
+ 1103 040a 1F86      		call HAL_comm_UART_Receive
+ 1105               	.LM136:
+ 1106               		ldd r24,Y+1
+ 1107               	.LBE326:
+ 1108 040c CE01      	.LBE325:
+ 1110 0410 0E94 0000 	.LM137:
+ 1111               		cpi r24,lo8(70)
+ 1112               		brne .L31
+ 1113               	.LBB327:
+ 1114               	.LBB328:
+ 1116 0416 A82F      	.LM138:
+ 1117 0418 B0E0      		movw r24,r28
+ 1118 041a EF85      		adiw r24,1
+ 1119 041c F889      		call HAL_comm_UART_Receive
+ 1120 041e EA2B      	.LBE328:
+ 1121 0420 FB2B      	.LBE327:
+ 1123 0424 ED83      	.LM139:
+ 1124               		ldd r19,Y+1
+ 1125               		std Y+14,r19
+ 1126               		std Y+13,__zero_reg__
+ 1127               	.LBB329:
+ 1128               	.LBB330:
+ 1130 0428 F093 0000 	.LM140:
+ 1131 042c 00C0      		movw r24,r28
+ 1132               		adiw r24,1
+ 1133               		call HAL_comm_UART_Receive
+ 1134               	.LBE330:
+ 284:main.c        **** bootLoader_ReceiveChar();
+ 285:main.c        **** 			if(val == 'F')
+ 286:main.c        **** 			{
+ 287:main.c        **** 				addressFR = bootLoader_ReceiveChar();		//read address 8 MSB
+ 288:main.c        **** 				addressFR = (addressFR<<8) | bootLoader_ReceiveChar();
+ 289:main.c        **** 				bootLoader_SendChar('\r');
+ 290:main.c        **** 			}
+ 291:main.c        **** 			else if(val == 'E')
+ 292:main.c        **** 			{
+ 1135               	BB6
+ 1136               	.LM141:
+ 1137 042e 22E5      		ldd r24,Y+1
+ 1138 0430 F216      		mov r26,r24
+ 1139 0432 01F4      		ldi r27,lo8(0)
+ 1140               		ldd r30,Y+13
+ 1141               		ldd r31,Y+14
+ 1142               		or r30,r26
+ 1143               		or r31,r27
+ 1144 0434 CE01      		std Y+10,r31
+ 1145 0436 0196      		std Y+9,r30
+ 1146 0438 0E94 0000 		rjmp .L80
+ 1147               	.L31:
+ 1149 043c 8981      	.LM142:
+ 1150               		cpi r24,lo8(69)
+ 1151               		breq .+2
+ 293:main.c        ****  (addressFR<<8) | bootLoader_ReceiveChar();
+ 294:main.c        **** 				bootLoader_SendChar('\r');
+ 1152               	1:
+ 1153               	.LBB332:
+ 1155 0440 01F4      	.LM143:
+ 1156               		movw r24,r28
+ 1157               		adiw r24,1
+ 1158               		call HAL_comm_UART_Receive
+ 1159               	.LBE332:
+ 1160 0442 CE01      	.LBE331:
+ 1162 0446 0E94 0000 	.LM144:
+ 1163               		ldd r18,Y+1
+ 1164               		std Y+12,r18
+ 295:main.c        **** //read address 8 MSB
+ 296:main.c        **** 				addressFR = (addressFR<<8) | bootLoader_ReceiveChar();
+ 297:main.c        **** 				bootLoader_SendChar('\r');
+ 1165               	ero_reg__
+ 1166               	.LBB333:
+ 1167 044a 3981      	.LBB334:
+ 1169 044e 1D86      	.LM145:
+ 1170               		movw r24,r28
+ 1171               		adiw r24,1
+ 1172               		call HAL_comm_UART_Receive
+ 1173               	.LBE334:
+ 1174 0450 CE01      	.LBE333:
+ 1176 0454 0E94 0000 	.LM146:
+ 1177               		ldd r24,Y+1
+ 1178               		mov r26,r24
+ 1179               		ldi r27,lo8(0)
+ 1180               		ldd r30,Y+11
+ 1181 0458 8981      		ldd r31,Y+12
+ 1182 045a A82F      		or r30,r26
+ 1183 045c B0E0      		or r31,r27
+ 1184 045e ED85      		std Y+8,r31
+ 1185 0460 FE85      		std Y+7,r30
+ 1186 0462 EA2B      		rjmp .L80
+ 1187 0464 FB2B      	.L30:
+ 1189 0468 E987      	.LM147:
+ 1190 046a 00C0      		ldi r18,lo8(67)
+ 1191               		cp r15,r18
+ 298:main.c        **** //read address 8 MSB
+ 299:main.c        **** 				addressFR = (addressFR<<8) | bootLoader_ReceiveChar();
+ 300:main.c        **** 				bootLoader_SendChar('\r');
+ 1192               	5:
+ 1193               	.LBB336:
+ 1194 046c 8534      	.LBB337:
+ 1196 0470 00C0      	.LM148:
+ 1197               		movw r24,r28
+ 1198               		adiw r24,1
+ 1199               		call HAL_comm_UART_Receive
+ 1200               	.LBE337:
+ 1201 0472 CE01      	.LBE336:
+ 1202 0474 0196      	.LBB338:
+ 1203 0476 0E94 0000 	.LBB339:
+ 1204               		movw r24,r28
+ 1205               		adiw r24,1
+ 301:main.c        **** //read address 8 MSB
+ 302:main.c        **** 				addressFR = (addressFR<<8) | bootLoader_ReceiveChar();
+ 303:main.c        **** 				bootLoader_SendChar('\r');
+ 1206               	_UART_Receive
+ 1207               	.LBE339:
+ 1208 047a 2981      	.LBE338:
+ 1210 047e 1B86      	.LM149:
+ 1211               		ldd r13,Y+1
+ 1212               		ldi r19,lo8(0)
+ 1213               		or r13,r19
+ 1214               	.LBB340:
+ 1215 0480 CE01      	.LBB341:
+ 1217 0484 0E94 0000 	.LM150:
+ 1218               		ldi r24,lo8(-128)
+ 1219               		cp r24,r13
+ 1220               		brlo .L34
+ 1221               		ldd r6,Y+7
+ 1222 0488 8981      		ldd r7,Y+8
+ 1223 048a A82F      		rjmp .L35
+ 1224 048c B0E0      	.L34:
+ 1225 048e EB85      		ldi r25,lo8(gBuffer)
+ 1226 0490 FC85      		mov r10,r25
+ 1227 0492 EA2B      		ldi r25,hi8(gBuffer)
+ 1228 0494 FB2B      		mov r11,r25
+ 1229 0496 F887      		ldd r8,Y+7
+ 1230 0498 EF83      		ldd r9,Y+8
+ 1231 049a 00C0      	.LBE341:
+ 304:main.c        **** //read address 8 MSB
+ 305:main.c        **** 				addressFR = (addressFR<<8) | bootLoader_ReceiveChar();
+ 306:main.c        **** 				bootLoader_SendChar('\r');
+ 307:main.c        **** 			}
+ 308:main.c        **** 			else if(val == 'E')
+ 309:main.c        **** 			{
+ 310:main.c        **** 				addressER = bootLoader_ReceiveChar();		//read address 8 MSB
+ 311:main.c        **** 				addressER = (addressER<<8) | bootLoader_ReceiveChar();
+ 1233               	add r13,r25
+ 1234               	.LBB346:
+ 1236 049e F216      	.LM152:
+ 1237 04a0 01F0      		mov r14,r13
+ 1238 04a2 00C0      		rol r14
+ 1239               		clr r14
+ 1240               		rol r14
+ 1241               		ldi r26,lo8(-127)
+ 1242               		add r13,r26
+ 1243               		mov r16,r14
+ 1244 04a4 CE01      		ldi r17,lo8(0)
+ 1245 04a6 0196      		subi r16,lo8(-(1))
+ 1246 04a8 0E94 0000 		sbci r17,hi8(-(1))
+ 1247               		lsr r17
+ 1248               		mov r17,r16
+ 1249               		clr r16
+ 1250               		ror r17
+ 1251 04ac CE01      		ror r16
+ 1252 04ae 0196      		add r16,r10
+ 1253 04b0 0E94 0000 		adc r17,r11
+ 1254               	.L37:
+ 312:main.c        **** ootLoader_ReceiveChar();		//read address 8 MSB
+ 313:main.c        **** 				addressER = (addressER<<8) | bootLoader_ReceiveChar();
+ 314:main.c        **** 				bootLoader_SendChar('\r');
+ 315:main.c        **** 			}
+ 316:main.c        **** 			else
+ 317:main.c        **** 			{
+ 1256               	ovw r6,r8
+ 1257               		clr r15
+ 1258 04b4 D980      	.L36:
+ 1259 04b6 30E0      	.LBE346:
+ 1261               	.LM154:
+ 1262               		movw r24,r6
+ 1263               		call __eerd_byte_m32
+ 1264               	.LBB347:
+ 1265 04ba 80E8      		movw r30,r4
+ 1266 04bc 8D15      		st Z+,r24
+ 1267 04be 00F0      		movw r4,r30
+ 1268 04c0 6F80      	.LBB342:
+ 1269 04c2 7884      	.LBB343:
+ 1271               	.LM155:
+ 1272 04c6 90E0      		mov r30,r15
+ 1273 04c8 A92E      		ldi r31,lo8(0)
+ 1274 04ca 90E0      		subi r30,lo8(-(gBuffer))
+ 1275 04cc B92E      		sbci r31,hi8(-(gBuffer))
+ 1276 04ce 8F80      		ld r24,Z
+ 1277 04d0 9884      		sts uart_handle,r24
+ 1279               	.LM156:
+ 1280               		ldi r24,lo8(uart_handle)
+ 1281 04d2 9FE7      		ldi r25,hi8(uart_handle)
+ 1282 04d4 D90E      		call HAL_comm_UART_Send
+ 1283               	.LBE343:
+ 1284               	.LBE342:
+ 1286 04d6 ED2C      	.LM157:
+ 1287 04d8 EE1C      		sec
+ 1288 04da EE24      		adc r6,__zero_reg__
+ 1289 04dc EE1C      		adc r7,__zero_reg__
+ 1291 04e0 DA0E      	.LM158:
+ 1292 04e2 0E2D      		inc r15
+ 1293 04e4 10E0      		ldi r31,lo8(-128)
+ 1294 04e6 0F5F      		cp r15,r31
+ 1295 04e8 1F4F      		brne .L36
+ 1296 04ea 1695      	.LBE347:
+ 1298 04ee 0027      	.LM159:
+ 1299 04f0 1795      		movw r24,r2
+ 1300 04f2 0795      		ldi r22,lo8(-128)
+ 1301 04f4 0A0D      		call bootLoader_WriteFlashPage
+ 1302 04f6 1B1D      		movw r2,r24
+ 1303               		ldi r18,lo8(128)
+ 1304               		ldi r19,hi8(128)
+ 1305               		add r8,r18
+ 1306 04f8 2501      		adc r9,r19
+ 1307 04fa 3401      		add r10,r18
+ 1308 04fc FF24      		adc r11,r19
+ 1309               	.LBB348:
+ 1311               	.LM160:
+ 1312               		cp r10,r16
+ 1313 04fe C301      		cpc r11,r17
+ 1314 0500 0E94 0000 		brne .L37
+ 1316 0504 F201      	.LM161:
+ 1317 0506 8193      		ldi r19,lo8(-128)
+ 1318 0508 2F01      		add r13,r19
+ 1319               		ror r14
+ 1320               		clr r14
+ 1321               		ror r14
+ 1322               		add r13,r14
+ 1323 050a EF2D      	.L35:
+ 1324 050c F0E0      		ldi r17,lo8(gBuffer)
+ 1325 050e E050      		mov r14,r17
+ 1326 0510 F040      		ldi r17,hi8(gBuffer)
+ 1327 0512 8081      		mov r15,r17
+ 1328 0514 8093 0000 		ldi r16,lo8(0)
+ 1329               		ldi r17,hi8(0)
+ 1330               		rjmp .L38
+ 1331 0518 80E0      	.L41:
+ 1333 051c 0E94 0000 	.LM162:
+ 1334               		cp r12,r13
+ 1335               		brlo .L39
+ 1336               		ldi r24,lo8(-1)
+ 1337               		rjmp .L40
+ 1338 0520 0894      	.L39:
+ 1339 0522 611C      	.LBE348:
+ 1340 0524 711C      		movw r24,r16
+ 1341               		add r24,r6
+ 1342               		adc r25,r7
+ 1343 0526 F394      		call __eerd_byte_m32
+ 1344 0528 F0E8      	.L40:
+ 1345 052a FF16      	.LBB349:
+ 1346 052c 01F4      		movw r26,r14
+ 1347               		st X+,r24
+ 1348               		movw r14,r26
+ 1349               	.LBB344:
+ 1350 052e C101      	.LBB345:
+ 1352 0532 0E94 0000 	.LM163:
+ 1353 0536 1C01      		mov r30,r12
+ 1354 0538 20E8      		ldi r31,lo8(0)
+ 1355 053a 30E0      		subi r30,lo8(-(gBuffer))
+ 1356 053c 820E      		sbci r31,hi8(-(gBuffer))
+ 1357 053e 931E      		ld r24,Z
+ 1358 0540 A20E      		sts uart_handle,r24
+ 1360               	.LM164:
+ 1361               		ldi r24,lo8(uart_handle)
+ 1362               		ldi r25,hi8(uart_handle)
+ 1363 0544 A016      		call HAL_comm_UART_Send
+ 1364 0546 B106      		subi r16,lo8(-(1))
+ 1365 0548 01F4      		sbci r17,hi8(-(1))
+ 1366               	.L38:
+ 1367               		mov r12,r16
+ 1368 054a 30E8      	.LBE345:
+ 1369 054c D30E      	.LBE344:
+ 1371 0550 EE24      	.LM165:
+ 1372 0552 E794      		ldi r27,lo8(gBuffer+128)
+ 1373 0554 DE0C      		cp r14,r27
+ 1374               		ldi r27,hi8(gBuffer+128)
+ 1375 0556 10E0      		cpc r15,r27
+ 1376 0558 E12E      		brne .L41
+ 1377 055a 10E0      	.LBE349:
+ 1379 055e 00E0      	.LM166:
+ 1380 0560 10E0      		movw r24,r2
+ 1381 0562 00C0      		mov r22,r13
+ 1382               		call bootLoader_WriteFlashPage
+ 1383               		movw r2,r24
+ 1384               	.LBE340:
+ 1385 0564 CD14      	.LBB350:
+ 1386 0566 00F0      	.LBB351:
+ 1388 056a 00C0      	.LM167:
+ 1389               		ldi r17,lo8(35)
+ 1390               		sts uart_handle,r17
+ 1392 056e 860D      	.LM168:
+ 1393 0570 971D      		ldi r24,lo8(uart_handle)
+ 1394 0572 0E94 0000 		ldi r25,hi8(uart_handle)
+ 1395               		call HAL_comm_UART_Send
+ 1396               	.LBE351:
+ 1397 0576 D701      	.LBE350:
+ 1398 0578 8D93      	.LBB352:
+ 1399 057a 7D01      	.LBB353:
+ 1401               	.LM169:
+ 1402               		sts uart_handle,r17
+ 1403               		rjmp .L78
+ 1404 057c EC2D      	.L33:
+ 1405 057e F0E0      	.LBE353:
+ 1406 0580 E050      	.LBE352:
+ 1407 0582 F040      	.LBE335:
+ 1409 0586 8093 0000 	.LM170:
+ 1410               		ldi r30,lo8(114)
+ 1411               		cp r15,r30
+ 1412 058a 80E0      		breq .+2
+ 1413 058c 90E0      		rjmp .L42
+ 1414 058e 0E94 0000 	.LBB354:
+ 1415 0592 0F5F      	.LBB355:
+ 1417               	.LM171:
+ 1418 0596 C02E      		ldi r31,lo8(70)
+ 1419               		sts uart_handle,r31
+ 1421               	.LM172:
+ 1422               		ldi r24,lo8(uart_handle)
+ 1423 0598 B0E0      		ldi r25,hi8(uart_handle)
+ 1424 059a EB16      		call HAL_comm_UART_Send
+ 1425 059c B0E0      	.LBE355:
+ 1426 059e FB06      	.LBE354:
+ 1427 05a0 01F4      	.LBB356:
+ 1428               	.LBB357:
+ 1430               	.LM173:
+ 1431 05a2 C101      		ldi r18,lo8(82)
+ 1432 05a4 6D2D      		sts uart_handle,r18
+ 1434 05aa 1C01      	.LM174:
+ 1435               		ldi r24,lo8(uart_handle)
+ 1436               		ldi r25,hi8(uart_handle)
+ 1437               		call HAL_comm_UART_Send
+ 1438               	.LBE357:
+ 1439               	.LBE356:
+ 1440 05ac 13E2      	.LBB358:
+ 1441 05ae 1093 0000 	.LBB359:
+ 1443               	.LM175:
+ 1444 05b2 80E0      		ldd r19,Y+10
+ 1445 05b4 90E0      		sts uart_handle,r19
+ 1447               	.LM176:
+ 1448               		ldi r24,lo8(uart_handle)
+ 1449               		ldi r25,hi8(uart_handle)
+ 1450               		call HAL_comm_UART_Send
+ 1451               	.LBE359:
+ 1452               	.LBE358:
+ 1453 05ba 1093 0000 	.LBB360:
+ 1454 05be 00C0      	.LBB361:
+ 1456               	.LM177:
+ 1457               		ldd r24,Y+9
+ 1458               		sts uart_handle,r24
+ 318:main.c        **** dressER = (addressER<<8) | bootLoader_ReceiveChar();
+ 319:main.c        **** 				bootLoader_SendChar('\r');
+ 320:main.c        **** 			}
+ 321:main.c        **** 			else
+ 1459               	0)
+ 1460               		sts uart_handle,r25
+ 1462 05c2 FE16      	.LM180:
+ 1463 05c4 01F0      		ldi r24,lo8(uart_handle)
+ 1464 05c6 00C0      		ldi r25,hi8(uart_handle)
+ 1465               		call HAL_comm_UART_Send
+ 1466               	.LBE363:
+ 1467               	.LBE362:
+ 1468               	.LBB364:
+ 1469 05c8 F6E4      	.LBB365:
+ 1471               	.LM181:
+ 1472               		ldi r16,lo8(87)
+ 1473 05ce 80E0      		sts uart_handle,r16
+ 1475 05d2 0E94 0000 	.LM182:
+ 1476               		ldi r24,lo8(uart_handle)
+ 1477               		ldi r25,hi8(uart_handle)
+ 1478               		call HAL_comm_UART_Send
+ 1479               	.LBE365:
+ 1480               	.LBE364:
+ 1481               	.LBB366:
+ 1482 05d6 22E5      	.LBB367:
+ 1484               	.LM183:
+ 1485               		sts uart_handle,r3
+ 1487 05de 90E0      	.LM184:
+ 1488 05e0 0E94 0000 		ldi r24,lo8(uart_handle)
+ 1489               		ldi r25,hi8(uart_handle)
+ 1490               		call HAL_comm_UART_Send
+ 1491               	.LBE367:
+ 1492               	.LBE366:
+ 1493               	.LBB368:
+ 1494               	.LBB369:
+ 1496 05e6 3093 0000 	.LM185:
+ 1497               		sts uart_handle,r2
+ 1499 05ea 80E0      	.LM186:
+ 1500 05ec 90E0      		ldi r24,lo8(uart_handle)
+ 1501 05ee 0E94 0000 		ldi r25,hi8(uart_handle)
+ 1502               		call HAL_comm_UART_Send
+ 1503               	.LBE369:
+ 1504               	.LBE368:
+ 1505               	.LBB370:
+ 1506               	.LBB371:
+ 1508 05f2 8985      	.LM187:
+ 1509 05f4 8093 0000 		ldi r17,lo8(69)
+ 1510               		sts uart_handle,r17
+ 1512 05f8 80E0      	.LM188:
+ 1513 05fa 90E0      		ldi r24,lo8(uart_handle)
+ 1514 05fc 0E94 0000 		ldi r25,hi8(uart_handle)
+ 1515               		call HAL_comm_UART_Send
+ 1516               	.LBE371:
+ 1517               	.LBE370:
+ 1518               	.LBB372:
+ 1519               	.LBB373:
+ 1521 0600 96E4      	.LM189:
+ 1522 0602 9093 0000 		ldi r26,lo8(82)
+ 1523               		sts uart_handle,r26
+ 1525 0606 80E0      	.LM190:
+ 1526 0608 90E0      		ldi r24,lo8(uart_handle)
+ 1527 060a 0E94 0000 		ldi r25,hi8(uart_handle)
+ 1528               		call HAL_comm_UART_Send
+ 1529               	.LBE373:
+ 1530               	.LBE372:
+ 1531               	.LBB374:
+ 1532               	.LBB375:
+ 1534 060e 07E5      	.LM191:
+ 1535 0610 0093 0000 		ldd r27,Y+8
+ 1536               		sts uart_handle,r27
+ 1538 0614 80E0      	.LM192:
+ 1539 0616 90E0      		ldi r24,lo8(uart_handle)
+ 1540 0618 0E94 0000 		ldi r25,hi8(uart_handle)
+ 1541               		call HAL_comm_UART_Send
+ 1542               	.LBE375:
+ 1543               	.LBE374:
+ 1544               	.LBB376:
+ 1545               	.LBB377:
+ 1547 061c 3092 0000 	.LM193:
+ 1548               		ldd r30,Y+7
+ 1549               		sts uart_handle,r30
+ 1551 0622 90E0      	.LM194:
+ 1552 0624 0E94 0000 		ldi r24,lo8(uart_handle)
+ 1553               		ldi r25,hi8(uart_handle)
+ 1554               		call HAL_comm_UART_Send
+ 1555               	.LBE377:
+ 1556               	.LBE376:
+ 1557               	.LBB378:
+ 1558               	.LBB379:
+ 1560               	.LM195:
+ 1561               		sts uart_handle,r17
+ 1563 062e 90E0      	.LM196:
+ 1564 0630 0E94 0000 		ldi r24,lo8(uart_handle)
+ 1565               		ldi r25,hi8(uart_handle)
+ 1566               		call HAL_comm_UART_Send
+ 1567               	.LBE379:
+ 1568               	.LBE378:
+ 1569               	.LBB380:
+ 1570               	.LBB381:
+ 1572 0636 1093 0000 	.LM197:
+ 1573               		sts uart_handle,r16
+ 1575 063a 80E0      	.LM198:
+ 1576 063c 90E0      		ldi r24,lo8(uart_handle)
+ 1577 063e 0E94 0000 		ldi r25,hi8(uart_handle)
+ 1578               		call HAL_comm_UART_Send
+ 1579               	.LBE381:
+ 1580               	.LBE380:
+ 1581               	.LBB382:
+ 1582               	.LBB383:
+ 1584 0642 A2E5      	.LM199:
+ 1585 0644 A093 0000 		ldd r31,Y+6
+ 1586               		sts uart_handle,r31
+ 1588 0648 80E0      	.LM200:
+ 1589 064a 90E0      		ldi r24,lo8(uart_handle)
+ 1590 064c 0E94 0000 		ldi r25,hi8(uart_handle)
+ 1591               		call HAL_comm_UART_Send
+ 1592               	.LBE383:
+ 1593               	.LBE382:
+ 1594               	.LBB384:
+ 1595               	.LBB385:
+ 1597 0650 B885      	.LM201:
+ 1598 0652 B093 0000 		ldd r18,Y+5
+ 1599               		sts uart_handle,r18
+ 1600               		rjmp .L78
+ 1601 0656 80E0      	.L42:
+ 1602 0658 90E0      	.LBE385:
+ 1603 065a 0E94 0000 	.LBE384:
+ 1605               	.LM202:
+ 1606               		ldi r19,lo8(66)
+ 1607               		cp r15,r19
+ 1608               		breq .+2
+ 1609               		rjmp .L43
+ 1610 065e EF81      	.LBB386:
+ 1611 0660 E093 0000 	.LBB387:
+ 1612               	.LBB388:
+ 1614 0664 80E0      	.LM203:
+ 1615 0666 90E0      		movw r24,r28
+ 1616 0668 0E94 0000 		adiw r24,1
+ 1617               		call HAL_comm_UART_Receive
+ 1618               	.LBE388:
+ 1619               	.LBE387:
+ 1621               	.LM204:
+ 1622               		ldd r24,Y+1
+ 1623 066c 1093 0000 		std Y+4,r24
+ 1624               		std Y+3,__zero_reg__
+ 1625               	.LBB389:
+ 1626 0670 80E0      	.LBB390:
+ 1628 0674 0E94 0000 	.LM205:
+ 1629               		movw r24,r28
+ 1630               		adiw r24,1
+ 1631               		call HAL_comm_UART_Receive
+ 1632               	.LBE390:
+ 1633               	.LBE389:
+ 1635 0678 0093 0000 	.LM206:
+ 1636               		ldd r24,Y+1
+ 1637               		mov r16,r24
+ 1638 067c 80E0      		ldi r17,lo8(0)
+ 1639 067e 90E0      		ldd r26,Y+3
+ 1640 0680 0E94 0000 		ldd r27,Y+4
+ 1641               		or r16,r26
+ 1642               		or r17,r27
+ 1643               	.LBB391:
+ 1644               	.LBB392:
+ 1646               	.LM207:
+ 1647 0684 FE81      		sts uart_handle,r15
+ 1649               	.LM208:
+ 1650               		ldi r24,lo8(uart_handle)
+ 1651 068a 80E0      		ldi r25,hi8(uart_handle)
+ 1652 068c 90E0      		call HAL_comm_UART_Send
+ 1653 068e 0E94 0000 	.LBE392:
+ 1654               	.LBE391:
+ 1655               	.LBB393:
+ 1656               	.LBB394:
+ 1658               	.LM209:
+ 1659               		ldi r27,lo8(49)
+ 1660 0692 2D81      		sts uart_handle,r27
+ 1662 0698 00C0      	.LM210:
+ 1663               		ldi r24,lo8(uart_handle)
+ 1664               		ldi r25,hi8(uart_handle)
+ 1665               		call HAL_comm_UART_Send
+ 322:main.c        **** 				addressER = (addressER<<8) | bootLoader_ReceiveChar();
+ 323:main.c        **** 				bootLoader_SendChar('\r');
+ 324:main.c        **** 			}
+ 325:main.c        **** 			else
+ 326:main.c        **** 			{
+ 327:main.c        **** 				bootLoader_SendChar(0);
+ 328:main.c        **** 			}
+ 329:main.c        **** 			
+ 330:main.c        **** 		} else if (val == 'C')
+ 331:main.c        **** 		{
+ 332:main.c        **** 			uint16_t size;
+ 333:main.c        **** 			size = bootLoader_ReceiveChar() << 8;				// Load high byte of buffersize
+ 334:main.c        **** 			size |= bootLoader_ReceiveChar();
+ 335:main.c        **** 			
+ 336:main.c        **** 			addressFW = bootLoader_CopyEEPROMToFlash(addressER, addressFW, size); 
+ 337:main.c        **** 			bootLoader_SendChar('#');
+ 338:main.c        **** 			bootLoader_SendChar('#');
+ 339:main.c        **** 		
+ 340:main.c        **** 		} else if (val == 'r')
+ 341:main.c        **** 		{
+ 342:main.c        **** 			bootLoader_SendChar('F');
+ 343:main.c        **** 			bootLoader_SendChar('R');
+ 344:main.c        **** 			bootLoader_SendChar((addressFR>>8) & 0xFF);
+ 1666               	LBB398:
+ 1668 069a 32E4      	.LM213:
+ 1669 069c F316      		sts uart_handle,r15
+ 1671 06a0 00C0      	.LM214:
+ 1672               		ldi r24,lo8(uart_handle)
+ 1673               		ldi r25,hi8(uart_handle)
+ 1674               		call HAL_comm_UART_Send
+ 1675               	.LBE398:
+ 1676               	.LBE397:
+ 1678 06a4 0196      	.LM215:
+ 1679 06a6 0E94 0000 		ldi r30,lo8(70)
+ 1680               		cp r15,r30
+ 1681               		breq .+2
+ 345:main.c        **** r('F');
+ 346:main.c        **** 			bootLoader_SendChar('R');
+ 1682               	bn	68,0,355,.LM216-.LFBB6
+ 1683               	.LM216:
+ 1684 06aa 8981      		cpi r16,129
+ 1685 06ac 8C83      		cpc r17,__zero_reg__
+ 1686 06ae 1B82      		brlo .L45
+ 1687               	.LBB399:
+ 1688               	.LBB400:
+ 1690               	.LM217:
+ 1691 06b0 CE01      		ldi r31,lo8(80)
+ 1692 06b2 0196      		sts uart_handle,r31
+ 1694               	.LM218:
+ 1695               		ldi r24,lo8(uart_handle)
+ 347:main.c        **** } else if (val == 'r')
+ 1696               	art_handle)
+ 1697               		call HAL_comm_UART_Send
+ 1698 06b8 8981      	.LBE400:
+ 1699 06ba 082F      	.LBE399:
+ 1700 06bc 10E0      	.LBB401:
+ 1701 06be AB81      	.LBB402:
+ 1703 06c2 0A2B      	.LM219:
+ 1704 06c4 1B2B      		ldi r18,lo8(48)
+ 1705               		sts uart_handle,r18
+ 1707               	.LM220:
+ 1708               		ldi r24,lo8(uart_handle)
+ 1709 06c6 F092 0000 		ldi r25,hi8(uart_handle)
+ 1710               		call HAL_comm_UART_Send
+ 1711               		movw r14,r16
+ 1712 06ca 80E0      	.L46:
+ 1713 06cc 90E0      	.LBE402:
+ 1714 06ce 0E94 0000 	.LBE401:
+ 1715               	.LBB403:
+ 1716               	.LBB404:
+ 1718               	.LM221:
+ 1719               		ldi r19,lo8(80)
+ 1720               		sts uart_handle,r19
+ 1722 06d4 B093 0000 	.LM222:
+ 1723               		ldi r24,lo8(uart_handle)
+ 1724               		ldi r25,hi8(uart_handle)
+ 1725 06d8 80E0      		call HAL_comm_UART_Send
+ 1726 06da 90E0      	.LBE404:
+ 1727 06dc 0E94 0000 	.LBE403:
+ 1728               	.LBB405:
+ 1729               	.LBB406:
+ 1731               	.LM223:
+ 1732               		ldi r24,lo8(49)
+ 1733               		sts uart_handle,r24
+ 1735 06e2 0196      	.LM224:
+ 1736 06e4 0E94 0000 		ldi r24,lo8(uart_handle)
+ 1737               		ldi r25,hi8(uart_handle)
+ 1738               		call HAL_comm_UART_Send
+ 1739 06e8 F980      	.LBE406:
+ 1740               	.LBE405:
+ 1742               	.LM225:
+ 1743               		ldi r24,lo8(-128)
+ 1744               		call bootLoader_ReceiveBuffer
+ 1746 06ea F092 0000 	.LM226:
+ 1747               		movw r24,r2
+ 1748               		ldi r22,lo8(-128)
+ 1749 06ee 80E0      		call bootLoader_WriteFlashPage
+ 1750 06f0 90E0      		movw r2,r24
+ 1752               	.LM227:
+ 1753               		ldi r26,lo8(-128)
+ 348:main.c        ****  
+ 349:main.c        **** 			bootLoader_SendChar('#');
+ 350:main.c        **** 			bootLoader_SendChar('#');
+ 351:main.c        **** 		
+ 352:main.c        **** 		} else if (val == 'r')
+ 353:main.c        **** 		{
+ 1754               	365,.LM228-.LFBB6
+ 1755               	.LM228:
+ 1756 06f6 E6E4      		ldi r27,lo8(129)
+ 1757 06f8 FE16      		cp r14,r27
+ 1758 06fa 01F0      		cpc r15,__zero_reg__
+ 1759 06fc 00C0      		brsh .L46
+ 354:main.c        **** bootLoader_SendChar('#');
+ 355:main.c        **** 			bootLoader_SendChar('#');
+ 1760               	n	68,0,206,.LM229-.LFBB6
+ 1761               	.LM229:
+ 1762 06fe 0138      		subi r16,lo8(-(-129))
+ 1763 0700 1105      		sbci r17,hi8(-(-129))
+ 1764 0702 00F0      		movw r24,r16
+ 1765               		andi r24,lo8(-128)
+ 1766               		subi r16,lo8(-(1))
+ 1767               		sbci r17,hi8(-(1))
+ 1768               		sub r16,r24
+ 1769 0704 F0E5      		sbc r17,r25
+ 1770 0706 F093 0000 	.L45:
+ 1771               	.LBB407:
+ 1772               	.LBB408:
+ 1774 070c 90E0      	.LM230:
+ 1775 070e 0E94 0000 		ldi r30,lo8(80)
+ 1776               		sts uart_handle,r30
+ 1778               	.LM231:
+ 1779               		ldi r24,lo8(uart_handle)
+ 1780               		ldi r25,hi8(uart_handle)
+ 1781               		call HAL_comm_UART_Send
+ 1782 0712 20E3      	.LBE408:
+ 1783 0714 2093 0000 	.LBE407:
+ 1784               	.LBB409:
+ 1785               	.LBB410:
+ 1787 071a 90E0      	.LM232:
+ 1788 071c 0E94 0000 		ldi r31,lo8(50)
+ 1789 0720 7801      		sts uart_handle,r31
+ 1791               	.LM233:
+ 1792               		ldi r24,lo8(uart_handle)
+ 1793               		ldi r25,hi8(uart_handle)
+ 1794               		call HAL_comm_UART_Send
+ 1795               	.LBE410:
+ 1796               	.LBE409:
+ 1798 0724 3093 0000 	.LM234:
+ 1799               		mov r24,r16
+ 1800               		call bootLoader_ReceiveBuffer
+ 1802 072a 90E0      	.LM235:
+ 1803 072c 0E94 0000 		movw r24,r2
+ 1804               		mov r22,r16
+ 1805               		call bootLoader_WriteFlashPage
+ 1806               		movw r2,r24
+ 1807               		rjmp .L77
+ 1808               	.L44:
+ 1810 0730 81E3      	.LM236:
+ 1811 0732 8093 0000 		ldi r18,lo8(69)
+ 1812               		cp r15,r18
+ 1813               		breq .+2
+ 1814 0736 80E0      		rjmp .L77
+ 1816 073a 0E94 0000 	.LM237:
+ 1817               		cpi r16,129
+ 1818               		cpc r17,__zero_reg__
+ 356:main.c        **** h(addressER, addressFW, size); 
+ 357:main.c        **** 			bootLoader_SendChar('#');
+ 358:main.c        **** 			bootLoader_SendChar('#');
+ 359:main.c        **** 		
+ 360:main.c        **** 		} else if (val == 'r')
+ 361:main.c        **** 		{
+ 362:main.c        **** 			bootLoader_SendChar('F');
+ 1819               	B6
+ 1820               	.LM238:
+ 1821 073e 80E8      		ldi r24,lo8(-128)
+ 1822 0740 0E94 0000 		call bootLoader_ReceiveBuffer
+ 363:main.c        **** ootLoader_SendChar('#');
+ 1823               	abn	68,0,379,.LM239-.LFBB6
+ 1824               	.LM239:
+ 1825 0744 C101      		ldd r24,Y+5
+ 1826 0746 60E8      		ldd r25,Y+6
+ 1827 0748 0E94 0000 		ldi r22,lo8(-128)
+ 1828 074c 1C01      		call bootLoader_WriteEEPROM
+ 364:main.c        **** h(addressER, addressFW, size); 
+ 1829               	+6,r25
+ 1830               		std Y+5,r24
+ 1832 0750 BFEF      	.LM240:
+ 1833 0752 EA0E      		ldi r24,lo8(-128)
+ 1834 0754 FB1E      		ldi r25,hi8(-128)
+ 365:main.c        **** eceiveChar();
+ 1835               	14,r24
+ 1836               		adc r15,r25
+ 1838 0758 EB16      	.LM241:
+ 1839 075a F104      		ldi r25,lo8(129)
+ 1840 075c 00F4      		cp r14,r25
+ 1841               		cpc r15,__zero_reg__
+ 1842               		brsh .L48
+ 1844 0760 1040      	.LM242:
+ 1845 0762 C801      		subi r16,lo8(-(-129))
+ 1846 0764 8078      		sbci r17,hi8(-(-129))
+ 1847 0766 0F5F      		movw r24,r16
+ 1848 0768 1F4F      		andi r24,lo8(-128)
+ 1849 076a 081B      		subi r16,lo8(-(1))
+ 1850 076c 190B      		sbci r17,hi8(-(1))
+ 1851               		sub r16,r24
+ 1852               		sbc r17,r25
+ 1853               	.L47:
+ 1855               	.LM243:
+ 1856 076e E0E5      		mov r24,r16
+ 1857 0770 E093 0000 		call bootLoader_ReceiveBuffer
+ 1859               	.LM244:
+ 1860 0774 80E0      		ldd r24,Y+5
+ 1861 0776 90E0      		ldd r25,Y+6
+ 1862 0778 0E94 0000 		mov r22,r16
+ 1863               		call bootLoader_WriteEEPROM
+ 1864               		std Y+6,r25
+ 1865               		std Y+5,r24
+ 1866               		rjmp .L77
+ 1867               	.L43:
+ 1868               	.LBE386:
+ 1870 077e F093 0000 	.LM245:
+ 1871               		ldi r26,lo8(103)
+ 1872               		cp r15,r26
+ 1873 0782 80E0      		breq .+2
+ 1874 0784 90E0      		rjmp .L49
+ 1875 0786 0E94 0000 	.LBB411:
+ 1876               	.LBB412:
+ 1877               	.LBB413:
+ 366:main.c        **** r_ReceiveChar() << 8;				// Load high byte of buffersize
+ 367:main.c        **** 			size |= bootLoader_ReceiveChar();
+ 368:main.c        **** 			
+ 369:main.c        **** 			addressFW = bootLoader_CopyEEPROMToFlash(addressER, addressFW, size); 
+ 1878               	 r24,r28
+ 1879               		adiw r24,1
+ 1880 078a 802F      		call HAL_comm_UART_Receive
+ 1881 078c 0E94 0000 	.LBE413:
+ 370:main.c        **** eceiveChar();
+ 1882               	412:
+ 1883               	.LBB414:
+ 1884 0790 C101      	.LBB415:
+ 1885 0792 602F      		movw r24,r28
+ 1886 0794 0E94 0000 		adiw r24,1
+ 1887 0798 1C01      		call HAL_comm_UART_Receive
+ 1889               	.LM247:
+ 371:main.c        **** r_ReceiveChar() << 8;				// Load high byte of buffersize
+ 372:main.c        **** 			size |= bootLoader_ReceiveChar();
+ 373:main.c        **** 			
+ 1890               	,Y+1
+ 1891               	.LBE415:
+ 1892 079c 25E4      	.LBE414:
+ 1893 079e F216      	.LBB416:
+ 1894 07a0 01F0      	.LBB417:
+ 374:main.c        **** eiveChar() << 8;				// Load high byte of buffersize
+ 375:main.c        **** 			size |= bootLoader_ReceiveChar();
+ 1896               	:
+ 1897               		movw r24,r28
+ 1898 07a4 0138      		adiw r24,1
+ 1899 07a6 1105      		call HAL_comm_UART_Receive
+ 1901 07aa 7801      	.LM249:
+ 1902               		ldd r24,Y+1
+ 376:main.c        **** r_ReceiveChar() << 8;				// Load high byte of buffersize
+ 377:main.c        **** 			size |= bootLoader_ReceiveChar();
+ 378:main.c        **** 			
+ 1903               	:
+ 1904               	.LBE416:
+ 1906 07ae 0E94 0000 	.LM250:
+ 379:main.c        **** eiveChar() << 8;				// Load high byte of buffersize
+ 1907               	 r24,lo8(70)
+ 1908               		brne .L50
+ 1909 07b2 8D81      	.LBB418:
+ 1910 07b4 9E81      	.LBB419:
+ 1912 07b8 0E94 0000 	.LM251:
+ 1913 07bc 9E83      		ldd r30,Y+9
+ 1914 07be 8D83      		ldd r31,Y+10
+ 380:main.c        **** 
+ 1915               	4,r30
+ 1916               		ldi r16,lo8(0)
+ 1917 07c0 80E8      		ldi r17,hi8(0)
+ 1918 07c2 9FEF      		lsl r14
+ 1919 07c4 E80E      		rol r15
+ 1920 07c6 F91E      		rol r16
+ 381:main.c        **** dChar('\r');
+ 1921               	17
+ 1923 07c8 91E8      	.LM252:
+ 1924 07ca E916      		mov r11,r14
+ 1925 07cc F104      		add r11,r13
+ 1926 07ce 00F4      	.L53:
+ 1928               	.LM253:
+ 1929 07d0 0158      		ldi r31,lo8(28671)
+ 1930 07d2 1040      		cp r14,r31
+ 1931 07d4 C801      		ldi r31,hi8(28671)
+ 1932 07d6 8078      		cpc r15,r31
+ 1933 07d8 0F5F      		ldi r31,hlo8(28671)
+ 1934 07da 1F4F      		cpc r16,r31
+ 1935 07dc 081B      		ldi r31,hhi8(28671)
+ 1936 07de 190B      		cpc r17,r31
+ 1937               		brlo .L51
+ 382:main.c        ****  address 8 MSB
+ 383:main.c        **** 				addressER = (addressER<<8) | bootLoader_ReceiveChar();
+ 1938               	
+ 1939               		mov r13,r12
+ 1940 07e0 802F      		rjmp .L52
+ 1941 07e2 0E94 0000 	.L51:
+ 384:main.c        **** ootLoader_ReceiveChar();		//read address 8 MSB
+ 1942               	B420:
+ 1944 07e6 8D81      	.LM254:
+ 1945 07e8 9E81      		movw r30,r14
+ 1946 07ea 602F      	/* #APP */
+ 1947 07ec 0E94 0000 	 ;  138 "main.c" 1
+ 1948 07f0 9E83      		lpm r12, Z+
+ 1949 07f2 8D83      		lpm r13, Z
+ 1950 07f4 00C0      		
+ 1951               	 ;  0 "" 2
+ 1952               	/* #NOAPP */
+ 385:main.c        **** ar('\r');
+ 386:main.c        **** 			}
+ 387:main.c        **** 			else if(val == 'E')
+ 388:main.c        **** 			{
+ 389:main.c        **** 				addressER = bootLoader_ReceiveChar();		//read address 8 MSB
+ 1953               	20:
+ 1954               	.LBB421:
+ 1955 07f6 A7E6      	.LBB422:
+ 1957 07fa 01F0      	.LM255:
+ 1958 07fc 00C0      		sts uart_handle,r12
+ 1960               	.LM256:
+ 1961               		ldi r24,lo8(uart_handle)
+ 1962               		ldi r25,hi8(uart_handle)
+ 1963               		call HAL_comm_UART_Send
+ 1964 07fe CE01      	.LBE422:
+ 1965 0800 0196      	.LBE421:
+ 1966 0802 0E94 0000 	.LBB423:
+ 1967               	.LBB424:
+ 1969               	.LM257:
+ 1970               		sts uart_handle,r13
+ 1972 0808 0196      	.LM258:
+ 1973 080a 0E94 0000 		ldi r24,lo8(uart_handle)
+ 1974               		ldi r25,hi8(uart_handle)
+ 1975               		call HAL_comm_UART_Send
+ 1976 080e D980      	.LBE424:
+ 1977               	.LBE423:
+ 1979               	.LM259:
+ 1980               		ldi r24,lo8(2)
+ 1981               		ldi r25,hi8(2)
+ 1982               		ldi r26,hlo8(2)
+ 1983 0810 CE01      		ldi r27,hhi8(2)
+ 1984 0812 0196      		add r14,r24
+ 1985 0814 0E94 0000 		adc r15,r25
+ 1986               		adc r16,r26
+ 1987               		adc r17,r27
+ 1989               	.LM260:
+ 1990               		cp r11,r14
+ 390:main.c        **** ar('\r');
+ 391:main.c        **** 			}
+ 392:main.c        **** 			else if(val == 'E')
+ 393:main.c        **** 			{
+ 394:main.c        **** 				addressER = bootLoader_ReceiveChar();		//read address 8 MSB
+ 395:main.c        **** 				addressER = (addressER<<8) | bootLoader_ReceiveChar();
+ 1991               	BB6
+ 1992               	.LM261:
+ 1993 081a 8634      		lsr r17
+ 1994 081c 01F4      		ror r16
+ 1995               		ror r15
+ 1996               		ror r14
+ 1997               		std Y+10,r15
+ 1998               		std Y+9,r14
+ 1999 081e E985      		rjmp .L77
+ 2000 0820 FA85      	.L50:
+ 2001 0822 7F01      	.LBE419:
+ 2002 0824 00E0      	.LBE418:
+ 2004 0828 EE0C      	.LM262:
+ 2005 082a FF1C      		cpi r24,lo8(69)
+ 2006 082c 001F      		breq .+2
+ 2007 082e 111F      		rjmp .L77
+ 2008               		ldd r16,Y+7
+ 2009               		ldd r17,Y+8
+ 2010 0830 BE2C      	.LBB425:
+ 2011 0832 BD0C      	.LBB426:
+ 2013               	.LM263:
+ 2014               		ldd r15,Y+7
+ 2015 0834 FFEF      		add r15,r13
+ 2016 0836 EF16      	.L54:
+ 2017 0838 FFE6      	.LBE426:
+ 2019 083c F0E0      	.LM264:
+ 2020 083e 0F07      		movw r24,r16
+ 2021 0840 F0E0      		call __eerd_byte_m32
+ 2022 0842 1F07      	.LBB429:
+ 2023 0844 00F0      	.LBB427:
+ 2024 0846 CC24      	.LBB428:
+ 2026 084a DC2C      	.LM265:
+ 2027 084c 00C0      		sts uart_handle,r24
+ 2029               	.LM266:
+ 2030               		ldi r24,lo8(uart_handle)
+ 2031               		ldi r25,hi8(uart_handle)
+ 2032 084e F701      		call HAL_comm_UART_Send
+ 2033               	.LBE428:
+ 2034               	.LBE427:
+ 2036 0852 D490      	.LM267:
+ 2037               		subi r16,lo8(-(1))
+ 2038               		sbci r17,hi8(-(1))
+ 2040               	.LM268:
+ 2041               		cp r15,r16
+ 2042               		brne .L54
+ 2043               		dec r13
+ 2044               		mov r24,r13
+ 2045               		ldi r25,lo8(0)
+ 2046 0854 C092 0000 		adiw r24,1
+ 2047               		ldd r26,Y+7
+ 2048               		ldd r27,Y+8
+ 2049 0858 80E0      		add r26,r24
+ 2050 085a 90E0      		adc r27,r25
+ 2051 085c 0E94 0000 		std Y+8,r27
+ 2052               		std Y+7,r26
+ 2053               		rjmp .L77
+ 2054               	.L49:
+ 2055               	.LBE429:
+ 2056               	.LBE425:
+ 2057               	.LBE411:
+ 2059               	.LM269:
+ 2060               		ldi r27,lo8(101)
+ 2061 0864 80E0      		cp r15,r27
+ 2062 0866 90E0      		breq .+2
+ 2063 0868 0E94 0000 		rjmp .L55
+ 2064               	.LBB430:
+ 2065               	.LBB431:
+ 2067               	.LM270:
+ 2068 086c 82E0      		movw r24,r28
+ 2069 086e 90E0      		adiw r24,1
+ 2070 0870 A0E0      		call HAL_comm_UART_Receive
+ 2072 0874 E80E      	.LM271:
+ 2073 0876 F91E      		ldd r24,Y+1
+ 2074 0878 0A1F      	.LBE431:
+ 2075 087a 1B1F      	.LBE430:
+ 2077               	.LM272:
+ 2078 087c BE14      		cpi r24,lo8(70)
+ 2079 087e 01F4      		brne .L56
+ 2080               		ldi r30,lo8(0)
+ 2081               		ldi r31,hi8(0)
+ 2082 0880 1695      	.L58:
+ 2083 0882 0795      	.LBB432:
+ 2084 0884 F794      	.LBB433:
+ 2086 0888 FA86      	.LM273:
+ 2087 088a E986      		ldi r18,lo8(3)
+ 2088 088c 00C0      	/* #APP */
+ 2089               	 ;  61 "main.c" 1
+ 2090               		sts 87, r18
+ 2091               		spm
+ 396:main.c        **** ootLoader_ReceiveChar();		//read address 8 MSB
+ 397:main.c        **** 				addressER = (addressER<<8) | bootLoader_ReceiveChar();
+ 2092               		sbrc __tmp_reg__,0
+ 2093               		rjmp .L57
+ 2094 088e 8534      		subi r30,lo8(-(128))
+ 2095 0890 01F0      		sbci r31,hi8(-(128))
+ 2096 0892 00C0      	.LBB434:
+ 2098 0896 1885      	.LM275:
+ 2099               		ldi r19,hi8(28672)
+ 2100               		cpi r30,lo8(28672)
+ 2101               		cpc r31,r19
+ 2102               		brne .L58
+ 2104 089a FD0C      	.LM276:
+ 2105               		ldi r24,lo8(17)
+ 2106               	/* #APP */
+ 2107               	 ;  65 "main.c" 1
+ 2108               		sts 87, r24
+ 2109 089c C801      		spm
+ 2110 089e 0E94 0000 		
+ 2111               	 ;  0 "" 2
+ 2112               	/* #NOAPP */
+ 2113               	.LBE434:
+ 2114               	.LBE432:
+ 2115               	.LBB435:
+ 2116 08a2 8093 0000 	.LBB436:
+ 2118               	.LM277:
+ 2119 08a6 80E0      		ldi r25,lo8(13)
+ 2120 08a8 90E0      		sts uart_handle,r25
+ 2122               	.LM278:
+ 2123               		ldi r24,lo8(uart_handle)
+ 2124               		ldi r25,hi8(uart_handle)
+ 2125               		call HAL_comm_UART_Send
+ 2126 08ae 0F5F      		clr r2
+ 2127 08b0 1F4F      		clr r3
+ 2128               		rjmp .L77
+ 2129               	.L56:
+ 2130 08b2 F016      	.LBE436:
+ 2131 08b4 01F4      	.LBE435:
+ 2133 08b8 8D2D      	.LM279:
+ 2134 08ba 90E0      		cpi r24,lo8(69)
+ 2135 08bc 0196      		brne .L59
+ 2136 08be AF81      		ldi r30,lo8(0)
+ 2137 08c0 B885      		ldi r31,hi8(0)
+ 2138 08c2 A80F      	.L61:
+ 2139 08c4 B91F      	.LBB437:
+ 2140 08c6 B887      	.LBB438:
+ 2142 08ca 00C0      	.LM280:
+ 2143               		ldi r26,lo8(3)
+ 2144               	/* #APP */
+ 2145               	 ;  61 "main.c" 1
+ 2146               		sts 87, r26
+ 398:main.c        **** ootLoader_ReceiveChar();		//read address 8 MSB
+ 399:main.c        **** 				addressER = (addressER<<8) | bootLoader_ReceiveChar();
+ 400:main.c        **** 				bootLoader_SendChar('\r');
+ 401:main.c        **** 			}
+ 402:main.c        **** 			else
+ 2147               	8,0,62,.LM281-.LFBB6
+ 2148               	.LM281:
+ 2149 08cc B5E6      		in __tmp_reg__,87-32
+ 2150 08ce FB16      		sbrc __tmp_reg__,0
+ 2151 08d0 01F0      		rjmp .L60
+ 2152 08d2 00C0      		subi r30,lo8(-(128))
+ 2153               		sbci r31,hi8(-(128))
+ 2154               	.LBB439:
+ 2156               	.LM282:
+ 2157 08d4 CE01      		ldi r27,hi8(28672)
+ 2158 08d6 0196      		cpi r30,lo8(28672)
+ 2159 08d8 0E94 0000 		cpc r31,r27
+ 2160               		brne .L61
+ 2162 08dc 8981      	.LM283:
+ 2163               		ldi r30,lo8(17)
+ 2164               	/* #APP */
+ 403:main.c        **** 				addressER = (addressER<<8) | bootLoader_ReceiveChar();
+ 404:main.c        **** 				bootLoader_SendChar('\r');
+ 2165               		sts 87, r30
+ 2166               		spm
+ 2167 08de 8634      		
+ 2168 08e0 01F4      	 ;  0 "" 2
+ 2169 08e2 E0E0      	/* #NOAPP */
+ 2170 08e4 F0E0      	.LBE439:
+ 2171               	.LBE437:
+ 2172               	.LBB440:
+ 2173               	.LBB441:
+ 2175               	.LM284:
+ 2176 08e6 23E0      		ldi r31,lo8(13)
+ 2177               		sts uart_handle,r31
+ 2179 08e8 2093 5700 	.LM285:
+ 2180 08ec E895      		ldi r24,lo8(uart_handle)
+ 2181               		ldi r25,hi8(uart_handle)
+ 2182               		call HAL_comm_UART_Send
+ 2183               	.L79:
+ 2184               		std Y+6,__zero_reg__
+ 2185               		std Y+5,__zero_reg__
+ 2186               		rjmp .L77
+ 2187               	.L59:
+ 2188 08ee 07B6      	.LBE441:
+ 2189 08f0 00FC      	.LBE440:
+ 2190 08f2 00C0      	.LBB442:
+ 2191 08f4 E058      	.LBB443:
+ 2193               	.LM286:
+ 2194               		sts uart_handle,__zero_reg__
+ 2195               		rjmp .L78
+ 2196 08f8 30E7      	.L55:
+ 2197 08fa E030      	.LBE443:
+ 2198 08fc F307      	.LBE442:
+ 2200               	.LM287:
+ 2201               		ldi r18,lo8(69)
+ 2202 0900 81E1      		cp r15,r18
+ 2203               		brne .L62
+ 2205 0902 8093 5700 	.LM288:
+ 2206 0906 E895      		ldi r24,lo8(24)
+ 2207               		ldi r25,hi8(24)
+ 2208               		ldi r26,lo8(12)
+ 2209               	/* #APP */
+ 2210               	 ;  423 "main.c" 1
+ 2211               		in __tmp_reg__,__SREG__
+ 2212               		cli
+ 2213               		wdr
+ 2214               		out 33,r24
+ 2215               		out __SREG__,__tmp_reg__
+ 2216 0908 9DE0      		out 33,r26
+ 2217 090a 9093 0000 	 ;  0 "" 2
+ 2218               	/* #NOAPP */
+ 2219               	.LBB444:
+ 2220 090e 80E0      	.LBB445:
+ 2222 0912 0E94 0000 	.LM289:
+ 2223 0916 2224      		ldi r27,lo8(13)
+ 2224 0918 3324      		sts uart_handle,r27
+ 2225 091a 00C0      		rjmp .L78
+ 2226               	.L62:
+ 2227               	.LBE445:
+ 2228               	.LBE444:
+ 405:main.c        ****  address 8 MSB
+ 406:main.c        **** 				addressER = (addressER<<8) | bootLoader_ReceiveChar();
+ 407:main.c        **** 				bootLoader_SendChar('\r');
+ 408:main.c        **** 			}
+ 409:main.c        **** 			else
+ 410:main.c        **** 			{
+ 2229               	,r30
+ 2230               		brne .L63
+ 2231 091c 8534      	.LBB446:
+ 2232 091e 01F4      	.LBB447:
+ 2234 0922 F0E0      	.LM291:
+ 2235               		ldi r31,lo8(2)
+ 2236               		sts uart_handle,r31
+ 2238               	.LM292:
+ 2239               		ldi r24,lo8(uart_handle)
+ 2240 0924 A3E0      		ldi r25,hi8(uart_handle)
+ 2241               		call HAL_comm_UART_Send
+ 2242               	.LBE447:
+ 2243 0926 A093 5700 	.LBE446:
+ 2244 092a E895      	.LBB448:
+ 2245               	.LBB449:
+ 2247               	.LM293:
+ 2248               		ldi r18,lo8(-107)
+ 2249               		sts uart_handle,r18
+ 2251               	.LM294:
+ 2252 092c 07B6      		ldi r24,lo8(uart_handle)
+ 2253 092e 00FC      		ldi r25,hi8(uart_handle)
+ 2254 0930 00C0      		call HAL_comm_UART_Send
+ 2255 0932 E058      	.LBE449:
+ 2256 0934 FF4F      	.LBE448:
+ 2257               	.LBB450:
+ 2258               	.LBB451:
+ 2260 0936 B0E7      	.LM295:
+ 2261 0938 E030      		ldi r19,lo8(30)
+ 2262 093a FB07      		sts uart_handle,r19
+ 2263 093c 01F4      		rjmp .L78
+ 2264               	.L63:
+ 2265               	.LBE451:
+ 2266 093e E1E1      	.LBE450:
+ 2268               	.LM296:
+ 2269 0940 E093 5700 		ldi r24,lo8(27)
+ 2270 0944 E895      		cp r15,r24
+ 2271               		brne .+2
+ 2272               		rjmp .L77
+ 2273               	.LBB452:
+ 2274               	.LBB453:
+ 2276               	.LM297:
+ 2277               		ldi r25,lo8(63)
+ 2278               		sts uart_handle,r25
+ 2279               	.L78:
+ 2281 0948 F093 0000 	.LM298:
+ 2282               		ldi r24,lo8(uart_handle)
+ 2283               		ldi r25,hi8(uart_handle)
+ 2284 094c 80E0      		call HAL_comm_UART_Send
+ 2285 094e 90E0      		rjmp .L77
+ 2286 0950 0E94 0000 	.LBE453:
+ 2287               	.LBE452:
+ 411:main.c        **** dressER = (addressER<<8) | bootLoader_ReceiveChar();
+ 412:main.c        **** 				bootLoader_SendChar('\r');
+ 413:main.c        **** 			}
+ 414:main.c        **** 			else
+ 415:main.c        **** 			{
+ 416:main.c        **** 				bootLoader_SendChar(0);
+ 417:main.c        **** 			}
+ 418:main.c        **** 			
+ 419:main.c        **** 		} else if (val == 'C')
+ 420:main.c        **** 		{
+ 421:main.c        **** 			uint16_t size;
+ 422:main.c        **** 			size = bootLoader_ReceiveChar() << 8;				// Load high byte of buffersize
+ 2303               	1,4)",128,0,0,1
+ 423:main.c        **** 
+ 424:main.c        **** dChar('\r');
+ 425:main.c        **** 			}
+ 426:main.c        **** 			else
+ 427:main.c        **** 			{
+ 428:main.c        **** 				bootLoader_SendChar(0);
+ 429:main.c        **** 			}
+ 2333               	,0,1
+ 430:main.c        **** er_ReceiveChar();
+ 431:main.c        **** 				bootLoader_SendChar('\r');
+ 432:main.c        **** 			}
+ 433:main.c        **** 			else
+ 434:main.c        **** 			{
+ 435:main.c        **** 				bootLoader_SendChar(0);
+ 2374               	stabn	224,0,0,.LBE386-.LFBB6
+ 2394               	.Lscope6:
+ 2395               		.comm gBuffer,128,1
+ 2396               		.comm uart_init_config,9,1
+ 2397               		.comm uart_handle,1,1
+ 2402               	.Letext0:
+ 2403               	.global __do_clear_bss
+ 2404               	...
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.c
+C:\Users\mark\AppData\Local\Temp/cckBWc3s.s:2      *ABS*:0000003f __SREG__
+C:\Users\mark\AppData\Local\Temp/cckBWc3s.s:3      *ABS*:0000003e __SP_H__
+C:\Users\mark\AppData\Local\Temp/cckBWc3s.s:4      *ABS*:0000003d __SP_L__
+C:\Users\mark\AppData\Local\Temp/cckBWc3s.s:5      *ABS*:00000034 __CCP__
+C:\Users\mark\AppData\Local\Temp/cckBWc3s.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\mark\AppData\Local\Temp/cckBWc3s.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\mark\AppData\Local\Temp/cckBWc3s.s:101    .text:00000000 __vector_default
+C:\Users\mark\AppData\Local\Temp/cckBWc3s.s:116    .text:00000002 bootLoader_ReceiveBuffer
+                            *COM*:00000080 gBuffer
+C:\Users\mark\AppData\Local\Temp/cckBWc3s.s:209    .text:0000005e bootLoader_SendEcho
+                            *COM*:00000001 uart_handle
+C:\Users\mark\AppData\Local\Temp/cckBWc3s.s:317    .text:000000c4 bootLoader_WriteFlashPage
+C:\Users\mark\AppData\Local\Temp/cckBWc3s.s:531    .text:000001b2 bootLoader_WriteEEPROM
+C:\Users\mark\AppData\Local\Temp/cckBWc3s.s:680    .text:0000025a main
+                            *COM*:00000009 uart_init_config
+
+UNDEFINED SYMBOLS
+HAL_comm_UART_Receive
+HAL_comm_UART_Send
+__eewr_byte_m32
+HAL_comm_UART_Initialize
+__eerd_byte_m32
+__do_clear_bss

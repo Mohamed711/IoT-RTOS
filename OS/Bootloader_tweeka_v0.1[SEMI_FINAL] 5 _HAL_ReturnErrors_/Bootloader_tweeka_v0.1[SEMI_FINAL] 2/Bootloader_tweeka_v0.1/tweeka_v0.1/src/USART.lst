@@ -1,0 +1,609 @@
+   1               		.file	"USART.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+  77               	.global	comm_UART_Send
+  79               	comm_UART_Send:
+   1:USART.c       **** /*
+   2:USART.c       ****  * USART.c
+   3:USART.c       ****  *
+   4:USART.c       ****  * Created: 2/1/2016 1:53:09 AM
+   5:USART.c       ****  *  Author: Mark
+   6:USART.c       ****  */ 
+   7:USART.c       **** 
+   8:USART.c       **** #include <avr/io.h>
+   9:USART.c       **** #include <avr/interrupt.h>
+  10:USART.c       **** #include "USART.h"
+  11:USART.c       **** #include "USART_CFG.h"
+  12:USART.c       **** #include "USART_config.h"
+  13:USART.c       **** #include "HAL_UART.h"
+  14:USART.c       **** #include <stdint.h>
+  15:USART.c       **** #include <stdbool.h>
+  16:USART.c       **** #include <util/delay.h>
+  17:USART.c       **** #include "return_Errors.h"
+  18:USART.c       **** 
+  19:USART.c       **** /************************************************************************
+  20:USART.c       **** * Set the Baud Rate value.
+  21:USART.c       **** *
+  22:USART.c       **** * Enable Uart by enabling receive bit(Rx) and transmit bit(Tx).
+  23:USART.c       **** *
+  24:USART.c       **** * Set the number of data bits, stop bits, and parity bits.
+  25:USART.c       **** *
+  26:USART.c       **** * Set the speed mode if Normal speed or Double speed.
+  27:USART.c       **** *
+  28:USART.c       **** * Enable interrupts                                                                    
+  29:USART.c       **** ************************************************************************/
+  30:USART.c       **** uint16_t comm_UART_Initialize(HAL_Comm_UART_ConfigStruct_t* usart_init_config)
+  31:USART.c       **** {
+  32:USART.c       **** 	uint16_t UBRR_VALUE;
+  33:USART.c       **** 	if(usart_init_config->U2X_State != 0)	/*if Double speed state is enabled*/
+  34:USART.c       **** 	{
+  35:USART.c       **** 		UBRR_VALUE = (uint16_t)((F_CPU + usart_init_config->Baud*4UL)/(usart_init_config->Baud*8UL) - 1UL
+  36:USART.c       **** 	}
+  37:USART.c       **** 	else	/*if Normal speed state is enabled*/
+  38:USART.c       **** 	{
+  39:USART.c       **** 		UBRR_VALUE = (uint16_t)((F_CPU + usart_init_config->Baud*8UL)/(usart_init_config->Baud*16UL) - 1U
+  40:USART.c       **** 	}
+  41:USART.c       **** 
+  42:USART.c       **** 	UCSRC_REG = UBRR_SELECT;	/*URSEL is set to zero to update UBRRH*/
+  43:USART.c       **** 	UBRRL_REG = UBRR_VALUE;	
+  44:USART.c       **** 	UBRRH_REG = UBRR_VALUE >> 8;
+  45:USART.c       **** 	
+  46:USART.c       **** 	comm_UART_Enable();
+  47:USART.c       **** 	
+  48:USART.c       **** 	/*URSEL is set to one to update the UCSRC settings*/
+  49:USART.c       **** 	UCSRC_REG |= UCSRC_SELECT | usart_init_config->DataBits | usart_init_config->StopBits | usart_init
+  50:USART.c       **** 	
+  51:USART.c       **** 	UCSRA_REG |= usart_init_config->U2X_State;
+  52:USART.c       **** 	
+  53:USART.c       **** 	if(usart_init_config->EnableInterrupt)	/*if interrupt is enabled*/
+  54:USART.c       **** 	{
+  55:USART.c       **** 		cli();
+  56:USART.c       **** 		comm_UART_EnableInterruptRx();	/*enable receive interrupt*/
+  57:USART.c       **** 		sei();
+  58:USART.c       **** 	}
+  59:USART.c       **** 	return SUCCESS;	
+  60:USART.c       **** }
+  61:USART.c       **** 
+  62:USART.c       **** /************************************************************************
+  63:USART.c       **** * Put data into the UDR buffer to be sent                                                          
+  64:USART.c       **** ************************************************************************/
+  65:USART.c       **** uint16_t comm_UART_Send(unsigned char x)
+  66:USART.c       **** {
+  80               	e = 0 */
+  81               	.L2:
+  83               	.LM1:
+  84               		sbis 43-32,5
+  85               		rjmp .L2
+  67:USART.c       **** 	while (!(UCSRA_REG & UDR_ENABLE));	/*wait until the transmit buffer is empty and ready to be writt
+  86               	n	68,0,68,.LM2-.LFBB1
+  87               	.LM2:
+  88 0000 5D9B      		out 44-32,r24
+  68:USART.c       **** 	UDR_REG = x;	/*put data into the buffer*/
+  90               	:
+  91               		ldi r24,lo8(0)
+  92 0004 8CB9      		ldi r25,hi8(0)
+  69:USART.c       **** 	return SUCCESS;
+  70:USART.c       **** }
+  93               	epilogue start */
+  94               		ret
+  96 0008 90E0      	.Lscope1:
+  99               	.global	comm_UART_Receive
+ 101               	comm_UART_Receive:
+ 103               	.LM4:
+ 104               	.LFBB2:
+ 105               	/* prologue: function */
+  71:USART.c       **** 
+  72:USART.c       **** /************************************************************************
+  73:USART.c       **** * Return data found in the UDR buffer                                                              
+  74:USART.c       **** ************************************************************************/
+  75:USART.c       **** uint16_t comm_UART_Receive(void *receiveChar)
+  76:USART.c       **** {
+ 106               	 = 0 */
+ 107               		movw r30,r24
+ 108               	.L6:
+ 110               	.LM5:
+ 111 000c FC01      		sbis 43-32,7
+ 112               		rjmp .L6
+  77:USART.c       **** 	uint16_t dataReg;
+  78:USART.c       **** 	
+  79:USART.c       **** 	while (!(UCSRA_REG & RXC_RECEIVE_COMPLETE));	/*wait until the receive is finished and the buffer i
+ 113               		68,0,80,.LM6-.LFBB2
+ 114               	.LM6:
+ 115 000e 5F9B      		in r24,44-32
+  80:USART.c       **** 	dataReg = UDR_REG;
+ 117               	:
+ 118               		st Z,r24
+ 119 0012 8CB1      		std Z+1,__zero_reg__
+  81:USART.c       **** 	*(uint16_t *) receiveChar = dataReg;
+ 120               	tabn	68,0,83,.LM8-.LFBB2
+ 121               	.LM8:
+ 122 0014 8083      		ldi r24,lo8(0)
+ 123 0016 1182      		ldi r25,hi8(0)
+  82:USART.c       **** 	return SUCCESS;
+  83:USART.c       **** }
+ 124               	pilogue start */
+ 125               		ret
+ 127 001a 90E0      	.Lscope2:
+ 129 001c 0895      	.global	__vector_13
+ 131               	__vector_13:
+ 133               	.LM9:
+ 134               	.LFBB3:
+ 135               		push __zero_reg__
+  84:USART.c       **** 
+  85:USART.c       **** /************************************************************************
+  86:USART.c       **** * if interrupt happens (byte is received), write data in UDR_REG on port C, delay 0.1 sec,
+  87:USART.c       **** * then send the same data again
+  88:USART.c       **** ************************************************************************/
+  89:USART.c       ****  ISR(USART_RXC_vect)
+  90:USART.c       **** {
+ 136               	 r0,__SREG__
+ 137               		push r0
+ 138               		clr __zero_reg__
+ 139 001e 1F92      		push r18
+ 140 0020 0F92      		push r19
+ 141 0022 0FB6      		push r24
+ 142 0024 0F92      		push r25
+ 143 0026 1124      		push r30
+ 144 0028 2F93      		push r31
+ 145 002a 3F93      		push r29
+ 146 002c 8F93      		push r28
+ 147 002e 9F93      		push __tmp_reg__
+ 148 0030 EF93      		in r28,__SP_L__
+ 149 0032 FF93      		in r29,__SP_H__
+ 150 0034 DF93      	/* prologue: Signal */
+ 151 0036 CF93      	/* frame size = 1 */
+ 153 003a CDB7      	.LM10:
+ 154 003c DEB7      		in r24,44-32
+ 155               		std Y+1,r24
+ 156               		ldi r24,lo8(1000)
+  91:USART.c       **** 	volatile unsigned char value;
+  92:USART.c       **** 	value = UDR_REG;
+ 157               		push r30
+ 158               		push r31
+ 159 003e 8CB1      		push r29
+ 160 0040 8983      		push r28
+ 161 0042 88EE      		push __tmp_reg__
+ 162 0044 93E0      		in r28,__SP_L__
+ 163               		in r29,__SP_H__
+ 164               	/* prologue: Signal */
+ 165               	/* frame size = 1 */
+ 167               	.LM10:
+ 168               		in r24,44-32
+   1:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /* Copyright (c) 2002, Marek Michalkiewicz
+   2:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    Copyright (c) 2007 Joerg Wunsch
+   3:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    All rights reserved.
+   4:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+   5:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    Redistribution and use in source and binary forms, with or without
+   6:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    modification, are permitted provided that the following conditions are met:
+   7:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+   8:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    * Redistributions of source code must retain the above copyright
+   9:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      notice, this list of conditions and the following disclaimer.
+  10:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  11:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    * Redistributions in binary form must reproduce the above copyright
+  12:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      notice, this list of conditions and the following disclaimer in
+  13:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      the documentation and/or other materials provided with the
+  14:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      distribution.
+  15:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  16:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****    * Neither the name of the copyright holders nor the names of
+  17:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      contributors may be used to endorse or promote products derived
+  18:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****      from this software without specific prior written permission.
+  19:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  20:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  21:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  22:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  23:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  24:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  25:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  26:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  27:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  28:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  29:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  30:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  31:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  32:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /* $Id: delay_basic.h,v 1.1 2007/05/13 21:23:20 joerg_wunsch Exp $ */
+  33:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  34:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #ifndef _UTIL_DELAY_BASIC_H_
+  35:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #define _UTIL_DELAY_BASIC_H_ 1
+  36:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  37:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #include <inttypes.h>
+  38:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  39:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \file */
+  40:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \defgroup util_delay_basic <util/delay_basic.h>: Basic busy-wait delay loops
+  41:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     \code
+  42:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     #include <util/delay_basic.h>
+  43:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     \endcode
+  44:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  45:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     The functions in this header file implement simple delay loops
+  46:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     that perform a busy-waiting.  They are typically used to
+  47:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     facilitate short delays in the program execution.  They are
+  48:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     implemented as count-down loops with a well-known CPU cycle
+  49:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     count per loop iteration.  As such, no other processing can
+  50:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     occur simultaneously.  It should be kept in mind that the
+  51:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     functions described here do not disable interrupts.
+  52:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  53:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     In general, for long delays, the use of hardware timers is
+  54:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     much preferrable, as they free the CPU, and allow for
+  55:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     concurrent processing of other events while the timer is
+  56:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     running.  However, in particular for very short delays, the
+  57:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     overhead of setting up a hardware timer is too much compared
+  58:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     to the overall delay time.
+  59:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  60:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Two inline functions are provided for the actual delay algorithms.
+  61:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  62:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** */
+  63:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  64:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #if !defined(__DOXYGEN__)
+  65:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** static inline void _delay_loop_1(uint8_t __count) __attribute__((always_inline));
+  66:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** static inline void _delay_loop_2(uint16_t __count) __attribute__((always_inline));
+  67:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** #endif
+  68:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  69:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \ingroup util_delay_basic
+  70:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  71:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Delay loop using an 8-bit counter \c __count, so up to 256
+  72:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     iterations are possible.  (The value 256 would have to be passed
+  73:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     as 0.)  The loop executes three CPU cycles per iteration, not
+  74:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     including the overhead the compiler needs to setup the counter
+  75:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     register.
+  76:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  77:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Thus, at a CPU speed of 1 MHz, delays of up to 768 microseconds
+  78:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     can be achieved.
+  79:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** */
+  80:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** void
+  81:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** _delay_loop_1(uint8_t __count)
+  82:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** {
+  83:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 	__asm__ volatile (
+  84:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 		"1: dec %0" "\n\t"
+  85:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 		"brne 1b"
+  86:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 		: "=r" (__count)
+  87:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 		: "0" (__count)
+  88:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 	);
+  89:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** }
+  90:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  91:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** /** \ingroup util_delay_basic
+  92:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  93:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Delay loop using a 16-bit counter \c __count, so up to 65536
+  94:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     iterations are possible.  (The value 65536 would have to be
+  95:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     passed as 0.)  The loop executes four CPU cycles per iteration,
+  96:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     not including the overhead the compiler requires to setup the
+  97:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     counter register pair.
+  98:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 
+  99:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     Thus, at a CPU speed of 1 MHz, delays of up to about 262.1
+ 100:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****     milliseconds can be achieved.
+ 101:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h ****  */
+ 102:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** void
+ 103:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** _delay_loop_2(uint16_t __count)
+ 104:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** {
+ 105:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h **** 	__asm__ volatile (
+ 169               	r18
+ 170               		push r19
+ 171 0046 28EC      		push r24
+ 172 0048 30E0      		push r25
+ 173               		push r30
+ 174 004a F901      		push r31
+ 175               		push r29
+ 176               		push r28
+ 177 004c 3197      		push __tmp_reg__
+ 178 004e 01F4      		in r28,__SP_L__
+ 179               		in r29,__SP_H__
+ 180               	/* prologue: Signal */
+ 181               	/* frame size = 1 */
+ 183               	.LM10:
+ 184               		in r24,44-32
+   1:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** /* Copyright (c) 2002, Marek Michalkiewicz
+   2:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    Copyright (c) 2004,2005,2007 Joerg Wunsch
+   3:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    Copyright (c) 2007  Florin-Viorel Petrov
+   4:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    All rights reserved.
+   5:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+   6:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    Redistribution and use in source and binary forms, with or without
+   7:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    modification, are permitted provided that the following conditions are met:
+   8:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+   9:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    * Redistributions of source code must retain the above copyright
+  10:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****      notice, this list of conditions and the following disclaimer.
+  11:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  12:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    * Redistributions in binary form must reproduce the above copyright
+  13:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****      notice, this list of conditions and the following disclaimer in
+  14:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****      the documentation and/or other materials provided with the
+  15:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****      distribution.
+  16:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  17:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    * Neither the name of the copyright holders nor the names of
+  18:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****      contributors may be used to endorse or promote products derived
+  19:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****      from this software without specific prior written permission.
+  20:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  21:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  22:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  23:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  24:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  25:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  26:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  27:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  28:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  29:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  30:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  31:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  32:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  33:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** /* $Id: delay.h,v 1.5.2.1 2009/02/25 10:14:03 joerg_wunsch Exp $ */
+  34:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  35:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #ifndef _UTIL_DELAY_H_
+  36:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #define _UTIL_DELAY_H_ 1
+  37:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  38:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #include <inttypes.h>
+  39:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #include <util/delay_basic.h>
+  40:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  41:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** /** \file */
+  42:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** /** \defgroup util_delay <util/delay.h>: Convenience functions for busy-wait delay loops
+  43:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     \code
+  44:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     #define F_CPU 1000000UL  // 1 MHz
+  45:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     //#define F_CPU 14.7456E6
+  46:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     #include <util/delay.h>
+  47:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     \endcode
+  48:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  49:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     \note As an alternative method, it is possible to pass the
+  50:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     F_CPU macro down to the compiler from the Makefile.
+  51:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     Obviously, in that case, no \c \#define statement should be
+  52:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     used.
+  53:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  54:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     The functions in this header file are wrappers around the basic
+  55:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     busy-wait functions from <util/delay_basic.h>.  They are meant as
+  56:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     convenience functions where actual time values can be specified
+  57:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     rather than a number of cycles to wait for.  The idea behind is
+  58:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     that compile-time constant expressions will be eliminated by
+  59:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     compiler optimization so floating-point expressions can be used
+  60:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     to calculate the number of delay cycles needed based on the CPU
+  61:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     frequency passed by the macro F_CPU.
+  62:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  63:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     \note In order for these functions to work as intended, compiler
+  64:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     optimizations <em>must</em> be enabled, and the delay time
+  65:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     <em>must</em> be an expression that is a known constant at
+  66:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     compile-time.  If these requirements are not met, the resulting
+  67:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     delay will be much longer (and basically unpredictable), and
+  68:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     applications that otherwise do not use floating-point calculations
+  69:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     will experience severe code bloat by the floating-point library
+  70:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     routines linked into the application.
+  71:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  72:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     The functions available allow the specification of microsecond, and
+  73:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     millisecond delays directly, using the application-supplied macro
+  74:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****     F_CPU as the CPU clock frequency (in Hertz).
+  75:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  76:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** */
+  77:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  78:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #if !defined(__DOXYGEN__)
+  79:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** static inline void _delay_us(double __us) __attribute__((always_inline));
+  80:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** static inline void _delay_ms(double __ms) __attribute__((always_inline));
+  81:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #endif
+  82:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  83:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #ifndef F_CPU
+  84:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** /* prevent compiler error by supplying a default */
+  85:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** # warning "F_CPU not defined for <util/delay.h>"
+  86:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** # define F_CPU 1000000UL
+  87:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #endif
+  88:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  89:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #ifndef __OPTIMIZE__
+  90:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** # warning "Compiler optimizations disabled; functions from <util/delay.h> won't work as designed"
+  91:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** #endif
+  92:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  93:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** /**
+  94:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    \ingroup util_delay
+  95:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  96:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    Perform a delay of \c __ms milliseconds, using _delay_loop_2().
+  97:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+  98:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    The macro F_CPU is supposed to be defined to a
+  99:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    constant defining the CPU clock frequency (in Hertz).
+ 100:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+ 101:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    The maximal possible delay is 262.14 ms / F_CPU in MHz.
+ 102:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 
+ 103:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    When the user request delay which exceed the maximum possible one,
+ 104:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    _delay_ms() provides a decreased resolution functionality. In this
+ 105:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    mode _delay_ms() will work with a resolution of 1/10 ms, providing
+ 106:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    delays up to 6.5535 seconds (independent from CPU frequency).  The
+ 107:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****    user will not be informed about decreased resolution.
+ 108:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h ****  */
+ 109:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** void
+ 110:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** _delay_ms(double __ms)
+ 111:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** {
+ 112:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 	uint16_t __ticks;
+ 113:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 	double __tmp = ((F_CPU) / 4e3) * __ms;
+ 114:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 	if (__tmp < 1.0)
+ 115:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 		__ticks = 1;
+ 116:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 	else if (__tmp > 65535)
+ 117:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 	{
+ 118:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 		//	__ticks = requested delay in 1/10 ms
+ 119:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 		__ticks = (uint16_t) (__ms * 10.0);
+ 120:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 		while(__ticks)
+ 121:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 		{
+ 122:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 			// wait 1/10 ms
+ 123:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 			_delay_loop_2(((F_CPU) / 4e3) / 10);
+ 124:c:/winavr-20100110/lib/gcc/../../avr/include/util/delay.h **** 			__ticks --;
+ 185               	r18
+ 186               		push r19
+ 187 0050 0197      		push r24
+ 188               		push r25
+ 189               		push r30
+ 190 0052 01F4      		push r31
+ 191               		push r29
+ 192               		push r28
+ 193               		push __tmp_reg__
+ 194               		in r28,__SP_L__
+  93:USART.c       **** 	_delay_ms(100);
+  94:USART.c       **** 	comm_UART_Send(value);	/*just echo the data received*/
+ 195               	stabn	68,0,90,.LM9-.LFBB3
+ 196               	.LM9:
+ 197 0054 8981      	.LFBB3:
+ 198               		push __zero_reg__
+ 199               		push r0
+ 200               		in r0,__SREG__
+ 201               		push r0
+ 202               		clr __zero_reg__
+ 203 0056 5D9B      		push r18
+ 204 0058 00C0      		push r19
+ 205               		push r24
+ 206               		push r25
+ 207 005a 8CB9      		push r30
+ 208               		push r31
+ 209               		push r29
+ 210               		push r28
+  95:USART.c       **** }
+ 211               	_vector_13, @function
+ 212               	__vector_13:
+ 214 005e CF91      	.LM9:
+ 215 0060 DF91      	.LFBB3:
+ 216 0062 FF91      		push __zero_reg__
+ 217 0064 EF91      		push r0
+ 218 0066 9F91      		in r0,__SREG__
+ 219 0068 8F91      		push r0
+ 220 006a 3F91      		clr __zero_reg__
+ 221 006c 2F91      		push r18
+ 222 006e 0F90      		push r19
+ 223 0070 0FBE      		push r24
+ 224 0072 0F90      		push r25
+ 225 0074 1F90      		push r30
+ 226 0076 1895      		push r31
+ 227               		push r29
+ 228               		push r28
+ 229               		push __tmp_reg__
+ 230               		in r28,__SP_L__
+ 231               		in r29,__SP_H__
+ 232               	/* prologue: Signal */
+ 233               	/* frame size = 1 */
+ 235               	.LM10:
+ 236               		in r24,44-32
+ 237               		std Y+1,r24
+ 238               		ldi r24,lo8(1000)
+ 239               		ldi r25,hi8(1000)
+ 240               	.LBB14:
+ 241               	.LBB15:
+ 242               	.LBB16:
+ 243               	.LBB17:
+ 245               	.Ltext1:
+ 247 007a DF93      	.LM11:
+ 248               		ldi r18,lo8(200)
+ 249               		ldi r19,hi8(200)
+ 250 007c EC01      	.L10:
+ 251               		movw r30,r18
+ 252               	/* #APP */
+ 253 007e 8885      	 ;  105 "c:/winavr-20100110/lib/gcc/../../avr/include/util/delay_basic.h" 1
+ 254 0080 2881      		1: sbiw r30,1
+ 255 0082 3981      		brne 1b
+ 256 0084 4A81      	 ;  0 "" 2
+ 257 0086 5B81      	/* #NOAPP */
+ 258 0088 8823      	.LBE17:
+ 259 008a 01F0      	.LBE16:
+ 261               	.Ltext2:
+ 263 008e B901      	.LM12:
+ 264 0090 6058      		sbiw r24,1
+ 266 0094 814E      	.LM13:
+ 267 0096 9F4F      		brne .L10
+ 268 0098 B2E0      	.LBE15:
+ 269 009a 660F      	.LBE14:
+ 271 009e 881F      	.Ltext3:
+ 273 00a2 BA95      	.LM14:
+ 274 00a4 01F4      		ldd r24,Y+1
+ 275 00a6 A3E0      	.L11:
+ 276 00a8 220F      	.LBB18:
+ 277 00aa 331F      	.LBB19:
+ 279 00ae 551F      	.LM15:
+ 280 00b0 AA95      		sbis 43-32,5
+ 281 00b2 01F4      		rjmp .L11
+ 283               	.LM16:
+ 284               		out 44-32,r24
+ 285               	/* epilogue start */
+ 286 00b6 CA01      	.LBE19:
+ 287 00b8 B901      	.LBE18:
+ 289 00bc 7D4B      	.LM17:
+ 290 00be 804F      		pop __tmp_reg__
+ 291 00c0 9F4F      		pop r28
+ 292 00c2 F3E0      		pop r29
+ 293 00c4 660F      		pop r31
+ 294 00c6 771F      		pop r30
+ 295 00c8 881F      		pop r25
+ 296 00ca 991F      		pop r24
+ 297 00cc FA95      		pop r19
+ 298 00ce 01F4      		pop r18
+ 299 00d0 E4E0      		pop r0
+ 300 00d2 220F      		out __SREG__,r0
+ 301 00d4 331F      		pop r0
+ 302 00d6 441F      		pop __zero_reg__
+ 303 00d8 551F      		reti
+ 314               	.Lscope3:
+ 317               	.global	comm_UART_Initialize
+ 319               	comm_UART_Initialize:
+ 321 00ec 0E94 0000 	.LM18:
+ 322               	.LFBB4:
+ 323               		push r28
+ 324 00f0 80B5      		push r29
+ 325 00f2 9C81      	/* prologue: function */
+ 326 00f4 892B      	/* frame size = 0 */
+ 327 00f6 8068      		movw r28,r24
+ 329 00fa 892B      	.LM19:
+ 330 00fc 9E81      		ldd r24,Y+8
+ 331 00fe 892B      		ld r18,Y
+ 332 0100 80BD      		ldd r19,Y+1
+ 333               		ldd r20,Y+2
+ 334               		ldd r21,Y+3
+ 335 0102 8BB1      		tst r24
+ 336 0104 9885      		breq .L16
+ 338 0108 8BB9      	.LM20:
+ 339               		movw r24,r20
+ 340               		movw r22,r18
+ 341 010a 8F81      		subi r22,lo8(-(2000000))
+ 342 010c 8823      		sbci r23,hi8(-(2000000))
+ 343 010e 01F0      		sbci r24,hlo8(-(2000000))
+ 344               		sbci r25,hhi8(-(2000000))
+ 345               		ldi r27,2
+ 346               	1:	lsl r22
+ 347               		rol r23
+ 348 0110 F894      		rol r24
+ 349               		rol r25
+ 350               		dec r27
+ 351               		brne 1b
+ 352               		ldi r26,3
+ 353 0112 0E94 0000 	1:	lsl r18
+ 354               		rol r19
+ 355               		rol r20
+ 356               		rol r21
+ 357               		dec r26
+ 358 0116 7894      		brne 1b
+ 359               		rjmp .L20
+ 360               	.L16:
+ 362               	.LM21:
+ 363               		movw r24,r20
+ 364 0118 80E0      		movw r22,r18
+ 365 011a 90E0      		subi r22,lo8(-(1000000))
+ 366               		sbci r23,hi8(-(1000000))
+ 367 011c DF91      		sbci r24,hlo8(-(1000000))
+ 368 011e CF91      		sbci r25,hhi8(-(1000000))
+ 369 0120 0895      		ldi r31,3
+ 370               	1:	lsl r22
+ 371               		rol r23
+ 372               		rol r24
+ 373               		rol r25
+ 374               		dec r31
+ 375               		brne 1b
+ 376               		ldi r30,4
+ 377               	1:	lsl r18
+ 378               		rol r19
+ 379               		rol r20
+DEFINED SYMBOLS
+                            *ABS*:00000000 USART.c
+C:\Users\mark\AppData\Local\Temp/cciHbKkH.s:2      *ABS*:0000003f __SREG__
+C:\Users\mark\AppData\Local\Temp/cciHbKkH.s:3      *ABS*:0000003e __SP_H__
+C:\Users\mark\AppData\Local\Temp/cciHbKkH.s:4      *ABS*:0000003d __SP_L__
+C:\Users\mark\AppData\Local\Temp/cciHbKkH.s:5      *ABS*:00000034 __CCP__
+C:\Users\mark\AppData\Local\Temp/cciHbKkH.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\mark\AppData\Local\Temp/cciHbKkH.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\mark\AppData\Local\Temp/cciHbKkH.s:79     .text:00000000 comm_UART_Send
+C:\Users\mark\AppData\Local\Temp/cciHbKkH.s:105    .text:0000000c comm_UART_Receive
+C:\Users\mark\AppData\Local\Temp/cciHbKkH.s:135    .text:0000001e __vector_13
+C:\Users\mark\AppData\Local\Temp/cciHbKkH.s:242    .text:00000078 comm_UART_Initialize
+                            *COM*:00000001 value
+
+UNDEFINED SYMBOLS
+__udivmodsi4
+comm_UART_Enable
+comm_UART_EnableInterruptRx
+__do_clear_bss

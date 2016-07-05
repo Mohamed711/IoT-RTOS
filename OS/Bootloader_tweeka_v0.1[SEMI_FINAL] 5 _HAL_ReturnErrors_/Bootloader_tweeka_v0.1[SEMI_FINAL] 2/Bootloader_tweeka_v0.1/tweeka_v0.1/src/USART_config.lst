@@ -1,0 +1,270 @@
+   1               		.file	"USART_config.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+  69               	.global	comm_UART_Disable
+  71               	comm_UART_Disable:
+   1:USART_config.c **** /*
+   2:USART_config.c ****  * USART_config.c
+   3:USART_config.c ****  *
+   4:USART_config.c ****  * Created: 2/4/2016 3:05:37 AM
+   5:USART_config.c ****  *  Author: Mark
+   6:USART_config.c ****  */
+   7:USART_config.c **** 
+   8:USART_config.c **** #include <avr/io.h>
+   9:USART_config.c **** #include <avr/interrupt.h>
+  10:USART_config.c **** #include "USART_CFG.h"
+  11:USART_config.c **** #include "USART_config.h"
+  12:USART_config.c **** #include "return_Errors.h"
+  13:USART_config.c **** 
+  14:USART_config.c **** /************************************************************************
+  15:USART_config.c **** * disable UART receiver and transmitter
+  16:USART_config.c **** ************************************************************************/
+  17:USART_config.c **** uint16_t comm_UART_Disable()
+  18:USART_config.c **** {
+  72               	rame size = 0 */
+  74               	.LM1:
+  75               		in r24,42-32
+  76               		out 42-32,__zero_reg__
+  19:USART_config.c **** 	UCSRB_REG &= (0<<RXEN) | (0<<TXEN);
+  77               	mm_UART_Disable:
+  79 0000 8AB1      	.LM0:
+  80 0002 1AB8      	.LFBB1:
+  20:USART_config.c **** 	return SUCCESS;
+  21:USART_config.c **** }
+  81               	rologue: function */
+  82               	/* frame size = 0 */
+  84 0006 90E0      	.LM1:
+  85               		in r24,42-32
+  86 0008 0895      		out 42-32,__zero_reg__
+  88               	.LM2:
+  89               		ldi r24,lo8(0)
+  90               		ldi r25,hi8(0)
+  91               	/* epilogue start */
+  92               		ret
+  22:USART_config.c **** 
+  23:USART_config.c **** /************************************************************************
+  24:USART_config.c **** * disable UART receiver
+  25:USART_config.c **** ************************************************************************/
+  26:USART_config.c **** uint16_t comm_UART_DisableRx()
+  27:USART_config.c **** {
+  93               	= 0 */
+  95               	.LM1:
+  96               		in r24,42-32
+  97               		out 42-32,__zero_reg__
+  28:USART_config.c **** 	UCSRB_REG &= (0<<RXEN);
+  98               	mm_UART_Disable:
+ 100 000a 8AB1      	.LM0:
+ 101 000c 1AB8      	.LFBB1:
+  29:USART_config.c **** 	return SUCCESS;
+  30:USART_config.c **** }
+ 102               	rologue: function */
+ 103               	/* frame size = 0 */
+ 105 0010 90E0      	.LM1:
+ 106               		in r24,42-32
+ 107 0012 0895      		out 42-32,__zero_reg__
+ 109               	.LM2:
+ 110               		ldi r24,lo8(0)
+ 111               		ldi r25,hi8(0)
+ 112               	/* epilogue start */
+ 113               		ret
+  31:USART_config.c **** 
+  32:USART_config.c **** /************************************************************************
+  33:USART_config.c **** * disable UART transmitter
+  34:USART_config.c **** ************************************************************************/
+  35:USART_config.c **** uint16_t comm_UART_DisableTx()
+  36:USART_config.c **** {
+ 114               	= 0 */
+ 116               	.LM1:
+ 117               		in r24,42-32
+ 118               		out 42-32,__zero_reg__
+  37:USART_config.c **** 	UCSRB_REG &= (0<<TXEN);
+ 119               	mm_UART_Disable:
+ 121 0014 8AB1      	.LM0:
+ 122 0016 1AB8      	.LFBB1:
+  38:USART_config.c **** 	return SUCCESS;
+  39:USART_config.c **** }
+ 123               	rologue: function */
+ 124               	/* frame size = 0 */
+ 126 001a 90E0      	.LM1:
+ 127               		in r24,42-32
+ 128 001c 0895      		out 42-32,__zero_reg__
+ 130               	.LM2:
+ 131               		ldi r24,lo8(0)
+ 132               		ldi r25,hi8(0)
+ 133               	/* epilogue start */
+ 134               		ret
+  40:USART_config.c **** 
+  41:USART_config.c **** /************************************************************************
+  42:USART_config.c **** * enable UART receiver and transmitter
+  43:USART_config.c **** ************************************************************************/
+  44:USART_config.c **** uint16_t comm_UART_Enable()
+  45:USART_config.c **** {
+ 135               	= 0 */
+ 137               	.LM1:
+ 138               		in r24,42-32
+ 139               		out 42-32,__zero_reg__
+  46:USART_config.c **** 	UCSRB_REG |= (1<<RXEN) | (1<<TXEN);
+ 140               	mm_UART_Disable:
+ 142 001e 8AB1      	.LM0:
+ 143 0020 8861      	.LFBB1:
+ 144 0022 8AB9      	/* prologue: function */
+  47:USART_config.c **** 	return SUCCESS;
+  48:USART_config.c **** }
+ 145               	ame size = 0 */
+ 147 0024 80E0      	.LM1:
+ 148 0026 90E0      		in r24,42-32
+ 149               		out 42-32,__zero_reg__
+ 151               	.LM2:
+ 152               		ldi r24,lo8(0)
+ 153               		ldi r25,hi8(0)
+ 154               	/* epilogue start */
+ 155               		ret
+  49:USART_config.c **** 
+  50:USART_config.c **** /************************************************************************
+  51:USART_config.c **** * enable UART receiver
+  52:USART_config.c **** ************************************************************************/
+  53:USART_config.c **** uint16_t comm_UART_EnableRx()
+  54:USART_config.c **** {
+ 157               	4,42-32
+ 158               		out 42-32,__zero_reg__
+ 160               	.LM2:
+ 161               		ldi r24,lo8(0)
+  55:USART_config.c **** 	UCSRB_REG |= (1<<RXEN);
+ 162               	FBB1:
+ 163               	/* prologue: function */
+ 164 002a 549A      	/* frame size = 0 */
+  56:USART_config.c **** 	return SUCCESS;
+  57:USART_config.c **** }
+ 165               	tabn	68,0,19,.LM1-.LFBB1
+ 166               	.LM1:
+ 167 002c 80E0      		in r24,42-32
+ 168 002e 90E0      		out 42-32,__zero_reg__
+ 170 0030 0895      	.LM2:
+ 171               		ldi r24,lo8(0)
+ 172               		ldi r25,hi8(0)
+ 173               	/* epilogue start */
+ 174               		ret
+ 176               	.Lscope1:
+  58:USART_config.c **** 
+  59:USART_config.c **** /************************************************************************
+  60:USART_config.c **** * enable UART transmitter
+  61:USART_config.c **** ************************************************************************/
+  62:USART_config.c **** uint16_t comm_UART_EnableTx()
+  63:USART_config.c **** {
+ 177               	t 42-32,__zero_reg__
+ 179               	.LM2:
+ 180               		ldi r24,lo8(0)
+ 181               		ldi r25,hi8(0)
+  64:USART_config.c **** 	UCSRB_REG |= (1<<TXEN);
+ 182               	: function */
+ 183               	/* frame size = 0 */
+  65:USART_config.c **** 	return SUCCESS;
+  66:USART_config.c **** }
+ 185               	_Disable
+ 187 0034 80E0      	comm_UART_Disable:
+ 189               	.LM0:
+ 190 0038 0895      	.LFBB1:
+ 191               	/* prologue: function */
+ 192               	/* frame size = 0 */
+ 194               	.LM1:
+ 195               		in r24,42-32
+ 196               		out 42-32,__zero_reg__
+  67:USART_config.c **** 
+  68:USART_config.c **** /************************************************************************
+  69:USART_config.c **** * disable UART interrupts
+  70:USART_config.c **** ************************************************************************/
+  71:USART_config.c **** uint16_t comm_UART_DisableInterrupt()
+  72:USART_config.c **** {
+ 197               	,21,.LM2-.LFBB1
+ 198               	.LM2:
+ 199               		ldi r24,lo8(0)
+ 200               		ldi r25,hi8(0)
+ 201               	/* epilogue start */
+  73:USART_config.c **** 	UCSRB_REG &= (0<<RXCIE) | (0<<TXCIE) | (0<<UDRIE);
+ 202               	 size = 0 */
+ 204 003a 8AB1      	.LM1:
+ 205 003c 1AB8      		in r24,42-32
+  74:USART_config.c **** 	return SUCCESS;
+  75:USART_config.c **** }
+ 206               	ART_Disable, @function
+ 207               	comm_UART_Disable:
+ 209 0040 90E0      	.LM0:
+ 210               	.LFBB1:
+ 211 0042 0895      	/* prologue: function */
+ 212               	/* frame size = 0 */
+ 214               	.LM1:
+ 215               		in r24,42-32
+ 216               		out 42-32,__zero_reg__
+  76:USART_config.c **** 
+  77:USART_config.c **** /************************************************************************
+  78:USART_config.c **** * enable UART interrupts
+  79:USART_config.c **** ************************************************************************/
+  80:USART_config.c **** uint16_t comm_UART_EnableInterrupt()
+  81:USART_config.c **** {
+ 218               	24,lo8(0)
+ 219               		ldi r25,hi8(0)
+ 220               	/* epilogue start */
+ 221               		ret
+  82:USART_config.c **** 	UCSRB_REG |= (1<<RXCIE) | (1<<TXCIE) | (1<<UDRIE);
+ 223               	4,42-32
+ 224               		out 42-32,__zero_reg__
+ 226 0046 806E      	.LM2:
+ 227 0048 8AB9      		ldi r24,lo8(0)
+  83:USART_config.c **** 	return SUCCESS;
+  84:USART_config.c **** }
+ 228               	FBB1:
+ 229               	/* prologue: function */
+ 230 004a 80E0      	/* frame size = 0 */
+ 232               	.LM1:
+ 233 004e 0895      		in r24,42-32
+ 234               		out 42-32,__zero_reg__
+ 236               	.LM2:
+ 237               		ldi r24,lo8(0)
+ 238               		ldi r25,hi8(0)
+ 239               	/* epilogue start */
+  85:USART_config.c **** 
+  86:USART_config.c **** /************************************************************************
+  87:USART_config.c **** * enable UART receive interrupts
+  88:USART_config.c **** ************************************************************************/
+  89:USART_config.c **** uint16_t comm_UART_EnableInterruptRx()
+  90:USART_config.c **** {
+ 240               	comm_UART_Disable, .-comm_UART_Disable
+ 241               	.Lscope1:
+ 243               	.global	comm_UART_DisableRx
+  91:USART_config.c **** 	UCSRB_REG |= (1<<RXCIE);
+ 245               	able, .-comm_UART_Disable
+ 246               	.Lscope1:
+  92:USART_config.c **** 	return SUCCESS;
+  93:USART_config.c **** }
+ 248               	o8(0)
+ 249               		ldi r25,hi8(0)
+ 250 0052 80E0      	/* epilogue start */
+ 251 0054 90E0      		ret
+ 253 0056 0895      	.Lscope1:
+ 255               	.global	comm_UART_DisableRx
+ 257               	comm_UART_DisableRx:
+DEFINED SYMBOLS
+                            *ABS*:00000000 USART_config.c
+C:\Users\mark\AppData\Local\Temp/ccK9Cyob.s:2      *ABS*:0000003f __SREG__
+C:\Users\mark\AppData\Local\Temp/ccK9Cyob.s:3      *ABS*:0000003e __SP_H__
+C:\Users\mark\AppData\Local\Temp/ccK9Cyob.s:4      *ABS*:0000003d __SP_L__
+C:\Users\mark\AppData\Local\Temp/ccK9Cyob.s:5      *ABS*:00000034 __CCP__
+C:\Users\mark\AppData\Local\Temp/ccK9Cyob.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\mark\AppData\Local\Temp/ccK9Cyob.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\mark\AppData\Local\Temp/ccK9Cyob.s:71     .text:00000000 comm_UART_Disable
+C:\Users\mark\AppData\Local\Temp/ccK9Cyob.s:92     .text:0000000a comm_UART_DisableRx
+C:\Users\mark\AppData\Local\Temp/ccK9Cyob.s:113    .text:00000014 comm_UART_DisableTx
+C:\Users\mark\AppData\Local\Temp/ccK9Cyob.s:134    .text:0000001e comm_UART_Enable
+C:\Users\mark\AppData\Local\Temp/ccK9Cyob.s:156    .text:0000002a comm_UART_EnableRx
+C:\Users\mark\AppData\Local\Temp/ccK9Cyob.s:176    .text:00000032 comm_UART_EnableTx
+C:\Users\mark\AppData\Local\Temp/ccK9Cyob.s:196    .text:0000003a comm_UART_DisableInterrupt
+C:\Users\mark\AppData\Local\Temp/ccK9Cyob.s:217    .text:00000044 comm_UART_EnableInterrupt
+C:\Users\mark\AppData\Local\Temp/ccK9Cyob.s:239    .text:00000050 comm_UART_EnableInterruptRx
+
+NO UNDEFINED SYMBOLS

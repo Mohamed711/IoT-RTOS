@@ -1,0 +1,145 @@
+   1               		.file	"HAL_UART.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+  77               	.global	HAL_comm_UART_Receive
+  79               	HAL_comm_UART_Receive:
+   1:HAL_UART.c    **** /*
+   2:HAL_UART.c    ****  * HAL_UART.c
+   3:HAL_UART.c    ****  *
+   4:HAL_UART.c    ****  * Created: 2/20/2016 3:09:12 PM
+   5:HAL_UART.c    ****  *  Author: Mark
+   6:HAL_UART.c    ****  */ 
+   7:HAL_UART.c    **** 
+   8:HAL_UART.c    **** #include "HAL_UART.h"
+   9:HAL_UART.c    **** #include "USART.h"
+  10:HAL_UART.c    **** #include "return_Errors.h"
+  11:HAL_UART.c    **** 
+  12:HAL_UART.c    **** uint16_t HAL_comm_UART_Initialize(HAL_Comm_UART_ConfigStruct_t* HAL_uartInitConfig)
+  13:HAL_UART.c    **** {
+  14:HAL_UART.c    **** 	comm_UART_Initialize(HAL_uartInitConfig);
+  15:HAL_UART.c    **** 	return SUCCESS;
+  16:HAL_UART.c    **** }
+  17:HAL_UART.c    **** 
+  18:HAL_UART.c    **** uint16_t HAL_comm_UART_Send(HAL_Comm_UART_HandleTypeDefStruct_t* HAL_transmitChar)
+  19:HAL_UART.c    **** {
+  20:HAL_UART.c    **** 	comm_UART_Send(HAL_transmitChar->transmit_char);
+  21:HAL_UART.c    **** 	return SUCCESS;
+  22:HAL_UART.c    **** }
+  23:HAL_UART.c    **** 
+  24:HAL_UART.c    **** uint16_t HAL_comm_UART_Receive(void *receiveChar)
+  25:HAL_UART.c    **** {
+  80               	28
+  81               		rcall .
+  82               		in r28,__SP_L__
+  83 0000 0F93      		in r29,__SP_H__
+  84 0002 1F93      	/* prologue: function */
+  85 0004 DF93      	/* frame size = 2 */
+  86 0006 CF93      		movw r16,r24
+  88 000a CDB7      	.LM1:
+  89 000c DEB7      		movw r24,r28
+  90               		adiw r24,1
+  91               		call comm_UART_Receive
+  92 000e 8C01      		or r24,r25
+  26:HAL_UART.c    **** 	
+  27:HAL_UART.c    **** 	uint16_t temp;
+  28:HAL_UART.c    **** 	if (comm_UART_Receive(&temp))
+  93               	.LM1-.LFBB1
+  94               	.LM1:
+  95 0010 CE01      		movw r24,r28
+  96 0012 0196      		adiw r24,1
+  97 0014 0E94 0000 		call comm_UART_Receive
+  98 0018 892B      		or r24,r25
+  99 001a 01F0      		breq .L2
+ 100 001c 2FEF      		ldi r18,lo8(-1)
+ 101 001e 3FEF      		ldi r19,hi8(-1)
+ 102 0020 00C0      		rjmp .L3
+ 103               	.L2:
+  29:HAL_UART.c    **** 	{
+  30:HAL_UART.c    **** 		return FAIL;
+  31:HAL_UART.c    **** 	}
+  32:HAL_UART.c    **** 	else
+  33:HAL_UART.c    **** 	{
+  34:HAL_UART.c    **** 		*(uint16_t*)receiveChar = temp;
+ 104               	ive
+ 105               		or r24,r25
+ 106 0022 8981      		breq .L2
+ 107 0024 9A81      		ldi r18,lo8(-1)
+ 108 0026 F801      		ldi r19,hi8(-1)
+ 109 0028 9183      		rjmp .L3
+ 110 002a 8083      	.L2:
+ 112 002e 30E0      	.LM2:
+ 113               		ldd r24,Y+1
+  35:HAL_UART.c    **** 		return SUCCESS;
+  36:HAL_UART.c    **** 	}	
+  37:HAL_UART.c    **** }...
+ 114               	9,hi8(-1)
+ 115               		rjmp .L3
+ 116 0030 C901      	.L2:
+ 118 0032 0F90      	.LM2:
+ 119 0034 0F90      		ldd r24,Y+1
+ 120 0036 CF91      		ldd r25,Y+2
+ 121 0038 DF91      		movw r30,r16
+ 122 003a 1F91      		std Z+1,r25
+ 123 003c 0F91      		st Z,r24
+ 124 003e 0895      		ldi r18,lo8(0)
+ 125               		ldi r19,hi8(0)
+ 126               	.L3:
+ 128               	.LM3:
+ 129               		movw r24,r18
+ 130               	/* epilogue start */
+ 131               		pop __tmp_reg__
+ 132               		pop __tmp_reg__
+ 133               		pop r28
+ 134               		pop r29
+ 135               		pop r17
+ 136               		pop r16
+ 137               		ret
+ 142               	.Lscope1:
+ 145               	.global	HAL_comm_UART_Send
+ 147 0048 80E0      	HAL_comm_UART_Send:
+ 149               	.LM4:
+ 150 004c 0895      	.LFBB2:
+ 151               	/* prologue: function */
+ 152               	/* frame size = 0 */
+ 153               		movw r30,r24
+ 155               	.LM5:
+ 156               		ld r24,Z
+ 157               		call comm_UART_Send
+ 159               	.LM6:
+ 160               		ldi r24,lo8(0)
+ 161               		ldi r25,hi8(0)
+ 162               	/* epilogue start */
+ 163               		ret
+ 165 004e 0E94 0000 	.Lscope2:
+ 168 0052 80E0      	.global	HAL_comm_UART_Initialize
+ 170               	HAL_comm_UART_Initialize:
+ 172               	.LM7:
+ 173               	.LFBB3:
+ 174               	/* prologue: function */
+ 175               	/* frame size = 0 */
+ 177               	.LM8:
+ 178               		call comm_UART_Initialize
+DEFINED SYMBOLS
+                            *ABS*:00000000 HAL_UART.c
+C:\Users\mark\AppData\Local\Temp/ccQkLOzj.s:2      *ABS*:0000003f __SREG__
+C:\Users\mark\AppData\Local\Temp/ccQkLOzj.s:3      *ABS*:0000003e __SP_H__
+C:\Users\mark\AppData\Local\Temp/ccQkLOzj.s:4      *ABS*:0000003d __SP_L__
+C:\Users\mark\AppData\Local\Temp/ccQkLOzj.s:5      *ABS*:00000034 __CCP__
+C:\Users\mark\AppData\Local\Temp/ccQkLOzj.s:6      *ABS*:00000000 __tmp_reg__
+C:\Users\mark\AppData\Local\Temp/ccQkLOzj.s:7      *ABS*:00000001 __zero_reg__
+C:\Users\mark\AppData\Local\Temp/ccQkLOzj.s:79     .text:00000000 HAL_comm_UART_Receive
+C:\Users\mark\AppData\Local\Temp/ccQkLOzj.s:134    .text:00000040 HAL_comm_UART_Send
+C:\Users\mark\AppData\Local\Temp/ccQkLOzj.s:157    .text:0000004e HAL_comm_UART_Initialize
+                            *COM*:00000001 value
+
+UNDEFINED SYMBOLS
+comm_UART_Receive
+comm_UART_Send
+comm_UART_Initialize
+__do_clear_bss
