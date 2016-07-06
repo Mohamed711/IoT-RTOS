@@ -182,17 +182,6 @@ if (processId == queueHead(sleepq))
 	
 	Scheduler_processSetReady(processId);
 	
-	if (!isEmpty(sleepq))
-	{
-		time = queueTab[firstId(sleepq)].qPriority;
-		Timer_New(Scheduler_clkhandler, time);
-	}
-	else
-	{
-		Timer_New(Scheduler_clkhandler, 10000000000);
-		//TimerDisable(TIMER0_BASE, TIMER_A);
-	}
-	
 	wakefromSleep = false;
 	IntTrigger(INT_TIMER0A);
 	return OK;
