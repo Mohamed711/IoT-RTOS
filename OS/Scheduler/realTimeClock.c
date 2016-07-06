@@ -32,59 +32,10 @@ uint32_t time;				/*time used for the timer*/
 
 uint32_t	clktime;		/* current time in secs since boot	*/
 uint32_t 	ctr1000;
-int32_t		slnonEmpty;		/* nonzero if sleepq is nonEmpty	*/
+int32_t		slnonEmpty;	/* nonzero if sleepq is nonEmpty	*/
 int32_t		*sltop;			/* ptr to key in first item on sleepq	*/
 uint32_t	preempt;		/* preemption counter			*/
 
-/******************************************************************************
-*
-*	The function's purpose is to insert a processes in the sleep queue
-*	and calculate it's new key
-*
-*	\param pid				process's ID
-*	\param q				ID of the queue
-*	\param key				delay from now (in ms.)
-*
-* 	\return 0 if there's an error, -1 if there's no error
-*
-*****************************************************************************/
-sysCall	Scheduler_insertd(pid	processId,  qid	queueId, queuePriority	key)
-{
-	qid	next;			/* Runs through the delta list	*/
-	qid	prev;			/* Follows next through the list*/
-
-	if (isBadQid(queueId) || isbadpid(processId))
-	{
-		return SYSERR;
-	}
-
-	prev = queueHead(queueId);
-	next = queueTab[queueHead(queueId)].qnext;
-
-	while ((next != queueTail(queueId)) && (queueTab[next].qPriority <= key))
-	{
-		key -= queueTab[next].qPriority;
-		prev = next;
-		next = queueTab[next].qnext;
-	}
-
-	/* Insert new node between prev and next nodes */
-
-	queueTab[processId].qnext = next;
-	queueTab[processId].qprev = prev;
-	queueTab[processId].qPriority = key;
-	queueTab[prev].qnext = processId;
-	queueTab[next].qprev = processId;
-
-	if (next != queueTail(queueId))
-	{
-		queueTab[next].qPriority -= key;
-	}
-	
-	time = queueTab[firstId(sleepingList)].qPriority;
-	Timer_New(Scheduler_clkhandler, time+2);
-
-}
 
 /******************************************************************************
 *
@@ -92,7 +43,7 @@ sysCall	Scheduler_insertd(pid	processId,  qid	queueId, queuePriority	key)
 *
 *	\param delay		time to delay in seconds
 *
-* 	\return system call
+* \return system call
 *
 *****************************************************************************/
 sysCall	Scheduler_sleep(int32_t delay)
@@ -128,7 +79,7 @@ sysCall	Scheduler_sleepms(int32_t	delay)
 
 	/* Delay calling process */
 
-	if (Scheduler_insertd(currpid, sleepingList, delay) == SYSERR)
+	if (insertSleep(currpid, delay) == SYSERR)
 	{
 		return SYSERR;
 	}

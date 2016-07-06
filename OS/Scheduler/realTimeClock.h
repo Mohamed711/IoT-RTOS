@@ -26,7 +26,8 @@
 #include <stdint.h>
 #include "../RTOS.h"
 
-sysCall	Scheduler_insertd(pid	processId,  qid	queueId, queuePriority	key);
+extern uint32_t time;				/*time used for the timer*/
+
 sysCall	Scheduler_sleep(int32_t delay);
 sysCall	Scheduler_sleepms(int32_t	delay);
 sysCall	Scheduler_unsleep(pid processId);

@@ -23,6 +23,7 @@
 #include <stdint.h>
 #include "queue.h"
 #include "Process.h"
+#include "realTimeClock.h"
 
 qid readyList;
 qid suspendedList;
@@ -239,29 +240,37 @@ sysCall getItem(pid processId)
 #if ( PARTIALLY_BLOCKING_ENABLE == 0x01 )
 	sysCall	insertSleep (pid processId, queuePriority entryPriority )
 	{
-		qid	curr;			/* Runs through items in a queue */
-		qid	prev;			/* Holds previous node index	*/
+		
+	qid	prev;			/* Follows next through the list*/
+	qid curr;
 
-		if (isBadPid(processId))
-		{
-			return pdFAIL;
-		}
+	if (isBadQid(sleepingList) || isbadpid(processId))
+	{
+		return SYSERR;
+	}
 
-		curr = firstId(sleepingList);
-		while (sleepTab[curr].sleeping > entryPriority)
-		{
-			curr = sleepTab[curr].qnext;
-		}
-
-		/* Insert process between curr node and previous node */
-
-		prev = sleepTab[curr].qprev;	/* Get index of previous node */
-		sleepTab[processId].qnext = curr;
-		sleepTab[processId].qprev = prev;
-		sleepTab[processId].sleeping = entryPriority;
-
-		sleepTab[prev].qnext = processId;
-		sleepTab[curr].qprev = processId;
+	curr = firstId(sleepingList);
+	while ( (curr != queueTail(sleepingList)) && queueTab[curr].qPriority < entryPriority )
+	{
+		entryPriority -= queueTab[curr].qPriority;
+		curr = queueTab[curr].qnext;
+	}
+	
+	prev = queueTab[curr].qprev;
+	queueTab[processId].qnext = curr;
+	queueTab[processId].qprev = prev;
+	queueTab[processId].qPriority = entryPriority;
+	
+	queueTab[prev].qnext = processId;
+	queueTab[curr].qprev = processId;
+	
+	if (curr != queueTail(sleepingList))
+	{
+		queueTab[curr].qPriority -= entryPriority;
+	}
+	
+	time = queueTab[firstId(sleepingList)].qPriority;
+	Timer_New(Scheduler_clkhandler, time+2);
 
 		return pdPASS;
 	}
@@ -313,3 +322,57 @@ sysCall getItem(pid processId)
 	}
 
 #endif
+	
+	
+	
+	
+/******************************************************************************
+*
+*	The function's purpose is to insert a process in a queue
+*	making sure it's in the right place
+*
+*	\param processId			ID of the process to be inserted
+*	\param entryPriority		The priority of the process in the queue
+*
+* 	\return pdFAIL if there's an error, pdPASS if there's no error
+*
+*****************************************************************************/
+#if ( PARTIALLY_BLOCKING_ENABLE == 0x00 )
+	sysCall	insertSleep (pid processId, queuePriority entryPriority )
+	{
+		
+	qid	prev;			/* Follows next through the list*/
+	qid curr;
+
+	if (isBadQid(sleepingList) || isbadpid(processId))
+	{
+		return SYSERR;
+	}
+
+	curr = firstId(sleepingList);
+	while ( (curr != queueTail(sleepingList)) && queueTab[curr].qPriority < entryPriority )
+	{
+		entryPriority -= queueTab[curr].qPriority;
+		curr = queueTab[curr].qnext;
+	}
+	
+	prev = queueTab[curr].qprev;
+	queueTab[processId].qnext = curr;
+	queueTab[processId].qprev = prev;
+	queueTab[processId].qPriority = entryPriority;
+	
+	queueTab[prev].qnext = processId;
+	queueTab[curr].qprev = processId;
+	
+	if (curr != queueTail(sleepingList))
+	{
+		queueTab[curr].qPriority -= entryPriority;
+	}
+	
+	time = queueTab[firstId(sleepingList)].qPriority;
+	Timer_New(Scheduler_clkhandler, time+2);
+
+		return pdPASS;
+	}
+#endif
+

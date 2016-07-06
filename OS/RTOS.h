@@ -67,8 +67,8 @@ typedef bool sysCall;
 #define pdFALSE	0x00			// false return
 #define pdPASS	0x01			// return value that the function carried out correctly
 #define pdFAIL 	0x00			// return fail
-#define errQUEUE_FULL	0x00	// error value indicates that the queue is full
-#define errQUEUE_EMPTY 	0x00	// error the queue is empty
+#define errQUEUE_FULL	0x01	// error value indicates that the queue is full
+#define errQUEUE_EMPTY 	0x01	// error the queue is empty
 #define mtCOVERAGE_TEST_MARKER()// just an empty for the else part of the if statement
 #define configUSE_PREEMPTION 0	// config the scheduler to be preemptive or cooperative
 #define preemptive 0

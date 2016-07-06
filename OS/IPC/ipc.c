@@ -238,7 +238,7 @@ BaseType_t IPC_xQueueGenericSend( QueueHandle_t xQueue, const void * const pvIte
 					insert( Scheduler_processGetPid() , pxQueue->xTasksWaitingToSend , proctab[Scheduler_processGetPid()].prprio );
 					if ( xSleepTime != IPC_WAIT_FOREVER )
 					{
-						Scheduler_insertd( Scheduler_processGetPid(), sleepingList, xSleepTime );
+						insertSleep( Scheduler_processGetPid(), xSleepTime );
 					}
 					else
 					{
@@ -351,7 +351,7 @@ BaseType_t IPC_xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer
 					
 					if ( xSleepTime != IPC_WAIT_FOREVER )
 					{
-						Scheduler_insertd( Scheduler_processGetPid(), sleepingList, xSleepTime );
+						insertSleep( Scheduler_processGetPid(), xSleepTime );
 					}
 					else
 					{

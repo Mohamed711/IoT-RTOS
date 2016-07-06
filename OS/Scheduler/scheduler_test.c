@@ -103,8 +103,8 @@ void SchedulerTest()
 	pid pidLED2= Scheduler_processCreate(LED2, 400, 10, "P2");	//red
 	pid pidLED3= Scheduler_processCreate(LED3, 400, 15, "P3");	//purple
 
-	//Scheduler_insertd(pidLED1, sleepq, 300);
-	Scheduler_insertd(pidLED2, sleepingList, 1000);
+	//insertSleep(pidLED1, sleepq, 300);
+	insertSleep(pidLED2,1000);
 	//processSetReady(pidLED2);
 	Scheduler_processSetReady(pidLED3);
 	//insert(0, readyList, 0);
