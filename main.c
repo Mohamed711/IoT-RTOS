@@ -25,7 +25,7 @@
 
 #define ARMScheduler_TEST 	1
 #define IPC_TEST						2
-#define TEST_USED IPC_TEST
+#define TEST_USED ARMScheduler_TEST
 
 int main(void) 
 {
@@ -33,7 +33,7 @@ int main(void)
 	#if  (TEST_USED == ARMScheduler_TEST )
 		SchedulerTest();
 	#elif (TEST_USED == IPC_TEST)
-		if (ipc_test() == SUCCESS )
+		if (IPC_test() == SUCCESS )
 		{
 			ReturnValue = SUCCESS;
 		}
