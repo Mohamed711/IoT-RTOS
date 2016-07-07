@@ -127,6 +127,7 @@ sysCall	Scheduler_unsleep(pid processId)
 	{
 		getItem(processId);
 	}
+
 	Scheduler_processSetReady(processId);
 	
 	wakefromSleep = false;

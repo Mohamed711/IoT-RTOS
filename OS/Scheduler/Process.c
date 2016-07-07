@@ -30,7 +30,6 @@
 pid currpid;
 struct procent proctab[NPROC];		  /* table of processes */
 extern uint32_t prcount;
-
 extern bool wakefromSleep;
 
 /******************************************************************************
@@ -89,7 +88,7 @@ pid Scheduler_processNewPid(void)
 * 	\return the pid of the created process
 *
 *****************************************************************************/
-pid Scheduler_processCreate(void *funcAddr, uint32_t ssize, pid priority, char *name)
+pid Scheduler_processCreate(void *funcAddr, uint32_t ssize, int32_t priority, char *name)
 {
 	pid processId; /* Stores new process id */
 	struct procent *prptr; /* Pointer to process table entry */
@@ -102,9 +101,9 @@ pid Scheduler_processCreate(void *funcAddr, uint32_t ssize, pid priority, char *
 	processId = Scheduler_processNewPid();
 	saddr= (char*)pvPortMalloc(ssize);
 
-	if ((priority < 1) || processId == (pid)SYSERR || saddr == (char *)SYSERR)
+	if ((priority < 1) || processId == SYSERR || saddr == (char *)SYSERR)
 	{
-		return (pid)SYSERR;
+		return SYSERR;
 	}
 	prcount++;
 	prptr = &proctab[processId];
@@ -112,7 +111,7 @@ pid Scheduler_processCreate(void *funcAddr, uint32_t ssize, pid priority, char *
 	/* Initialize process table entry for new process */
 	prptr->processFunction = funcAddr;
 	prptr->prstate = PR_SUSP; /* Initial state is suspended */
-	prptr->prprio = priority;
+	prptr->prprio = (pid)priority;
 	prptr->prstkbase = (char*)saddr;
 	prptr->prstklen = ssize;
 	prptr->prname[PNMLEN - 1] = NULLCH;

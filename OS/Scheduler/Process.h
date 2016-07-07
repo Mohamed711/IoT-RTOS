@@ -113,7 +113,7 @@ extern pid currpid;
 
 pid Scheduler_processGetPid();
 pid Scheduler_processNewPid();
-pid Scheduler_processCreate(void *funcaddr, uint32_t ssize, pid priority, char *name);
+pid Scheduler_processCreate(void *funcaddr, uint32_t ssize, int32_t priority, char *name);
 sysCall Scheduler_processTerminate(pid processId);
 sysCall	Scheduler_processSetReady(pid processId);
 pid Scheduler_processResume(pid processId);
