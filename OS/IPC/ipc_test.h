@@ -10,4 +10,13 @@
  *  source code must retain the above copyright notice, and this condition.
  *****************************************************************************/
  
+ #ifndef IPC_TEST_H_
+ #define IPC_TEST_H_
+ 
+ uint16_t ipc_test();
+ 
+ #endif
+ 
+ 
+ 
  

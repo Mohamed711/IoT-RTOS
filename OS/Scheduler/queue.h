@@ -68,16 +68,13 @@ sysCall	insert( pid processId, qid queueId, queuePriority entryPriority );
 sysCall getItem(pid processId);
 qid newqueue(void);
 sysCall	insertSleep(pid processId, queuePriority entryPriority );
+sysCall getItemFromSleep(pid processId);
 
 #if ( PARTIALLY_BLOCKING_ENABLE == 0x00 )
 	#define dequeueSleep()													dequeue(sleepingList)
-	#define enqueueSleep(processId)									enqueue(processId, sleepingList)
-	#define getItemFromSleep(processId)							getItem(processId,sleepingList)
 	#define newSleepingQueue()											newqueue()
 #else	
 	pid dequeueSleep();
-	sysCall enqueueSleep(pid processId);
-	sysCall getItemFromSleep(pid processId);
 	qid newSleepingQueue();
 #endif
 

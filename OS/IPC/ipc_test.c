@@ -14,56 +14,137 @@
 
 #include "../RTOS.h"
 #include "ipc.h"
+#include "TM4C123GH6PM.h"
 
-void ipc_test()
- {
+#ifdef ARM
+//#include "C:/Keil_v5/ARM/CMSIS/Include/core_cmFunc.h"
+#endif 
+
+#include "../Scheduler/Process.h"
+#include "../Scheduler/queue.h"
+#include "../Scheduler/realTimeClock.h"
+#include "../Scheduler/Initialize.h"
+#include "../Scheduler/nullProcess.h"
+#include "ipc_test.h"
+
+#include "../RTOS.h"
+
+	extern uint32_t prcount;
+
+QueueHandle_t pxQueue;
+uint8_t mode = 0;
+
+void task1()
+{
 	
-	uint8_t uxLength, uxItemSize, xVal, debugValue;
+	uint32_t z =10;
+	IPC_xQueueSendToFront(pxQueue,&z,IPC_NO_SLEEP);
+	
+}
+
+void task2()
+{
+	int val1;
+	IPC_xQueueGenericReceive(pxQueue,&val1,IPC_WAIT_FOREVER,IPC_RECEIVE_WITH_CONSUMING);
+	
+	if (val1 == 10) 
+	{
+		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 14);
+	}
+	else
+	{
+		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 7);
+	}
+}
+
+
+uint16_t ipc_test()
+ {
+	prcount=0;
+	readyList = newqueue();
+	suspendedList = newqueue();
+	sleepingList = newSleepingQueue();
+	Scheduler_initializenullProcess();
+	Timer_New(Scheduler_clkhandler, 50000000);
+	 	
+	uint8_t uxLength, uxItemSize, xVal;
 	QueueHandle_t queue;
 	uxLength = 2;
 	uxItemSize = 4;
 
+	/* Test the creation of the queue */
 	queue = IPC_xQueueCreate(uxLength, uxItemSize);
+	 pxQueue = IPC_xQueueCreate(uxLength, uxItemSize);
 
+	 SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+	GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
+	 
+	pid id1= Scheduler_processCreate(task1, 700, 20, "P2");	
+	pid id2= Scheduler_processCreate(task2, 700, 25, "P3");	
+
+	Scheduler_processSetReady(id2);
+	Scheduler_processSetReady(id1);
+
+	
+	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 2);
+
+	/* Test the full queue value */ 
 	xVal = IPC_xQueueIsQueueFullFromISR(queue);
-	if ( xVal == pdFALSE )
+	if ( xVal == pdTRUE )
 	{
-		debugValue = 10;
+		 return 0xFFFF;
 	}
 
+	/* Checks if the queue is empty */
 	xVal = IPC_xQueueIsQueueEmptyFromISR(queue);
-	if ( xVal == pdTRUE )
+	if ( xVal == pdFALSE )
 		{
-			debugValue = 20;
+			return 0xFF;
 		}
-
+		
+  /* Checks the number of waiting messages */
 	xVal = IPC_uxQueueMessagesWaitingFromISR(queue);
-	if ( xVal == 0x00 )
+	if ( xVal != 0x00 )
 		{
-			debugValue = 30;
+			return 0xFF;
 		}
 
+	/* Checks the spaces available in teh queeu */
 	xVal = IPC_uxQueueSpacesAvailable(queue);
 
-	debugValue = xVal;
-
-	debugValue += 1;
-
-
+		
 	int z = 100, q = 200;
-	IPC_xQueueSendToFront(queue,&z,0);
-	IPC_xQueueSendToFront(queue,&q,0);
+	IPC_xQueueSendToFront(queue,&z,IPC_NO_SLEEP);
+	IPC_xQueueSendToFront(queue,&q,IPC_NO_SLEEP);
 
 	int val1,val2;
-	IPC_xQueueGenericReceive(queue,&val1,0,pdFALSE);
-	IPC_xQueueGenericReceive(queue,&val2,0,pdFALSE);
-
+	IPC_xQueueGenericReceive(queue,&val1,IPC_NO_SLEEP,IPC_RECEIVE_WITH_CONSUMING);
+	IPC_xQueueGenericReceive(queue,&val2,IPC_NO_SLEEP,IPC_RECEIVE_WITH_CONSUMING);
+		
+	if (val1 != 200 || val2 != 100)
+	{
+		return 0xFF;
+	}
+		
 	z = 100, q = 200;
-	IPC_xQueueSendToBack(queue,&z,0);
-	IPC_xQueueSendToBack(queue,&q,0);
+	IPC_xQueueSendToBack(queue,&z,IPC_NO_SLEEP);
+	IPC_xQueueSendToBack(queue,&q,IPC_NO_SLEEP);
 
-	IPC_xQueueGenericReceive(queue,&val1,0,pdTRUE);
-	IPC_xQueueGenericReceive(queue,&val2,0,pdFALSE);
+	IPC_xQueueGenericReceive(queue,&val1,IPC_NO_SLEEP,IPC_RECEIVE_WITHOUT_CONSUMING);
+	IPC_xQueueGenericReceive(queue,&val2,IPC_NO_SLEEP,IPC_RECEIVE_WITH_CONSUMING);
+	
+	if ( z != 100 && q != 100 ) 
+	{
+		return 0xFF;
+	}
+	
+	__set_PSP(__get_MSP()); // copy current stack pointer value into PSP
+  __set_CONTROL(0x00000002); // switch to "process" stack pointer PSP
+	
+	Scheduler_nullProc();
+	
+	return SUCCESS; 
 
 }
 

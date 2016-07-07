@@ -52,8 +52,8 @@ void ISRos(void)
 
 	pid nwPiD = Scheduler_reSchedule();
 	
-		*((uint32_t*)mainStk) = THREAD_RETURN;
-		set_PSP((uint32_t)proctab[nwPiD].prstkptr);
+	*((uint32_t*)mainStk) = THREAD_RETURN;
+	set_PSP((uint32_t)proctab[nwPiD].prstkptr);
 	loadContext(proctab[nwPiD].prstkptr);
 }
 

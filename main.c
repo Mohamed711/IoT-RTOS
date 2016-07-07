@@ -21,14 +21,26 @@
  *****************************************************************************/
 #include "RTOS_Headers.h"
 #include "OS/Scheduler/scheduler_test.h"
+#include "OS/IPC/ipc_test.h"
 
-#define ARMScheduler 1
-#define TEST_USED ARMScheduler
+#define ARMScheduler_TEST 	1
+#define IPC_TEST						2
+#define TEST_USED IPC_TEST
 
 int main(void) 
 {
-	#if  (TEST_USED == ARMScheduler )
+	uint16_t ReturnValue;
+	#if  (TEST_USED == ARMScheduler_TEST )
 		SchedulerTest();
+	#elif (TEST_USED == IPC_TEST)
+		if (ipc_test() == SUCCESS )
+		{
+			ReturnValue = SUCCESS;
+		}
+		else
+		{
+			ReturnValue = 0xFF;
+		}
 	#endif
 	return 0;
 }

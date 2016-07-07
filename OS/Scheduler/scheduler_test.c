@@ -93,7 +93,7 @@ void SchedulerTest()
 	prcount=0;
 	readyList = newqueue();
 	suspendedList = newqueue();
-	sleepingList = newqueue();
+	sleepingList = newSleepingQueue();
 	
 	Scheduler_initializenullProcess();
 	

@@ -31,6 +31,8 @@ pid currpid;
 struct procent proctab[NPROC];		  /* table of processes */
 extern uint32_t prcount;
 
+extern bool wakefromSleep;
+
 /******************************************************************************
 *
 *	The function's purpose is to get the pid of the current process
@@ -172,9 +174,6 @@ sysCall Scheduler_processTerminate(pid processId)
 	}
 	prcount--;
 
-	currpid =0;
-	getItem(0);
-	proctab[0].prstate = PR_CURR;
 	return OK;
 }
 
@@ -184,7 +183,7 @@ sysCall Scheduler_processTerminate(pid processId)
 *
 *	\param pid				the process's ID
 *
-* 	\return 0 if there's an error, -1 if there's no error
+* \return 0 if there's an error, -1 if there's no error
 *
 *****************************************************************************/
 sysCall	Scheduler_processSetReady(pid processId)
@@ -366,5 +365,7 @@ void Scheduler_processResumeAll(void)
 sysCall Scheduler_processKill()
 {
 	Scheduler_processTerminate(currpid);
+	wakefromSleep = false;
+	IntTrigger(INT_TIMER0A);
 	return OK;
 }

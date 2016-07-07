@@ -75,18 +75,10 @@
 #endif
 
 #ifndef traceBLOCKING_ON_QUEUE_RECEIVE
-	/* Task is about to block because it cannot read from a
-	queue.  pxQueue is a pointer to the queue/mutex/semaphore
-	upon which the read was attempted.  pxCurrentTCB points to the TCB of the
-	task that attempted the read. */
 	#define traceBLOCKING_ON_QUEUE_RECEIVE( pxQueue )
 #endif
 
 #ifndef traceBLOCKING_ON_QUEUE_SEND
-	/* Task is about to block because it cannot write to a
-	queue.  pxQueue is a pointer to the queue/mutex/semaphore
-	upon which the write was attempted.  pxCurrentTCB points to the TCB of the
-	task that attempted the write. */
 	#define traceBLOCKING_ON_QUEUE_SEND( pxQueue )
 #endif
 

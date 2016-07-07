@@ -34,7 +34,11 @@ extern "C" {
 *****************************************************************************/
 typedef void * QueueHandle_t;
 
-	
+/* For external use by other modules */
+#define IPC_NO_SLEEP									( ( _delay_ms ) ( 0x00000000 ) )
+#define IPC_WAIT_FOREVER							( ( _delay_ms ) ( 0xFFFFFFFF ) )
+#define IPC_RESET_EXISTING_QUEUE			( ( BaseType_t ) 0 )
+
 /* For internal use only. */
 #define	IPC_queueSEND_TO_BACK					( ( BaseType_t ) 0 )
 #define	IPC_queueSEND_TO_FRONT				( ( BaseType_t ) 1 )
@@ -43,12 +47,9 @@ typedef void * QueueHandle_t;
 #define IPC_RECEIVE_WITH_CONSUMING		( ( BaseType_t ) 0 )
 #define IPC_RECEIVE_WITHOUT_CONSUMING	( ( BaseType_t ) 1 )
 	
-#define IPC_RESET_EXISTING_QUEUE			( ( BaseType_t ) 0 )
 #define IPC_RESET_NEW_QUEUE						( ( BaseType_t ) 1 )
 
-#define IPC_NO_SLEEP			( ( _delay_ms ) ( 0x00000000 ) )
-#define IPC_WAIT_FOREVER	( ( _delay_ms ) ( 0xFFFFFFFF ) )
-	
+
 /* create a queue */
 #define IPC_xQueueCreate( uxQueueLength, uxItemSize ) \
 				IPC_xQueueGenericCreate( ( uxQueueLength ), ( uxItemSize ) )

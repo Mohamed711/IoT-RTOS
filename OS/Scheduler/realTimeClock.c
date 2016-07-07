@@ -83,7 +83,6 @@ sysCall	Scheduler_sleepms(int32_t	delay)
 	{
 		return SYSERR;
 	}
-
 	proctab[currpid].prstate = PR_sleep;
 	wakefromSleep = false;
 	IntTrigger(INT_TIMER0A);
@@ -96,7 +95,7 @@ sysCall	Scheduler_sleepms(int32_t	delay)
 *
 *	\param pid		the process's ID
 *
-* 	\return 0 if there's an error, -1 if there's no error
+* \return 0 if there's an error, -1 if there's no error
 *
 *****************************************************************************/
 sysCall	Scheduler_unsleep(pid processId)
@@ -113,29 +112,22 @@ sysCall	Scheduler_unsleep(pid processId)
 	/* Verify that candidate process is on the sleep queue */
 	prptr = &proctab[processId];
 
-	if ((prptr->prstate!=PR_sleep) && (prptr->prstate!=PR_RECTIM))
+	if ((prptr->prstate!=PR_sleep) && (prptr->prstate!=PR_RECTIM) && (prptr->prstate!=PR_SENDTIM))
 	{
 		return SYSERR;
 	}
-if (processId == queueHead(sleepingList))
+	
+	if (processId == firstId(sleepingList))
 	{
+		getItem(processId);	
 		time = queueTab[firstId(sleepingList)].qPriority;
 		Timer_New(Scheduler_clkhandler, time+2);
 	}
-	getItem(processId);			/* Unlink process from queue */
-	
-	Scheduler_processSetReady(processId);
-	
-	if (!isEmpty(sleepingList))
-	{
-		time = queueTab[firstId(sleepingList)].qPriority;
-		Timer_New(Scheduler_clkhandler, time);
-	}
 	else
 	{
-		Timer_New(Scheduler_clkhandler, 10000000000);
-		//TimerDisable(TIMER0_BASE, TIMER_A);
+		getItem(processId);
 	}
+	Scheduler_processSetReady(processId);
 	
 	wakefromSleep = false;
 	IntTrigger(INT_TIMER0A);
