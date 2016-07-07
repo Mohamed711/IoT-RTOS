@@ -47,15 +47,15 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include "inc/hw_aes.h"
-#include "inc/hw_ccm.h"
-#include "inc/hw_ints.h"
-#include "inc/hw_memmap.h"
-#include "inc/hw_nvic.h"
-#include "inc/hw_types.h"
-#include "driverlib/aes.h"
-#include "driverlib/debug.h"
-#include "driverlib/interrupt.h"
+#include "../inc/hw_aes.h"
+#include "../inc/hw_ccm.h"
+#include "../inc/hw_ints.h"
+#include "../inc/hw_memmap.h"
+#include "../inc/hw_nvic.h"
+#include "../inc/hw_types.h"
+#include "aes.h"
+#include "../debug/debug.h"
+#include "../interrupt/interrupt.h"
 
 //*****************************************************************************
 //

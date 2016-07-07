@@ -11,16 +11,7 @@
 //! \param Base_Address is the base address of the AES module.
 //! \param *Key is an array of 32-bit words, containing the key to be
 //! configured.  The least significant word in the 0th index.
-//! \param ui32Config is the configuration of the AES module.It is a 
-//! bit-wise OR of a number of configuration flags.
-//! The valid flags are grouped based on their function.
-//! The key size is specified with only one of the following flags:
-//!
-//! - \b AES_CFG_KEY_SIZE_128BIT - Key size of 128 bits
-//! - \b AES_CFG_KEY_SIZE_192BIT - Key size of 192 bits
-//! - \b AES_CFG_KEY_SIZE_256BIT - Key size of 256 bits
-//!
-//! The mode of operation is specified with only one of the following flags.
+//! \param Mode is the mode of operation and is specified with only one of the following flags.
 //!
 //! - \b AES_CFG_MODE_ECB - Electronic codebook mode
 //! - \b AES_CFG_MODE_CBC - Cipher-block chaining mode
