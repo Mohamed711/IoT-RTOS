@@ -22,7 +22,11 @@
 
 #ifndef DRIVERS_ADC_ADC_TEST_H_
 #define DRIVERS_ADC_ADC_TEST_H_
+#include"ADC_HAL_TIVA.h"
 
-void ADC_Test();
 
-#endif /* DRIVERS_ADC_ADC_TEST_H_ */
+extern void adctest();
+
+
+
+#endif

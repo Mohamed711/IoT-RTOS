@@ -23,9 +23,11 @@
 #ifndef DRIVERS_ADC_ADC_HAL_TIVA_H_
 #define DRIVERS_ADC_ADC_HAL_TIVA_H_
 
-#include <stdint.h>
-#include <stdbool.h>
-
+#include<stdint.h>
+#include<stdbool.h>
+#include"adc.h"
+#include "../sysctl/sysctl.h"
+#include "../inc/hw_memmap.h"
 typedef struct
 {
 	uint32_t ADCn;
@@ -34,23 +36,26 @@ typedef struct
 	uint32_t prio;
 	uint32_t steps;
 	uint32_t src;
+	uint32_t ui32ADCnValue;
 	bool diff;
-}ADC_InitTypeDef;
+
+
+	}
+ADC_InitTypeDef;
 
 typedef struct
 {
-	uint32_t nullVariable;
 
-}ADC_HandleTypeDef;
+	}
+ADC_handle_typedef;
 
-/*****************************************************************************
-*
-* Prototypes for the APIs.
-*
-******************************************************************************/
-void ADC_Init(ADC_InitTypeDef *adc);
-uint32_t ADC_Read(ADC_InitTypeDef *adc);
-//void ADC_Off();
+
+
+
+void HAL_ADC_Init(ADC_InitTypeDef *adc);
+void HAL_ADC_read(ADC_InitTypeDef *adc);
+bool HAL_ADC_OFF();
+
 
 
 #endif /* DRIVERS_ADC_ADC_HAL_TIVA_H_ */

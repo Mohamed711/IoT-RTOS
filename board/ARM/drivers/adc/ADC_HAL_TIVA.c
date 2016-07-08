@@ -20,39 +20,30 @@
 *  distribution.
 *****************************************************************************/
 
-#include<stdint.h>
-#include<stdbool.h>
-#include"adc.h"
-#include "../sysctl/sysctl.h"
-#include "../inc/hw_memmap.h"
-#include"ADC_HAL_TIVA.h"
 
-/******************************************************************************
-*
-*	The function's purpose is to initialize the adc
-*
-*	\param i2c		pointer to structure that contains all the data needed
-*					to initialize the adc
-*
-* 	\return none
-*
-*****************************************************************************/
-void ADC_Init(ADC_InitTypeDef *adc)
+#include"ADC_HAL_TIVA.h"
+void HAL_ADC_Init(ADC_InitTypeDef *adc)
 {
+
+
 	uint32_t ADCn_BASE;
 	SysCtlPeripheralEnable(adc->ADCn); /*enabling adc periph*/
 
 	switch(adc->ADCn)
 	{
-		case SYSCTL_PERIPH_ADC0 :
-				ADCn_BASE = ADC0_BASE;
-				break;
-		case SYSCTL_PERIPH_ADC1 :
-				ADCn_BASE = ADC1_BASE;
-				break;
+	case SYSCTL_PERIPH_ADC0 :
+		ADCn_BASE = ADC0_BASE;
+		break;
+	case SYSCTL_PERIPH_ADC1 :
+		ADCn_BASE = ADC1_BASE;
+		break;
 	}
 
+
+
+
 	ADCSequenceConfigure(ADCn_BASE, adc->seq, adc->ADC_TRIGGER, adc->prio);
+
 
 	int8_t count;
 	adc->steps=4;
@@ -70,21 +61,18 @@ void ADC_Init(ADC_InitTypeDef *adc)
 		ADCSequenceStepConfigure(ADCn_BASE, adc->seq, count, adc->src|((1 & adc->diff)<<1));
 	}
 
+
+
 	ADCSequenceStepConfigure(ADCn_BASE,adc->seq,adc->steps-1,adc->src|ADC_CTL_IE|ADC_CTL_END|((1 & adc->diff)<<1));
 
-	ADCSequenceEnable(ADCn_BASE, adc->seq);
-}
 
-/******************************************************************************
-*
-*	The function's purpose is to read the adc's return value
-*
-* 	\return none
-*
-*****************************************************************************/
-uint32_t ADC_Read(ADC_InitTypeDef *adc)
+	ADCSequenceEnable(ADCn_BASE, adc->seq);
+
+}
+void HAL_ADC_read(ADC_InitTypeDef *adc)
 {
 	uint32_t ADCn_BASE;
+	uint32_t ui32ADCValue[4];
 	switch(adc->ADCn)
 		{
 		case SYSCTL_PERIPH_ADC0 :
@@ -95,6 +83,7 @@ uint32_t ADC_Read(ADC_InitTypeDef *adc)
 			break;
 		}
 
+
 			ADCIntClear(ADCn_BASE,adc->seq);
 			ADCProcessorTrigger(ADCn_BASE,adc->seq);
 
@@ -103,36 +92,27 @@ uint32_t ADC_Read(ADC_InitTypeDef *adc)
 			{
 			}
 
-			uint32_t *ui32ADCnValue;
-			uint32_t value;
-			ADCSequenceDataGet(ADCn_BASE,adc->seq, ui32ADCnValue);
 
-			value =  (ui32ADCnValue[0] + ui32ADCnValue[1] + ui32ADCnValue[2] + ui32ADCnValue[3] + 2)/4;
-			value = (1475 - ((2475 * value)) / 4096)/10;
-			return value;
+
+			ADCSequenceDataGet(ADCn_BASE,adc->seq,  ui32ADCValue);
+			(adc->ui32ADCnValue)=ui32ADCValue[0] + ui32ADCValue[1] + ui32ADCValue[2] + ui32ADCValue[3];
+			int8_t counting;
+
 }
 
-/******************************************************************************
-*
-*	The function's purpose is to turn off the adc
-*
-* 	\return none
-*
-*****************************************************************************/
-#if 0	/* NEED MODIFICATION */
-void ADC_Off()
+
+bool HAL_ADC_OFF()
 {
-	/*Before using this function, it is highly recommended that the event trigger
-	is changed to ADC_TRIGGER_NEVER on all enabled sequencers to prevent the ADC from
-	starting after checking the busy status*/
+	//Before using this function, it is highly recommended that the event trigger
+	//is changed to ADC_TRIGGER_NEVER on all enabled sequencers to prevent the ADC from
+	//starting after checking the busy status
+
 
 	if(ADCBusy(ADC0_BASE)||ADCBusy(ADC1_BASE))
-	{
-		return false;
-	}
+	{ return false;}
 	else
 	{
+
 		return true;
 	}
 }
-#endif
