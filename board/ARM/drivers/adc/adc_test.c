@@ -19,52 +19,65 @@
 *  documentation and/or other materials provided with the
 *  distribution.
 *****************************************************************************/
+/*
+ * adc_test.c
+ *
+ *  Created on: Feb 7, 2016
+ *      Author: Mina
+ */
 
+#include"adc_test.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include "../inc/hw_memmap.h"
 #include "../inc/hw_types.h"
 #include "../debug/debug.h"
 #include "../sysctl/sysctl.h"
-#include"adc_test.h"
 #include"adc.h"
 
-void ADC_Test()
+
+
+
+
+
+
+
+
+void adctest()
 {
-	uint32_t ui32ADC0Value[4];
-	volatile uint32_t ui32TempAvg;
-
-	//settign up clock
-	SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_OSC_MAIN|SYSCTL_XTAL_16MHZ);
-
-	//choosing adc0
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC0);
-
-	//sampling rate ,priorty
-	ADCSequenceConfigure(ADC0_BASE, 1, ADC_TRIGGER_PROCESSOR, 0);
-	ADCSequenceStepConfigure(ADC0_BASE, 1, 0, ADC_CTL_TS);
-	ADCSequenceStepConfigure(ADC0_BASE, 1, 1, ADC_CTL_TS);
-	ADCSequenceStepConfigure(ADC0_BASE, 1, 2, ADC_CTL_TS);
-	ADCSequenceStepConfigure(ADC0_BASE,1,3,ADC_CTL_TS|ADC_CTL_IE|ADC_CTL_END);
-
-	//enabling
-	ADCSequenceEnable(ADC0_BASE, 1);
+uint32_t ui32ADC0Value[4];
+volatile uint32_t ui32TempAvg;
+ADC_InitTypeDef input;
 
 
-	while(1)
-	{
-		ADCIntClear(ADC0_BASE, 1);
-		ADCProcessorTrigger(ADC0_BASE, 1);
+input.ADCn=SYSCTL_PERIPH_ADC0;
+input.seq=1;
+input.ADC_TRIGGER=ADC_TRIGGER_PROCESSOR;
+input.prio=0;
+input.src=ADC_CTL_TS;
+input.diff=0;
 
-		//busy waiting
-		while(!ADCIntStatus(ADC0_BASE, 1, false))
-		{
-		}
 
-		ADCSequenceDataGet(ADC0_BASE, 1, ui32ADC0Value);
 
-		ui32TempAvg = (ui32ADC0Value[0] + ui32ADC0Value[1] + ui32ADC0Value[2] + ui32ADC0Value[3] + 2)/4;
-		ui32TempAvg = (1475 - ((2475 * ui32TempAvg)) / 4096)/10;
-	}
+
+
+//settign up clock
+SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_OSC_MAIN|SYSCTL_XTAL_16MHZ);
+
+
+
+
+HAL_ADC_Init(&input);
+
+while(1)
+{
+
+HAL_ADC_read(&input);
+
+input.ui32ADCnValue/=4;
+ui32TempAvg = (1475 - ((2475 * input.ui32ADCnValue)) / 4096)/10;
+}
+
+
 
 }
