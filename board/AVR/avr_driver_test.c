@@ -134,7 +134,7 @@ void timer_avr_test(void)
 
 //ADC TEST 
 
-void adc_avr_tes(void)
+void adc_avr_test(void)
 {
 	uint16_t result;
 	DDRA &=(~(0xFF));
