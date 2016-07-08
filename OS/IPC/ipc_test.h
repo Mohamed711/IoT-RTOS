@@ -33,12 +33,12 @@
  
  
  /* MODULE TEST */
- uint16_t IPC_u16QUEUE_ASYNC_SEND_test();
- uint16_t IPC_u16QUEUE_ASYNC_RECEIVE_test();
- uint16_t IPC_u16QUEUE_SYNC_SEND_test();
- uint16_t IPC_u16QUEUE_SYNC_RECEIVE_test();
- uint16_t IPC_u16QUEUE_PARTIAL_SEND_test();
- uint16_t IPC_u16QUEUE_PARTIAL_RECEIVE_test();
+ uint16_t IPC_u16Queue_Async_Send_test();
+ uint16_t IPC_u16Queue_Async_Recv_test();
+ uint16_t IPC_u16Queue_Sync_Send_test();
+ uint16_t IPC_u16Queue_Sync_Recv_test();
+ uint16_t IPC_u16Queue_Partial_Send_test();
+ uint16_t IPC_u16Queue_Partial_Recv_test();
 
  #endif
  

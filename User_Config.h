@@ -24,7 +24,7 @@
 #define IOT_RTOS_USER_CONFIG_H_
 
 #define FAST_HAL 1		/* This to use macros in HAL instead of the functions */
-#define AVR 	1
+#define ARM 	1
 #define PART_TM4C1230C3PM 1
 #define PARTIALLY_BLOCKING_ENABLE 0x00
 #define NO_OF_TASKS 3

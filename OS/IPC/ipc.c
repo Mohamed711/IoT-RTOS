@@ -281,7 +281,8 @@ BaseType_t IPC_xQueueGenericSend( QueueHandle_t xQueue, const void * const pvIte
 BaseType_t IPC_xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer, _timeDelay xSleepTime, const BaseType_t xJustPeeking )
 {
 	int8_t *pcOriginalReadPosition;
-	Queue_t * const pxQueue = ( Queue_t * ) xQueue;
+	Queue_t * pxQueue = ( Queue_t * ) xQueue;
+	uint32_t value = (uint32_t) pxQueue;
 
 	configASSERT( pxQueue );
 
@@ -357,6 +358,8 @@ BaseType_t IPC_xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer
 					}
 					
 					_RESCHEDULE_;
+					
+					pxQueue = (Queue_t *)value;
 
 					if ( prvIsQueueEmpty( pxQueue ) == pdTRUE )
 					{

@@ -23,18 +23,18 @@
 #include "OS/Scheduler/scheduler_test.h"
 #include "OS/IPC/ipc_test.h"
 
-#define NO_TEST						0
+#define NO_TEST									0
 #define ARMScheduler_TEST 			1
-#define IPC_TEST					2
-#define AVR_ADC_TEST				3
-#define AVR_TIMER_TEST				4
-#define AVR_SPI_TEST				5
-#define AVR_I2C_TEST				6
-#define AVR_UART_TEST				7
-#define AVR_WATCHDOG_TEST			8
+#define IPC_TEST								2
+#define AVR_ADC_TEST						3
+#define AVR_TIMER_TEST					4
+#define AVR_SPI_TEST						5
+#define AVR_I2C_TEST						6
+#define AVR_UART_TEST						7
+#define AVR_WATCHDOG_TEST				8
 
 
-#define TEST_USED			NO_TEST
+#define TEST_USED							IPC_TEST
 
 int main(void) 
 {
@@ -42,7 +42,7 @@ int main(void)
 	#if  (TEST_USED == ARMScheduler_TEST )
 		SchedulerTest();
 	#elif (TEST_USED == IPC_TEST)
-		if (IPC_test() == SUCCESS )
+		if ( IPC_test() == SUCCESS )
 		{
 			ReturnValue = SUCCESS;
 		}

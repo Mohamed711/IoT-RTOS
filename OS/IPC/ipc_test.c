@@ -9,17 +9,18 @@
  *  modification, are permitted provided that the redistributions of the
  *  source code must retain the above copyright notice, and this condition.
  *****************************************************************************/
-#ifdef ARM
+
 
 #include <stdint.h>
-
-#include "../RTOS.h"
-#include "ipc.h"
 
 #ifdef ARM
 //#include "C:/Keil_v5/ARM/CMSIS/Include/core_cmFunc.h"
 #endif 
 
+
+
+#include "../RTOS.h"
+#include "ipc.h"
 #include "../Scheduler/Process.h"
 #include "../Scheduler/queue.h"
 #include "../Scheduler/realTimeClock.h"
@@ -27,9 +28,9 @@
 #include "../Scheduler/nullProcess.h"
 #include "ipc_test.h"
 
-#include "../RTOS.h"
+#ifdef ARM
 
-	extern uint32_t prcount;
+extern uint32_t prcount;
 
 QueueHandle_t pxQueue;
 uint8_t mode = 0;
@@ -47,13 +48,13 @@ void task2()
 	int val1;
 	IPC_xQueueGenericReceive(pxQueue,&val1,IPC_WAIT_FOREVER,IPC_RECEIVE_WITH_CONSUMING);
 	
-	if (val1 == 10) 
+	if (val1 == 20) 
 	{
-		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 14);
+		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 7);
 	}
 	else
 	{
-		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 7);
+		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 14);
 	}
 }
 
