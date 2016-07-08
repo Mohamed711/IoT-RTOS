@@ -20,20 +20,20 @@
 *  distribution.
 *****************************************************************************/
 	
-#include "ReSched.h"
+#include "reSched.h"
 #include "Process.h"
 #include "queue.h"
-#include "../RTOS.h"
+#include "contextSwitch.h"
 
 volatile char* pxCurrentTCB_Old;
 volatile char* pxCurrentTCB_New;
-extern pid32 currpid;
+extern pid currpid;
 extern struct procent proctab[NPROC];		  /* table of processes */
-extern qid16 readylist;
+extern qid readyList;
 	
-/******************************************************************************
+/*******************************************************************************
 *
-*	The function's purpose is to reschedule the processes
+*	The function's purpose is to reSchedule the processes
 *
 *	By getting the head of the ready queue, the new process' state is then 
 *	changed to 'running' state 
@@ -41,31 +41,33 @@ extern qid16 readylist;
 * 	\return none
 *
 *****************************************************************************/
-void reSched(void) /* Assumes interrupts are disabled */
+pid Scheduler_reSchedule(void) /* Assumes interrupts are disabled */
 {
-struct procent *ptold; /* Ptr to table entry for old process */
-struct procent *ptnew; /* Ptr to table entry for new process */
-ptold = &proctab[currpid];
+	struct procent *ptold; /* Ptr to table entry for old process */
+	struct procent *ptnew; /* Ptr to table entry for new process */
+	ptold = &proctab[currpid];
+	
+	pid oldP = currpid;
+	
 	if (ptold->prstate == PR_CURR)
 	{ 	/* Process remains eligible */
-		if (ptold->prprio > firstkey(readylist))
+		if (firstKey(readyList)==0)
 		{
-			return;
+			return oldP;
+		}
+		if (ptold->prprio > firstKey(readyList))
+		{
+			return oldP;
 		}
 		/* Old process will no longer remain current */
-
 		ptold->prstate = PR_READY;
-		insert(currpid, readylist, ptold->prprio);
+		insert(currpid, readyList, ptold->prprio);
 	}
-	currpid = dequeue(readylist);
+	currpid = dequeue(readyList);
 	ptnew = &proctab[currpid];
 	ptnew->prstate = PR_CURR;
 	
-
-	/*preempt = QUANTUM;	*/
-	/* Reset time slice for process	*/
-
-	//contextSwitch(&ptold->prstkptr, &ptnew->prstkptr);
-	
-	return;
+	pid newP = currpid;
+		
+	return newP;
 }

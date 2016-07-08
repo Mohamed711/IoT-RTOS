@@ -278,7 +278,7 @@ void uartConfigSetExpClk(uint32_t ui32Base, uint32_t ui32UARTClk,
 
 
     /* Stop the UART.*/
-    UARTDisable(ui32Base);
+    uartDisable(ui32Base);
 
 
     /* Is the required baud rate greater than the maximum rate supported
@@ -320,7 +320,7 @@ void uartConfigSetExpClk(uint32_t ui32Base, uint32_t ui32UARTClk,
     HWREG(ui32Base + UART_O_FR) = 0;
 
     /* Start the UART.*/
-    UARTEnable(ui32Base);
+    uartEnable(ui32Base);
 }
 
 /*****************************************************************************

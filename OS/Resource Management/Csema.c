@@ -25,7 +25,7 @@
 #include "Resource Management.h"
 #include "../Scheduler/Process.h"
 
-extern pid32 currpid;
+extern pid currpid;
 
 
 int8_t Csema_init( Csema *sema, int8_t count )
@@ -57,7 +57,7 @@ int8_t Csema_delete( Csema *sema )
 	int32_t pid;
 	while(pid=dequeue(sema->queue)!=SYSERR)
 	{
-		processResume(pid);
+		Scheduler_processResume(pid);
 	}
 	return OK;
 
@@ -82,7 +82,7 @@ int8_t Csema_wait(Csema *sema)
 	else
 	{
 		enqueue(currpid,sema->queue);
-		processWaiting(currpid);
+		Scheduler_processWaiting(currpid);
 
 		//EnbleInterrupt();
 		return OK;
@@ -98,7 +98,7 @@ int8_t Csema_signal(Csema *sema)
 			return SYSERR;
 		}
 	//DisableInterrupt();
-	if(isempty(sema->queue))
+	if(isEmpty(sema->queue))
 	{
 		sema->count++;
 		//EnableInterrupt();
@@ -107,7 +107,7 @@ int8_t Csema_signal(Csema *sema)
 	else
 	{
 		int32_t pid=dequeue(sema->queue);
-		processSetReady(pid);
+		Scheduler_processSetReady(pid);
 
 		//EnableInterrupt();
 		return OK;

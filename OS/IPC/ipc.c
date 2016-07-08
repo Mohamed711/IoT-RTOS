@@ -1,166 +1,80 @@
 /******************************************************************************
- *	OurOS V 0.0.0 - Copyright (C) 2016 
+ *	RTOS V 0.0.0 - Copyright (C) 2016
  *  Computer and systems department
  *  Ain Shams University
  *  
  *  All rights reserved
  *
- *  VISIT http://www.OurRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
- *
  *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
+ *  modification, are permitted provided that the redistributions of the
+ *  source code must retain the above copyright notice, and this condition.
  * 
- *  Redistributions of source code must retain the above copyright
- *  notice, this list of conditions and the following disclaimer.
- * 
- *  Redistributions in binary form must reproduce the above copyright
- *  notice, this list of conditions and the following disclaimer in the
- *  documentation and/or other materials provided with the  
- *  distribution.
+ * 	FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
+ *
+ * 	This version is a modified and enhanced version of the queue module
+ * 	in the freeRTOS distribution.
  *****************************************************************************/
 
 #include <stdint.h>
 #include <stdlib.h>
 
 #include "../RTOS.h"
-#include "ipc_trace.h"
 #include "ipc.h"
+#include "ipc_trace.h"
+#include "../Scheduler/queue.h"
+#include "../Scheduler/ReSched.h"
+#include "../MMU/mmu.h"
+#include "../Scheduler/Process.h"
 
-#if( configUSE_PREEMPTION == 0 )
-	/* If the cooperative scheduler is being used then a yield should not be
-	performed just because a higher priority task has been woken. */
-	#define queueYIELD_IF_USING_PREEMPTION()
-#else
-	#define queueYIELD_IF_USING_PREEMPTION() portYIELD_WITHIN_API()
-#endif
+extern bool wakefromSleep;	
 
 
-/*
- * Definition of the queue used by the scheduler.
- * Items are queued by copy, not reference.
- */
+/****************************************************************************
+*
+* Definition of the queue used in the inter-process communcation.
+* Items are transferred to the queue by copy not by reference.
+*
+*****************************************************************************/
 typedef struct QueueDefinition
 {
-	int8_t *pcHead;					/*< Points to the beginning of the queue storage area. */
-	int8_t *pcTail;					/*< Points to the byte at the end of the queue storage area.  Once more byte is allocated than necessary to store the queue items, this is used as a marker. */
-	int8_t *pcWriteTo;				/*< Points to the free next place in the storage area. */
-	int8_t *pcReadFrom;			/*< Points to the last place that a queued item was read from when the structure is used as a queue. */
+	int8_t *pcHead;								/* Points to the beginning of the queue storage area. */
+	int8_t *pcTail;								/* Points to the byte at the end of the queue storage area. */
+	int8_t *pcWriteTo;						/* Points to the free next place in the storage area. */
+	int8_t *pcReadFrom;						/* Points to the last place that a queued item was read from when the structure is used as a queue. */
+
+	volatile UBaseType_t uxMessagesWaiting;	/* The number of items currently in the queue. */
+	UBaseType_t uxLength;					/* The length of the queue defined as the number of items it will hold, not the number of bytes. */
+	UBaseType_t uxItemSize;				/* The size of each items that the queue will hold. */
+	
+	qid xTasksWaitingToSend;		/* Queue Number of tasks waiting to send */
+	qid xTasksWaitingToReceive;	/* Queue Number of tasks waiting to receive */
+
+}Queue_t;
 
 
-// Two lists of processes one for the tasks waiting to send and other waiting to receive
-/// LOOK HERE ///
-// debugging code till merge
-	uint32_t xTasksWaitingToSend[5];
-	uint32_t xTasksWaitingToReceive[5];
-	uint8_t send_index;
-	uint8_t receive_index;
-//	List_t xTasksWaitingToSend;		/*< List of tasks that are blocked waiting to post onto this queue.  Stored in priority order. */
-//	List_t xTasksWaitingToReceive;	/*< List of tasks that are blocked waiting to read from this queue.  Stored in priority order. */
-
-	volatile UBaseType_t uxMessagesWaiting;/*< The number of items currently in the queue. */
-	UBaseType_t uxLength;			/*< The length of the queue defined as the number of items it will hold, not the number of bytes. */
-	UBaseType_t uxItemSize;			/*< The size of each items that the queue will hold. */
-
-} Queue_t;
-
-/*-----------------------------------------------------------*/
-
-/*
- * Uses a critical section to determine if there is any data in a queue.
- *
- * @return pdTRUE if the queue contains no items, otherwise pdFALSE.
- */
+/****************************************************************************
+*
+* Static functions prototypes.
+*
+*****************************************************************************/
 static BaseType_t prvIsQueueEmpty( const Queue_t *pxQueue );
-
-/*
- * Uses a critical section to determine if there is any space in a queue.
- *
- * @return pdTRUE if there is no space, otherwise pdFALSE;
- */
 static BaseType_t prvIsQueueFull( const Queue_t *pxQueue );
-
-/*
- * Copies an item into the queue, either at the front of the queue or the
- * back of the queue.
- */
 static BaseType_t prvCopyDataToQueue( Queue_t * const pxQueue, const void *pvItemToQueue, const BaseType_t xPosition );
-
-/*
- * Copies an item out of a queue.
- */
 static void prvCopyDataFromQueue( Queue_t * const pxQueue, void * const pvBuffer );
 
 
-/*-----------------------------------------------------------*/
-
-BaseType_t xQueueGenericReset( QueueHandle_t xQueue, BaseType_t xNewQueue )
-{
-	Queue_t * const pxQueue = ( Queue_t * ) xQueue;
-
-	configASSERT( pxQueue );
-
-	EnterCriticalSection();
-	{
-		pxQueue->pcTail = pxQueue->pcHead + ( pxQueue->uxLength * pxQueue->uxItemSize );
-		pxQueue->uxMessagesWaiting = ( UBaseType_t ) 0U;
-		pxQueue->pcWriteTo = pxQueue->pcHead;
-		pxQueue->pcReadFrom = pxQueue->pcHead + ( ( pxQueue->uxLength - ( UBaseType_t ) 1U ) * pxQueue->uxItemSize );
-
-		/// LOOK HERE ///
-		pxQueue->send_index = ( UBaseType_t ) 0U;
-		pxQueue->receive_index = ( UBaseType_t ) 0U;
-
-		if( xNewQueue == pdFALSE )
-		{
-			/* If there are tasks blocked waiting to read from the queue, then
-			the tasks will remain blocked as after this function exits the queue
-			will still be empty.  If there are tasks blocked waiting to write to
-			the queue, then one should be unblocked as after this function exits
-			it will be possible to write to it. */
-
-			// check for the list of waiting to send tasks is empty
-			// check list is empty
-			/// LOOK HERE ///
-			// check if the sending state is not empty
-			if( /* listLIST_IS_EMPTY( &(  pxQueue->xTasksWaitingToSend  ) ) == pdFALSE */ pxQueue->send_index != 0 )
-			{
-				// remove a process from waiting to send on the queue as you reset the queue so its empty
-				if( /* xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToSend  ) ) */ pdTRUE == pdTRUE )
-				{
-					// check in case of preemption if it has high priority
-					queueYIELD_IF_USING_PREEMPTION();
-				}
-				else
-				{
-					mtCOVERAGE_TEST_MARKER();
-				}
-			}
-			else
-			{
-				mtCOVERAGE_TEST_MARKER();
-			}
-		}
-		else
-		{
-			/* Ensure the event queues start in the correct state. */
-			// make two lists for tasks, one waiting to send and the other is waiting to receive
-			//	vListInitialise( &( pxQueue->xTasksWaitingToSend ) );
-			//	vListInitialise( &( pxQueue->xTasksWaitingToReceive ) );
-			/// LOOK HERE ///
-			// create two queues by newqueue which return the number
-			// save the address or the number of queues in the datastructure itself
-		}
-	}
-	ExitCriticalSection();
-
-	/* A value is returned for calling semantic consistency with previous
-	versions. */
-	return pdPASS;
-}
-/*-----------------------------------------------------------*/
-
-QueueHandle_t xQueueGenericCreate( const UBaseType_t uxQueueLength, const UBaseType_t uxItemSize )
+/****************************************************************************
+*	Function Number 1
+*
+*	The function's purpose is to create a new queue.
+*
+*	\param uxQueueLength			The number of items of the queue.
+*	\param uxItemSize				  The size of the item.
+*
+* \return QueueHandle_t to the created queue
+*
+*****************************************************************************/
+QueueHandle_t IPC_xQueueGenericCreate( const UBaseType_t uxQueueLength, const UBaseType_t uxItemSize )
 {
 	Queue_t *pxNewQueue;
 	size_t xQueueSizeInBytes;
@@ -170,14 +84,11 @@ QueueHandle_t xQueueGenericCreate( const UBaseType_t uxQueueLength, const UBaseT
 
 	/* The queue is one byte longer than asked for to make wrap checking
 	easier/faster. */
-	xQueueSizeInBytes = ( size_t ) ( uxQueueLength * uxItemSize ) + ( size_t ) 1; /*lint !e961 MISRA exception as the casts are only redundant for some ports. */
+	xQueueSizeInBytes = ( size_t ) ( uxQueueLength * uxItemSize ) + ( size_t ) 1;
 
 
 	/* Allocate the new queue structure and storage area. */
-	// reserve the amount in memory for the queue
-	/// LOOK HERE ///
-	pxNewQueue = (Queue_t * ) malloc( sizeof ( Queue_t ) + xQueueSizeInBytes );
-	//	pxNewQueue = ( Queue_t * ) pvPortMalloc( sizeof( Queue_t ) + xQueueSizeInBytes );
+	pxNewQueue = ( Queue_t * ) pvPortMalloc( sizeof( Queue_t ) + xQueueSizeInBytes );
 
 	if( pxNewQueue != NULL )
 	{
@@ -187,11 +98,11 @@ QueueHandle_t xQueueGenericCreate( const UBaseType_t uxQueueLength, const UBaseT
 		pxNewQueue->pcHead = ( ( int8_t * ) pxNewQueue ) + sizeof( Queue_t );
 
 
-		/* Initialise the queue members as described above where the queue type
+		/* Initialize the queue members as described above where the queue type
 		is defined. */
 		pxNewQueue->uxLength = uxQueueLength;
 		pxNewQueue->uxItemSize = uxItemSize;
-		( void ) xQueueGenericReset( pxNewQueue, pdTRUE );
+		( void ) IPC_xQueueGenericReset( pxNewQueue, IPC_RESET_NEW_QUEUE );
 
 		traceQUEUE_CREATE( pxNewQueue );
 		xReturn = pxNewQueue;
@@ -205,228 +116,279 @@ QueueHandle_t xQueueGenericCreate( const UBaseType_t uxQueueLength, const UBaseT
 
 	return xReturn;
 }
-/*-----------------------------------------------------------*/
 
-BaseType_t xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQueue, TickType_t xTicksToWait, const BaseType_t xCopyPosition )
+
+/****************************************************************************
+*	Function Number 2
+*
+*	The function's purpose is to reset a queue by resetting its parameters
+* to the default values.
+*
+*	The function is called either for a new queue to reset all the parameters
+* to the default values or for an existing queue.
+*
+* In case of the function is called to reset an existing queue, the function 
+* checks if any tasks are waiting to send to the queue to activate them.
+
+*	\param xQueue						Pointer to the queue.
+*	\param xNewQueue				Indicate if it's a new queue or not.
+*
+* \return SUCCESS if there's no error.
+*
+*****************************************************************************/
+BaseType_t IPC_xQueueGenericReset( QueueHandle_t xQueue, BaseType_t xNewQueue )
 {
-	BaseType_t xEntryTimeSet = pdFALSE;
-	//TimeOut_t xTimeOut;
+	Queue_t * const pxQueue = ( Queue_t * ) xQueue;
+	
+	configASSERT( pxQueue );
+
+	EnterCriticalSection();
+	{
+		pxQueue->pcTail = pxQueue->pcHead + ( pxQueue->uxLength * pxQueue->uxItemSize );
+		pxQueue->pcReadFrom = pxQueue->pcTail - pxQueue->uxItemSize;
+		pxQueue->uxMessagesWaiting = ( UBaseType_t ) 0U;
+		pxQueue->pcWriteTo = pxQueue->pcHead;
+
+		if( xNewQueue == IPC_RESET_EXISTING_QUEUE )
+		{
+			/* Resetting an already existing queue */
+			/* If there are tasks blocked waiting to read from the queue, then
+			the tasks will remain blocked as after this function exits the queue
+			will still be empty.  If there are tasks blocked waiting to write to
+			the queue, then one should be unblocked as after this function exits
+			it will be possible to write to it. */
+
+			if( nonEmpty( pxQueue->xTasksWaitingToSend ) )
+			{
+				pid ProcessId = dequeue( pxQueue->xTasksWaitingToSend );
+				Scheduler_processSetReady( ProcessId );
+				_RESCHEDULE_;
+			}
+			else
+			{
+				mtCOVERAGE_TEST_MARKER();
+			}
+		}
+		else
+		{
+			pxQueue->xTasksWaitingToSend = ( qid ) newqueue();
+			pxQueue->xTasksWaitingToReceive = ( qid ) newqueue();
+		}
+	}
+	ExitCriticalSection();
+
+	return SUCCESS;
+}
+
+
+/****************************************************************************
+*	Function Number 3
+*
+*	The function's purpose is to send data to a specific queue.
+* 
+*	\param xQueue								Pointer to the queue.
+*	\param pvItemToQueue				Pointer to the item to be transferred to the queue.
+* \param xSleepTime						Sleeping time to wait on the queue if it is full.
+* \param xCopyPosition				Position where the item will be deposited.
+*
+* \return SUCCESS if there's no error.
+*
+*****************************************************************************/
+
+BaseType_t IPC_xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQueue, _timeDelay xSleepTime, const BaseType_t xCopyPosition )
+{
 	Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 
-			configASSERT( pxQueue );
-			configASSERT( !( ( pvItemToQueue == NULL ) && ( pxQueue->uxItemSize != ( UBaseType_t ) 0U ) ) );
+	configASSERT( pxQueue );
 
-			for( ;; )
+	for(;;)
+	{
+		EnterCriticalSection();
+		{
+			if( pxQueue->uxMessagesWaiting < pxQueue->uxLength )
 			{
-				EnterCriticalSection();
+				traceQUEUE_SEND( pxQueue );
+				prvCopyDataToQueue( pxQueue, pvItemToQueue, xCopyPosition );
+
+				/* If there was a task waiting for data to arrive on the
+				queue then unblock it now. */
+				if( nonEmpty ( pxQueue->xTasksWaitingToReceive ) )
 				{
-					/* Is there room on the queue now?  To be running we must be
-					the highest priority task wanting to access the queue. */
-					if( pxQueue->uxMessagesWaiting < pxQueue->uxLength )
-					{
-						traceQUEUE_SEND( pxQueue );
-						prvCopyDataToQueue( pxQueue, pvItemToQueue, xCopyPosition );
-
-						/* If there was a task waiting for data to arrive on the
-						queue then unblock it now. */
-						// look for waiting tasks to receive
-						if( /* listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToReceive ) ) == pdFALSE */ pxQueue->receive_index != 0 )
-						{
-							// wake up a task
-							if( /* xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToReceive ) ) == pdTRUE */ 0 == 0 )
-							{
-								/* The unblocked task has a priority higher than
-								our own so yield immediately. */
-								portYIELD_WITHIN_API();
-							}
-							else
-							{
-								mtCOVERAGE_TEST_MARKER();
-							}
-						}
-						else
-						{
-							mtCOVERAGE_TEST_MARKER();
-						}
-
-						ExitCriticalSection();
-						return pdPASS;
-					}
-					else
-					{
-						if( xTicksToWait == ( TickType_t ) 0 )
-						{
-							ExitCriticalSection();
-							return errQUEUE_FULL;
-						}
-						else if( xEntryTimeSet == pdFALSE )
-						{
-							// initialize the time variable with the required value
-							// vTaskSetTimeOutState( &xTimeOut );
-							xEntryTimeSet = pdTRUE;
-						}
-					}
+					pid ProcessId = dequeue( pxQueue->xTasksWaitingToReceive );
+					Scheduler_processSetReady( ProcessId );
+					_RESCHEDULE_;
+				}
+				else
+				{
+					mtCOVERAGE_TEST_MARKER();
 				}
 				ExitCriticalSection();
-
-				EnterCriticalSection();
+				return SUCCESS;
+			}
+			else
+			{
+				if( xSleepTime == IPC_NO_SLEEP )
 				{
-					if( /* xTaskCheckForTimeOut( &xTimeOut, &xTicksToWait ) == pdFALSE  */ 0 == 1 )
+					ExitCriticalSection();
+					return errQUEUE_FULL;
+				}
+				else
+				{
+					traceBLOCKING_ON_QUEUE_SEND( pxQueue );
+					insert( Scheduler_processGetPid() , pxQueue->xTasksWaitingToSend , proctab[Scheduler_processGetPid()].prprio );
+					if ( xSleepTime != IPC_WAIT_FOREVER )
 					{
-						if( prvIsQueueFull( pxQueue ) != pdFALSE )
-						{
-							traceBLOCKING_ON_QUEUE_SEND( pxQueue );
-							// add the task to the waiting to send with a specific time
-							// vTaskPlaceOnEventList( &( pxQueue->xTasksWaitingToSend ), xTicksToWait );
-							portYIELD_WITHIN_API();
-						}
-						else
-						{
-							mtCOVERAGE_TEST_MARKER();
-						}
+						insertSleep( Scheduler_processGetPid(), xSleepTime );
 					}
 					else
 					{
+						mtCOVERAGE_TEST_MARKER();
+					}
+					
+					_RESCHEDULE_;
+
+					if ( prvIsQueueFull( pxQueue ) == pdTRUE )
+					{
 						ExitCriticalSection();
-						traceQUEUE_SEND_FAILED( pxQueue );
 						return errQUEUE_FULL;
 					}
+					else
+					{
+						mtCOVERAGE_TEST_MARKER();
+						// remove my self from the sleep queue
+					}
 				}
-				ExitCriticalSection();
 			}
+		}
+		ExitCriticalSection();
+	}
 }
 
-/*-----------------------------------------------------------*/
 
-BaseType_t xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer, TickType_t xTicksToWait, const BaseType_t xJustPeeking )
+/****************************************************************************
+*	Function Number 4
+*
+*	The function's purpose is to receive data from a given queue.
+*
+*	\param xQueue							Pointer to the queue.
+*	\param pvBuffer						Pointer to where the item will be copied.
+* \param xSleepTime					Sleeping time to wait on the queue if it is empty.
+* \param xJustPeeking				If reading without consuming is required.
+*
+* \return SUCCESS if there's no error
+*
+*****************************************************************************/
+BaseType_t IPC_xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer, _timeDelay xSleepTime, const BaseType_t xJustPeeking )
 {
-	BaseType_t xEntryTimeSet = pdFALSE;
-	//	TimeOut_t xTimeOut;
-		int8_t *pcOriginalReadPosition;
-		Queue_t * const pxQueue = ( Queue_t * ) xQueue;
+	int8_t *pcOriginalReadPosition;
+	Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 
-			configASSERT( pxQueue );
-			configASSERT( !( ( pvBuffer == NULL ) && ( pxQueue->uxItemSize != ( UBaseType_t ) 0U ) ) );
+	configASSERT( pxQueue );
 
-			for( ;; )
+	for( ;; )
+	{
+		EnterCriticalSection();
+		{
+			if( pxQueue->uxMessagesWaiting > ( UBaseType_t ) 0 )
 			{
-				EnterCriticalSection();
+				/* Remember our read position in case we are just peeking. */
+				pcOriginalReadPosition = pxQueue->pcReadFrom;
+
+				prvCopyDataFromQueue( pxQueue, pvBuffer );
+
+				if( xJustPeeking == IPC_RECEIVE_WITH_CONSUMING )
 				{
-					if( pxQueue->uxMessagesWaiting > ( UBaseType_t ) 0 )
+					traceQUEUE_RECEIVE( pxQueue );
+
+					/* Data is actually being removed (not just peeked). */
+					--( pxQueue->uxMessagesWaiting );
+
+					if( nonEmpty( pxQueue -> xTasksWaitingToSend ) )
 					{
-						/* Remember our read position in case we are just peeking. */
-						pcOriginalReadPosition = pxQueue->pcReadFrom;
-
-						prvCopyDataFromQueue( pxQueue, pvBuffer );
-
-						if( xJustPeeking == pdFALSE )
-						{
-							traceQUEUE_RECEIVE( pxQueue );
-
-							/* Data is actually being removed (not just peeked). */
-							--( pxQueue->uxMessagesWaiting );
-
-							// check for tasks waiting to send
-							if(/* listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToSend ) ) */ pdTRUE == pdFALSE )
-							{
-								// remove a task from the waiting to send list
-								if( /* xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToSend ) ) */ pdFALSE == pdTRUE )
-								{
-									portYIELD_WITHIN_API();
-								}
-								else
-								{
-									mtCOVERAGE_TEST_MARKER();
-								}
-							}
-						}
-						else
-						{
-							traceQUEUE_PEEK( pxQueue );
-
-							/* The data is not being removed, so reset our read
-							pointer. */
-							pxQueue->pcReadFrom = pcOriginalReadPosition;
-
-							/* The data is being left in the queue, so see if there are
-							any other tasks waiting for the data. */
-							// check for other tasks waiting to receive
-							if( /* listLIST_IS_EMPTY( &( pxQueue->xTasksWaitingToReceive ) ) */ pdTRUE == pdFALSE )
-							{
-								/* Tasks that are removed from the event list will get added to
-								the pending ready list as the scheduler is still suspended. */
-								// get the task that is waiting to receive
-								if( /* xTaskRemoveFromEventList( &( pxQueue->xTasksWaitingToReceive ) )*/  pdTRUE != pdFALSE )
-								{
-									/* The task waiting has a higher priority than this task. */
-									portYIELD_WITHIN_API();
-								}
-								else
-								{
-									mtCOVERAGE_TEST_MARKER();
-								}
-							}
-							else
-							{
-								mtCOVERAGE_TEST_MARKER();
-							}
-						}
-
-						ExitCriticalSection();
-						return pdPASS;
+						pid ProcessId = dequeue( pxQueue->xTasksWaitingToSend );
+						Scheduler_processSetReady( ProcessId );
+						_RESCHEDULE_;
 					}
 					else
 					{
-						if( xTicksToWait == ( TickType_t ) 0 )
-						{
-							ExitCriticalSection();
-							// trace Queue
-							// traceQUEUE_RECEIVE_FAILED( pxQueue );
-							return errQUEUE_EMPTY;
-						}
-						else if( xEntryTimeSet == pdFALSE )
-						{
-							// config the timeout
-							//vTaskSetTimeOutState( &xTimeOut );
-							xEntryTimeSet = pdTRUE;
-						}
+						mtCOVERAGE_TEST_MARKER();
+					}
+				}
+				else
+				{
+					traceQUEUE_PEEK( pxQueue );
+
+					pxQueue->pcReadFrom = pcOriginalReadPosition;
+
+					if( nonEmpty ( pxQueue->xTasksWaitingToReceive ) )
+					{
+						pid ProcessId = dequeue( pxQueue->xTasksWaitingToReceive );
+						Scheduler_processSetReady( ProcessId );
+						_RESCHEDULE_;
+					}
+					else
+					{
+						mtCOVERAGE_TEST_MARKER();
 					}
 				}
 				ExitCriticalSection();
-
-				EnterCriticalSection();
+				return SUCCESS;
+			}
+			else
+			{
+				if( xSleepTime ==  IPC_NO_SLEEP )
 				{
-					// compare if the timeout has passed
-					if( /* xTaskCheckForTimeOut( &xTimeOut, &xTicksToWait )*/ pdTRUE == pdFALSE )
+					ExitCriticalSection();
+					traceQUEUE_RECEIVE_FAILED( pxQueue );
+					return errQUEUE_EMPTY;
+				}
+				else
+				{
+					pid ProcessId = Scheduler_processGetPid();
+					insert( ProcessId , pxQueue->xTasksWaitingToReceive , proctab[ProcessId].prprio );
+					proctab[ProcessId].prstate = PR_RECV;
+					if ( xSleepTime != IPC_WAIT_FOREVER )
 					{
-						if( prvIsQueueEmpty( pxQueue ) != pdFALSE )
-						{
-							// trace sentence
-							//traceBLOCKING_ON_QUEUE_RECEIVE( pxQueue );
-							// add a task to the list of waiting to receive
-							// vTaskPlaceOnEventList( &( pxQueue->xTasksWaitingToReceive ), xTicksToWait );
-							portYIELD_WITHIN_API();
-						}
-						else
-						{
-							mtCOVERAGE_TEST_MARKER();
-						}
+						insertSleep( Scheduler_processGetPid(), xSleepTime );
 					}
 					else
 					{
+						mtCOVERAGE_TEST_MARKER();
+					}
+					
+					_RESCHEDULE_;
+
+					if ( prvIsQueueEmpty( pxQueue ) == pdTRUE )
+					{
 						ExitCriticalSection();
-						// trace Queue
-						// traceQUEUE_RECEIVE_FAILED( pxQueue );
 						return errQUEUE_EMPTY;
 					}
+					else
+					{
+						mtCOVERAGE_TEST_MARKER();
+						// remove it from the sleeping queue
+					}
 				}
-				ExitCriticalSection();
 			}
+		}
+	ExitCriticalSection();
+	}
 }
 
-/*-----------------------------------------------------------*/
 
-UBaseType_t uxQueueMessagesWaiting( const QueueHandle_t xQueue )
+/****************************************************************************
+*	Function Number 5
+*
+*	The function's purpose is to return the number of messages 
+* in the queue
+*
+*	\param xQueue						Pointer to the queue of messages
+*
+* \return uxReturn				The number of messages in the queue
+*
+*****************************************************************************/
+
+UBaseType_t IPC_uxQueueMessagesWaiting( const QueueHandle_t xQueue )
 {
 UBaseType_t uxReturn;
 
@@ -440,9 +402,20 @@ UBaseType_t uxReturn;
 
 	return uxReturn;
 }
-/*-----------------------------------------------------------*/
 
-UBaseType_t uxQueueSpacesAvailable( const QueueHandle_t xQueue )
+/****************************************************************************
+*	Function Number 6
+*
+*	The function's purpose is to return the number of free spaces 
+* in the queue
+*
+*	\param xQueue						Pointer to the queue of messages
+*
+* \return uxReturn				The number of free spaces in the queue
+*
+*****************************************************************************/
+
+UBaseType_t IPC_uxQueueSpacesAvailable( const QueueHandle_t xQueue )
 {
 	UBaseType_t uxReturn;
 	Queue_t *pxQueue;
@@ -457,10 +430,22 @@ UBaseType_t uxQueueSpacesAvailable( const QueueHandle_t xQueue )
 	ExitCriticalSection();
 
 	return uxReturn;
-} /*lint !e818 Pointer cannot be declared const as xQueue is a typedef not pointer. */
-/*-----------------------------------------------------------*/
+}
 
-UBaseType_t uxQueueMessagesWaitingFromISR( const QueueHandle_t xQueue )
+/****************************************************************************
+*	Function Number 7
+*
+*	The function's purpose is to return the number of messages 
+* in the queue to be called from a critical section or from 
+* an ISR.
+*
+*	\param xQueue						Pointer to the queue of messages
+*
+* \return uxReturn				The number of messages in the queue
+*
+*****************************************************************************/
+
+UBaseType_t IPC_uxQueueMessagesWaitingFromISR( const QueueHandle_t xQueue )
 {
 UBaseType_t uxReturn;
 
@@ -469,8 +454,18 @@ UBaseType_t uxReturn;
 	uxReturn = ( ( Queue_t * ) xQueue )->uxMessagesWaiting;
 
 	return uxReturn;
-} /*lint !e818 Pointer cannot be declared const as xQueue is a typedef not pointer. */
-/*-----------------------------------------------------------*/
+} 
+
+/****************************************************************************
+*	Function Number 8
+*
+*	The function's purpose is to check if the queue is empty.
+*
+*	\param pxQueue						Pointer to the queue of messages
+*
+* \return xReturn						pdTRUE if the queue is empty, pdFALSE otherwise
+*
+*****************************************************************************/
 
 
 static BaseType_t prvIsQueueEmpty( const Queue_t *pxQueue )
@@ -492,9 +487,19 @@ BaseType_t xReturn;
 
 	return xReturn;
 }
-/*-----------------------------------------------------------*/
 
-BaseType_t xQueueIsQueueEmptyFromISR( const QueueHandle_t xQueue )
+/****************************************************************************
+*	Function Number 9
+*
+*	The function's purpose is to check if the queue is empty.
+*
+*	\param xQueue						Pointer to the queue of messages
+*
+* \return xReturn					pdTRUE if the queue is empty, pdFALSE otherwise
+*
+*****************************************************************************/
+
+BaseType_t IPC_xQueueIsQueueEmptyFromISR( const QueueHandle_t xQueue )
 {
 BaseType_t xReturn;
 
@@ -509,8 +514,18 @@ BaseType_t xReturn;
 	}
 
 	return xReturn;
-} /*lint !e818 xQueue could not be pointer to const because it is a typedef. */
-/*-----------------------------------------------------------*/
+} 
+
+/****************************************************************************
+*	Function Number 10
+*
+*	The function's purpose is to check if the queue is full.
+*
+*	\param pxQueue						Pointer to the queue of messages
+*
+* \return xReturn						pdTRUE if the queue is full, pdFALSE otherwise
+*
+*****************************************************************************/
 
 static BaseType_t prvIsQueueFull( const Queue_t *pxQueue )
 {
@@ -531,9 +546,22 @@ BaseType_t xReturn;
 
 	return xReturn;
 }
-/*-----------------------------------------------------------*/
 
-BaseType_t xQueueIsQueueFullFromISR( const QueueHandle_t xQueue )
+/****************************************************************************
+*	Function Number 11
+*
+*	The function's purpose is to check if the queue is full.
+*
+* The function is to be called from a critical section or from
+* an ISR.
+*
+*	\param pxQueue						Pointer to the queue of messages
+*
+* \return xReturn						pdTRUE if the queue is full, pdFALSE otherwise
+*
+*****************************************************************************/
+
+BaseType_t IPC_xQueueIsQueueFullFromISR( const QueueHandle_t xQueue )
 {
 BaseType_t xReturn;
 
@@ -549,33 +577,52 @@ BaseType_t xReturn;
 
 	return xReturn;
 }
-/*-----------------------------------------------------------*/
 
-void vQueueDelete( QueueHandle_t xQueue )
+/****************************************************************************
+*	Function Number 12
+*
+*	The function's purpose is to delete a queue.
+*
+*	\param xQueue							Pointer to the queue of messages
+*
+* \return Nothing
+*
+*****************************************************************************/
+
+void IPC_vQueueDelete( QueueHandle_t xQueue )
 {
-	//Queue_t * const pxQueue = ( Queue_t * ) xQueue;
+	Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 
-	//configASSERT( pxQueue );
+	configASSERT( pxQueue );
 
-	//traceQUEUE_DELETE( pxQueue );
+	traceQUEUE_DELETE( pxQueue );
 
-	/// LOOK HERE ///
-	// free the part of the pxQueue
-
-	// vPortFree( pxQueue );
+	/* Not supported in our OS as its static memory implementation */
+	/* vPortFree( pxQueue ); */
 }
 
-/*-----------------------------------------------------------*/
+
+/****************************************************************************
+*	Function Number 13
+*
+*	The function's purpose is to copy data to the queue.
+*
+*	\param pxQueue						Pointer to the queue of messages.
+* \param pvItemToQueue			Pointer to the data to be copied to the queue.
+* \param xPosition					Position of the data on the queue.
+*
+* \return SUCCESS if there is no error.						
+*
+*****************************************************************************/
 
 static BaseType_t prvCopyDataToQueue( Queue_t * const pxQueue, const void *pvItemToQueue, const BaseType_t xPosition )
 {
-BaseType_t xReturn = pdFALSE;
 
-	if( xPosition == queueSEND_TO_BACK )
+	if( xPosition == IPC_queueSEND_TO_BACK )
 	{
-		( void ) memcpy( ( void * ) pxQueue->pcWriteTo, pvItemToQueue, ( size_t ) pxQueue->uxItemSize ); /*lint !e961 !e418 MISRA exception as the casts are only redundant for some ports, plus previous logic ensures a null pointer can only be passed to memcpy() if the copy size is 0. */
+		( void ) memcpy( ( void * ) pxQueue->pcWriteTo, pvItemToQueue, ( size_t ) pxQueue->uxItemSize ); 
 		pxQueue->pcWriteTo += pxQueue->uxItemSize;
-		if( pxQueue->pcWriteTo >= pxQueue->pcTail ) /*lint !e946 MISRA exception justified as comparison of pointers is the cleanest solution. */
+		if( pxQueue->pcWriteTo >= pxQueue->pcTail ) 
 		{
 			pxQueue->pcWriteTo = pxQueue->pcHead;
 		}
@@ -586,9 +633,9 @@ BaseType_t xReturn = pdFALSE;
 	}
 	else
 	{
-		( void ) memcpy( ( void * ) pxQueue->pcReadFrom, pvItemToQueue, ( size_t ) pxQueue->uxItemSize ); /*lint !e961 MISRA exception as the casts are only redundant for some ports. */
+		( void ) memcpy( ( void * ) pxQueue->pcReadFrom, pvItemToQueue, ( size_t ) pxQueue->uxItemSize );
 		pxQueue->pcReadFrom -= pxQueue->uxItemSize;
-		if( pxQueue->pcReadFrom < pxQueue->pcHead ) /*lint !e946 MISRA exception justified as comparison of pointers is the cleanest solution. */
+		if( pxQueue->pcReadFrom < pxQueue->pcHead )
 		{
 			pxQueue->pcReadFrom = ( pxQueue->pcTail - pxQueue->uxItemSize );
 		}
@@ -597,7 +644,7 @@ BaseType_t xReturn = pdFALSE;
 			mtCOVERAGE_TEST_MARKER();
 		}
 
-		if( xPosition == queueOVERWRITE )
+		if( xPosition == IPC_queueOVERWRITE )
 		{
 			if( pxQueue->uxMessagesWaiting > ( UBaseType_t ) 0 )
 			{
@@ -620,15 +667,26 @@ BaseType_t xReturn = pdFALSE;
 
 	++( pxQueue->uxMessagesWaiting );
 
-	return xReturn;
+	return SUCCESS;
 }
-/*-----------------------------------------------------------*/
+
+/****************************************************************************
+*	Function Number 14
+*
+*	The function's purpose is to copy data from a queue to a given buffer.
+*
+*	\param pxQueue						Pointer to the queue of messages
+* \param pvBuffer						Pointer to the buffer 
+*
+* \return Nothing
+*
+*****************************************************************************/
 
 static void prvCopyDataFromQueue( Queue_t * const pxQueue, void * const pvBuffer )
 {
 
 	pxQueue->pcReadFrom += pxQueue->uxItemSize;
-	if( pxQueue->pcReadFrom >= pxQueue->pcTail ) /*lint !e946 MISRA exception justified as use of the relational operator is the cleanest solutions. */
+	if( pxQueue->pcReadFrom >= pxQueue->pcTail ) 
 	{
 		pxQueue->pcReadFrom = pxQueue->pcHead;
 	}
@@ -639,6 +697,5 @@ static void prvCopyDataFromQueue( Queue_t * const pxQueue, void * const pvBuffer
 	( void ) memcpy( ( void * ) pvBuffer, ( void * ) pxQueue->pcReadFrom, ( size_t ) pxQueue->uxItemSize ); /*lint !e961 !e418 MISRA exception as the casts are only redundant for some ports.  Also previous logic ensures a null pointer can only be passed to memcpy() when the count is 0. */
 
 }
-/*-----------------------------------------------------------*/
 
 

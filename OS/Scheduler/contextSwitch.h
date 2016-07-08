@@ -23,10 +23,15 @@
 #ifndef CONTEXTSWITCH_H_
 #define CONTEXTSWITCH_H_
 
+#include "Process.h"
+
 /*
  * The function definition is in the board folder as its implementation
  * differ with the type of the microcontroller used
  */
-void contextSwitch(char *oldStackPointer, char *newStackPointer);
+void Scheduler_contextSwitch(struct procent *ptold, struct procent *ptnew);
+void jumptoPC(uint32_t LR);
+void saveContext(char* oldSP);
+void loadContext(char* newSP);
 
 #endif /* CONTEXTSWITCH_H_ */
