@@ -32,7 +32,7 @@
 #define AVR_I2C_TEST				6
 #define AVR_UART_TEST				7
 #define AVR_WATCHDOG_TEST			8
-
+#define ARM_I2C_TEST				9
 
 #define TEST_USED			NO_TEST
 
@@ -63,6 +63,8 @@ int main(void)
 		uart_avr_test(void);
 	#elif (TEST_USED == AVR_WATCHDOG_TEST)
 		
+	#elif(TEST_USED == ARM_I2C_TEST)
+		i2c_arm_test();
 	#endif
 	
 	return 0;
