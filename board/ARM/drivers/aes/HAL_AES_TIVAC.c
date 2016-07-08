@@ -5,6 +5,7 @@ void HAL_AES_Encrypt(AES_HandleTypeDef* handle)
 
 {
         AESReset(handle->Base_Address);
+
 	AESConfigSet(handle->Base_Address,((handle->Mode) | (handle->ui32Keysize) | AES_CFG_DIR_ENCRYPT));
 	AESKey1Set(handle->Base_Address, handle->Key, handle->ui32Keysize);
 
@@ -23,6 +24,7 @@ void HAL_AES_Decrypt(AES_HandleTypeDef* handle)
 
 {
         AESReset(handle->Base_Address);
+
 	AESConfigSet(handle->Base_Address,(handle->Mode) | (handle->ui32Keysize) | (AES_CFG_DIR_DECRYPT));
 	AESKey1Set(handle->Base_Address, handle->Key, handle->ui32Keysize);
 

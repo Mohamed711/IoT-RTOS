@@ -102,7 +102,7 @@
 
 typedef struct
 {
-	qid16 Bsem_queue ;
+	qid Bsem_queue ;
 	//Queue *Bsem_queue = createQueue(10);
 	int8_t count;	
 }Bsem_t;

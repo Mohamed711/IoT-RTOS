@@ -23,7 +23,7 @@
 #include "Resource Management.h"
 #include "../Scheduler/Process.h"
 
-extern pid32 currpid;
+extern pid currpid;
 
 void vid_Binary_semp_Bsem_wait (Bsem_t *S)
 {
@@ -31,7 +31,7 @@ void vid_Binary_semp_Bsem_wait (Bsem_t *S)
 	{ 
 		enqueue(currpid /*current process*/,S->Bsem_queue);
 		
-		/*pri16*/ /*sysCall suspend_return =*/ processWaiting(currpid);
+		/*pri16*/ /*sysCall suspend_return =*/ Scheduler_processWaiting(currpid);
 	}
 	else if(S->count==1)
 	{
@@ -41,12 +41,13 @@ void vid_Binary_semp_Bsem_wait (Bsem_t *S)
 void vid_Binary_semp_Bsem_signal(Bsem_t *S)
 {
 	
-	if (!isempty(S->Bsem_queue))
+	if (!isEmpty(S->Bsem_queue))
 	{
 		int32_t processid= dequeue(S->Bsem_queue);
-		processSetReady(processid /*curent process id  */);
+
+		Scheduler_processSetReady(processid /*curent process id  */);
 	}
-	else if(isempty(S->Bsem_queue))
+	else if(isEmpty(S->Bsem_queue))
 	{
 		S->count=1;
 	}

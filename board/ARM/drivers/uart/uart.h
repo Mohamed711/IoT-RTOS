@@ -182,7 +182,7 @@ extern void uartIntRegister(uint32_t ui32Base, void (*pfnHandler)(void));
 extern void uartIntUnregister(uint32_t ui32Base);
 extern void uartIntEnable(uint32_t ui32Base, uint32_t ui32IntFlags);
 extern void uartIntDisable(uint32_t ui32Base, uint32_t ui32IntFlags);
-extern uint32_t UuartIntStatus(uint32_t ui32Base, bool bMasked);
+extern uint32_t uartIntStatus(uint32_t ui32Base, bool bMasked);
 extern void uartIntClear(uint32_t ui32Base, uint32_t ui32IntFlags);
 extern void uartDMAEnable(uint32_t ui32Base, uint32_t ui32DMAFlags);
 extern void uartDMADisable(uint32_t ui32Base, uint32_t ui32DMAFlags);
