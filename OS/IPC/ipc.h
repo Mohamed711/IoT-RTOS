@@ -35,8 +35,8 @@ extern "C" {
 typedef void * QueueHandle_t;
 
 /* For external use by other modules */
-#define IPC_NO_SLEEP									( ( _delay_ms ) ( 0x00000000 ) )
-#define IPC_WAIT_FOREVER							( ( _delay_ms ) ( 0xFFFFFFFF ) )
+#define IPC_NO_SLEEP									( ( _timeDelay ) ( 0x00000000 ) )
+#define IPC_WAIT_FOREVER							( ( _timeDelay ) ( 0xFFFFFFFF ) )
 
 /* For internal use only. */
 #define	IPC_queueSEND_TO_BACK					( ( BaseType_t ) 0 )
@@ -95,12 +95,12 @@ BaseType_t IPC_xQueueGenericReset(  QueueHandle_t xQueue, BaseType_t xNewQueue )
 
 
 /* send to a queue */
-BaseType_t IPC_xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQueue, _delay_ms xSleepTime, const BaseType_t xCopyPosition );
+BaseType_t IPC_xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQueue, _timeDelay xSleepTime, const BaseType_t xCopyPosition );
 //BaseType_t IPC_xQueueGenericSendFromISR( QueueHandle_t xQueue, const void * const pvItemToQueue, BaseType_t * const pxHigherPriorityTaskWoken, const BaseType_t xCopyPosition );
 
 
 /* receive from a queue */
-BaseType_t IPC_xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer, _delay_ms xSleepTime, const BaseType_t xJustPeek );
+BaseType_t IPC_xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer, _timeDelay xSleepTime, const BaseType_t xJustPeek );
 //BaseType_t IPC_xQueueReceiveFromISR( QueueHandle_t xQueue, void * const pvBuffer, BaseType_t * const pxHigherPriorityTaskWoken );
 //BaseType_t IPC_xQueuePeekFromISR( QueueHandle_t xQueue, void * const pvBuffer );
 

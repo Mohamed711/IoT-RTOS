@@ -44,11 +44,13 @@
 	#include "../board/ARM/drivers/pin_map/pin_map.h"
 	#include "../board/ARM/drivers/inc/hw_uart.h"
 	#include "TM4C123GH6PM.h"
+	#define _RESCHEDULE_	do { wakefromSleep = false;IntTrigger(INT_TIMER0A);} while(0)
 #endif
 
 #ifdef AVR
 	#include "../board/AVR/drivers/Timer/HAL_Timer_AVR.h"
 	#include "../board/AVR/board_config.h"
+	#define _RESCHEDULE_
 #endif
 
 
@@ -108,11 +110,11 @@ void heap_init(Heap_Init *size);
 #define NQENT	( NPROC + NO_OF_QUEUES + 3 )
 
 #if ( MAX_SLEEPING_TIME < 256 )
-	typedef uint8_t _delay_ms ;
+	typedef uint8_t _timeDelay ;
 #elif ( MAX_SLEEPING_TIME < 65536 )
-	typedef uint16_t _delay_ms;
+	typedef uint16_t _timeDelay;
 #else
-	typedef uint32_t _delay_ms;
+	typedef uint32_t _timeDelay;
 #endif
 
 #if ( NPROC < 256 )
@@ -132,7 +134,7 @@ void heap_init(Heap_Init *size);
 #endif
 
 #if ( PARTIALLY_BLOCKING_ENABLE == 0x00 )
-	typedef _delay_ms queuePriority;
+	typedef _timeDelay queuePriority;
 #else
 	typedef pid queuePriority;
 #endif

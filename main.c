@@ -24,8 +24,8 @@
 #include "OS/IPC/ipc_test.h"
 
 #define ARMScheduler_TEST 	1
-#define IPC_TEST						2
-#define TEST_USED ARMScheduler_TEST
+#define IPC_TEST			2
+#define TEST_USED			0
 
 int main(void) 
 {

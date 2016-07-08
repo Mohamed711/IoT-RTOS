@@ -26,7 +26,7 @@
 
 #if ( PARTIALLY_BLOCKING_ENABLE == 0x01 )
 	struct sleepingEntry {
-		_delay_ms sleeping;			/* sleeping time */
+		_timeDelay sleeping;			/* sleeping time */
 		pid qnext;			/* next process in the sleeping queue */
 		pid qprev;		/* previous process in the sleeping queue */
 	};

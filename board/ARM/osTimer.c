@@ -26,6 +26,7 @@
 #include "../../OS/Scheduler/Process.h"
 #include "drivers/timer/timer.h"
 #include "../../User_Config.h"
+#include "../../OS/Scheduler/scheduler_test.h"
 
 extern unsigned int lrReg;
 extern pid currpid;

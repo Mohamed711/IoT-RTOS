@@ -35,7 +35,7 @@
  /* MODULE TEST */
  uint16_t IPC_u16QUEUE_ASYNC_SEND_test();
  uint16_t IPC_u16QUEUE_ASYNC_RECEIVE_test();
- uint16_t	IPC_u16QUEUE_SYNC_SEND_test();
+ uint16_t IPC_u16QUEUE_SYNC_SEND_test();
  uint16_t IPC_u16QUEUE_SYNC_RECEIVE_test();
  uint16_t IPC_u16QUEUE_PARTIAL_SEND_test();
  uint16_t IPC_u16QUEUE_PARTIAL_RECEIVE_test();

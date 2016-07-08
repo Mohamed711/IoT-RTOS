@@ -9,12 +9,12 @@
  *  modification, are permitted provided that the redistributions of the
  *  source code must retain the above copyright notice, and this condition.
  *****************************************************************************/
+#ifdef ARM
 
 #include <stdint.h>
 
 #include "../RTOS.h"
 #include "ipc.h"
-#include "TM4C123GH6PM.h"
 
 #ifdef ARM
 //#include "C:/Keil_v5/ARM/CMSIS/Include/core_cmFunc.h"
@@ -58,7 +58,7 @@ void task2()
 }
 
 
-uint16_t ipc_test()
+uint16_t IPC_test()
  {
 	prcount=0;
 	readyList = newqueue();
@@ -75,7 +75,7 @@ uint16_t ipc_test()
 	/* Test the creation of the queue */
 	queue = IPC_xQueueCreate(uxLength, uxItemSize);
 	 pxQueue = IPC_xQueueCreate(uxLength, uxItemSize);
-
+	 
 	 SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
 	GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
@@ -86,7 +86,6 @@ uint16_t ipc_test()
 	Scheduler_processSetReady(id2);
 	Scheduler_processSetReady(id1);
 
-	
 	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 2);
 
 	/* Test the full queue value */ 
@@ -148,3 +147,187 @@ uint16_t ipc_test()
 
 }
 
+
+/*
+ uint16_t IPC_test()
+{
+	uint16_t u16Return;
+	u16Return=IPC_ModulerTest();
+		if ( u16Return != SUCCESS )
+		return u16Return;
+	u16Return=IPC_DiffScenariosTest();
+		if ( u16Return != SUCCESS )
+		return u16Return;
+}
+
+*/
+ uint16_t IPC_ModulerTest()
+{
+	uint16_t u16Return;
+	u16Return=IPC_u16QueueCreate_test();
+		if ( u16Return != SUCCESS )
+		return u16Return;
+  u16Return=IPC_u16QueueEmpty_test();
+		if ( u16Return != SUCCESS )
+		return u16Return;
+  u16Return=IPC_u16QueueFull_test();
+		if ( u16Return != SUCCESS )
+		return u16Return;
+  u16Return=IPC_u16QueueSendToFront_test();
+		if ( u16Return != SUCCESS )
+		return u16Return;
+  u16Return=IPC_u16QueueSendToBack_test();
+		if ( u16Return != SUCCESS )
+		return u16Return;
+  u16Return=IPC_u16QueueOverwrite_test();
+		if ( u16Return != SUCCESS )
+		return u16Return;
+  u16Return=IPC_u16QueueGetPeek_test();
+		if ( u16Return != SUCCESS )
+		return u16Return;
+  u16Return=IPC_u16QueueReceive_test();
+		if ( u16Return != SUCCESS )
+		return u16Return;
+  u16Return=IPC_u16QueueReset_test();
+		if ( u16Return != SUCCESS )
+		return u16Return;
+  u16Return=IPC_u16QueueMsgWaiting_test();
+		if ( u16Return != SUCCESS )
+		return u16Return;
+  u16Return=IPC_u16QueueSpacesAvailable_test();
+		if ( u16Return != SUCCESS )
+		return u16Return;
+}
+
+
+ uint16_t IPC_DiffScenariosTest()
+{
+	uint16_t u16Return;
+	u16Return = IPC_u16Queue_Async_Send_test();
+		if ( u16Return != SUCCESS )
+		return u16Return;
+  u16Return=IPC_u16Queue_Async_Recv_test();
+		if ( u16Return != SUCCESS )
+		return u16Return;
+ 	u16Return=IPC_u16Queue_Sync_Send_test();
+		if ( u16Return != SUCCESS )
+		return u16Return;
+  u16Return=IPC_u16Queue_Sync_Recv_test();
+		if ( u16Return != SUCCESS )
+		return u16Return;
+  u16Return=IPC_u16Queue_Partial_Send_test();
+		if ( u16Return != SUCCESS )
+		return u16Return;
+  u16Return=IPC_u16Queue_Partial_Recv_test();
+		if ( u16Return != SUCCESS )
+		return u16Return;
+}
+ 
+ /* FUNCTION TESTS */
+ uint16_t IPC_u16QueueCreate_test()
+{
+	QueueHandle_t queue;
+	uint8_t uxLength, uxItemSize;
+	uxLength = 2;
+	uxItemSize = 4;
+	queue = IPC_xQueueCreate(uxLength, uxItemSize);
+	
+}
+
+
+ uint16_t IPC_u16QueueEmpty_test()
+{
+	QueueHandle_t queue;
+	uint16_t u16Return;
+	uint8_t uxLength, uxItemSize;
+	uxLength = 2;
+	uxItemSize = 4;
+	queue = IPC_xQueueCreate(uxLength, uxItemSize);
+	u16Return = IPC_xQueueIsQueueEmptyFromISR(queue);
+	if ( u16Return != pdTRUE )
+			return IPC_QUEUE_EMPTY_FAIL;
+	
+}
+
+
+ uint16_t IPC_u16QueueFull_test()
+{
+}
+
+
+ uint16_t IPC_u16QueueSendToFront_test()
+{
+}
+
+
+ uint16_t IPC_u16QueueSendToBack_test()
+{
+}
+
+
+ uint16_t IPC_u16QueueOverwrite_test()
+{
+}
+
+
+ uint16_t IPC_u16QueueGetPeek_test()
+{
+}
+
+
+ uint16_t IPC_u16QueueReceive_test()
+{
+}
+
+
+ uint16_t IPC_u16QueueReset_test()
+{
+}
+
+
+ uint16_t IPC_u16QueueMsgWaiting_test()
+{
+}
+
+
+ uint16_t IPC_u16QueueSpacesAvailable_test()
+{
+}
+
+
+ 
+ 
+ /* MODULE TEST */
+ uint16_t IPC_u16Queue_Async_Send_test()
+{
+}
+
+
+ uint16_t IPC_u16Queue_Async_Recv_test()
+{
+}
+
+
+ uint16_t	IPC_u16Queue_Sync_Send_test()
+{
+}
+
+
+ uint16_t IPC_u16Queue_Sync_Recv_test()
+{
+}
+
+
+ uint16_t IPC_u16Queue_Partial_Send_test()
+{
+}
+
+
+ uint16_t IPC_u16Queue_Partial_Recv_test()
+{
+}
+
+
+
+
+#endif

@@ -51,16 +51,20 @@ void Scheduler_initializenullProcess()
 	currpid = 0;
 }
 
-void initializeUART( Uart_InitTypeDef *initConf,uint32_t BaseAddress )
-{
+#ifdef ARM
+
+	void initializeUART( Uart_InitTypeDef *initConf,uint32_t BaseAddress )
+	{
 	
-	initConf->BaudRate=9600;
-	initConf->Parity= UART_CONFIG_PAR_NONE;
-	initConf->Wlen=UART_CONFIG_WLEN_8;
-	initConf->stopBit=UART_CONFIG_STOP_ONE;
-	initConf->BaseAddress=BaseAddress;
-	initConf->clock=SysCtlClockGet();
+		initConf->BaudRate=9600;
+		initConf->Parity= UART_CONFIG_PAR_NONE;
+		initConf->Wlen=UART_CONFIG_WLEN_8;
+		initConf->stopBit=UART_CONFIG_STOP_ONE;
+		initConf->BaseAddress=BaseAddress;
+		initConf->clock=SysCtlClockGet();
 
-	uartinit(initConf);
+		uartinit(initConf);
 
-}
+	}
+
+#endif

@@ -28,5 +28,4 @@
 //void Scheduler_nullProc(Uart_HandleTypeDef *transmit);
 void Scheduler_nullProc();
 
-
 #endif

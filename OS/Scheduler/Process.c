@@ -364,7 +364,6 @@ void Scheduler_processResumeAll(void)
 sysCall Scheduler_processKill()
 {
 	Scheduler_processTerminate(currpid);
-	wakefromSleep = false;
-	IntTrigger(INT_TIMER0A);
+	_RESCHEDULE_;
 	return OK;
 }

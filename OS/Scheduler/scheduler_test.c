@@ -1,15 +1,14 @@
 
-
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
 
-#include "TM4C123GH6PM.h"
+
 
 #ifdef ARM
 #include "C:/Keil_v5/ARM/CMSIS/Include/core_cmFunc.h"
-#endif 
-
+#include "TM4C123GH6PM.h"
+#endif
 
 #include "Process.h"
 #include "queue.h"
@@ -18,6 +17,8 @@
 #include "nullProcess.h"
 #include "scheduler_test.h"
 #include "../RTOS.h"
+
+#if ARM
 
 	extern uint32_t prcount;
 	
@@ -115,3 +116,4 @@ void SchedulerTest()
 	Scheduler_nullProc();
 }
 
+#endif 

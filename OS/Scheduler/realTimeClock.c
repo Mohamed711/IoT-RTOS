@@ -84,8 +84,7 @@ sysCall	Scheduler_sleepms(int32_t	delay)
 		return SYSERR;
 	}
 	proctab[currpid].prstate = PR_sleep;
-	wakefromSleep = false;
-	IntTrigger(INT_TIMER0A);
+	_RESCHEDULE_;
 	return OK;
 }
 
@@ -130,8 +129,7 @@ sysCall	Scheduler_unsleep(pid processId)
 
 	Scheduler_processSetReady(processId);
 	
-	wakefromSleep = false;
-	IntTrigger(INT_TIMER0A);
+	_RESCHEDULE_;
 	return OK;
 }
 

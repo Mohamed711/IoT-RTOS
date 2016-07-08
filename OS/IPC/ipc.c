@@ -162,8 +162,7 @@ BaseType_t IPC_xQueueGenericReset( QueueHandle_t xQueue, BaseType_t xNewQueue )
 			{
 				pid ProcessId = dequeue( pxQueue->xTasksWaitingToSend );
 				Scheduler_processSetReady( ProcessId );
-				wakefromSleep = false;
-				IntTrigger(INT_TIMER0A);
+				_RESCHEDULE_;
 			}
 			else
 			{
@@ -196,7 +195,7 @@ BaseType_t IPC_xQueueGenericReset( QueueHandle_t xQueue, BaseType_t xNewQueue )
 *
 *****************************************************************************/
 
-BaseType_t IPC_xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQueue, _delay_ms xSleepTime, const BaseType_t xCopyPosition )
+BaseType_t IPC_xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQueue, _timeDelay xSleepTime, const BaseType_t xCopyPosition )
 {
 	Queue_t * const pxQueue = ( Queue_t * ) xQueue;
 
@@ -217,8 +216,7 @@ BaseType_t IPC_xQueueGenericSend( QueueHandle_t xQueue, const void * const pvIte
 				{
 					pid ProcessId = dequeue( pxQueue->xTasksWaitingToReceive );
 					Scheduler_processSetReady( ProcessId );
-					wakefromSleep = false;
-					IntTrigger(INT_TIMER0A);
+					_RESCHEDULE_;
 				}
 				else
 				{
@@ -247,8 +245,7 @@ BaseType_t IPC_xQueueGenericSend( QueueHandle_t xQueue, const void * const pvIte
 						mtCOVERAGE_TEST_MARKER();
 					}
 					
-					wakefromSleep = false;
-					IntTrigger(INT_TIMER0A);
+					_RESCHEDULE_;
 
 					if ( prvIsQueueFull( pxQueue ) == pdTRUE )
 					{
@@ -281,7 +278,7 @@ BaseType_t IPC_xQueueGenericSend( QueueHandle_t xQueue, const void * const pvIte
 * \return SUCCESS if there's no error
 *
 *****************************************************************************/
-BaseType_t IPC_xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer, _delay_ms xSleepTime, const BaseType_t xJustPeeking )
+BaseType_t IPC_xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer, _timeDelay xSleepTime, const BaseType_t xJustPeeking )
 {
 	int8_t *pcOriginalReadPosition;
 	Queue_t * const pxQueue = ( Queue_t * ) xQueue;
@@ -310,8 +307,7 @@ BaseType_t IPC_xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer
 					{
 						pid ProcessId = dequeue( pxQueue->xTasksWaitingToSend );
 						Scheduler_processSetReady( ProcessId );
-						wakefromSleep = false;
-						IntTrigger(INT_TIMER0A);
+						_RESCHEDULE_;
 					}
 					else
 					{
@@ -328,8 +324,7 @@ BaseType_t IPC_xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer
 					{
 						pid ProcessId = dequeue( pxQueue->xTasksWaitingToReceive );
 						Scheduler_processSetReady( ProcessId );
-						wakefromSleep = false;
-						IntTrigger(INT_TIMER0A);
+						_RESCHEDULE_;
 					}
 					else
 					{
@@ -361,8 +356,7 @@ BaseType_t IPC_xQueueGenericReceive( QueueHandle_t xQueue, void * const pvBuffer
 						mtCOVERAGE_TEST_MARKER();
 					}
 					
-					wakefromSleep = false;
-					IntTrigger(INT_TIMER0A);
+					_RESCHEDULE_;
 
 					if ( prvIsQueueEmpty( pxQueue ) == pdTRUE )
 					{
