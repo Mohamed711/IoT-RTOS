@@ -19,28 +19,13 @@
  *  documentation and/or other materials provided with the
  *  distribution.
  *****************************************************************************/
-#include "RTOS_Headers.h"
-#include "OS/Scheduler/scheduler_test.h"
-#include "OS/IPC/ipc_test.h"
 
-#define ARMScheduler_TEST 	1
-#define IPC_TEST			2
-#define TEST_USED			0
+#ifndef NULLPROCESS_H_
+#define NULLPROCESS_H_
 
-int main(void) 
-{
-	uint16_t ReturnValue;
-	#if  (TEST_USED == ARMScheduler_TEST )
-		SchedulerTest();
-	#elif (TEST_USED == IPC_TEST)
-		if (IPC_test() == SUCCESS )
-		{
-			ReturnValue = SUCCESS;
-		}
-		else
-		{
-			ReturnValue = 0xFF;
-		}
-	#endif
-	return 0;
-}
+#include "../RTOS.h"
+
+//void Scheduler_nullProc(Uart_HandleTypeDef *transmit);
+void Scheduler_nullProc();
+
+#endif

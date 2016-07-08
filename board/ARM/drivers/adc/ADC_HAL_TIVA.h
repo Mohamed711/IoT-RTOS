@@ -23,6 +23,8 @@
 #ifndef DRIVERS_ADC_ADC_HAL_TIVA_H_
 #define DRIVERS_ADC_ADC_HAL_TIVA_H_
 
+#include <stdint.h>
+#include <stdbool.h>
 
 typedef struct
 {
@@ -37,6 +39,7 @@ typedef struct
 
 typedef struct
 {
+	uint32_t nullVariable;
 
 }ADC_HandleTypeDef;
 

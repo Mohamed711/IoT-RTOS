@@ -1,4 +1,4 @@
-/******************************************************************************
+/****************************************************************************
 *	OurOS V 0.0.0 - Copyright (C) 2016
 *  Computer and systems department
 *  Ain Shams University
@@ -22,6 +22,11 @@
 #ifndef INITIALIZE_H_
 #define INITIALIZE_H_
 
-void initializeOS(void);
+
+void Scheduler_initializenullProcess();
+
+#if ARM
+	void initializeUART(Uart_InitTypeDef *initConf,uint32_t BaseAddress);
+#endif
 
 #endif /* INITIALIZE_H_ */

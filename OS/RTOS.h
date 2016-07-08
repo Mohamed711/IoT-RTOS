@@ -28,15 +28,29 @@
 #include <stdbool.h>
 
 #include "../User_Config.h"
+#include "../error_codes.h"
 
 #ifdef ARM
 	#include "../board/ARM/drivers/timer/HAL_Timer_TivaC.h"
 	#include "../board/ARM/board_config.h"
+	#include "../board/ARM/tivaHAL.h"
+	#include "../board/ARM/drivers/inc/hw_gpio.h"	/*temp include*/
+	#include "../board/ARM/drivers/inc/hw_ints.h"
+	#include "../board/ARM/drivers/uart/uart.h"
+	#include "../board/ARM/drivers/inc/hw_memmap.h"
+  	#include "../board/ARM/drivers/inc/hw_types.h"
+	#include "../board/ARM/drivers/inc/tm4c123gh6pge.h"
+	#include "../board/ARM/drivers/interrupt/interrupt.h"
+	#include "../board/ARM/drivers/pin_map/pin_map.h"
+	#include "../board/ARM/drivers/inc/hw_uart.h"
+	#include "TM4C123GH6PM.h"
+	#define _RESCHEDULE_	do { wakefromSleep = false;IntTrigger(INT_TIMER0A);} while(0)
 #endif
 
 #ifdef AVR
 	#include "../board/AVR/drivers/Timer/HAL_Timer_AVR.h"
 	#include "../board/AVR/board_config.h"
+	#define _RESCHEDULE_
 #endif
 
 
@@ -45,13 +59,9 @@ typedef uint8_t TickType_t ;	// ticktype is a structure for the tick
 /* the basetype must be defined some where */
 typedef int8_t BaseType_t ;		// signed basetype is the base datatype
 typedef uint8_t UBaseType_t ; 	// unsigned basetype is important datatype used
-typedef int32_t pid32;
-typedef uint16_t pri16;
-typedef uint32_t sid32;
 typedef uint32_t umsg32;
 typedef bool bool8;
 typedef	uint32_t intmask;
-typedef uint16_t qid16;
 typedef bool sysCall;
 
 #define configASSERT(x)			// configAssert check the condition x is true or return the file and line number
@@ -59,26 +69,18 @@ typedef bool sysCall;
 #define pdFALSE	0x00			// false return
 #define pdPASS	0x01			// return value that the function carried out correctly
 #define pdFAIL 	0x00			// return fail
-#define errQUEUE_FULL	0x00	// error value indicates that the queue is full
-#define errQUEUE_EMPTY 	0x00	// error the queue is empty
+#define errQUEUE_FULL	0x01	// error value indicates that the queue is full
+#define errQUEUE_EMPTY 	0x01	// error the queue is empty
 #define mtCOVERAGE_TEST_MARKER()// just an empty for the else part of the if statement
-#define PRIVILEGED_FUNCTION		// to the memory protection unit
 #define configUSE_PREEMPTION 0	// config the scheduler to be preemptive or cooperative
 #define preemptive 0
 
 #define portYIELD_WITHIN_API()	// check for the tasks to take the higher priority one
 
-
-/* this values to be computed by a separate program isa */
-#define NSEM 10
-#define NPROC 5
-#define NQENT   (NPROC + 4 + NSEM + NSEM)
-
-#define	QUANTUM	2
 #define	MAXSECONDS	2147483		/* Max seconds per 32-bit msec	*/
 
 #define OK 1
-#define SYSERR -1
+#define SYSERR  0x00
 #define TIMEOUT 0
 
 #ifndef configUSE_MALLOC_FAILED_HOOK
@@ -96,6 +98,46 @@ typedef struct
 void heap_init(Heap_Init *size);
 */
 /*-----------------------------------------*/
+
+#define MAX_SLEEPING_TIME 65535
+/* Number of processes equal to the number of
+ * tasks plus the null process
+ */
+#define NPROC	( NO_OF_TASKS + 1 )
+/* Number of queues equal to the number specified by the user plus
+ * the ready, suspended, sleeping queue
+ */
+#define NQENT	( NPROC + NO_OF_QUEUES + 3 )
+
+#if ( MAX_SLEEPING_TIME < 256 )
+	typedef uint8_t _timeDelay ;
+#elif ( MAX_SLEEPING_TIME < 65536 )
+	typedef uint16_t _timeDelay;
+#else
+	typedef uint32_t _timeDelay;
+#endif
+
+#if ( NPROC < 256 )
+	typedef uint8_t pid;
+#elif ( NPROC < 65536 )
+	typedef uint16_t pid;
+#else
+	typedef uint32_t pid;
+#endif
+
+#if ( NQENT < 256 )
+	typedef uint8_t qid;
+#elif ( NPROC < 65536 )
+	typedef uint16_t qid;
+#else
+	typedef uint32_t qid;
+#endif
+
+#if ( PARTIALLY_BLOCKING_ENABLE == 0x00 )
+	typedef _timeDelay queuePriority;
+#else
+	typedef pid queuePriority;
+#endif
 
 /*portBYTE_ALIGNMENT defined by user but for default value portBYTE_ALIGNMENT=8  need to implement this as structure*/
 #if portBYTE_ALIGNMENT == 8

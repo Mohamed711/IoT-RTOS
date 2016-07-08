@@ -26,7 +26,7 @@
 typedef void (*FnPtr)(void);
 
 typedef struct Timer_InitTypeDef{
-
+	uint32_t baseAddress;
 }Timer_InitTypeDef;
 
 typedef struct Timer_HandleTypeDef{
@@ -44,5 +44,7 @@ void timerinit(Timer_InitTypeDef * timer);
 void timerstart(Timer_HandleTypeDef * timer);
 void timerstart(Timer_HandleTypeDef * timer);
 void timerstop(Timer_HandleTypeDef * timer);
+
+void Timer_New(FnPtr timeoutFn, uint32_t time);
 
 #endif
