@@ -31,35 +31,44 @@
 #ifdef ARM
 
 extern uint32_t prcount;
-
-QueueHandle_t pxQueue;
-uint8_t mode = 0;
+static uint16_t task1_return;
+static uint16_t task2_return;
+static uint16_t mode_of_operation = 0;
+QueueHandle_t queueTest;
 
 void task1()
 {
-	
 	uint32_t z =10;
-	IPC_xQueueSendToFront(pxQueue,&z,IPC_NO_SLEEP);
-	
+	IPC_xQueueSendToFront(queueTest,&z,IPC_NO_SLEEP);
+	IPC_xQueueSendToBack(queueTest, &z, IPC_WAIT_FOREVER);
+	IPC_xQueueGenericReceive(queueTest,&z,IPC_NO_SLEEP,IPC_RECEIVE_WITH_CONSUMING);
+
+		if (z == 10) 
+		{
+			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 14);
+			task2_return = SUCCESS;
+		}
+		else
+		{
+			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 2);
+			task2_return = IPC_QUEUE_SYNC_RECV_FAIL;
+		}
 }
 
 void task2()
 {
-	int val1;
-	IPC_xQueueGenericReceive(pxQueue,&val1,IPC_WAIT_FOREVER,IPC_RECEIVE_WITH_CONSUMING);
+		int val1 , val2 = 20;
+		IPC_xQueueGenericReceive(queueTest,&val1,IPC_WAIT_FOREVER,IPC_RECEIVE_WITH_CONSUMING);
+
+		IPC_xQueueSendToBack(queueTest, &val2, IPC_NO_SLEEP);
+		IPC_xQueueSendToBack(queueTest, &val2, IPC_NO_SLEEP);
+		Scheduler_sleepms(1000);
+		IPC_xQueueGenericReceive(queueTest,&val1,IPC_NO_SLEEP,IPC_RECEIVE_WITH_CONSUMING);
 	
-	if (val1 == 20) 
-	{
-		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 7);
-	}
-	else
-	{
-		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 14);
-	}
 }
 
 
-uint16_t IPC_test()
+uint16_t try_it()
  {
 	prcount=0;
 	readyList = newqueue();
@@ -68,76 +77,22 @@ uint16_t IPC_test()
 	Scheduler_initializenullProcess();
 	Timer_New(Scheduler_clkhandler, 50000000);
 	 	
-	uint8_t uxLength, uxItemSize, xVal;
-	QueueHandle_t queue;
-	uxLength = 2;
-	uxItemSize = 4;
-
-	/* Test the creation of the queue */
-	queue = IPC_xQueueCreate(uxLength, uxItemSize);
-	 pxQueue = IPC_xQueueCreate(uxLength, uxItemSize);
-	 
-	 SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
+	
+	SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
 	GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
 	 
-	pid id1= Scheduler_processCreate(task1, 700, 20, "P2");	
+	 queueTest = IPC_xQueueCreate(2,4);
+	 	pid id1= Scheduler_processCreate(task1, 700, 20, "P2");	
 	pid id2= Scheduler_processCreate(task2, 700, 25, "P3");	
 
 	Scheduler_processSetReady(id2);
 	Scheduler_processSetReady(id1);
 
+
 	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 2);
 
-	/* Test the full queue value */ 
-	xVal = IPC_xQueueIsQueueFullFromISR(queue);
-	if ( xVal == pdTRUE )
-	{
-		 return 0xFFFF;
-	}
 
-	/* Checks if the queue is empty */
-	xVal = IPC_xQueueIsQueueEmptyFromISR(queue);
-	if ( xVal == pdFALSE )
-		{
-			return 0xFF;
-		}
-		
-  /* Checks the number of waiting messages */
-	xVal = IPC_uxQueueMessagesWaitingFromISR(queue);
-	if ( xVal != 0x00 )
-		{
-			return 0xFF;
-		}
-
-	/* Checks the spaces available in teh queeu */
-	xVal = IPC_uxQueueSpacesAvailable(queue);
-
-		
-	int z = 100, q = 200;
-	IPC_xQueueSendToFront(queue,&z,IPC_NO_SLEEP);
-	IPC_xQueueSendToFront(queue,&q,IPC_NO_SLEEP);
-
-	int val1,val2;
-	IPC_xQueueGenericReceive(queue,&val1,IPC_NO_SLEEP,IPC_RECEIVE_WITH_CONSUMING);
-	IPC_xQueueGenericReceive(queue,&val2,IPC_NO_SLEEP,IPC_RECEIVE_WITH_CONSUMING);
-		
-	if (val1 != 200 || val2 != 100)
-	{
-		return 0xFF;
-	}
-		
-	z = 100, q = 200;
-	IPC_xQueueSendToBack(queue,&z,IPC_NO_SLEEP);
-	IPC_xQueueSendToBack(queue,&q,IPC_NO_SLEEP);
-
-	IPC_xQueueGenericReceive(queue,&val1,IPC_NO_SLEEP,IPC_RECEIVE_WITHOUT_CONSUMING);
-	IPC_xQueueGenericReceive(queue,&val2,IPC_NO_SLEEP,IPC_RECEIVE_WITH_CONSUMING);
-	
-	if ( z != 100 && q != 100 ) 
-	{
-		return 0xFF;
-	}
 	
 	__set_PSP(__get_MSP()); // copy current stack pointer value into PSP
   __set_CONTROL(0x00000002); // switch to "process" stack pointer PSP
@@ -149,7 +104,7 @@ uint16_t IPC_test()
 }
 
 
-/*
+
  uint16_t IPC_test()
 {
 	uint16_t u16Return;
@@ -159,9 +114,11 @@ uint16_t IPC_test()
 	u16Return=IPC_DiffScenariosTest();
 		if ( u16Return != SUCCESS )
 		return u16Return;
+		
+		return SUCCESS;
 }
 
-*/
+
  uint16_t IPC_ModulerTest()
 {
 	uint16_t u16Return;
@@ -198,6 +155,9 @@ uint16_t IPC_test()
   u16Return=IPC_u16QueueSpacesAvailable_test();
 		if ( u16Return != SUCCESS )
 		return u16Return;
+		
+		return SUCCESS;
+
 }
 
 
@@ -222,6 +182,9 @@ uint16_t IPC_test()
   u16Return=IPC_u16Queue_Partial_Recv_test();
 		if ( u16Return != SUCCESS )
 		return u16Return;
+		
+		return SUCCESS;
+
 }
  
  /* FUNCTION TESTS */
@@ -232,7 +195,18 @@ uint16_t IPC_test()
 	uxLength = 2;
 	uxItemSize = 4;
 	queue = IPC_xQueueCreate(uxLength, uxItemSize);
+	Queue_t *const pxQueue = (Queue_t * ) queue;
+	if ( pxQueue->uxItemSize != uxItemSize || 
+			 pxQueue->uxLength != uxLength ||
+			 pxQueue->uxMessagesWaiting != 0x00 || 
+	     pxQueue->xTasksWaitingToReceive != (pxQueue->xTasksWaitingToReceive+2) ||
+			 pxQueue->pcReadFrom !=  pxQueue->pcTail - pxQueue->uxItemSize || 
+			 pxQueue->pcWriteTo != pxQueue->pcHead )
+		return IPC_QUEUE_CREATE_FAIL;
 	
+	
+		return SUCCESS;
+
 }
 
 
@@ -248,51 +222,196 @@ uint16_t IPC_test()
 	if ( u16Return != pdTRUE )
 			return IPC_QUEUE_EMPTY_FAIL;
 	
+	return SUCCESS;
+
 }
 
 
  uint16_t IPC_u16QueueFull_test()
 {
+	QueueHandle_t queue;
+	uint16_t u16Return;
+	uint8_t uxLength, uxItemSize;
+	uxLength = 2;
+	uxItemSize = 4;
+	uint32_t val1 = 20;
+	uint32_t val2 = 30;
+	queue = IPC_xQueueCreate(uxLength, uxItemSize);
+	IPC_xQueueSendToBack(queue, &val1, IPC_NO_SLEEP);
+	IPC_xQueueSendToBack(queue, &val2, IPC_NO_SLEEP);
+	
+	u16Return = IPC_xQueueIsQueueFullFromISR(queue);
+	if ( u16Return != pdTRUE )
+			return IPC_QUEUE_FULL_FAIL;
+	
+			return SUCCESS;
+
 }
 
 
  uint16_t IPC_u16QueueSendToFront_test()
 {
+	QueueHandle_t queue;
+	uint16_t u16Return;
+	uint8_t uxLength, uxItemSize;
+	uxLength = 2;
+	uxItemSize = 4;
+	uint32_t value = 20;
+	queue = IPC_xQueueCreate(uxLength, uxItemSize);
+	Queue_t *const pxQueue = (Queue_t * ) queue;
+	IPC_xQueueSendToFront(pxQueue, &value, IPC_NO_SLEEP );
+	if (*(pxQueue->pcReadFrom + pxQueue->uxItemSize) != 20 )
+		return IPC_QUEUE_SEND_FRONT_FAIL;
+	
+			return SUCCESS;
+
 }
 
 
  uint16_t IPC_u16QueueSendToBack_test()
 {
+	QueueHandle_t queue;
+	uint16_t u16Return;
+	uint8_t uxLength, uxItemSize;
+	uxLength = 2;
+	uxItemSize = 4;
+	uint32_t value = 20;
+	queue = IPC_xQueueCreate(uxLength, uxItemSize);
+	Queue_t *const pxQueue = (Queue_t * ) queue;
+	IPC_xQueueSendToBack(pxQueue, &value, IPC_NO_SLEEP );
+	if (*(pxQueue->pcReadFrom - pxQueue->uxItemSize) != 20 )
+		return IPC_QUEUE_SEND_BACK_FAIL;
+	
+			return SUCCESS;
+
 }
 
 
  uint16_t IPC_u16QueueOverwrite_test()
 {
+	QueueHandle_t queue;
+	uint16_t u16Return;
+	uint8_t uxLength, uxItemSize;
+	uxLength = 1;
+	uxItemSize = 4;
+	uint32_t value = 20;
+	queue = IPC_xQueueCreate(uxLength, uxItemSize);
+	Queue_t *const pxQueue = (Queue_t * ) queue;
+	IPC_xQueueOverwrite(pxQueue, &value);
+	if (*(pxQueue->pcWriteTo) != 20 )
+		return IPC_QUEUE_OVERWRITE_FAIL;
+	
+			return SUCCESS;
+
 }
 
 
  uint16_t IPC_u16QueueGetPeek_test()
 {
+	QueueHandle_t queue;
+	uint16_t u16Return;
+	uint8_t uxLength, uxItemSize;
+	uxLength = 1;
+	uxItemSize = 4;
+	uint32_t value = 20;
+	queue = IPC_xQueueCreate(uxLength, uxItemSize);
+	Queue_t *const pxQueue = (Queue_t * ) queue;
+	IPC_xQueueSendToBack(pxQueue, &value, IPC_NO_SLEEP);
+	if (*(pxQueue->pcReadFrom) != 20 )
+		return IPC_QUEUE_GETPEEK_FAIL;
+	
+			return SUCCESS;
+
 }
 
 
  uint16_t IPC_u16QueueReceive_test()
 {
+	QueueHandle_t queue;
+	uint8_t uxLength, uxItemSize;
+	uxLength = 2;
+	uxItemSize = 4;
+	uint32_t value1 = 20,value2 = 30 , temp;
+	queue = IPC_xQueueCreate(uxLength, uxItemSize);
+	IPC_xQueueSendToBack(queue, &value1, IPC_NO_SLEEP);
+	IPC_xQueueSendToBack(queue, &value2, IPC_NO_SLEEP);
+	IPC_xQueueReceive(queue, &temp, IPC_NO_SLEEP);
+	if ( temp != 20 )
+		return IPC_QUEUE_RECEIVE_FAIL;
+	
+	IPC_xQueueReceive(queue, &temp, IPC_NO_SLEEP);
+	if ( temp != 30 )
+		return IPC_QUEUE_RECEIVE_FAIL;
+	
+			return SUCCESS;
+
 }
 
 
  uint16_t IPC_u16QueueReset_test()
 {
+	QueueHandle_t queue;
+	uint16_t u16Return;
+	uint8_t uxLength, uxItemSize;
+	uxLength = 1;
+	uxItemSize = 4;
+	uint32_t value = 20;
+	queue = IPC_xQueueCreate(uxLength, uxItemSize);
+	Queue_t *const pxQueue = (Queue_t * ) queue;
+	IPC_xQueueSendToBack(pxQueue, &value, IPC_NO_SLEEP);
+	IPC_xQueueReset(queue);
+	u16Return = IPC_xQueueReceive(pxQueue, &value, IPC_NO_SLEEP);
+	if ( u16Return != errQUEUE_EMPTY)
+		return IPC_QUEUE_RESET_FAIL;
+	
+	return SUCCESS;
 }
 
 
  uint16_t IPC_u16QueueMsgWaiting_test()
 {
+	QueueHandle_t queue;
+	uint16_t u16Return;
+	uint8_t uxLength, uxItemSize;
+	uxLength = 3;
+	uxItemSize = 4;
+	uint32_t val1 = 20;
+	uint32_t val2 = 30;
+	queue = IPC_xQueueCreate(uxLength, uxItemSize);
+	IPC_xQueueSendToBack(queue, &val1, IPC_NO_SLEEP);
+	IPC_xQueueSendToBack(queue, &val2, IPC_NO_SLEEP);
+	
+	u16Return = IPC_uxQueueMessagesWaiting(queue);
+	if ( u16Return != 2 )
+			return IPC_QUEUE_MSG_WAITING_FAIL;
+	
+	return SUCCESS;
 }
 
 
  uint16_t IPC_u16QueueSpacesAvailable_test()
 {
+	QueueHandle_t queue;
+	uint16_t u16Return;
+	uint8_t uxLength, uxItemSize;
+	uxLength = 3;
+	uxItemSize = 4;
+	uint32_t val1 = 20;
+	uint32_t val2 = 30;
+	
+	u16Return = IPC_uxQueueSpacesAvailable(queue);
+	if ( u16Return != 3 )
+			return IPC_QUEUE_SPACE_AVAIL_FAIL;
+	
+	queue = IPC_xQueueCreate(uxLength, uxItemSize);
+	IPC_xQueueSendToBack(queue, &val1, IPC_NO_SLEEP);
+	IPC_xQueueSendToBack(queue, &val2, IPC_NO_SLEEP);
+	
+	u16Return = IPC_uxQueueSpacesAvailable(queue);
+	if ( u16Return != 1 )
+			return IPC_QUEUE_SPACE_AVAIL_FAIL;
+	
+	return SUCCESS;
 }
 
 
@@ -301,21 +420,48 @@ uint16_t IPC_test()
  /* MODULE TEST */
  uint16_t IPC_u16Queue_Async_Send_test()
 {
+	QueueHandle_t queue;
+	uint16_t u16Return;
+	uint8_t uxLength, uxItemSize;
+	uxLength = 1;
+	uxItemSize = 4;
+	uint32_t value = 20;
+	queue = IPC_xQueueCreate(uxLength, uxItemSize);
+	Queue_t *const pxQueue = (Queue_t * ) queue;
+	IPC_xQueueSendToBack(pxQueue, &value, IPC_NO_SLEEP);
+	u16Return = IPC_xQueueSendToBack(pxQueue, &value, IPC_NO_SLEEP);
+	if ( u16Return != errQUEUE_FULL)
+		return IPC_QUEUE_ASYNC_SEND_FAIL;
+	
+	return SUCCESS;
 }
 
 
  uint16_t IPC_u16Queue_Async_Recv_test()
 {
+	QueueHandle_t queue;
+	uint16_t u16Return;
+	uint8_t uxLength, uxItemSize;
+	uxLength = 1;
+	uxItemSize = 4;
+	uint32_t value = 20;
+	queue = IPC_xQueueCreate(uxLength, uxItemSize);
+	u16Return = IPC_xQueueReceive(queue, &value, IPC_NO_SLEEP);
+	if ( u16Return != errQUEUE_EMPTY)
+		return IPC_QUEUE_ASYNC_RECV_FAIL;
+	
+	return SUCCESS;
 }
 
 
  uint16_t	IPC_u16Queue_Sync_Send_test()
 {
+	
 }
-
 
  uint16_t IPC_u16Queue_Sync_Recv_test()
 {
+
 }
 
 

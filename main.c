@@ -42,7 +42,7 @@ int main(void)
 	#if  (TEST_USED == ARMScheduler_TEST )
 		SchedulerTest();
 	#elif (TEST_USED == IPC_TEST)
-		if ( IPC_test() == SUCCESS )
+		if ( try_it() == SUCCESS )
 		{
 			ReturnValue = SUCCESS;
 		}

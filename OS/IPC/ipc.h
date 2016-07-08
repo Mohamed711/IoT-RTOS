@@ -25,6 +25,30 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+	
+	
+/****************************************************************************
+*
+* Definition of the queue used in the inter-process communcation.
+* Items are transferred to the queue by copy not by reference.
+*
+*****************************************************************************/
+typedef struct QueueDefinition
+{
+	int8_t *pcHead;								/* Points to the beginning of the queue storage area. */
+	int8_t *pcTail;								/* Points to the byte at the end of the queue storage area. */
+	int8_t *pcWriteTo;						/* Points to the free next place in the storage area. */
+	int8_t *pcReadFrom;						/* Points to the last place that a queued item was read from when the structure is used as a queue. */
+
+	volatile UBaseType_t uxMessagesWaiting;	/* The number of items currently in the queue. */
+	UBaseType_t uxLength;					/* The length of the queue defined as the number of items it will hold, not the number of bytes. */
+	UBaseType_t uxItemSize;				/* The size of each items that the queue will hold. */
+	
+	qid xTasksWaitingToSend;		/* Queue Number of tasks waiting to send */
+	qid xTasksWaitingToReceive;	/* Queue Number of tasks waiting to receive */
+
+}Queue_t;
+
 
 /****************************************************************************
 *
