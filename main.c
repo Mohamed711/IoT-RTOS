@@ -45,7 +45,7 @@ int main(void)
 		SchedulerTest();
 	#elif (TEST_USED == IPC_TEST)
 	
-		if ( IPC_ModulerTest() == SUCCESS )
+		if ( IPC_test() == SUCCESS )
 		{
 			ReturnValue = SUCCESS;
 		}
