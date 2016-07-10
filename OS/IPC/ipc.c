@@ -174,10 +174,11 @@ BaseType_t IPC_xQueueGenericReset( QueueHandle_t xQueue, BaseType_t xNewQueue )
 
 BaseType_t IPC_xQueueGenericSend( QueueHandle_t xQueue, const void * const pvItemToQueue, _timeDelay xSleepTime, const BaseType_t xCopyPosition )
 {
-	Queue_t * const pxQueue = ( Queue_t * ) xQueue;
+	Queue_t * pxQueue = ( Queue_t * ) xQueue;
 
 	configASSERT( pxQueue );
-
+	uint32_t value = (uint32_t) pxQueue;
+	
 	for(;;)
 	{
 		EnterCriticalSection();
@@ -213,6 +214,7 @@ BaseType_t IPC_xQueueGenericSend( QueueHandle_t xQueue, const void * const pvIte
 				{
 					traceBLOCKING_ON_QUEUE_SEND( pxQueue );
 					insert( Scheduler_processGetPid() , pxQueue->xTasksWaitingToSend , proctab[Scheduler_processGetPid()].prprio );
+					proctab[Scheduler_processGetPid()].prstate = PR_SEND;
 					if ( xSleepTime != IPC_WAIT_FOREVER )
 					{
 						insertSleep( Scheduler_processGetPid(), xSleepTime );
@@ -223,6 +225,7 @@ BaseType_t IPC_xQueueGenericSend( QueueHandle_t xQueue, const void * const pvIte
 					}
 					
 					_RESCHEDULE_;
+					pxQueue = (Queue_t *)value;
 
 					if ( prvIsQueueFull( pxQueue ) == pdTRUE )
 					{
@@ -398,9 +401,8 @@ UBaseType_t uxReturn;
 UBaseType_t IPC_uxQueueSpacesAvailable( const QueueHandle_t xQueue )
 {
 	UBaseType_t uxReturn;
-	Queue_t *pxQueue;
-
-	pxQueue = ( Queue_t * ) xQueue;
+	Queue_t *pxQueue = ( Queue_t * ) xQueue;
+	
 	configASSERT( pxQueue );
 
 	EnterCriticalSection();

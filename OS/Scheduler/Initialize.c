@@ -51,6 +51,19 @@ void Scheduler_initializenullProcess()
 	currpid = 0;
 }
 
+void Scheduler_initialize()
+{
+	prcount=0;
+	readyList = newqueue();
+	suspendedList = newqueue();
+	sleepingList = newSleepingQueue();
+	Scheduler_initializenullProcess();
+	Timer_New(Scheduler_clkhandler, 50000000);
+	
+	
+}
+
+
 #ifdef ARM
 
 	void initializeUART( Uart_InitTypeDef *initConf,uint32_t BaseAddress )

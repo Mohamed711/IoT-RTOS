@@ -38,14 +38,22 @@ QueueHandle_t queueTest;
 
 void task1()
 {
-	uint32_t z =10;
-	IPC_xQueueSendToFront(queueTest,&z,IPC_NO_SLEEP);
-	IPC_xQueueSendToBack(queueTest, &z, IPC_WAIT_FOREVER);
-	IPC_xQueueGenericReceive(queueTest,&z,IPC_NO_SLEEP,IPC_RECEIVE_WITH_CONSUMING);
+	uint32_t val1;
+	IPC_xQueueGenericReceive(queueTest,&val1,IPC_NO_SLEEP,IPC_RECEIVE_WITH_CONSUMING);
 
-		if (z == 10) 
+}
+
+void task2()
+{
+		uint32_t val1 , val2 = 20;
+		IPC_xQueueSendToBack(queueTest,&val2,IPC_NO_SLEEP);
+		IPC_xQueueSendToBack(queueTest,&val2,IPC_NO_SLEEP);
+		IPC_xQueueSendToBack(queueTest,&val2,IPC_WAIT_FOREVER);
+		IPC_xQueueGenericReceive(queueTest,&val1,IPC_NO_SLEEP,IPC_RECEIVE_WITH_CONSUMING);
+	
+		if (val1 == 20) 
 		{
-			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 14);
+			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 7);
 			task2_return = SUCCESS;
 		}
 		else
@@ -53,42 +61,39 @@ void task1()
 			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 2);
 			task2_return = IPC_QUEUE_SYNC_RECV_FAIL;
 		}
-}
 
-void task2()
-{
-		int val1 , val2 = 20;
-		IPC_xQueueGenericReceive(queueTest,&val1,IPC_WAIT_FOREVER,IPC_RECEIVE_WITH_CONSUMING);
-
-		IPC_xQueueSendToBack(queueTest, &val2, IPC_NO_SLEEP);
-		IPC_xQueueSendToBack(queueTest, &val2, IPC_NO_SLEEP);
-		Scheduler_sleepms(1000);
-		IPC_xQueueGenericReceive(queueTest,&val1,IPC_NO_SLEEP,IPC_RECEIVE_WITH_CONSUMING);
-	
 }
 
 
 uint16_t try_it()
- {
-	prcount=0;
-	readyList = newqueue();
-	suspendedList = newqueue();
-	sleepingList = newSleepingQueue();
-	Scheduler_initializenullProcess();
-	Timer_New(Scheduler_clkhandler, 50000000);
-	 	
+ {	 	
 	
 	SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
 	GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
 	 
-	 queueTest = IPC_xQueueCreate(2,4);
-	 	pid id1= Scheduler_processCreate(task1, 700, 20, "P2");	
+	queueTest = IPC_xQueueCreate(2,4);
+	pid id1= Scheduler_processCreate(task1, 700, 20, "P2");	
 	pid id2= Scheduler_processCreate(task2, 700, 25, "P3");	
 
 	Scheduler_processSetReady(id2);
 	Scheduler_processSetReady(id1);
-
+	QueueHandle_t queue;
+	uint8_t uxLength, uxItemSize;
+	uxLength = 2;
+	uxItemSize = 4;
+	queue = IPC_xQueueCreate(uxLength, uxItemSize);
+	Queue_t *const pxQueue = (Queue_t * ) queue;
+	if ( pxQueue->uxItemSize != uxItemSize || 
+			 pxQueue->uxLength != uxLength ||
+			 pxQueue->uxMessagesWaiting != 0x00 || 
+	     pxQueue->xTasksWaitingToReceive != (pxQueue->xTasksWaitingToSend+2) ||
+			 pxQueue->pcReadFrom !=  pxQueue->pcTail - pxQueue->uxItemSize || 
+			 pxQueue->pcWriteTo != pxQueue->pcHead )
+		return IPC_QUEUE_CREATE_FAIL;
+	
+	
+		return SUCCESS;
 
 	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 2);
 
@@ -199,7 +204,7 @@ uint16_t try_it()
 	if ( pxQueue->uxItemSize != uxItemSize || 
 			 pxQueue->uxLength != uxLength ||
 			 pxQueue->uxMessagesWaiting != 0x00 || 
-	     pxQueue->xTasksWaitingToReceive != (pxQueue->xTasksWaitingToReceive+2) ||
+	     pxQueue->xTasksWaitingToReceive != (pxQueue->xTasksWaitingToSend+2) ||
 			 pxQueue->pcReadFrom !=  pxQueue->pcTail - pxQueue->uxItemSize || 
 			 pxQueue->pcWriteTo != pxQueue->pcHead )
 		return IPC_QUEUE_CREATE_FAIL;
@@ -399,11 +404,11 @@ uint16_t try_it()
 	uint32_t val1 = 20;
 	uint32_t val2 = 30;
 	
+	queue = IPC_xQueueCreate(uxLength, uxItemSize);
 	u16Return = IPC_uxQueueSpacesAvailable(queue);
 	if ( u16Return != 3 )
 			return IPC_QUEUE_SPACE_AVAIL_FAIL;
 	
-	queue = IPC_xQueueCreate(uxLength, uxItemSize);
 	IPC_xQueueSendToBack(queue, &val1, IPC_NO_SLEEP);
 	IPC_xQueueSendToBack(queue, &val2, IPC_NO_SLEEP);
 	

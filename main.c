@@ -38,11 +38,14 @@
 
 int main(void) 
 {
+	Scheduler_initialize();
+	
 	uint16_t ReturnValue;
 	#if  (TEST_USED == ARMScheduler_TEST )
 		SchedulerTest();
 	#elif (TEST_USED == IPC_TEST)
-		if ( try_it() == SUCCESS )
+	
+		if ( IPC_ModulerTest() == SUCCESS )
 		{
 			ReturnValue = SUCCESS;
 		}

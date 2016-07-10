@@ -14,6 +14,7 @@
  #define IPC_TEST_H_
  
  /* parent testing functions */
+ uint16_t try_it();
  uint16_t IPC_test();
  uint16_t IPC_ModulerTest();
  uint16_t IPC_DiffScenariosTest();

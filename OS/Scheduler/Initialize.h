@@ -24,7 +24,7 @@
 
 
 void Scheduler_initializenullProcess();
-
+void Scheduler_initialize();
 #if ARM
 	void initializeUART(Uart_InitTypeDef *initConf,uint32_t BaseAddress);
 #endif
