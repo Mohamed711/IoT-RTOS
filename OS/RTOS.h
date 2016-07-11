@@ -87,17 +87,17 @@ typedef bool sysCall;
 	#define configUSE_MALLOC_FAILED_HOOK 0
 #endif
 
+#ifndef portPOINTER_SIZE_TYPE
+	#define portPOINTER_SIZE_TYPE uint16_t
+#endif
 
-/*-----------------------------------------*/
-/* struct
-typedef struct
-{
-	bool type; //TivaC=0 , Atmega32=1
-	uint16_t configTOTAL_HEAP_SIZE;
-} Heap_Init;
-void heap_init(Heap_Init *size);
-*/
-/*-----------------------------------------*/
+#ifndef traceMALLOC
+	#define traceMALLOC( pvAddress, uiSize )
+#endif
+
+#ifndef traceFREE
+	#define traceFREE( pvAddress, uiSize )
+#endif
 
 #define MAX_SLEEPING_TIME 65535
 /* Number of processes equal to the number of
