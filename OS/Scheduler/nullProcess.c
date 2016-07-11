@@ -192,4 +192,13 @@ void Scheduler_nullProc()
 }
 
 
+void Scheduler_Start()
+{
+	__set_PSP(__get_MSP()); // copy current stack pointer value into PSP
+  __set_CONTROL(0x00000002); // switch to "process" stack pointer PSP
+	
+	Scheduler_nullProc();
+	
+}
+
 

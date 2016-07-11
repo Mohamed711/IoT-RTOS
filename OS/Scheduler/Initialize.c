@@ -59,8 +59,8 @@ void Scheduler_initialize()
 	sleepingList = newSleepingQueue();
 	Scheduler_initializenullProcess();
 	Timer_New(Scheduler_clkhandler, 50000000);
-	
-	
+
+
 }
 
 

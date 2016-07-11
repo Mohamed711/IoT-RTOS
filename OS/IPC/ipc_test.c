@@ -27,101 +27,63 @@
 #include "../Scheduler/Initialize.h"
 #include "../Scheduler/nullProcess.h"
 #include "ipc_test.h"
+#include "../../tests.h"
 
 #ifdef ARM
 
-extern uint32_t prcount;
-static uint16_t task1_return;
-static uint16_t task2_return;
-static uint16_t mode_of_operation = 0;
 QueueHandle_t queueTest;
 
 void task1()
 {
 	uint32_t val1;
-	IPC_xQueueGenericReceive(queueTest,&val1,IPC_NO_SLEEP,IPC_RECEIVE_WITH_CONSUMING);
-
+	
+	#if (TEST_USED == IPC_SYNC_SEND_TEST)
+		IPC_xQueueGenericReceive(queueTest,&val1,IPC_NO_SLEEP,IPC_RECEIVE_WITH_CONSUMING);
+	
+	#elif (TEST_USED == IPC_SYNC_RECV_TEST)
+		val1 =20;
+		IPC_xQueueSendToBack(queueTest,&val1,IPC_NO_SLEEP);
+	
+	#elif (TEST_USED == IPC_PAR_SEND_TEST)
+	
+	#elif (TEST_USED == IPC_PAR_RECV_TEST)
+	
+	#endif
+	
 }
 
 void task2()
 {
-		uint32_t val1 , val2 = 20;
+	uint32_t val1 = 0 , val2 = 0;
+	
+	#if (TEST_USED == IPC_SYNC_SEND_TEST)
+		val2 = 20;
 		IPC_xQueueSendToBack(queueTest,&val2,IPC_NO_SLEEP);
 		IPC_xQueueSendToBack(queueTest,&val2,IPC_NO_SLEEP);
 		IPC_xQueueSendToBack(queueTest,&val2,IPC_WAIT_FOREVER);
 		IPC_xQueueGenericReceive(queueTest,&val1,IPC_NO_SLEEP,IPC_RECEIVE_WITH_CONSUMING);
 	
+
+	#elif (TEST_USED == IPC_SYNC_RECV_TEST)
+		val1 = 0;
+		IPC_xQueueGenericReceive(queueTest,&val1,IPC_WAIT_FOREVER,IPC_RECEIVE_WITH_CONSUMING);
+	
+	#elif (TEST_USED == IPC_PAR_SEND_TEST)
+	
+	#elif (TEST_USED == IPC_PAR_RECV_TEST)
+	
+	#endif
+	
 		if (val1 == 20) 
 		{
-			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 7);
-			task2_return = SUCCESS;
+			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 5);
 		}
 		else
 		{
 			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 2);
-			task2_return = IPC_QUEUE_SYNC_RECV_FAIL;
 		}
-
 }
 
-
-uint16_t try_it()
- {	 	
-	
-	SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
-	GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
-	 
-	queueTest = IPC_xQueueCreate(2,4);
-	pid id1= Scheduler_processCreate(task1, 700, 20, "P2");	
-	pid id2= Scheduler_processCreate(task2, 700, 25, "P3");	
-
-	Scheduler_processSetReady(id2);
-	Scheduler_processSetReady(id1);
-	QueueHandle_t queue;
-	uint8_t uxLength, uxItemSize;
-	uxLength = 2;
-	uxItemSize = 4;
-	queue = IPC_xQueueCreate(uxLength, uxItemSize);
-	Queue_t *const pxQueue = (Queue_t * ) queue;
-	if ( pxQueue->uxItemSize != uxItemSize || 
-			 pxQueue->uxLength != uxLength ||
-			 pxQueue->uxMessagesWaiting != 0x00 || 
-	     pxQueue->xTasksWaitingToReceive != (pxQueue->xTasksWaitingToSend+2) ||
-			 pxQueue->pcReadFrom !=  pxQueue->pcTail - pxQueue->uxItemSize || 
-			 pxQueue->pcWriteTo != pxQueue->pcHead )
-		return IPC_QUEUE_CREATE_FAIL;
-	
-	
-		return SUCCESS;
-
-	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 2);
-
-
-	
-	__set_PSP(__get_MSP()); // copy current stack pointer value into PSP
-  __set_CONTROL(0x00000002); // switch to "process" stack pointer PSP
-	
-	Scheduler_nullProc();
-	
-	return SUCCESS; 
-
-}
-
-
-
- uint16_t IPC_test()
-{
-	uint16_t u16Return;
-	u16Return=IPC_ModulerTest();
-		if ( u16Return != SUCCESS )
-		return u16Return;
-	u16Return=IPC_DiffScenariosTest();
-		if ( u16Return != SUCCESS )
-		return u16Return;
-		
-		return SUCCESS;
-}
 
 
  uint16_t IPC_ModulerTest()
@@ -166,7 +128,7 @@ uint16_t try_it()
 }
 
 
- uint16_t IPC_DiffScenariosTest()
+ uint16_t IPC_Async_test()
 {
 	uint16_t u16Return;
 	u16Return = IPC_u16Queue_Async_Send_test();
@@ -175,21 +137,8 @@ uint16_t try_it()
   u16Return=IPC_u16Queue_Async_Recv_test();
 		if ( u16Return != SUCCESS )
 		return u16Return;
- 	u16Return=IPC_u16Queue_Sync_Send_test();
-		if ( u16Return != SUCCESS )
-		return u16Return;
-  u16Return=IPC_u16Queue_Sync_Recv_test();
-		if ( u16Return != SUCCESS )
-		return u16Return;
-  u16Return=IPC_u16Queue_Partial_Send_test();
-		if ( u16Return != SUCCESS )
-		return u16Return;
-  u16Return=IPC_u16Queue_Partial_Recv_test();
-		if ( u16Return != SUCCESS )
-		return u16Return;
 		
 		return SUCCESS;
-
 }
  
  /* FUNCTION TESTS */
@@ -459,27 +408,27 @@ uint16_t try_it()
 }
 
 
- uint16_t	IPC_u16Queue_Sync_Send_test()
+ uint16_t	IPC_u16Queue_Scenario_test()
+{
+	queueTest = IPC_xQueueCreate(2,4);
+	pid id1= Scheduler_processCreate(task1, 700, 20, "P2");	
+	pid id2= Scheduler_processCreate(task2, 700, 25, "P3");	
+
+	Scheduler_processSetReady(id2);
+	Scheduler_processSetReady(id1);
+}
+
+ uint16_t IPC_u16Queue_Par_Send_test()
 {
 	
+	
+	return SUCCESS;
 }
-
- uint16_t IPC_u16Queue_Sync_Recv_test()
+ uint16_t IPC_u16Queue_Par_Recv_test()
 {
-
+	
+	
+	return SUCCESS;
 }
-
-
- uint16_t IPC_u16Queue_Partial_Send_test()
-{
-}
-
-
- uint16_t IPC_u16Queue_Partial_Recv_test()
-{
-}
-
-
-
 
 #endif

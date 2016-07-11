@@ -21,31 +21,27 @@
  *****************************************************************************/
 #include "RTOS_Headers.h"
 #include "OS/Scheduler/scheduler_test.h"
+#include "tests.h"
 #include "OS/IPC/ipc_test.h"
 
-#define NO_TEST									0
-#define ARMScheduler_TEST 			1
-#define IPC_TEST								2
-#define AVR_ADC_TEST						3
-#define AVR_TIMER_TEST					4
-#define AVR_SPI_TEST						5
-#define AVR_I2C_TEST						6
-#define AVR_UART_TEST						7
-#define AVR_WATCHDOG_TEST				8
-
-
-#define TEST_USED							IPC_TEST
 
 int main(void) 
 {
-	Scheduler_initialize();
 	
 	uint16_t ReturnValue;
+	
+	SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+	GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
+	
+	Scheduler_initialize();
+	
 	#if  (TEST_USED == ARMScheduler_TEST )
 		SchedulerTest();
-	#elif (TEST_USED == IPC_TEST)
 	
-		if ( IPC_test() == SUCCESS )
+	#elif (TEST_USED == IPC_MODULAR_TEST)
+	
+		if ( IPC_ModulerTest() == SUCCESS )
 		{
 			ReturnValue = SUCCESS;
 		}
@@ -53,7 +49,45 @@ int main(void)
 		{
 			ReturnValue = 0xFF;
 		}
-
+		
+	#elif (TEST_USED == IPC_ASYNC_TEST)
+	
+		if ( IPC_Async_test() == SUCCESS )
+		{
+			ReturnValue = SUCCESS;
+		}
+		else
+		{
+			ReturnValue = 0xFF;
+		}
+		
+	#elif (TEST_USED == IPC_SYNC_SEND_TEST)	
+		IPC_u16Queue_Scenario_test();
+		
+	#elif (TEST_USED == IPC_SYNC_RECV_TEST)
+		IPC_u16Queue_Scenario_test();
+		
+	#elif (TEST_USED == IPC_PAR_SEND_TEST)
+	
+		if ( IPC_u16Queue_Par_Send_test() == SUCCESS )
+		{
+			ReturnValue = SUCCESS;
+		}
+		else
+		{
+			ReturnValue = 0xFF;
+		}
+		
+	#elif (TEST_USED == IPC_PAR_RECV_TEST)
+	
+		if ( IPC_u16Queue_Par_Recv_test() == SUCCESS )
+		{
+			ReturnValue = SUCCESS;
+		}
+		else
+		{
+			ReturnValue = 0xFF;
+		}
 	#elif (TEST_USED == AVR_ADC_TEST)
 		adc_avr_test(void);
 	#elif (TEST_USED == AVR_TIMER_TEST)
@@ -64,9 +98,12 @@ int main(void)
 		i2c_avr_test(void);
 	#elif (TEST_USED == AVR_UART_TEST)
 		uart_avr_test(void);
-	#elif (TEST_USED == AVR_WATCHDOG_TEST)
 		
 	#endif
+		
+		
+		
+	Scheduler_Start();
 	
 	return 0;
 }

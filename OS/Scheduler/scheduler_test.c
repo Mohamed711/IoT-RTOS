@@ -81,6 +81,7 @@ uint32_t get_PSP()
 
 void SchedulerTest()
 {
+	
 	SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
 	GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
@@ -91,14 +92,14 @@ void SchedulerTest()
 	Uart_HandleTypeDef transmit;
 	transmit.init = initConf;
 
-	prcount=0;
-	readyList = newqueue();
-	suspendedList = newqueue();
-	sleepingList = newSleepingQueue();
+//	prcount=0;
+	//readyList = newqueue();
+//	suspendedList = newqueue();
+//	sleepingList = newSleepingQueue();
 	
-	Scheduler_initializenullProcess();
+//	Scheduler_initializenullProcess();
 	
-	Timer_New(Scheduler_clkhandler, 50000000);
+//	Timer_New(Scheduler_clkhandler, 50000000);
 	
 	//pid32 pidLED1= Scheduler_processCreate(LED1, 400, 5, "P1");	//blue
 	pid pidLED2= Scheduler_processCreate(LED2, 400, 10, "P2");	//red
@@ -110,10 +111,6 @@ void SchedulerTest()
 	Scheduler_processSetReady(pidLED3);
 	//insert(0, readyList, 0);
 
-	__set_PSP(__get_MSP()); // copy current stack pointer value into PSP
-    __set_CONTROL(0x00000002); // switch to "process" stack pointer PSP
-	
-	Scheduler_nullProc();
 }
 
 #endif 

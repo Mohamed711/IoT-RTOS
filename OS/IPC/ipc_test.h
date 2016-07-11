@@ -14,11 +14,9 @@
  #define IPC_TEST_H_
  
  /* parent testing functions */
- uint16_t try_it();
- uint16_t IPC_test();
  uint16_t IPC_ModulerTest();
- uint16_t IPC_DiffScenariosTest();
- 
+ uint16_t IPC_Async_test();
+
  /* FUNCTION TESTS */
  uint16_t IPC_u16QueueCreate_test();
  uint16_t IPC_u16QueueEmpty_test();
@@ -36,10 +34,9 @@
  /* MODULE TEST */
  uint16_t IPC_u16Queue_Async_Send_test();
  uint16_t IPC_u16Queue_Async_Recv_test();
- uint16_t IPC_u16Queue_Sync_Send_test();
- uint16_t IPC_u16Queue_Sync_Recv_test();
- uint16_t IPC_u16Queue_Partial_Send_test();
- uint16_t IPC_u16Queue_Partial_Recv_test();
+ uint16_t IPC_u16Queue_Scenario_test();
+ uint16_t IPC_u16Queue_Par_Send_test();
+ uint16_t IPC_u16Queue_Par_Recv_test();
 
  #endif
  
