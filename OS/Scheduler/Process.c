@@ -240,6 +240,7 @@ pid Scheduler_processResume(pid processId)
 	/*
 	Function restore reloads an interrupt status from a previously saved value.
 	*/
+	_RESCHEDULE_;
 	return prio;
 }
 
@@ -288,6 +289,7 @@ sysCall	Scheduler_processSuspend(pid processId) 		/* ID of process to suspend	*/
 	}
 	prio = prptr->prprio;
 	//restore(mask);
+	_RESCHEDULE_;
 	return prio;
 }
 

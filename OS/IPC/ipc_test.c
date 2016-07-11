@@ -45,7 +45,7 @@ void task1()
 		IPC_xQueueSendToBack(queueTest,&val1,IPC_NO_SLEEP);
 	
 	#elif (TEST_USED == IPC_PAR_SEND_TEST)
-	
+		while(1);
 	#elif (TEST_USED == IPC_PAR_RECV_TEST)
 	
 	#endif
@@ -69,7 +69,12 @@ void task2()
 		IPC_xQueueGenericReceive(queueTest,&val1,IPC_WAIT_FOREVER,IPC_RECEIVE_WITH_CONSUMING);
 	
 	#elif (TEST_USED == IPC_PAR_SEND_TEST)
-	
+		val1 = 5;
+		IPC_xQueueSendToFront(queueTest, &val1, IPC_NO_SLEEP);
+		IPC_xQueueSendToFront(queueTest, &val1, IPC_NO_SLEEP);
+		val2 = IPC_xQueueSendToBack(queueTest, &val1, 5000);
+		if ( val2 == errQUEUE_FULL )
+			val1 = 20;
 	#elif (TEST_USED == IPC_PAR_RECV_TEST)
 	
 	#endif
@@ -420,13 +425,26 @@ void task2()
 
  uint16_t IPC_u16Queue_Par_Send_test()
 {
+	queueTest = IPC_xQueueCreate(2,4);
+	pid id1= Scheduler_processCreate(task1, 700, 20, "P2");	
+	pid id2= Scheduler_processCreate(task2, 700, 25, "P3");	
+
+	Scheduler_processSetReady(id2);
+	Scheduler_processSetReady(id1);
 	
-	
+			
 	return SUCCESS;
 }
+
  uint16_t IPC_u16Queue_Par_Recv_test()
 {
-	
+	uint32_t val1;
+	uint16_t u16Return;
+	queueTest = IPC_xQueueCreate(2,4);
+
+	u16Return = IPC_xQueueReceive(queueTest, &val1, 5000);
+	if ( u16Return != errQUEUE_EMPTY )
+		return IPC_QUEUE_PARTIAL_RECV_FAIL;
 	
 	return SUCCESS;
 }

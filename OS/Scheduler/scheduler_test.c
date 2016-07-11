@@ -21,7 +21,7 @@
 #if ARM
 
 	extern uint32_t prcount;
-	
+	/*
 void LED1()
 {
 		while(1)
@@ -50,7 +50,7 @@ void LED3()
 	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 10);
 	SysCtlDelay(20000000);
 	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 0);
-}
+}*/
 	
 uint32_t getControl()
 {
@@ -81,34 +81,16 @@ uint32_t get_PSP()
 
 void SchedulerTest()
 {
-	
-	SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
-	GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
-	
-	Uart_InitTypeDef initConf;	
-	initializeUART(&initConf,UART0_BASE);
-	
-	Uart_HandleTypeDef transmit;
-	transmit.init = initConf;
 
-//	prcount=0;
-	//readyList = newqueue();
-//	suspendedList = newqueue();
-//	sleepingList = newSleepingQueue();
-	
-//	Scheduler_initializenullProcess();
-	
-//	Timer_New(Scheduler_clkhandler, 50000000);
 	
 	//pid32 pidLED1= Scheduler_processCreate(LED1, 400, 5, "P1");	//blue
-	pid pidLED2= Scheduler_processCreate(LED2, 400, 10, "P2");	//red
-	pid pidLED3= Scheduler_processCreate(LED3, 400, 15, "P3");	//purple
+//	pid pidLED2= Scheduler_processCreate(LED2, 400, 10, "P2");	//red
+	//pid pidLED3= Scheduler_processCreate(LED3, 400, 15, "P3");	//purple
 
 	//insertSleep(pidLED1, sleepq, 300);
-	insertSleep(pidLED2,1000);
+	//insertSleep(pidLED2,1000);
 	//processSetReady(pidLED2);
-	Scheduler_processSetReady(pidLED3);
+	//Scheduler_processSetReady(pidLED3);
 	//insert(0, readyList, 0);
 
 }

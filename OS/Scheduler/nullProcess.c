@@ -25,6 +25,7 @@
 #include "reSched.h"
 #include "scheduler_test.h"
 #include "../RTOS.h"
+#include "initialize.h"
 	
  
 
@@ -35,17 +36,18 @@ extern uint32_t prcount;
 extern struct procent proctab[NPROC];
 extern qid readyList;
 
-/*
+
 void LED1()
-{
+{	
 		SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
 		SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
 		GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
-	
-	while(1)
-	{
-		//GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 4);
-		HWREG(GPIO_PORTF_BASE + (GPIO_O_DATA + (GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3) << 2)) = 8;
+		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 4);
+		while (1)
+		{
+			HWREG(GPIO_PORTF_BASE + (GPIO_O_DATA + (GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3) << 2)) = 4;
+	//	SysCtlDelay(20000000);
+		//GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 0);
 	}
 }
 
@@ -55,9 +57,11 @@ void LED2()
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
 	GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
 	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 2);
-	SysCtlDelay(20000000);
-	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 0);
-	Scheduler_processTerminate(2);
+	SysCtlDelay(10000000);
+	Scheduler_sleepms(2000);
+	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 8);
+	SysCtlDelay(10000000);
+
 }
 
 void LED3()
@@ -67,115 +71,118 @@ void LED3()
 		GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
 		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 14);
 		SysCtlDelay(20000000);
+		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 14);
+		SysCtlDelay(20000000);
 		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 0);
-		Scheduler_processTerminate(3);
 }
 
 
 Uart_HandleTypeDef * uart;
 int x =0;
 
-pid32 pidLED1;
-pid32 pidLED2;
-pid32 pidLED3;
+pid pidLED1;
+pid pidLED2;
+pid pidLED3;
 
-void uartInterrupt(void)
+bool flag = true;
+bool wakefromSleep = true;	
+#define THREAD_RETURN 0xFFFFFFFD //Tells the handler to return using the PSP
+
+void UART0_Handler(void)
 {		
-			uint32_t * const LrAddr = (void*)(get_MSP()+0x28); //el address 
-			lrReg = *LrAddr;
-	
-	
+		if (proctab[currpid].prstate != PR_FREE)
+		{
+			saveContext(proctab[currpid].prstkptr);
+			proctab[currpid].prstkptr = (void*)get_PSP();
+		}
+		uint32_t* mainStk = (void*)get_MSP();
+		
 		uint32_t ui32Status;
 		ui32Status = uartIntStatus(UART0_BASE, true); //get interrupt status
 		uartIntClear(UART0_BASE, ui32Status); //clear the asserted interrupts
 
 		while(uartCharsAvail(UART0_BASE))
 		{
-			x  = uartCharGetNonBlocking(uart->init.BaseAddress);
-			uart->Tx =x;
-			uartCharPutNonBlocking(uart->init.BaseAddress, x);
-			switch(uart->Tx) 
+			//x  = uartCharGetNonBlocking(uart->init.BaseAddress);
+			x  = uartCharGetNonBlocking(UART0_BASE);
+			//uart->Tx =x;
+			//uartCharPutNonBlocking(uart->init.BaseAddress, x);
+			uartCharPutNonBlocking(UART0_BASE, x);
+			//switch(uart->Tx) 
+			switch(x) 
 			{
 				case 0x31:
 				case 0xC8:
+				case 0xE8:
+				case 0xF2:
 					if (proctab[1].prstate != PR_READY && proctab[1].prstate != PR_CURR)
 					{
-						prcount++;
-						proctab[1].prstate = PR_SUSP;
+						//prcount++;
+						//proctab[1].prstate = PR_SUSP;
+						pidLED1 = Scheduler_processCreate(LED1, 100, 5, "P1");
 						Scheduler_processSetReady(pidLED1);
+						//wakefromSleep = false ;
+						//IntTrigger(INT_TIMER0A);
 					}
 				break;
 				case 0x32:
 				case 0xD8:
 				case 0xC9:
+				case 0xE9:
 					if (proctab[2].prstate != PR_READY && proctab[2].prstate != PR_CURR)
 					{
-						prcount++;
-						proctab[2].prstate = PR_SUSP;
+						//prcount++;
+						//proctab[2].prstate = PR_SUSP;
+						pidLED2 = Scheduler_processCreate(LED2, 100, 10, "P2");
 						Scheduler_processSetReady(pidLED2);
+						//wakefromSleep = false ;
+					  //IntTrigger(INT_TIMER0A);
 					}
 				break;
 				case 0x33:
 				case 0xD9:
+				case 0xEA:
+				case 0xFB:
+				case 0xED:
 					if (proctab[3].prstate != PR_READY && proctab[3].prstate != PR_CURR)
 					{
-						prcount++;
-						proctab[3].prstate = PR_SUSP;
+						//prcount++;
+						//proctab[3].prstate = PR_SUSP;
+						pidLED3 = Scheduler_processCreate(LED3, 100, 7, "P3");
 						Scheduler_processSetReady(pidLED3);
+						//wakefromSleep = false ;
+						//IntTrigger(INT_TIMER0A);
 					}
 				break;
-				case 0x34:
-					Scheduler_processTerminate(1);
-				break;
-			}
+				}
+			pid nwPiD = Scheduler_reSchedule();
+	
+			*((uint32_t*)mainStk) = THREAD_RETURN;
+			set_PSP((uint32_t)proctab[nwPiD].prstkptr);
+			loadContext(proctab[nwPiD].prstkptr);
 		}
-		*LrAddr = (uint32_t)Scheduler_nullProc;
 }
 
-bool flag = false;
 
-void Scheduler_nullProc(Uart_HandleTypeDef * transmit)
+
+void Scheduler_nullProc(Uart_HandleTypeDef *transmit)
 {
-	if (!flag)
+	if (flag)
 	{
-		pidLED1 = Scheduler_processCreate(LED1, 100, 5, "P1");//blue
-		pidLED2 = Scheduler_processCreate(LED2, 100, 10, "P2");//blue
-		pidLED3 = Scheduler_processCreate(LED3, 100, 7, "P3");//blue
+		set_PSP((uint32_t)proctab[0].prstkptr);
+		loadContext(proctab[0].prstkptr);
+		//pidLED1 = Scheduler_processCreate(LED1, 100, 5, "P1");//blue
+		//pidLED2 = Scheduler_processCreate(LED2, 100, 10, "P2");//red
+		//pidLED3 = Scheduler_processCreate(LED3, 100, 7, "P3");//purple
 		
 		uart = transmit;
 		
 		SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
 		SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
 		IntMasterEnable(); //enable processor interrupts
-		uartIntRegister(transmit->init.BaseAddress, uartInterrupt);
+		//uartIntRegister(transmit->init.BaseAddress, uartInterrupt);
 		IntEnable(INT_UART0); //enable the UART interrupt
 		uartIntEnable(UART0_BASE, UART_INT_RX | UART_INT_RT);
-		flag = true;
-	}
-	
-	while (1)
-		{
-				if (prcount !=0 && !isEmpty(readyList))
-				{
-					if (currpid != 0)
-					{
-						insert(currpid, readyList, proctab[currpid].prprio);
-					}
-					currpid = 0;
-						Scheduler_reSchedule();
-				}
-	}
-}*/
-
-bool flag = true;
-bool wakefromSleep = true;	
-
-void Scheduler_nullProc()
-{
-	if (flag)
-	{
-		set_PSP((uint32_t)proctab[0].prstkptr);
-		loadContext(proctab[0].prstkptr);
 		flag = false;
 	}
 	while (1)
@@ -197,7 +204,7 @@ void Scheduler_Start()
 	__set_PSP(__get_MSP()); // copy current stack pointer value into PSP
   __set_CONTROL(0x00000002); // switch to "process" stack pointer PSP
 	
-	Scheduler_nullProc();
+	Scheduler_nullProc(&transmit);
 	
 }
 

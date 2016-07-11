@@ -22,11 +22,12 @@
 #ifndef INITIALIZE_H_
 #define INITIALIZE_H_
 
+extern Uart_HandleTypeDef transmit;
 
 void Scheduler_initializenullProcess();
 void Scheduler_initialize();
-#if ARM
+//#ifdef ARM
 	void initializeUART(Uart_InitTypeDef *initConf,uint32_t BaseAddress);
-#endif
+//#endif
 
 #endif /* INITIALIZE_H_ */

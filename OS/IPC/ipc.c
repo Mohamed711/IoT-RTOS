@@ -194,6 +194,8 @@ BaseType_t IPC_xQueueGenericSend( QueueHandle_t xQueue, const void * const pvIte
 				{
 					pid ProcessId = dequeue( pxQueue->xTasksWaitingToReceive );
 					Scheduler_processSetReady( ProcessId );
+					if ( 	proctab[ProcessId].prstate = PR_RECTIM )
+						Scheduler_unsleep(ProcessId);
 					_RESCHEDULE_;
 				}
 				else
@@ -217,14 +219,15 @@ BaseType_t IPC_xQueueGenericSend( QueueHandle_t xQueue, const void * const pvIte
 					proctab[Scheduler_processGetPid()].prstate = PR_SEND;
 					if ( xSleepTime != IPC_WAIT_FOREVER )
 					{
-						insertSleep( Scheduler_processGetPid(), xSleepTime );
+						proctab[Scheduler_processGetPid()].prstate = PR_SENDTIM;
+						Scheduler_sleepms(xSleepTime);
 					}
 					else
 					{
-						mtCOVERAGE_TEST_MARKER();
+						_RESCHEDULE_;
 					}
 					
-					_RESCHEDULE_;
+					
 					pxQueue = (Queue_t *)value;
 
 					if ( prvIsQueueFull( pxQueue ) == pdTRUE )
@@ -235,7 +238,7 @@ BaseType_t IPC_xQueueGenericSend( QueueHandle_t xQueue, const void * const pvIte
 					else
 					{
 						mtCOVERAGE_TEST_MARKER();
-						// remove my self from the sleep queue
+						Scheduler_unsleep(Scheduler_processGetPid());
 					}
 				}
 			}

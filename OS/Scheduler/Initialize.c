@@ -26,11 +26,15 @@
 #include "Process.h"
 #include "queue.h"
 #include "nullProcess.h"
+#include "Initialize.h"
 
 
 #include <string.h>
 extern pid currpid;
 uint32_t prcount;
+Uart_InitTypeDef initConf;	
+Uart_HandleTypeDef transmit;
+
 
 /******************************************************************************
 *
@@ -58,16 +62,26 @@ void Scheduler_initialize()
 	suspendedList = newqueue();
 	sleepingList = newSleepingQueue();
 	Scheduler_initializenullProcess();
+	
+	SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+	GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
+	
+	initializeUART(&initConf,UART0_BASE);
+	
+	transmit.init = initConf;
+	
+	
 	Timer_New(Scheduler_clkhandler, 50000000);
 
 
 }
 
 
-#ifdef ARM
+//#ifdef ARM
 
-	void initializeUART( Uart_InitTypeDef *initConf,uint32_t BaseAddress )
-	{
+void initializeUART(Uart_InitTypeDef *initConf,uint32_t BaseAddress)
+{
 	
 		initConf->BaudRate=9600;
 		initConf->Parity= UART_CONFIG_PAR_NONE;
@@ -78,6 +92,6 @@ void Scheduler_initialize()
 
 		uartinit(initConf);
 
-	}
+}
 
-#endif
+//#endif

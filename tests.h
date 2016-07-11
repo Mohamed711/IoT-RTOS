@@ -21,7 +21,7 @@
 #define AVR_WATCHDOG_TEST				13
 
 
-#define 	TEST_USED		IPC_SYNC_SEND_TEST
+#define 	TEST_USED		ARMScheduler_TEST
 
 
 #endif

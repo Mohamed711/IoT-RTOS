@@ -97,6 +97,8 @@ sysCall	Scheduler_sleepms(int32_t	delay)
 * \return 0 if there's an error, -1 if there's no error
 *
 *****************************************************************************/
+#if ( PARTIALLY_BLOCKING_ENABLE == 0x00 )
+
 sysCall	Scheduler_unsleep(pid processId)
 {
 	struct	procent	*prptr;		/* Ptr to process' table entry	*/
@@ -132,6 +134,45 @@ sysCall	Scheduler_unsleep(pid processId)
 	_RESCHEDULE_;
 	return OK;
 }
+#else
+
+sysCall	Scheduler_unsleep(pid processId)
+{
+	struct	procent	*prptr;		/* Ptr to process' table entry	*/
+	qid	pidnext;		/* ID of process on sleep queue	*/
+										/*   that follows the process	
+										/*   which is being removed	*/
+	if (isbadpid(processId))
+	{
+		return SYSERR;
+	}
+
+	/* Verify that candidate process is on the sleep queue */
+	prptr = &proctab[processId];
+
+	if ((prptr->prstate!=PR_sleep) && (prptr->prstate!=PR_RECTIM) && (prptr->prstate!=PR_SENDTIM))
+	{
+		return SYSERR;
+	}
+	
+	if (processId == firstId(sleepingList))
+	{
+		getItemFromSleep(processId);	
+		time = sleepTab[firstId(sleepingList)].sleeping;
+		Timer_New(Scheduler_clkhandler, time+2);
+	}
+	else
+	{
+		getItemFromSleep(processId);
+	}
+
+	Scheduler_processSetReady(processId);
+	
+	_RESCHEDULE_;
+	return OK;
+}
+
+#endif
 
 /******************************************************************************
 *
@@ -141,12 +182,13 @@ sysCall	Scheduler_unsleep(pid processId)
 * 	\return none
 *
 *****************************************************************************/
+#if ( PARTIALLY_BLOCKING_ENABLE == 0x00 )
 void Scheduler_wakeup(void)
 {
 	/* Awaken all processes that have no more time to sleep */
 	pid processId;
 	uint32_t i =0;
-		processId = dequeue(sleepingList);
+		processId = dequeueSleep();
 		insert(processId, readyList, proctab[processId].prprio);
 	if (!isEmpty(sleepingList))
 	{
@@ -159,6 +201,27 @@ void Scheduler_wakeup(void)
 	}
 	return;
 }
+#else
+void Scheduler_wakeup(void)
+{
+	/* Awaken all processes that have no more time to sleep */
+	pid processId;
+	uint32_t i =0;
+		processId = dequeueSleep();
+		insert(processId, readyList, proctab[processId].prprio);
+	if (!isEmpty(sleepingList))
+	{
+		time = sleepTab[firstId(sleepingList)].sleeping;
+		Timer_New(Scheduler_clkhandler, time);
+	}
+	else
+	{
+		Timer_New(Scheduler_clkhandler, 100000000);
+	}
+	return;
+}
+
+#endif
 
 /******************************************************************************
 *
@@ -167,6 +230,7 @@ void Scheduler_wakeup(void)
 * 	\return none
 *
 *****************************************************************************/
+#if ( PARTIALLY_BLOCKING_ENABLE == 0x00 )
 void Scheduler_clkhandler(void)
 {
 
@@ -182,3 +246,21 @@ void Scheduler_clkhandler(void)
 	}
 	
 }
+#else
+void Scheduler_clkhandler(void)
+{
+
+	/* Handle sleeping processes if any exist */
+	if(!isEmpty(sleepingList))
+	{
+		/* Decrement the delay for the first process on the */
+		/* sleep queue, and awaken if the count reaches zero */
+		if (sleepTab[firstId(sleepingList)].sleeping - time  <=0)
+		{
+			Scheduler_wakeup();
+		}
+	}
+	
+}
+
+#endif

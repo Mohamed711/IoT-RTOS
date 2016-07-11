@@ -221,26 +221,26 @@ sysCall getItem(pid processId)
 	}
 
 	curr = firstId(sleepingList);
-	while ( (curr != queueTail(sleepingList)) && sleepTab[curr].qPriority < entryPriority )
+	while ( (curr != queueTail(sleepingList)) && sleepTab[curr].sleeping < entryPriority )
 	{
-		entryPriority -= sleepTab[curr].qPriority;
+		entryPriority -= sleepTab[curr].sleeping;
 		curr = sleepTab[curr].qnext;
 	}
 	
 	prev = sleepTab[curr].qprev;
 	sleepTab[processId].qnext = curr;
 	sleepTab[processId].qprev = prev;
-	sleepTab[processId].qPriority = entryPriority;
+	sleepTab[processId].sleeping = entryPriority;
 	
 	sleepTab[prev].qnext = processId;
 	sleepTab[curr].qprev = processId;
 	
 	if (curr != queueTail(sleepingList))
 	{
-		sleepTab[curr].qPriority -= entryPriority;
+		sleepTab[curr].sleeping -= entryPriority;
 	}
 	
-	time = sleepTab[firstId(sleepingList)].qPriority;
+	time = sleepTab[firstId(sleepingList)].sleeping;
 	Timer_New(Scheduler_clkhandler, time+2);
 
 		return pdPASS;
@@ -291,7 +291,7 @@ sysCall getItem(pid processId)
 *
 *	\param processId	    	ID of process to be removed
 *
-* 	\return pdPASS if the process is removed
+* \return pdPASS if the process is removed
 *
 *****************************************************************************/
 #if ( PARTIALLY_BLOCKING_ENABLE == 0x01 )
@@ -305,7 +305,7 @@ sysCall getItem(pid processId)
 		return pdPASS;
 	}
 #else
-		sysCall getItemFromSleep(pid processId)
+	sysCall getItemFromSleep(pid processId)
 	{
 		qid prev, next;
 		next = queueTab[processId].qnext;  /* Following node in list  */

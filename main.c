@@ -21,6 +21,7 @@
  *****************************************************************************/
 #include "RTOS_Headers.h"
 #include "OS/Scheduler/scheduler_test.h"
+#include "OS/Scheduler/Initialize.h"
 #include "tests.h"
 #include "OS/IPC/ipc_test.h"
 
@@ -29,10 +30,6 @@ int main(void)
 {
 	
 	uint16_t ReturnValue;
-	
-	SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
-	GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
 	
 	Scheduler_initialize();
 	
