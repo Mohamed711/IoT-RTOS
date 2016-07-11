@@ -24,13 +24,13 @@
 #include "OS/Scheduler/Initialize.h"
 #include "tests.h"
 #include "OS/IPC/ipc_test.h"
+#include "OS/IPC/Shared_Memory.h"
 
 
 int main(void) 
 {
 	
 	uint16_t ReturnValue;
-	
 	Scheduler_initialize();
 	
 	#if  (TEST_USED == ARMScheduler_TEST )
@@ -96,6 +96,8 @@ int main(void)
 	#elif (TEST_USED == AVR_UART_TEST)
 		uart_avr_test(void);
 		
+	#elif (TEST_USED == SHARED_MEM_TEST)	
+		SharedMem_test();
 	#endif
 		
 		

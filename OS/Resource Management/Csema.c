@@ -20,97 +20,142 @@
  *  distribution.
  *****************************************************************************/
 
-#include <stdio.h>
 
-#include "Resource Management.h"
+#include <stdio.h>
+#include "Resource_Management.h"
+#include "../RTOS.h"
+#include "../Scheduler/ReSched.h"
+#include "../MMU/mmu.h"
 #include "../Scheduler/Process.h"
 
-extern pid currpid;
+extern bool wakefromSleep;
+
+countingSemaphoreStruct_t *semaphore_array[5];
+uint8_t semaphore_array_index=0;
 
 
-int8_t Csema_init( Csema *sema, int8_t count )
+uint16_t countingSemaphore_Initialize( countingSemaphoreStruct_t *pCSemaphore, int8_t initCount )
 {
-	if(sema==NULL)
+	if(pCSemaphore==NULL)
 	{
-		return SYSERR;
+		return RM_NULLPTR;
 	}
-
-	sema->count =count;
-	int16_t nq =newqueue();
-	if(nq==SYSERR)
-		return SYSERR;
+	if(initCount>255)
+	{
+		return RM_OVERFLOW;
+	}
+	if(semaphore_array_index<5)
+	{
+	semaphore_array[semaphore_array_index]=pCSemaphore;
+	semaphore_array_index++;
+	}
 	else
 	{
-		sema->queue=nq;
-		return OK;
+		return RM_FULLBUFFER;
 	}
-
+	pCSemaphore->count =initCount;
+	qid nq =newqueue();
+	
+		pCSemaphore->queue=nq;
+		return SUCCESS;
 }
 
-int8_t Csema_delete( Csema *sema )
+uint16_t countinSemaphore_Delete( countingSemaphoreStruct_t *pCSemaphore )
 {
-	if(sema==NULL)
+	if(pCSemaphore==NULL)
 		{
-			return SYSERR;
+			return RM_NULLPTR;
 		}
 
-	int32_t pid;
-	while(pid=dequeue(sema->queue)!=SYSERR)
+	pid p;
+	while(p=dequeue(pCSemaphore->queue)!=errQUEUE_EMPTY)
 	{
-		Scheduler_processResume(pid);
+		Scheduler_processSetReady(p);
+    _RESCHEDULE_;
 	}
-	return OK;
+	return SUCCESS;
 
 }
 
-int8_t Csema_wait(Csema *sema)
+uint16_t countingSemaphore_Wait(countingSemaphoreStruct_t *pCSemaphore)
 {
-	if(sema==NULL)
+	if(pCSemaphore==NULL)
 		{
-			return SYSERR;
+			return RM_NULLPTR;
 		}
-
 	//DisableInterrupt();
 
-	if( sema->count >0)
+	if( pCSemaphore->count >0)
 	{
-		sema->count--;
+		pCSemaphore->count--;
 		//EnableInterrupt();
-		return OK;
+		return SUCCESS;
 
 	}
 	else
 	{
-		enqueue(currpid,sema->queue);
-		Scheduler_processWaiting(currpid);
+		uint16_t enqueue_return=insert(Scheduler_processGetPid(),pCSemaphore->queue,proctab[Scheduler_processGetPid()].prprio);
+		if(enqueue_return==pdFAIL)
+		{
+			return RM_ENQUEUE;
+		}
 
+		Scheduler_processWaiting(Scheduler_processGetPid());
+		_RESCHEDULE_;
 		//EnbleInterrupt();
-		return OK;
+		return SUCCESS;
+	}
+}
+
+uint16_t countingSemaphore_WaitTimed(countingSemaphoreStruct_t *pCSemaphore, uint32_t timeout)
+{
+	if(pCSemaphore==NULL)
+		{
+			return RM_NULLPTR;
+		}
+
+	//DisableInterrupt();
+
+	if( pCSemaphore->count >0)
+	{
+		pCSemaphore->count--;
+		//EnableInterrupt();
+		return SUCCESS;
+
+	}
+	else
+	{
+		Scheduler_processWaiting(Scheduler_processGetPid());
+		Scheduler_sleep(timeout);
+		_RESCHEDULE_;
+		//EnbleInterrupt();
+		return SUCCESS;
 	}
 }
 
 
 
-int8_t Csema_signal(Csema *sema)
+uint16_t countingSemaphore_Signal(countingSemaphoreStruct_t *pCSemaphore)
 {
-	if(sema==NULL)
+	if(pCSemaphore==NULL)
 		{
-			return SYSERR;
+			return RM_NULLPTR;
 		}
 	//DisableInterrupt();
-	if(isEmpty(sema->queue))
+	if(isEmpty(pCSemaphore->queue))
 	{
-		sema->count++;
+		pCSemaphore->count++;
 		//EnableInterrupt();
-		return OK;
+		return SUCCESS;
 	}
 	else
 	{
-		int32_t pid=dequeue(sema->queue);
-		Scheduler_processSetReady(pid);
+		pid p=dequeue(pCSemaphore->queue);
 
+		Scheduler_processSetReady(p);
+		_RESCHEDULE_;
 		//EnableInterrupt();
-		return OK;
+		return SUCCESS;
 	}
 }
 

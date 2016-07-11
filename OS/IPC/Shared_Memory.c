@@ -25,7 +25,8 @@
 
 #include "../RTOS.h"
 #include "Shared_Memory.h"
-#include "../Resource Management/Resource Management.h"
+#include "../Resource Management/Resource_Management.h"
+#include "../mmu/mmu.h"
 //*****************************************************************************
 //
 //! Shared Memory data structure
@@ -35,11 +36,10 @@
 //! \param Semaphore is a binary semaphore data structure used for synchronization and to avoid readers-writers’ problems.
 //!
 //*****************************************************************************
-
 typedef struct {
 	uint8_t * pcHead;
 	uint8_t SizeInBytes;
-	Bsem_t Semaphore;
+	binarySemaphoreStruct_t Semaphore;
 } SharedMem_t;
 
 SharedMemHandle_t xSharedMemGenericCreate( const UBaseType_t uxSharedMemSize )
@@ -50,16 +50,13 @@ SharedMemHandle_t xSharedMemGenericCreate( const UBaseType_t uxSharedMemSize )
 
 	configASSERT( ( uxSharedMemSize > ( UBaseType_t ) 0 ) );
 
-	/* The shared memory is one byte longer than asked for to make wrap checking
-	easier/faster. */
-	xSharedMemSizeInBytes = ( size_t ) uxSharedMemSize  + ( size_t ) 1;
+
+	xSharedMemSizeInBytes = ( size_t ) uxSharedMemSize;
 
 
 	/* Allocate the new shared memory structure and storage area. */
 
-
-	pxNewSharedMem = (SharedMem_t * ) malloc( sizeof ( SharedMem_t ) + xSharedMemSizeInBytes );
-
+	pxNewSharedMem = (SharedMem_t * ) pvPortMalloc( sizeof ( SharedMem_t ) + xSharedMemSizeInBytes );
 	if( pxNewSharedMem != NULL )
 	{
 
@@ -71,7 +68,7 @@ SharedMemHandle_t xSharedMemGenericCreate( const UBaseType_t uxSharedMemSize )
 		/* Initialise the shared memory members as described above where the shared memory type
 		is defined. */
 		pxNewSharedMem->SizeInBytes = uxSharedMemSize;
-		vid_Binary_semp_Bsem_init(&(pxNewSharedMem->Semaphore));
+		binarySemaphore_Initialize(&(pxNewSharedMem->Semaphore));
 		xReturn = pxNewSharedMem;
 	}
 	else
@@ -85,8 +82,6 @@ SharedMemHandle_t xSharedMemGenericCreate( const UBaseType_t uxSharedMemSize )
 }
 
 
-
-
 void xSharedMemSend( SharedMemHandle_t xSharedMem , uint32_t xMessage )
 {
 
@@ -97,15 +92,14 @@ void xSharedMemSend( SharedMemHandle_t xSharedMem , uint32_t xMessage )
 
 
 			/* waits for the shared memory to be available */
-				vid_Binary_semp_Bsem_wait (&(pxSharedMem->Semaphore));
+				binarySemaphore_Wait (&(pxSharedMem->Semaphore));
 
 				*(pxSharedMem->pcHead) = xMessage;
 
 				/* signals the semaphore */
-				vid_Binary_semp_Bsem_signal(&(pxSharedMem->Semaphore));
+				binarySemaphore_Signal(&(pxSharedMem->Semaphore));
 
 }
-/*-----------------------------------------------------------*/
 
 uint32_t xSharedMemReceive( SharedMemHandle_t xSharedMem )
 {
@@ -113,13 +107,13 @@ uint32_t xSharedMemReceive( SharedMemHandle_t xSharedMem )
 	                SharedMem_t * const pxSharedMem = ( SharedMem_t * ) xSharedMem;
 
 	                  /* waits for the shared memory to be available */
-	                vid_Binary_semp_Bsem_wait (&(pxSharedMem->Semaphore));
+	                binarySemaphore_Wait (&(pxSharedMem->Semaphore));
 
 					uint32_t xReturn;
 					xReturn = *(pxSharedMem->pcHead);
 
                      /* signals the semaphore */
-					vid_Binary_semp_Bsem_signal(&(pxSharedMem->Semaphore));
+					binarySemaphore_Signal(&(pxSharedMem->Semaphore));
 
 					return xReturn;
 }

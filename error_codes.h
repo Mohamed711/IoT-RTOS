@@ -39,6 +39,11 @@
  #define IPC_QUEUE_PARTIAL_SEND_FAIL	( 0x0111 )
  #define IPC_QUEUE_PARTIAL_RECV_FAIL	( 0x0112 )
  
- 
+#define RM_NULLPTR 			 							(0x0301)
+#define RM_CREATEQUEUE	 							(0x0302)
+#define RM_ENQUEUE 										(0x0303)
+#define RM_DEQUEUE 										(0x0304)
+#define RM_OVERFLOW 									(0x0305)
+#define RM_FULLBUFFER 								(0x0306)
  
  #endif

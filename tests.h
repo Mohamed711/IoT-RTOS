@@ -21,7 +21,9 @@
 #define AVR_WATCHDOG_TEST				13
 
 
-#define 	TEST_USED		ARMScheduler_TEST
+#define SHARED_MEM_TEST					14
+
+#define 	TEST_USED		SHARED_MEM_TEST
 
 
 #endif
