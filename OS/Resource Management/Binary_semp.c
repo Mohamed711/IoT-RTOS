@@ -49,7 +49,7 @@ uint16_t binarySemaphore_Wait (binarySemaphoreStruct_t *pBsemaphore)
 {
 	if (pBsemaphore->Bsemaphore_count == 0)
 	{ 
-		uint16_t enqueue_return= insert(Scheduler_processGetPid() /*current process*/,pBsemaphore->Bsemaphore_queue,proctab[Scheduler_processGetPid()].prprio);
+		uint16_t enqueue_return= insert(Scheduler_processGetPid(),pBsemaphore->Bsemaphore_queue,proctab[Scheduler_processGetPid()].prprio);
 		if(enqueue_return ==pdFAIL)
 		{
 			return RM_ENQUEUE;

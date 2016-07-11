@@ -28,7 +28,7 @@
 #define PART_TM4C1230C3PM 1
 #define PARTIALLY_BLOCKING_ENABLE 0x00
 #define NO_OF_TASKS 3
-#define NO_OF_QUEUES 26
+#define NO_OF_QUEUES 28
 
 
 #endif /* IOT_RTOS_USER_CONFIG_H_ */

@@ -22,7 +22,7 @@ typedef void * SharedMemHandle_t ;
 
  */
 
-#define xSharedMemCreate( uxSharedMemSize ) xSharedMemGenericCreate( uxSharedMemSize )
+#define xSharedMemCreate( ) xSharedMemGenericCreate( )
 
 /**
  * Creates a new shared memory instance.  This allocates the storage required by the
@@ -37,7 +37,7 @@ typedef void * SharedMemHandle_t ;
 
  */
 
-SharedMemHandle_t xSharedMemGenericCreate( const UBaseType_t uxSharedMemSize );
+SharedMemHandle_t xSharedMemGenericCreate( );
 
 
 /**

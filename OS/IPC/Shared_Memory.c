@@ -27,6 +27,7 @@
 #include "Shared_Memory.h"
 #include "../Resource Management/Resource_Management.h"
 #include "../mmu/mmu.h"
+#include "../Scheduler/realTimeClock.h"
 //*****************************************************************************
 //
 //! Shared Memory data structure
@@ -37,37 +38,30 @@
 //!
 //*****************************************************************************
 typedef struct {
-	uint8_t * pcHead;
-	uint8_t SizeInBytes;
+	uint32_t * pcHead;
 	binarySemaphoreStruct_t Semaphore;
 } SharedMem_t;
 
-SharedMemHandle_t xSharedMemGenericCreate( const UBaseType_t uxSharedMemSize )
+SharedMemHandle_t xSharedMemGenericCreate( )
 {
 	SharedMem_t *pxNewSharedMem;
-	size_t xSharedMemSizeInBytes;
+	//size_t xSharedMemSizeInBytes;
 	SharedMemHandle_t xReturn = NULL;
-
-	configASSERT( ( uxSharedMemSize > ( UBaseType_t ) 0 ) );
-
-
-	xSharedMemSizeInBytes = ( size_t ) uxSharedMemSize;
-
 
 	/* Allocate the new shared memory structure and storage area. */
 
-	pxNewSharedMem = (SharedMem_t * ) pvPortMalloc( sizeof ( SharedMem_t ) + xSharedMemSizeInBytes );
+	pxNewSharedMem = (SharedMem_t * ) pvPortMalloc( sizeof ( SharedMem_t ) + 4 );
 	if( pxNewSharedMem != NULL )
 	{
 
 		/* Jump past the shared memory structure to find the location of the shared memory
 		storage area. */
-		pxNewSharedMem->pcHead = ( ( int8_t * ) pxNewSharedMem ) + sizeof( SharedMem_t );
+		pxNewSharedMem->pcHead = ( ( int32_t * ) pxNewSharedMem ) + sizeof( SharedMem_t );
 
 
 		/* Initialise the shared memory members as described above where the shared memory type
 		is defined. */
-		pxNewSharedMem->SizeInBytes = uxSharedMemSize;
+		//pxNewSharedMem->SizeInBytes = uxSharedMemSize;
 		binarySemaphore_Initialize(&(pxNewSharedMem->Semaphore));
 		xReturn = pxNewSharedMem;
 	}
@@ -85,36 +79,40 @@ SharedMemHandle_t xSharedMemGenericCreate( const UBaseType_t uxSharedMemSize )
 void xSharedMemSend( SharedMemHandle_t xSharedMem , uint32_t xMessage )
 {
 
+	SharedMem_t * pxSharedMem = ( SharedMem_t * ) xSharedMem;
 
-	SharedMem_t * const pxSharedMem = ( SharedMem_t * ) xSharedMem;
+	configASSERT( pxSharedMem );
+//	uint32_t value = (uint32_t) pxSharedMem;
+	/* waits for the shared memory to be available */
+	binarySemaphore_Wait (&(pxSharedMem->Semaphore));
+	
+	Scheduler_sleepms(2000);
 
-			configASSERT( pxSharedMem );
+//	pxSharedMem = (SharedMem_t *)value;
+
+	*(pxSharedMem->pcHead) = xMessage;
 
 
-			/* waits for the shared memory to be available */
-				binarySemaphore_Wait (&(pxSharedMem->Semaphore));
 
-				*(pxSharedMem->pcHead) = xMessage;
 
-				/* signals the semaphore */
-				binarySemaphore_Signal(&(pxSharedMem->Semaphore));
+
+	binarySemaphore_Signal(&(pxSharedMem->Semaphore));
 
 }
 
 uint32_t xSharedMemReceive( SharedMemHandle_t xSharedMem )
 {
+	  SharedMem_t * const pxSharedMem = ( SharedMem_t * ) xSharedMem;
 
-	                SharedMem_t * const pxSharedMem = ( SharedMem_t * ) xSharedMem;
+	  /* waits for the shared memory to be available */
+	  binarySemaphore_Wait (&(pxSharedMem->Semaphore));
 
-	                  /* waits for the shared memory to be available */
-	                binarySemaphore_Wait (&(pxSharedMem->Semaphore));
+		uint32_t xReturn;
+		xReturn = *(pxSharedMem->pcHead);
 
-					uint32_t xReturn;
-					xReturn = *(pxSharedMem->pcHead);
+    /* signals the semaphore */
+		binarySemaphore_Signal(&(pxSharedMem->Semaphore));
 
-                     /* signals the semaphore */
-					binarySemaphore_Signal(&(pxSharedMem->Semaphore));
-
-					return xReturn;
+		return xReturn;
 }
 

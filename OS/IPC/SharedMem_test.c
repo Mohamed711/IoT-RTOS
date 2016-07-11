@@ -33,12 +33,12 @@
 extern uint32_t prcount;
 
 SharedMemHandle_t pxSharedMem;
-uint32_t message = 4;
+uint32_t message = 1200;
 
 
 void shared_memTask1()
 {
-	pxSharedMem = xSharedMemCreate( 4 );
+	pxSharedMem = xSharedMemCreate( );
 	xSharedMemSend( pxSharedMem , message );
 		
 }
@@ -46,14 +46,15 @@ void shared_memTask1()
 void shared_memTask2()
 {
 	uint32_t received;
+	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 2);
 	received = xSharedMemReceive( pxSharedMem );
-	if (received == 4) 
+	if (received == 1200) 
 	{
-		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 2);
+		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 14);
 	}
 	else
 	{
-		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 14);
+		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, 7);
 	}
 }
 
