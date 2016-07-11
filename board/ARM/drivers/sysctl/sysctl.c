@@ -1730,7 +1730,7 @@ SysCtlDeepsleep(void)
     //
     // Enable deep-sleep.
     //
-    HWREG(NVIC_SYS_CTRL) |= NVIC_SYS_CTRL_sleepDEEP;
+    HWREG(NVIC_SYS_CTRL) |= NVIC_SYS_CTRL_SLEEPDEEP;
 
     //
     // Wait for an interrupt.
@@ -1740,7 +1740,7 @@ SysCtlDeepsleep(void)
     //
     // Disable deep-sleep so that a future sleep works correctly.
     //
-    HWREG(NVIC_SYS_CTRL) &= ~(NVIC_SYS_CTRL_sleepDEEP);
+    HWREG(NVIC_SYS_CTRL) &= ~(NVIC_SYS_CTRL_SLEEPDEEP);
 }
 
 //*****************************************************************************

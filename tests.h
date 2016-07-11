@@ -23,7 +23,7 @@
 
 #define SHARED_MEM_TEST					14
 
-#define 	TEST_USED		SHARED_MEM_TEST
+#define 	TEST_USED		IPC_MODULAR_TEST
 
 
 #endif
