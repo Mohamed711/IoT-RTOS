@@ -1,0 +1,26 @@
+﻿/*
+ * DIO.h
+ *
+ * Created: 24/08/2015 12:51:11 ص
+ *  Author: hossam
+ */ 
+
+
+#ifndef DIO_H_
+#define DIO_H_
+
+
+#include <avr/io.h>
+
+#define PA 0x00
+#define PB 0x01
+#define PC 0x02
+#define PD 0x03
+
+void DIO_InitPortDirection(uint8_t PortName,uint8_t PortDirection,uint8_t PortMask);
+void DIO_WritePort(uint8_t PortName,uint8_t PortData,uint8_t PortMask);
+uint8_t DIO_ReadPort(uint8_t PortName,uint8_t PortMAsk);
+
+
+
+#endif /* DIO_H_ */
