@@ -69,5 +69,9 @@ pid Scheduler_reSchedule(void) /* Assumes interrupts are disabled */
 	
 	pid newP = currpid;
 		
+	#ifdef AVR
+		Scheduler_contextSwitch();
+	#endif
+	
 	return newP;
 }

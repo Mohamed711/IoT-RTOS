@@ -23,14 +23,12 @@
 #include "8-bit_TimerCounter0_LCFG.h"
 #include "8-bit_TimerCounter0_CFG.h"
 #include "avr/interrupt.h"
-#include "../../../../OS/Scheduler/nullProcess.h"
-#include "../../../../OS/Scheduler/Process.h"
-#include "../../../../OS/Scheduler/contextSwitch.h"
-#include "../../../../OS/Scheduler/Initialize.h"
-static FnPtr TMR_CylicFunPtr; /*ptr2fn to pass it from init to ISR*/
-volatile static uint32_t count = 0;
-volatile static uint32_t countCompare = 0;
-volatile static uint32_t no_of_ticks = 0;
+
+
+static FnPtr TMR_CylicFunPtr; /*global ptr2fn to pass it from init to ISR*/
+static uint32_t count = 0;
+static uint16_t countCompare = 0;
+static uint16_t no_of_ticks = 0;
 
 
 /*************************************************************************************************
@@ -73,7 +71,7 @@ void timer0Init1ms ()
 *	
 *	\return none
 **************************************************************************************************/
-void timer0Start (uint32_t millis, FnPtr timeoutFn)
+void timer0Start (uint16_t millis, FnPtr timeoutFn)
 {	
 	TIMSK = 0x00;
 	OCR0 = no_of_ticks-1;
@@ -105,7 +103,7 @@ uint8_t timer0Read()
 *
 *	\return none
 **************************************************************************************************/
-void timer0Delay1ms(uint32_t millis, FnPtr timeoutFn)
+void timer0Delay1ms(uint16_t millis, FnPtr timeoutFn)
 {
 	
 	uint16_t i;
@@ -205,24 +203,43 @@ void timer0Stop()
 *	function is executed. 
 *
 **************************************************************************************************/
+#ifdef TimerSDK
+ISR(TIMER0_COMP_vect)
+{
+	count++;
+	if (count == countCompare)
+	{
+		TMR_CylicFunPtr();
+		count = 0;
+	}
+}
+
+#endif
+/*************************************************************************************************
+*
+*	This is the interrupt service routine of the compare and match timer. The 'count' counts the
+*	number of milli-seconds required. When the 'count' matches the 'countCompare' context is saved
+*   and a wakeup function is called then setting the return address to the null process.
+**************************************************************************************************/
+
+#ifdef TimerOS
+#include "../../../../OS/Scheduler/nullProcess.h"
+#include "../../../../OS/Scheduler/Process.h"
+#include "../../../../OS/Scheduler/contextSwitch.h"
+#include "../../../../OS/Scheduler/Initialize.h"
 volatile uint16_t tempAddress;
 volatile uint16_t savedAddress;
 volatile uint8_t *Address;
-//ISR(TIMER0_COMP_vect) __attribute__ ( ( signal, naked ) );
 ISR(TIMER0_COMP_vect)
-{
-
-	
+{	
 	count++;
 	if (count == countCompare)
 	{
 		if (currpid!=0)
 		{
-			//GetReturnAddress();
-			//proctab[currpid].returnValue=(TempPointer_H<<8)|(TempPointer_L);
 				SaveMainStakpointer();
 				savedAddress=(TempPointer_H<<8)|(TempPointer_L);
-				Address=(uint8_t*)(savedAddress+19);
+				Address=(uint8_t*)(savedAddress+18);
 				proctab[currpid].returnValue=(*(Address+1))|(*Address)<<8;
 				proctab[currpid].prstkptr=savedAddress;
 				
@@ -238,9 +255,8 @@ ISR(TIMER0_COMP_vect)
 				SetMainStakpointer();
 			
 		}
-	
-		TMR_CylicFunPtr();
 		count = 0;
+		TMR_CylicFunPtr();
 		
 		tempAddress=Scheduler_nullProc;
 		TempPointer_L=tempAddress;
@@ -248,6 +264,5 @@ ISR(TIMER0_COMP_vect)
 		SetReturnAddress();
 		asm volatile ("reti");
 	}
-	
-	
 }
+#endif

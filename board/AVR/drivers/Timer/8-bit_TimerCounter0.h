@@ -25,6 +25,7 @@
 #include <stdbool.h>
 
 
+#define TimerOS 1
 
 typedef void (*FnPtr)(void);
 
@@ -32,8 +33,9 @@ void timer0Init1ms();
 
 uint8_t timer0Read();
 
-void timer0Delay1ms(uint32_t millis, FnPtr timeoutFn);
-void timer0Start (uint32_t millis, FnPtr timeoutFn);
+void timer0Delay1ms(uint16_t millis, FnPtr timeoutFn);
+void timer0Start (uint16_t millis, FnPtr timeoutFn);
+
 
 uint8_t timer0ReadOVFFlag();
 

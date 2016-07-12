@@ -39,5 +39,6 @@ typedef struct {
 #define timerdelay(x) timer0Delay1ms((*x).timeInMillis, (*x).timeoutFn)
 #define timerstart(x) timer0Start((*x).timeInMillis, (*x).timeoutFn)
 #define timerstop(x)  timer0Stop()
+void Timer_New(FnPtr timeoutFn, uint32_t time);
 
 #endif /* HAL_H_ */

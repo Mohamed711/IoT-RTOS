@@ -32,9 +32,10 @@
 #include <string.h>
 extern pid currpid;
 uint32_t prcount;
+#if ARM
 Uart_InitTypeDef initConf;	
 Uart_HandleTypeDef transmit;
-
+#endif
 
 /******************************************************************************
 *
@@ -43,6 +44,7 @@ Uart_HandleTypeDef transmit;
 * 	\return none
 *
 *****************************************************************************/
+#ifdef ARM
 void Scheduler_initializenullProcess()
 {
 	proctab[0].processFunction = Scheduler_nullProc;
@@ -54,7 +56,25 @@ void Scheduler_initializenullProcess()
 	proctab[0].prstkptr = Scheduler_stackInitialization(proctab[0].prstkbase , Scheduler_nullProc, 100);
 	currpid = 0;
 }
-
+#endif
+#ifdef AVR
+void Scheduler_initializenullProcess()
+{
+	volatile uint8_t *saddr;
+	proctab[0].processFunction = Scheduler_nullProc;
+	proctab[0].returnValue=Scheduler_nullProc;
+	proctab[0].prstate = PR_CURR;
+	proctab[0].prprio = 0;
+	strncpy(proctab[0].prname, "prnull", 7);
+	saddr = (uint8_t *)pvPortMalloc(NULLSTK);
+	proctab[0].prstkbase=saddr+NULLSTK;
+	proctab[0].prstklen=NULLSTK;
+	proctab[0].prstkptr=(uint8_t *)(saddr+NULLSTK-36); //32 reg + SREG + 3 fixed values
+	proctab[0].Regstkptr=(uint8_t *)(saddr+NULLSTK);
+	Scheduler_stackInitialization(proctab[0].prstkbase,Scheduler_nullProc, 100);
+	currpid = 0;
+}
+#endif
 void Scheduler_initialize()
 {
 	prcount=0;
@@ -78,7 +98,7 @@ void Scheduler_initialize()
 }
 
 
-//#ifdef ARM
+#ifdef ARM
 
 void initializeUART(Uart_InitTypeDef *initConf,uint32_t BaseAddress)
 {
@@ -94,4 +114,4 @@ void initializeUART(Uart_InitTypeDef *initConf,uint32_t BaseAddress)
 
 }
 
-//#endif
+#endif

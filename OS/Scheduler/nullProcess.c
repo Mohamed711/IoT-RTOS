@@ -88,6 +88,7 @@ bool flag = true;
 bool wakefromSleep = true;	
 #define THREAD_RETURN 0xFFFFFFFD //Tells the handler to return using the PSP
 
+#if ARM
 void UART0_Handler(void)
 {		
 		if (proctab[currpid].prstate != PR_FREE)
@@ -163,8 +164,6 @@ void UART0_Handler(void)
 		}
 }
 
-
-
 void Scheduler_nullProc(Uart_HandleTypeDef *transmit)
 {
 	if (flag)
@@ -197,8 +196,9 @@ void Scheduler_nullProc(Uart_HandleTypeDef *transmit)
 				}
 	}
 }
+#endif
 
-
+#if ARM
 void Scheduler_Start()
 {
 	__set_PSP(__get_MSP()); // copy current stack pointer value into PSP
@@ -207,5 +207,27 @@ void Scheduler_Start()
 	Scheduler_nullProc(&transmit);
 	
 }
+#endif
 
+#ifdef AVR
+	void Scheduler_nullProc()
+	{
+		
+		while (1)
+		{
+			if (prcount !=0)
+			{
+				if ((currpid != 0 )&&(proctab[currpid].prstate==PR_CURR))
+				{
+					
+					Scheduler_processSetReady(currpid);
+				}
 
+				currpid = 0;
+				Scheduler_reSchedule();
+				
+			}
+		}
+	}
+	
+#endif

@@ -10,8 +10,7 @@
 #define IPC_ASYNC_TEST					3
 #define IPC_SYNC_SEND_TEST			4
 #define IPC_SYNC_RECV_TEST			5
-#define IPC_PAR_SEND_TEST				6
-#define IPC_PAR_RECV_TEST				7
+
 
 #define AVR_ADC_TEST						8
 #define AVR_TIMER_TEST					9
@@ -23,7 +22,7 @@
 
 #define SHARED_MEM_TEST					14
 
-#define 	TEST_USED		IPC_MODULAR_TEST
+#define 	TEST_USED		IPC_SYNC_RECV_TEST
 
 
 #endif

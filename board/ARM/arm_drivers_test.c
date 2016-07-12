@@ -24,6 +24,21 @@
 #include <stdbool.h>
 
 #include "tivaHAL.h"
+#include "arm_drivers_test.h"
+
+void i2c_arm_test()
+{
+	I2C_InitTypeDef in;
+	in.baseAddress = I2C0_BASE;
+
+	I2C_HandleTypeDef handle;
+	handle.instance = in;
+	handle.slaveAddress = 4;
+	handle.Txdata = 'a';
+
+//	i2cmasterinit(&in);
+//	i2cmastersend(&handle);
+}
 
 void spi_arm_test()
 {

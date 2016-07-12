@@ -91,7 +91,12 @@
 #define INITRET userret /* Address to which process returns */
 #define INITSTK 100 	/* Initial process stack size */
 #define MINSTK	10  	/* Minimum stack size */
-
+#ifdef ARM
+typedef  uint32_t returnType;
+#endif
+#ifdef AVR
+typedef  uint16_t returnType;
+#endif
 /*Inline code to check process ID (assumes interrupts are disabled) */
 #define isbadpid(x) ( ((qid)(x) >= NPROC) || \
 (proctab[(x)].prstate == PR_FREE))
@@ -100,8 +105,9 @@
  struct procent {                /* Entry in the process table           */
 	void (*processFunction)(void);
 	char    *prstkptr;      /* Saved stack pointer                  */
+	char 	*Regstkptr;     /* Saved registers pointer               */
 	char    *prstkbase;     /* Base of run time stack               */
-	uint32_t returnValue;
+	returnType returnValue;  /*process return address*/
 	uint32_t   prprio;         /* Process priority                     */
 	uint16_t prstate;         /* Process state: PR_CURR, etc.         */
 	uint16_t  prstklen;       /* Stack length in bytes                */
@@ -121,9 +127,7 @@ sysCall	Scheduler_processSuspend(pid processId);
 void Scheduler_processSuspendAll(void);
 void Scheduler_processResumeAll(void);
 sysCall	Scheduler_processWaiting(pid processId);
-char * Scheduler_stackInitialization(char* stackpointer, void *func(), uint32_t ssize);
 sysCall Scheduler_processKill();
-
-
+char * Scheduler_stackInitialization(char* stackpointer, void *func(), uint32_t ssize);
 #endif
 

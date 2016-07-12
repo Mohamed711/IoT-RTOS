@@ -35,7 +35,9 @@ uint32_t 	ctr1000;
 int32_t		slnonEmpty;	/* nonzero if sleepq is nonEmpty	*/
 int32_t		*sltop;			/* ptr to key in first item on sleepq	*/
 uint32_t	preempt;		/* preemption counter			*/
-
+volatile uint16_t tempAddress;
+volatile uint16_t savedAddress;
+volatile static uint8_t *Address;
 
 /******************************************************************************
 *
@@ -67,6 +69,24 @@ sysCall	Scheduler_sleep(int32_t delay)
 *****************************************************************************/
 sysCall	Scheduler_sleepms(int32_t	delay)
 {
+	#ifdef AVR
+	SaveMainStakpointer();
+	savedAddress=(TempPointer_H<<8)|(TempPointer_L);
+	Address=(uint8_t*)(savedAddress+7);
+	proctab[currpid].returnValue=(*(Address+1))|(*Address)<<8;
+	proctab[currpid].prstkptr=savedAddress;
+	
+	tempAddress=proctab[currpid].Regstkptr;
+	TempPointer_L=tempAddress;
+	TempPointer_H=tempAddress>>8;
+	SetMainStakpointer();
+	
+	saveContext();
+	proctab[currpid].Regstkptr=(TempPointer_H<<8)|(TempPointer_L);
+	TempPointer_L=savedAddress;
+	TempPointer_H=savedAddress>>8;
+	SetMainStakpointer();
+#endif
 	if (delay < 0)
 	{
 		return SYSERR;
@@ -84,8 +104,21 @@ sysCall	Scheduler_sleepms(int32_t	delay)
 		return SYSERR;
 	}
 	proctab[currpid].prstate = PR_sleep;
-	_RESCHEDULE_;
-	return OK;
+	#ifdef AVR
+	currpid =0;
+	getItem(0);
+	proctab[0].prstate = PR_CURR;
+	tempAddress=Scheduler_nullProc;
+	TempPointer_L=tempAddress;
+	TempPointer_H=tempAddress>>8;
+	SetReturnAddress();
+	asm volatile ("ret");
+#endif
+#ifdef ARM
+_RESCHEDULE_;
+return OK;
+#endif
+	
 }
 
 /******************************************************************************

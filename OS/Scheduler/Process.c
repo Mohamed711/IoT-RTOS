@@ -26,12 +26,14 @@
 #include "reSched.h"
 #include "realTimeClock.h"
 #include "../MMU/mmu.h"
+#include "contextSwitch.h"
+#include "nullProcess.h"
 
 pid currpid;
 struct procent proctab[NPROC];		  /* table of processes */
 extern uint32_t prcount;
 extern bool wakefromSleep;
-
+volatile static uint16_t tempAddress;
 /******************************************************************************
 *
 *	The function's purpose is to get the pid of the current process
@@ -112,17 +114,23 @@ pid Scheduler_processCreate(void *funcAddr, uint32_t ssize, int32_t priority, ch
 	prptr->processFunction = funcAddr;
 	prptr->prstate = PR_SUSP; /* Initial state is suspended */
 	prptr->prprio = (pid)priority;
-	prptr->prstkbase = (char*)saddr;
+	
 	prptr->prstklen = ssize;
 	prptr->prname[PNMLEN - 1] = NULLCH;
 	for (i = 0; i < PNMLEN - 1 && (prptr->prname[i] = name[i]) != NULLCH; i++)
 	{
 		;
 	}
-
-	prptr->prstkptr = Scheduler_stackInitialization(saddr , funcAddr, ssize);
+	#ifdef ARM
+		prptr->prstkbase = (char*)saddr;
+		prptr->prstkptr = Scheduler_stackInitialization(saddr , funcAddr, ssize);
+#endif
+#ifdef AVR
+prptr->prstkbase = (uint8_t *)saddr+ssize;
+prptr->prstkptr=(uint8_t *)(saddr+ssize-36);
+prptr->Regstkptr=Scheduler_stackInitialization(prptr->prstkbase,funcAddr, ssize);
+#endif
 	prptr->returnValue = (uint32_t)funcAddr;
-	
 	return processId;
 }
 
@@ -172,8 +180,20 @@ sysCall Scheduler_processTerminate(pid processId)
 		prptr->prstate = PR_FREE;
 	}
 	prcount--;
-
+	
+#ifdef ARM
 	return OK;
+#endif
+#ifdef AVR
+	currpid =0;
+	getItem(0);
+	proctab[0].prstate = PR_CURR;
+	tempAddress=Scheduler_nullProc;
+	TempPointer_L=tempAddress;
+	TempPointer_H=tempAddress>>8;
+	SetReturnAddress();
+	asm volatile ("ret");
+#endif
 }
 
 /******************************************************************************
@@ -240,7 +260,6 @@ pid Scheduler_processResume(pid processId)
 	/*
 	Function restore reloads an interrupt status from a previously saved value.
 	*/
-	_RESCHEDULE_;
 	return prio;
 }
 
@@ -289,7 +308,6 @@ sysCall	Scheduler_processSuspend(pid processId) 		/* ID of process to suspend	*/
 	}
 	prio = prptr->prprio;
 	//restore(mask);
-	_RESCHEDULE_;
 	return prio;
 }
 

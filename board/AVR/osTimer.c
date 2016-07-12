@@ -20,20 +20,16 @@
 *  distribution.
 *****************************************************************************/
 
-#ifndef CONTEXTSWITCH_H_
-#define CONTEXTSWITCH_H_
+#include "../../RTOS_Headers.h"
+#include "../../OS/Scheduler/realTimeClock.h"
 
-#include "Process.h"
-#ifdef AVR
-#include "../../board/AVR/Port_AVR.h"
-#endif
-#ifdef ARM
-#include "../../board/ARM/Port_ARM.h"
-#endif
-/*
- * The function definition is in the board folder as its implementation
- * differ with the type of the microcontroller used
- */
-void Scheduler_contextSwitch();
+void Timer_New(FnPtr timeoutFn, uint32_t time)
+{
+	Timer_InitTypeDef timerInit;
+	Timer_HandleTypeDef  timerHandle;
+	timerHandle.timeInMillis=time;
+	timerHandle.timeoutFn = Scheduler_clkhandler;
 
-#endif /* CONTEXTSWITCH_H_ */
+	timerinit(&timerInit);
+	timerstart(&timerHandle);
+}	
